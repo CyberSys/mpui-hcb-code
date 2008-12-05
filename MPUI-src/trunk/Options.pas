@@ -376,8 +376,8 @@ begin
   
   PShow.Caption:='';
   for i:=0 to FontPaths.Count-1 do begin
-    if (FontNames[i]=LowerCase(CSubfont.Text)) or
-       (FontPaths[i]=LowerCase(CSubfont.Text)) then begin
+    if (LowerCase(FontNames[i])=LowerCase(CSubfont.Text)) or
+       (LowerCase(FontPaths[i])=LowerCase(CSubfont.Text)) then begin
       PShow.Font.Name:=FontNames[i];
       PShow.Caption:=FontNames[i];
       break;
@@ -666,7 +666,7 @@ begin
   end
   else begin
     for i:=0 to FontPaths.Count-1 do begin
-      if FontPaths[i]=LowerCase((Sender as TComboBox).Text) then begin
+      if LowerCase(FontPaths[i])=LowerCase((Sender as TComboBox).Text) then begin
         PShow.Font.Name:=FontNames[i];
         PShow.Caption:=FontNames[i];
         exit;

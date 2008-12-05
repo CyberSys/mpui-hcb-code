@@ -786,13 +786,13 @@ object OptionsForm: TOptionsForm
         Left = 1
         Top = 102
         Width = 300
-        Height = 109
+        Height = 110
         Anchors = [akLeft, akTop, akRight, akBottom]
         Caption = 'Lyric'
         TabOrder = 10
         DesignSize = (
           300
-          109)
+          110)
         object LTCL: TTntLabel
           Left = 14
           Top = 53

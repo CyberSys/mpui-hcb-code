@@ -414,28 +414,35 @@ var i,UPCount:integer;
 begin
   if Count=0 then begin Result:=-1; CurPlay:=-1; exit; end
   else Result:=CurPlay;
-  if OneLoop and AutoNext then exit;
-  AutoNext:=true;
   if Result<0 then Result:=0
   else Data[Result].State:=ExitState;  // mark State of current track
-
-  if Shuffle then begin // ***** SHUFFLE MODE *****
-    if Loop then Result:=Random(Count)
+  if OneLoop and AutoNext then exit;
+  AutoNext:=true;
+  if Shuffle and (not OneLoop) then begin // ***** SHUFFLE MODE *****
+    if Loop and (Count>1) then begin
+      repeat Result:=Random(Count);
+      until Result<>CurPlay;
+    end
     else begin
       // unplayed tracks left?
       UPCount:=0;
       for i:=0 to Count-1 do
         if Data[i].State=psNotPlayed then inc(UPCount);
       // find a track
-      if UPCount=0 then Result:=Random(Count)
-      else repeat Result:=Random(Count);
-      until Data[Result].State=psNotPlayed;
+      if UPCount=0 then begin
+        repeat Result:=Random(Count);
+        until Result<>CurPlay;
+      end
+      else begin
+        repeat Result:=Random(Count);
+        until Data[Result].State=psNotPlayed;
+      end;
     end;
   end
   else begin        // ***** NORMAL MODE *****
     inc(Result,Direction);
     if (Result<0) or (Result>Count-1) then begin
-      if Loop then Result:=(Result+Count) MOD Count
+      if Loop and (not OneLoop) then Result:=(Result+Count) MOD Count
       else Result:=-1;
     end;
   end;

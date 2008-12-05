@@ -406,7 +406,7 @@ begin
     Result:='';
     for i:=0 to FontPaths.Count-1 do begin
       if (LowerCase(FontNames[i])=LowerCase(Sfont)) or
-         (FontPaths[i]=LowerCase(Sfont)) then begin
+         (LowerCase(FontPaths[i])=LowerCase(Sfont)) then begin
         Result:=FontPaths[i];
         exit;
       end;
