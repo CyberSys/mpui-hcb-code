@@ -1217,7 +1217,7 @@ procedure TMainForm.FormResize(Sender: TObject);
 var CX,CY:integer;
 begin
   if SeekBarSlider.Visible then UpdateSeekBar;
-  if (Core.TotalTime>0) and MSIE.Checked then begin
+  if (Core.TotalTime>0) and SkipBar.Visible then begin
     if (Bp>0) and (Bp<Core.TotalTime) then
       SkipBar.Left:=SeekBar.Left+SeekBar.Width*Core.Bp DIV Core.TotalTime
     else SkipBar.Left:=SeekBar.Left;
@@ -2118,7 +2118,7 @@ begin
   DirHIdx:=0; DirHSub:=0; Vobfile:=''; substring:=''; MShowSub.Checked:=true;
   AudioID:=-1; SubID:=-1; VideoID:=-1; CID:=1; AID:=1; CDID:=1; Dreset:=false;
   subcount:=0; Lastsubcount:=0; LastPos:=0; SecondPos:=-1; TotalTime:=0;
-  Duration:='0:00:00'; SeekBarSlider.Left:=0; UpdateSkipBar:=MSIE.Checked;
+  Duration:='0:00:00'; SeekBarSlider.Left:=0; UpdateSkipBar:=SkipBar.Visible;
   if AudioFile<>''then begin AudioFile:=''; MUloadAudio.Visible:=false; end;
 end;
 
