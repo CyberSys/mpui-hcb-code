@@ -42,8 +42,10 @@ const SubTypeCount=35;
             '.js','.ass','.mpsub','.idx','.sub'
       );
       
-const MediaType:array[0..185]of string=(
-        '.rar','.7z','.zip','.aac','.ac3','.acc','.act','.aif','.aifc','.aiff','.amf','.amr','.amv','.ape',
+const MediaType:array[0..202]of string=('.7z','.rar','.zip','.arj','.bz2','.z','.lzh',
+        '.cab','.lzma','.xar','.hfs','.dmg','.wim','.iso','.split','.rpm','.deb','.cpio',
+        '.tar','.gz',
+        '.aac','.ac3','.acc','.act','.aif','.aifc','.aiff','.amf','.amr','.amv','.ape',
         '.as','.asf','.asx',
         '.a52','.apl','.au','.avi','.avs','.bik','.bin','.cda','.cmf','.cmn','.cpk',
         '.cue','.d2v','.dat','.drc','.dsm','.dsv','.dsa','.dss','.dts','.dtswav',
@@ -239,7 +241,7 @@ begin
     if Is7zLoaded<>0 then Result:=Add7zMovies(ArcName,PW,Add)
     else if IsZipLoaded<>0 then Result:=AddZipMovies(ArcName,PW,Add);
   end
-  else if Is7zLoaded<>0 then Result:=Add7zMovies(ArcName,PW,Add);
+  else if Is7zLoaded>2 then Result:=Add7zMovies(ArcName,PW,Add);
 end;
 
 procedure ExtractMovie(ArcName,MovieName,PW:widestring; ArcType:string);
@@ -256,7 +258,7 @@ begin
     if Is7zLoaded<>0 then Extract7zMovie(ArcName,MovieName,PW)
     else if IsZipLoaded<>0 then ExtractZipMovie(ArcName,MovieName,PW);
   end
-  else if Is7zLoaded<>0 then Extract7zMovie(ArcName,MovieName,PW);
+  else if Is7zLoaded>2 then Extract7zMovie(ArcName,MovieName,PW);
 end;
 
 procedure ExtractLyric(ArcName,PW:WideString; ArcType:string; Mode:integer);
@@ -273,7 +275,7 @@ begin
     if Is7zLoaded<>0 then Extract7zLyric(ArcName,PW,Mode)
     else if IsZipLoaded<>0 then ExtractZipLyric(ArcName,PW,Mode);
   end
-  else if Is7zLoaded<>0 then Extract7zLyric(ArcName,PW,Mode);
+  else if Is7zLoaded>2 then Extract7zLyric(ArcName,PW,Mode);
 end;
 
 function ExtractSub(ArcName,PW:WideString; ArcType:string):String;
@@ -291,7 +293,7 @@ begin
     if Is7zLoaded<>0 then Result:=Extract7zSub(ArcName,PW)
     else if IsZipLoaded<>0 then Result:=ExtractZipSub(ArcName,PW);
   end
-  else if Is7zLoaded<>0 then Result:=Extract7zSub(ArcName,PW);
+  else if Is7zLoaded>2 then Result:=Extract7zSub(ArcName,PW);
 end;
 
 function SplitLine(var Line:string):string;
