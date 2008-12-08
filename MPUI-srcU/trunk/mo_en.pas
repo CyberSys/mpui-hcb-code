@@ -245,7 +245,7 @@ begin
 'Tab'^I'Toggle Menu and ControlPanel'^M^J+
 'LMB drag video'^I'Adjust window position'^M^J+
 'LMB drag subtitle'^I'Adjust subtitle position'^M^J+
-'Ctrl+Left/Right/Up/Down^I'Adjust aspect ratio'^M^J+
+'Ctrl+Left/Right/Up/Down'^I'Adjust aspect ratio'^M^J+
 'Ctrl+LMB drag video'^I'Adjust aspect ratio'^M^J+
 'Shift+LMB drag video'^I'Scale video,Adjust volume or size'^M^J+
 '`'^I'Reset brightness,contrast,hue,saturation,gamma'^M^J+
