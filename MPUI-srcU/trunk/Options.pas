@@ -550,7 +550,10 @@ begin
     Title:=MainForm.MSubfont.Caption;
     Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
     filter:=FontFilter+'(*.ttf)|*.ttf|'+AnyFilter+'(*.*)|*.*';
-    if Execute then CSubfont.Text:=fileName;
+    if Execute then begin
+      if CSubfont.Text<>fileName then FontChange(CSubfont);
+      CSubfont.Text:=fileName;
+    end;
   end;
   WideSetCurrentDir(CurPath);
 end;
@@ -563,7 +566,10 @@ begin
     Title:=MainForm.MOsdfont.Caption;
     Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
     filter:=FontFilter+'(*.ttf)|*.ttf|'+AnyFilter+'(*.*)|*.*';
-    if Execute then COsdfont.Text:=fileName;
+    if Execute then begin
+      if COsdfont.Text<>fileName then FontChange(COsdfont);
+      COsdfont.Text:=fileName;
+    end;
   end;
   WideSetCurrentDir(CurPath);
 end;
@@ -574,7 +580,10 @@ begin
     Title:=RMplayer.Caption;
     Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
     filter:='*.exe|*.exe|'+AnyFilter+'(*.*)|*.*';
-    if Execute then EMplayerLocation.Text:=fileName;
+    if Execute then begin
+      if EMplayerLocation.Text<>fileName then changed:=true;
+      EMplayerLocation.Text:=fileName;
+    end;
   end;
 end;
 
@@ -618,7 +627,10 @@ begin
     Title:=CWadsp.Caption;
     Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
     filter:='*.dll|*.Dll|'+AnyFilter+'(*.*)|*.*';
-    if Execute then EWadsp.Text:=fileName;
+    if Execute then begin
+      if EWadsp.Text<>fileName then changed:=true;
+      EWadsp.Text:=fileName;
+    end;
   end;
 end;
 
@@ -705,8 +717,14 @@ var s:widestring;
 begin
   if WideSelectDirectory(AddDirCp,'',s) then begin
     case (Sender as TComponent).Tag of
-      0: ESsf.Text:=s;
-      1: ELyric.Text:=s;
+      0: begin 
+	         if ESsf.Text<>s then changed:=true;
+		       ESsf.Text:=s;
+	       end;
+      1: begin
+	         if ELyric.Text<>s then changed:=true;
+		       ELyric.Text:=s;
+	       end;
     end;
   end;
 end;

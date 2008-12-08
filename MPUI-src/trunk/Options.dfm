@@ -1,11 +1,11 @@
 object OptionsForm: TOptionsForm
-  Left = 193
-  Top = 166
+  Left = 194
+  Top = 167
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'OptionsForm'
-  ClientHeight = 370
-  ClientWidth = 321
+  ClientHeight = 368
+  ClientWidth = 319
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,21 +17,21 @@ object OptionsForm: TOptionsForm
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
-    321
-    370)
+    319
+    368)
   PixelsPerInch = 96
   TextHeight = 13
   object LParams: TTntLabel
     Left = 6
-    Top = 296
+    Top = 294
     Width = 55
     Height = 13
     Anchors = [akLeft, akBottom]
     Caption = 'Parameters'
   end
   object LHelp: TTntLabel
-    Left = 293
-    Top = 296
+    Left = 291
+    Top = 294
     Width = 21
     Height = 13
     Cursor = crHandPoint
@@ -48,7 +48,7 @@ object OptionsForm: TOptionsForm
   end
   object BOK: TTntButton
     Left = 3
-    Top = 340
+    Top = 338
     Width = 75
     Height = 25
     Anchors = [akLeft, akBottom]
@@ -58,7 +58,7 @@ object OptionsForm: TOptionsForm
   end
   object BApply: TTntButton
     Left = 83
-    Top = 340
+    Top = 338
     Width = 75
     Height = 25
     Anchors = [akLeft, akBottom]
@@ -68,7 +68,7 @@ object OptionsForm: TOptionsForm
   end
   object BSave: TTntButton
     Left = 163
-    Top = 340
+    Top = 338
     Width = 75
     Height = 25
     Anchors = [akLeft, akBottom]
@@ -78,7 +78,7 @@ object OptionsForm: TOptionsForm
   end
   object BClose: TTntButton
     Left = 243
-    Top = 340
+    Top = 338
     Width = 75
     Height = 25
     Anchors = [akLeft, akBottom]
@@ -88,8 +88,8 @@ object OptionsForm: TOptionsForm
   end
   object EParams: TEdit
     Left = 6
-    Top = 312
-    Width = 311
+    Top = 310
+    Width = 309
     Height = 21
     Anchors = [akLeft, akRight, akBottom]
     TabOrder = 4
@@ -98,8 +98,8 @@ object OptionsForm: TOptionsForm
   object Tab: TTntPageControl
     Left = 5
     Top = 6
-    Width = 311
-    Height = 288
+    Width = 309
+    Height = 286
     ActivePage = TabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     Images = ImageList1
@@ -107,8 +107,8 @@ object OptionsForm: TOptionsForm
     object TabSheet1: TTntTabSheet
       Caption = 'System'
       DesignSize = (
-        303
-        259)
+        301
+        257)
       object LLanguage: TTntLabel
         Left = 8
         Top = 9
@@ -119,7 +119,7 @@ object OptionsForm: TOptionsForm
       object CLanguage: TTntComboBox
         Left = 152
         Top = 5
-        Width = 147
+        Width = 145
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -155,14 +155,14 @@ object OptionsForm: TOptionsForm
       object EMplayerLocation: TEdit
         Left = 104
         Top = 219
-        Width = 166
+        Width = 164
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 2
         OnChange = SomethingChanged
       end
       object BMplayer: TButton
-        Left = 271
+        Left = 269
         Top = 219
         Width = 28
         Height = 21
@@ -174,7 +174,7 @@ object OptionsForm: TOptionsForm
       object CWid: TTntCheckBox
         Left = 219
         Top = 242
-        Width = 86
+        Width = 84
         Height = 17
         Anchors = [akLeft, akTop, akRight]
         Caption = 'Use WID'
@@ -193,7 +193,7 @@ object OptionsForm: TOptionsForm
         OnClick = SomethingChanged
       end
       object CDnav: TTntCheckBox
-        Left = 184
+        Left = 182
         Top = 128
         Width = 165
         Height = 17
@@ -234,7 +234,7 @@ object OptionsForm: TOptionsForm
         OnClick = RMplayerClick
       end
       object CFd: TTntCheckBox
-        Left = 184
+        Left = 182
         Top = 32
         Width = 119
         Height = 17
@@ -246,7 +246,7 @@ object OptionsForm: TOptionsForm
         OnClick = SomethingChanged
       end
       object CAsync: TTntCheckBox
-        Left = 184
+        Left = 182
         Top = 80
         Width = 70
         Height = 17
@@ -258,7 +258,7 @@ object OptionsForm: TOptionsForm
         OnClick = CAsyncClick
       end
       object EAsync: TEdit
-        Left = 251
+        Left = 249
         Top = 78
         Width = 34
         Height = 21
@@ -268,7 +268,7 @@ object OptionsForm: TOptionsForm
         OnChange = SomethingChanged
       end
       object UAsync: TUpDown
-        Left = 285
+        Left = 283
         Top = 78
         Width = 17
         Height = 21
@@ -280,7 +280,7 @@ object OptionsForm: TOptionsForm
         Thousands = False
       end
       object CCache: TTntCheckBox
-        Left = 184
+        Left = 182
         Top = 104
         Width = 64
         Height = 17
@@ -292,7 +292,7 @@ object OptionsForm: TOptionsForm
         OnClick = CCacheClick
       end
       object ECache: TEdit
-        Left = 251
+        Left = 249
         Top = 102
         Width = 34
         Height = 21
@@ -302,7 +302,7 @@ object OptionsForm: TOptionsForm
         OnChange = SomethingChanged
       end
       object UCache: TUpDown
-        Left = 285
+        Left = 283
         Top = 102
         Width = 17
         Height = 21
@@ -314,7 +314,7 @@ object OptionsForm: TOptionsForm
         Thousands = False
       end
       object CPriorityBoost: TTntCheckBox
-        Left = 184
+        Left = 182
         Top = 56
         Width = 119
         Height = 17
@@ -345,7 +345,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 20
       end
       object BSsf: TButton
-        Left = 271
+        Left = 269
         Top = 194
         Width = 28
         Height = 21
@@ -357,7 +357,7 @@ object OptionsForm: TOptionsForm
       object ESsf: TEdit
         Left = 104
         Top = 195
-        Width = 166
+        Width = 164
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 22
@@ -374,7 +374,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 23
       end
       object CGUI: TTntCheckBox
-        Left = 184
+        Left = 182
         Top = 152
         Width = 165
         Height = 17
@@ -397,7 +397,7 @@ object OptionsForm: TOptionsForm
         OnClick = SomethingChanged
       end
       object CFilter: TTntCheckBox
-        Left = 184
+        Left = 182
         Top = 176
         Width = 165
         Height = 17
@@ -412,8 +412,8 @@ object OptionsForm: TOptionsForm
       Caption = 'Video'
       ImageIndex = 1
       DesignSize = (
-        303
-        259)
+        301
+        257)
       object LPostproc: TTntLabel
         Left = 10
         Top = 80
@@ -454,7 +454,7 @@ object OptionsForm: TOptionsForm
         OnClick = SomethingChanged
       end
       object CYuy2: TTntCheckBox
-        Left = 172
+        Left = 170
         Top = 150
         Width = 129
         Height = 17
@@ -468,7 +468,7 @@ object OptionsForm: TOptionsForm
       object CPostproc: TTntComboBox
         Left = 154
         Top = 76
-        Width = 146
+        Width = 144
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -483,7 +483,7 @@ object OptionsForm: TOptionsForm
       object CAspect: TTntComboBox
         Left = 154
         Top = 4
-        Width = 146
+        Width = 144
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -506,7 +506,7 @@ object OptionsForm: TOptionsForm
       object CDeinterlace: TTntComboBox
         Left = 154
         Top = 52
-        Width = 146
+        Width = 144
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -519,7 +519,7 @@ object OptionsForm: TOptionsForm
           'adaptive')
       end
       object CDr: TTntCheckBox
-        Left = 172
+        Left = 170
         Top = 128
         Width = 129
         Height = 17
@@ -545,7 +545,7 @@ object OptionsForm: TOptionsForm
         Tag = -1
         Left = 154
         Top = 28
-        Width = 146
+        Width = 144
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
@@ -561,7 +561,7 @@ object OptionsForm: TOptionsForm
           '2.21:1')
       end
       object double: TTntCheckBox
-        Left = 172
+        Left = 170
         Top = 106
         Width = 129
         Height = 17
@@ -593,7 +593,7 @@ object OptionsForm: TOptionsForm
         OnClick = SomethingChanged
       end
       object CMir: TTntCheckBox
-        Left = 172
+        Left = 170
         Top = 172
         Width = 129
         Height = 17
@@ -603,7 +603,7 @@ object OptionsForm: TOptionsForm
         OnClick = SomethingChanged
       end
       object LRot: TTntStaticText
-        Left = 172
+        Left = 170
         Top = 218
         Width = 37
         Height = 17
@@ -626,7 +626,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 14
       end
       object CVSync: TTntCheckBox
-        Left = 172
+        Left = 170
         Top = 194
         Width = 160
         Height = 17
@@ -637,7 +637,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 15
       end
       object CRot: TComboBox
-        Left = 241
+        Left = 239
         Top = 214
         Width = 54
         Height = 21
@@ -656,8 +656,8 @@ object OptionsForm: TOptionsForm
       Caption = 'Audio'
       ImageIndex = 2
       DesignSize = (
-        303
-        259)
+        301
+        257)
       object LAudioOut: TTntLabel
         Left = 10
         Top = 8
@@ -673,7 +673,7 @@ object OptionsForm: TOptionsForm
         Caption = 'Audio device'
       end
       object LCh: TTntStaticText
-        Left = 159
+        Left = 157
         Top = 84
         Width = 65
         Height = 17
@@ -685,7 +685,7 @@ object OptionsForm: TOptionsForm
       object CAudioOut: TTntComboBox
         Left = 154
         Top = 4
-        Width = 146
+        Width = 144
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -699,7 +699,7 @@ object OptionsForm: TOptionsForm
           'DirectSound')
       end
       object CVolnorm: TTntCheckBox
-        Left = 159
+        Left = 157
         Top = 58
         Width = 129
         Height = 17
@@ -713,11 +713,11 @@ object OptionsForm: TOptionsForm
       object CAudioDev: TComboBox
         Left = 154
         Top = 28
-        Width = 146
+        Width = 144
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 1
         OnChange = SomethingChanged
       end
@@ -731,7 +731,7 @@ object OptionsForm: TOptionsForm
         OnClick = SomethingChanged
       end
       object CCh: TComboBox
-        Left = 249
+        Left = 247
         Top = 80
         Width = 51
         Height = 21
@@ -756,14 +756,14 @@ object OptionsForm: TOptionsForm
       object EWadsp: TEdit
         Left = 4
         Top = 235
-        Width = 266
+        Width = 264
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 6
         OnChange = SomethingChanged
       end
       object BWadsp: TButton
-        Left = 271
+        Left = 269
         Top = 235
         Width = 28
         Height = 21
@@ -775,7 +775,7 @@ object OptionsForm: TOptionsForm
       object CWadsp: TTntCheckBox
         Left = 4
         Top = 215
-        Width = 302
+        Width = 300
         Height = 17
         Anchors = [akLeft, akTop, akRight]
         Caption = 'Use Winamp DSP plugin'
@@ -787,14 +787,14 @@ object OptionsForm: TOptionsForm
       object TLyric: TTntGroupBox
         Left = 1
         Top = 102
-        Width = 300
-        Height = 109
+        Width = 298
+        Height = 108
         Anchors = [akLeft, akTop, akRight, akBottom]
         Caption = 'Lyric'
         TabOrder = 10
         DesignSize = (
-          300
-          109)
+          298
+          108)
         object LTCL: TTntLabel
           Left = 14
           Top = 53
@@ -841,7 +841,7 @@ object OptionsForm: TOptionsForm
           OnClick = SetColor
         end
         object PLBC: TPanel
-          Left = 256
+          Left = 254
           Top = 48
           Width = 36
           Height = 25
@@ -872,7 +872,7 @@ object OptionsForm: TOptionsForm
         object ELyric: TEdit
           Left = 67
           Top = 81
-          Width = 199
+          Width = 197
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 2
@@ -880,7 +880,7 @@ object OptionsForm: TOptionsForm
         end
         object BLyric: TButton
           Tag = 1
-          Left = 267
+          Left = 265
           Top = 81
           Width = 28
           Height = 21
@@ -892,7 +892,7 @@ object OptionsForm: TOptionsForm
         object LScroll: TTntCheckBox
           Left = 8
           Top = 22
-          Width = 124
+          Width = 122
           Height = 17
           Anchors = [akLeft, akTop, akRight]
           Caption = 'Smooth scroll'
@@ -901,7 +901,7 @@ object OptionsForm: TOptionsForm
           TabOrder = 5
         end
         object BFont: TButton
-          Left = 134
+          Left = 132
           Top = 17
           Width = 161
           Height = 25
@@ -916,10 +916,10 @@ object OptionsForm: TOptionsForm
       Caption = 'Subtitle'
       ImageIndex = 3
       DesignSize = (
-        303
-        259)
+        301
+        257)
       object BSubfont: TButton
-        Left = 270
+        Left = 268
         Top = 31
         Width = 28
         Height = 21
@@ -929,7 +929,7 @@ object OptionsForm: TOptionsForm
         OnClick = BSubfontClick
       end
       object CUni: TTntCheckBox
-        Left = 157
+        Left = 155
         Top = 123
         Width = 156
         Height = 17
@@ -994,18 +994,18 @@ object OptionsForm: TOptionsForm
       object CSubfont: TComboBox
         Left = 96
         Top = 32
-        Width = 174
+        Width = 172
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 15
         OnChange = FontChange
       end
       object PShow: TPanel
         Left = 8
         Top = 78
-        Width = 288
-        Height = 45
+        Width = 286
+        Height = 43
         Anchors = [akLeft, akTop, akRight, akBottom]
         BevelOuter = bvNone
         Font.Charset = DEFAULT_CHARSET
@@ -1019,15 +1019,15 @@ object OptionsForm: TOptionsForm
       object COsdfont: TComboBox
         Left = 96
         Top = 56
-        Width = 174
+        Width = 172
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 17
         OnChange = FontChange
       end
       object BOsdfont: TButton
-        Left = 270
+        Left = 268
         Top = 55
         Width = 28
         Height = 21
@@ -1092,7 +1092,7 @@ object OptionsForm: TOptionsForm
         OnClick = CAssClick
       end
       object CEfont: TTntCheckBox
-        Left = 157
+        Left = 155
         Top = 145
         Width = 156
         Height = 17
@@ -1118,7 +1118,7 @@ object OptionsForm: TOptionsForm
         Tag = -1
         Left = 96
         Top = 6
-        Width = 202
+        Width = 200
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
@@ -1239,7 +1239,7 @@ object OptionsForm: TOptionsForm
       object TFsize: TTrackBar
         Left = 112
         Top = 196
-        Width = 157
+        Width = 155
         Height = 20
         Anchors = [akLeft, akTop, akRight]
         Max = 100
@@ -1268,7 +1268,7 @@ object OptionsForm: TOptionsForm
       object TFol: TTrackBar
         Left = 112
         Top = 240
-        Width = 157
+        Width = 155
         Height = 20
         Anchors = [akLeft, akTop, akRight]
         Max = 80

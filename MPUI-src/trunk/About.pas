@@ -21,7 +21,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, TntForms,
-  Dialogs, ExtCtrls, StdCtrls, ShellAPI, jpeg, TntStdCtrls,Forms;
+  Dialogs, ExtCtrls, StdCtrls, ShellAPI, jpeg, TntStdCtrls,Forms,
+  TntExtCtrls;
 
 type
   TAboutForm = class(TTntForm)
@@ -37,7 +38,7 @@ type
     LURL: TLabel;
     FY: TTntLabel;
     FYI: TImage;
-    HCB: TTntMemo;
+    HCB: TImage;
     procedure FormShow(Sender: TObject);
     procedure BCloseClick(Sender: TObject);
     procedure URLClick(Sender: TObject);

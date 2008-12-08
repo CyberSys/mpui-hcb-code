@@ -44,8 +44,14 @@ begin
            empty:=true; Playlist.Changed;
            PlaylistForm.BPlayClick(nil);
          end;
-      2: OptionsForm.ESsf.Text:=DirView.SelectedFolder.PathName;
-      3: OptionsForm.ELyric.Text:=DirView.SelectedFolder.PathName;
+      2: begin
+           if OptionsForm.ESsf.Text<>DirView.SelectedFolder.PathName then OptionsForm.Changed:=true;
+           OptionsForm.ESsf.Text:=DirView.SelectedFolder.PathName;
+         end;
+      3: begin
+           if OptionsForm.ELyric.Text<>DirView.SelectedFolder.PathName then OptionsForm.Changed:=true;
+           OptionsForm.ELyric.Text:=DirView.SelectedFolder.PathName;
+         end;
     end;
   end;
   Close;

@@ -869,7 +869,7 @@ begin
     s:=CmdLine;
     while length(s)>0 do
       AddLine(SplitLine(s));
-      if winos='WINXP' then
+      if (winos='WINXP') and (GetUserDefaultLangID=LANG_CHINESE) then
         AddLine(
 '                   ®q= = = = = = = = = = = = = = = = ®r'^M^J+
 '                    ®U  °Ë®q°–®r ®q°–®rª∂”≠ π”√        ®U'^M^J+

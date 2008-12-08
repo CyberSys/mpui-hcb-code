@@ -2,7 +2,7 @@ object AddDirForm: TAddDirForm
   Left = 269
   Top = 152
   Width = 395
-  Height = 340
+  Height = 346
   Caption = 'Select a Folder'
   Color = clBtnFace
   Constraints.MinHeight = 164
@@ -14,12 +14,12 @@ object AddDirForm: TAddDirForm
   OnShow = FormShow
   DesignSize = (
     387
-    313)
+    312)
   PixelsPerInch = 96
   TextHeight = 13
   object BOK: TTntButton
     Left = 190
-    Top = 283
+    Top = 281
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -31,7 +31,7 @@ object AddDirForm: TAddDirForm
   end
   object BCancel: TTntButton
     Left = 307
-    Top = 283
+    Top = 281
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -43,7 +43,7 @@ object AddDirForm: TAddDirForm
   end
   object CInSubDir: TTntCheckBox
     Left = 16
-    Top = 290
+    Top = 286
     Width = 97
     Height = 17
     Anchors = [akLeft, akBottom]
@@ -54,7 +54,7 @@ object AddDirForm: TAddDirForm
     Left = 4
     Top = 4
     Width = 380
-    Height = 270
+    Height = 266
     ObjectTypes = [otFolders]
     Root = 'rfDesktop'
     UseShellImages = True

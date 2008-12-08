@@ -37,7 +37,7 @@ type
     LURL: TLabel;
     FY: TTntLabel;
     FYI: TImage;
-    HCB: TTntMemo;
+    HCB: TImage;
     procedure FormShow(Sender: TObject);
     procedure BCloseClick(Sender: TObject);
     procedure URLClick(Sender: TObject);
