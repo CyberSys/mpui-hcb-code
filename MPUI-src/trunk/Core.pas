@@ -143,7 +143,7 @@ var StreamInfo:record
       end;
     end;
 
-procedure AddChain(Count:integer;rs,s:string);
+procedure AddChain(var Count:integer; var rs:string; const s:string);
 function CheckOption(OPTN:string):boolean;
 function SecondsToTime(Seconds:integer):String;
 function TimeToSeconds(TimeCode:string):integer;
@@ -316,7 +316,7 @@ begin
   Delete(Line,1,i);
 end;
 
-procedure AddChain(Count:integer;rs,s:string);
+procedure AddChain(var Count:integer; var rs:string; const s:string);
 begin
   inc(Count);
   if Count>1 then rs:=rs+','+s

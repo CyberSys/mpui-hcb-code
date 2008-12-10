@@ -143,7 +143,7 @@ var StreamInfo:record
       end;
     end;
 
-procedure AddChain(Count:integer;rs,s:WideString);
+procedure AddChain(var Count:integer; var rs:WideString; const s:WideString);
 function WideGetEnvironmentVariable(const Name:WideString):WideString;
 function WideExpandUNCFileName(const FileName:WideString):WideString;
 function WideGetUniversalName(const FileName:WideString):WideString;    
@@ -352,7 +352,7 @@ begin
   Delete(Line,1,i);
 end;
 
-procedure AddChain(Count:integer;rs,s:WideString);
+procedure AddChain(var Count:integer; var rs:WideString; const s:WideString);
 begin
   inc(Count);
   if Count>1 then rs:=rs+','+s
