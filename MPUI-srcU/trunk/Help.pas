@@ -56,7 +56,7 @@ var NeededWidth,i,w:integer;
 begin
   NeededWidth:=0;
   for i:=0 to HelpText.Lines.Count-1 do begin
-    w:=WideCanvasTextWidth(HelpForm.Canvas,HelpText.Lines[i]+'@');
+    w:=WideCanvasTextWidth(HelpForm.Canvas,HelpText.Lines[i]+'@@');
     if w>NeededWidth then NeededWidth:=w;
   end;
   Width:=Width-HelpText.Width+NeededWidth;
