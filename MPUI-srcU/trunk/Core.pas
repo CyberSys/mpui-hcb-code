@@ -89,7 +89,7 @@ var HomeDir,SystemDir,TempDir:WideString;
 var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     ArcPW,TmpPW,DisplayURL,AudioFile:WideString;
     winos,subfont,osdfont,Duration,LyricF:String;
-    substring,Vobfile,ShotDir,LyricDir,LyricURL:wideString;
+    substring,afChain,Vobfile,ShotDir,LyricDir,LyricURL:wideString;
     Ccap,Acap,DemuxerName:WideString;
     MplayerLocation,WadspL,AsyncV,CacheV:widestring;
     MAspect,subcode,MaxLenLyric:string;
@@ -103,7 +103,7 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
 var VideoID,Ch,CurPlay,LyricS:integer;
     AudioID,MouseMode,SubPos:integer;
     SubID,TID,CID,AID,VCDST,VCDET,CDID:integer;
-    subcount,Bp,Ep,CurrentLocale:integer;
+    subcount,Bp,Ep,CurrentLocale,afCount:integer;
     Lastsubcount,DirHIdx,DirHSub:integer;
     AudiochannelsID,CurLyric,NextLyric,LyricCount:integer;
     VobsubCount,VobFileCount:integer;
@@ -143,6 +143,7 @@ var StreamInfo:record
       end;
     end;
 
+procedure AddChain(Count:integer;rs,s:WideString);
 function WideGetEnvironmentVariable(const Name:WideString):WideString;
 function WideExpandUNCFileName(const FileName:WideString):WideString;
 function WideGetUniversalName(const FileName:WideString):WideString;    
@@ -351,6 +352,13 @@ begin
   Delete(Line,1,i);
 end;
 
+procedure AddChain(Count:integer;rs,s:WideString);
+begin
+  inc(Count);
+  if Count>1 then rs:=rs+','+s
+  else rs:=s;
+end;
+
 function CheckOption(OPTN:WideString):boolean;
 begin
   OPTN:=Tnt_WideLowerCase(OPTN); Result:=False;
@@ -521,7 +529,7 @@ begin
     exit;
   end;
 
-  FirstChance:=true;
+  FirstChance:=true; afCount:=0; afChain:='';
   ClientWaitThread:=TClientWaitThread.Create(true);
   Processor:=TProcessor.Create(true);
   if ML then CmdLine:=EscapeParam(MplayerLocation)
@@ -802,22 +810,14 @@ begin
   end;
 
   case AudiochannelsID of
-    1:CmdLine:=CmdLine+' -af channels=2:2:0:1:0:0';
-    2:CmdLine:=CmdLine+' -af channels=2:2:1:0:1:1';
-    3:CmdLine:=CmdLine+' -af pan=2:0.65:0.35:0.35:0.65';
+    1: AddChain(afCount,afChain,'channels=2:2:0:1:0:0');
+    2: AddChain(afCount,afChain,'channels=2:2:1:0:1:1');
+    3: AddChain(afCount,afChain,'pan=2:0.65:0.35:0.35:0.65');
   end;
-  if Wadsp then begin
-    if AudiochannelsID>0 then
-      CmdLine:=CmdLine+',wadsp='+EscapeParam(WadspL)
-    else
-      CmdLine:=CmdLine+' -af wadsp='+EscapeParam(WadspL);
-  end;
-  if Volnorm then begin
-    if (AudiochannelsID>0) OR Wadsp then
-      CmdLine:=CmdLine+',volnorm'
-    else
-      CmdLine:=CmdLine+' -af volnorm';
-  end;
+  if Wadsp and (WadspL<>'') then AddChain(afCount,afChain,'wadsp='+EscapeParam(WadspL));
+  if Volnorm then AddChain(afCount,afChain,'volnorm');
+
+  if afCount>0 then CmdLine:=CmdLine+' -af '+afChain;
   if length(Params)>0 then CmdLine:=CmdLine+#32+Params;
   CmdLine:=CmdLine+' -subpos '+IntToStr(SubPos)+' -vf-add screenshot';
   if FirstOpen and Mainform.MSIE.Checked and (Bp>0) then begin
@@ -1507,22 +1507,14 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       SubMenu_SetNameLang(MainForm.MSubtitle,MainForm.MSubtitle.Count-1,s);
       case Loadsub of
         1: begin
-             subcount:=subcount+1;
-             if subcount>1 then
-               substring:=substring+','+EscapeParam(s)
-             else
-               substring:=EscapeParam(s);
+             AddChain(subcount,substring,EscapeParam(s));
              Mainform.NextSub;
              Loadsrt:=1;
            end;
         2: begin
-             p:=Pos(EscapePath(TempDir),s);
-             if p>0 then begin
-               subcount:=subcount+1; Lastsubcount:=subcount;
-               if subcount>1 then
-                 substring:=substring+','+EscapeParam(s)
-               else
-                 substring:=EscapeParam(s);
+             if Pos(EscapePath(TempDir),s)>0 then begin
+               AddChain(subcount,substring,EscapeParam(s));
+               Lastsubcount:=subcount;
              end;
            end;
       end;

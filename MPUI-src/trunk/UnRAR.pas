@@ -354,11 +354,8 @@ begin
           Break
         else begin
           if Firstrun or (winos='WIN9X') then begin
-            Loadsub:=2; Loadsrt:=2; j:=j+1;
-            if j>1 then
-              substring:=substring+','+EscapePath(EscapeParam(FName))
-            else
-              substring:=EscapePath(EscapeParam(FName));
+            Loadsub:=2; Loadsrt:=2;
+            AddChain(j,substring,EscapePath(EscapeParam(FName)));
           end
           else begin
             MainForm.Unpaused;

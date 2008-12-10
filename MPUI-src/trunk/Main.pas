@@ -694,11 +694,8 @@ begin
             else begin
               Loadsub:=1;
               if winos='WIN9X' then begin
-                Loadsub:=2; Loadsrt:=2; s:=s+1;
-                if s>1 then
-                  substring:=substring+','+EscapePath(EscapeParam(FName))
-                else
-                  substring:=EscapePath(EscapeParam(FName));
+                Loadsub:=2; Loadsrt:=2;
+                AddChain(s,substring,EscapePath(EscapeParam(FName)));
               end
               else begin
                 Unpaused;
@@ -1114,7 +1111,7 @@ begin
     if CBHSA=2 then begin
       InterW:=IPanel.Width; InterH:=IPanel.Height;
       MKaspect.Checked:=true; CBHSA:=0;
-      Aspect:=10; MCustomAspect.Checked:=true;
+      Aspect:=MCustomAspect.Tag; MCustomAspect.Checked:=true;
       NativeHeight:=InterH*NativeWidth DIV InterW;
       FixSize;
     end;
@@ -1635,7 +1632,7 @@ begin
       7: begin Core.SendCommand('switch_ratio 2.21'); Core.SendCommand('osd_show_text 2.21:1'); end;
       8: begin Core.SendCommand('switch_ratio 1'); Core.SendCommand('osd_show_text 1:1'); end;
       9: begin Core.SendCommand('switch_ratio 1.22'); Core.SendCommand('osd_show_text 1.22:1'); end;
-      10: begin if InterW>3*InterH then InterW:=3*InterH;
+     10: begin if InterW>3*InterH then InterW:=3*InterH;
            NativeHeight:=InterH*NativeWidth DIV InterW; VideoSizeChanged;
            Core.SendCommand('osd_show_text "'+OSD_Custom_Prompt+' '+IntToStr(InterW)+':'+IntToStr(InterH)+#34);
          end;
@@ -1986,7 +1983,7 @@ begin
       7: begin Core.SendCommand('switch_ratio 2.21');Core.SendCommand('osd_show_text 2.21:1'); end;
       8: begin Core.SendCommand('switch_ratio 1'); Core.SendCommand('osd_show_text 1:1'); end;
       9: begin Core.SendCommand('switch_ratio 1.22'); Core.SendCommand('osd_show_text 1.22:1'); end;
-      10: begin if InterW>3*InterH then InterW:=3*InterH;
+     10: begin if InterW>3*InterH then InterW:=3*InterH;
            NativeHeight:=InterH*NativeWidth DIV InterW; VideoSizeChanged;
            Core.SendCommand('osd_show_text "'+OSD_Custom_Prompt+' '+IntToStr(InterW)+':'+IntToStr(InterH)+#34);
          end;
@@ -2552,7 +2549,7 @@ begin
   if MouseMode=-4 then begin
     InterW:=IPanel.Width; InterH:=IPanel.Height;
     MKaspect.Checked:=true;
-    Aspect:=9; MCustomAspect.Checked:=true; 
+    Aspect:=MCustomAspect.Tag; MCustomAspect.Checked:=true; 
     NativeHeight:=InterH*NativeWidth DIV InterW;
     FixSize;
   end;
@@ -2699,11 +2696,8 @@ begin
           end
           else begin
             if winos='WIN9X' then begin
-              Loadsub:=2; Loadsrt:=2; s:=s+1;
-              if s>1 then
-                substring:=substring+','+EscapePath(EscapeParam(Files[i]))
-              else
-                substring:=EscapePath(EscapeParam(Files[i]));
+              Loadsub:=2; Loadsrt:=2;
+              AddChain(s,substring,EscapePath(EscapeParam(Files[i])));
             end
             else begin
               Unpaused;
