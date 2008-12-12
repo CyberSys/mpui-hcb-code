@@ -79,6 +79,10 @@ begin
         if ValueExists('Channels') then Ch:=CheckInfo(ChMap,ReadString('Channels'));
         if ValueExists('Rotate') then Rot:=CheckInfo(RotMap,ReadString('Rotate'));
         if ValueExists('MAspect') then MAspect:=ReadString('MAspect');
+        if ValueExists('VideoOut') then begin
+          VideoOut:=ReadString('VideoOut');
+          Dda:=Trim(LowerCase(VideoOut))='directx:noaccel';
+        end;
         if ValueExists('Subcode') then subcode:=ReadString('Subcode');
         if ValueExists('ReIndex') then ReIndex:=ReadBool('ReIndex');
         if ValueExists('SoftVol') then SoftVol:=ReadBool('SoftVol');
@@ -99,7 +103,6 @@ begin
         if ValueExists('Mirror') then Mirror:=ReadBool('Mirror');
         if ValueExists('Eq2') then Eq2:=ReadBool('Eq2');
         if ValueExists('Yuy2') then Yuy2:=ReadBool('Yuy2');
-        if ValueExists('Dda') then Dda:=ReadBool('Dda');
         if ValueExists('Ni') then ni:=ReadBool('Ni');
         if ValueExists('NoBPS') then nobps:=ReadBool('NoBPS');
         if ValueExists('DVDNav') then Dnav:=ReadBool('DVDNav');
@@ -182,6 +185,7 @@ begin
                WriteString('Channels',ChMap[Ch]);
                WriteString('Rotate',RotMap[Rot]);
                WriteString('MAspect',MAspect);
+               WriteString('VideoOut',VideoOut);
                WriteBool  ('ReIndex',ReIndex);
                WriteBool  ('SoftVol',SoftVol);
                WriteBool  ('MBRFullScreen',RFScr);
@@ -202,7 +206,6 @@ begin
                WriteBool  ('Mirror',Mirror);
                WriteBool  ('Eq2',Eq2);
                WriteBool  ('Yuy2',Yuy2);
-               WriteBool  ('Dda',Dda);
                WriteBool  ('NoBPS',nobps);
                WriteBool  ('Ni',ni);
                WriteBool  ('DVDNav',Dnav);

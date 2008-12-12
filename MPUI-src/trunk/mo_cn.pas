@@ -306,8 +306,7 @@ begin
     RCMplayer.Caption:=UTF8Decode('Mplayer和MPUI在同一目录下');
     CWid.Caption:=UTF8Decode('使用WID');
     LMAspect.Caption:=UTF8Decode('显示器的宽高比');
-    CDDXA.Caption:=UTF8Decode('禁用DirectX硬件加速');
-    CDDXA.Hint:=UTF8Decode('如果你有显示问题,可以尝试关闭此项');
+    LVideoOut.Caption:=UTF8Decode('视频输出的驱动');
     CEq2.Caption:=UTF8Decode('使用软件视频均衡器');
     CEq2.Hint:=UTF8Decode('用于不支持硬件亮度对比度控制的显卡/驱动');
     CYuy2.Caption:=UTF8Decode('YUY2色域');

@@ -244,7 +244,6 @@ type
     MShot: TTntMenuItem;
     N20: TTntMenuItem;
     MSEqualizer: TTntMenuItem;
-    N21: TTntMenuItem;
     MLoadAudio: TTntMenuItem;
     N22: TTntMenuItem;
     MSoftVol: TTntMenuItem;
@@ -287,7 +286,6 @@ type
     MSubStep0: TTntMenuItem;
     MSubStep1: TTntMenuItem;
     N32: TTntMenuItem;
-    MDDA: TTntMenuItem;
     MForce155: TTntMenuItem;
     MLoadlyric: TTntMenuItem;
     N33: TTntMenuItem;
@@ -399,7 +397,6 @@ type
     procedure MShuffleClick(Sender: TObject);
     procedure MAudioDelay2Click(Sender: TObject);
     procedure MSubDelay2Click(Sender: TObject);
-    procedure MDDAClick(Sender: TObject);
     procedure MLoadlyricClick(Sender: TObject);
     procedure MUUniClick(Sender: TObject);
 
@@ -2288,7 +2285,7 @@ begin
   MChannels.Caption:=OptionsForm.LCh.Caption; MSoftVol.Caption:=OptionsForm.CSoftVol.Caption;
   MSpdif.Caption:=OptionsForm.CSPDIF.Caption; MUseASS.Caption:=OptionsForm.CAss.Caption;
   MShuffle.Caption:=Playlistform.CShuffle.Hint; MLoopAll.Caption:=Playlistform.CLoop.Hint;
-  MOneLoop.Caption:=PlaylistForm.COneLoop.Hint; MDDA.Caption:=OptionsForm.CDDXA.Caption;
+  MOneLoop.Caption:=PlaylistForm.COneLoop.Hint; 
 end;
 
 procedure TMainForm.DisplayClick(Sender: TObject);
@@ -2598,7 +2595,6 @@ begin
   MSpdif.Checked:=Core.SPDIF;
   MSoftVol.Checked:=Core.SoftVol;
   MUseASS.Checked:=Core.Ass;
-  MDDA.Checked:=Core.Dda;
 end;
 
 procedure TMainForm.UpdateMenuEV(Mode:boolean);
@@ -2987,13 +2983,6 @@ begin
   Unpaused;
   Core.SendCommand('sub_delay 0 1'); Sdelay:=0;
   Core.SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_SubDelay_Prompt+'"');
-end;
-
-procedure TMainForm.MDDAClick(Sender: TObject);
-begin
-  Core.Dda:=not Core.Dda;
-  Core.Restart;
-  MDDA.Checked:=Core.Dda;
 end;
 
 procedure TMainForm.MLoadlyricClick(Sender: TObject);

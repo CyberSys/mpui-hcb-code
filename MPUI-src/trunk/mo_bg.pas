@@ -316,8 +316,8 @@ begin
     RCMplayer.Caption:=UTF8Decode('В същата директория, в която е MPUI');
     CWid.Caption:=UTF8Decode('Използвай WID');
     LMAspect.Caption:=UTF8Decode('Съотношение на картината на монитора');
-    CDDXA.Caption:=UTF8Decode('Не използвай DirectX ускорение');
-    CDDXA.Hint:=UTF8Decode('Пробвайте тази опция ако имате проблеми с дисплея');
+    //LVideoOut.Caption:=UTF8Decode('Не използвай DirectX ускорение');
+    //CDDXA.Hint:=UTF8Decode('Пробвайте тази опция ако имате проблеми с дисплея');
     CEq2.Caption:=UTF8Decode('Изплозване на софтуерен видео еквалайзер');
     CEq2.Hint:=UTF8Decode('за карти/драйвери, които не поддържат настройки за яркост и контраст на хардуерно ниво');
     CVSync.Caption:=UTF8Decode('Вертикална синхронизация');

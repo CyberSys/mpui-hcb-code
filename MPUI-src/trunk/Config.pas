@@ -72,7 +72,8 @@ begin
     Core.Mirror:=ReadBool(SectionName,'Mirror',Core.Mirror);
     Core.Eq2:=ReadBool(SectionName,'Eq2',Core.Eq2);
     Core.Yuy2:=ReadBool(SectionName,'Yuy2',Core.Yuy2);
-    Core.Dda:=ReadBool(SectionName,'Dda',Core.Dda);
+    Core.VideoOut:=ReadString(SectionName,'VideoOut',Core.VideoOut);
+    Core.Dda:=Trim(LowerCase(Core.VideoOut))='directx:noaccel';
     Core.ni:=ReadBool(SectionName,'Ni',Core.ni);
     Core.nobps:=ReadBool(SectionName,'NoBPS',Core.nobps);
     Core.Dnav:=ReadBool(SectionName,'DVDNav',Core.Dnav);
@@ -167,6 +168,7 @@ begin
            WriteBool  (SectionName,'Eq2',Core.Eq2);
            WriteBool  (SectionName,'Yuy2',Core.Yuy2);
            WriteBool  (SectionName,'Dda',Core.Dda);
+           WriteString(SectionName,'VideoOut',Core.VideoOut);
            WriteBool  (SectionName,'NoBPS',Core.nobps);
            WriteBool  (SectionName,'Ni',Core.ni);
            WriteBool  (SectionName,'DVDNav',Core.Dnav);

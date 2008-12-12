@@ -92,7 +92,7 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     substring,afChain,Vobfile,ShotDir,LyricDir,LyricURL:wideString;
     Ccap,Acap,DemuxerName:WideString;
     MplayerLocation,WadspL,AsyncV,CacheV:widestring;
-    MAspect,subcode,MaxLenLyric:string;
+    MAspect,subcode,MaxLenLyric,VideoOut:string;
     FirstOpen,Fd,Async,Cache,uof,DragM,FilterDrop:boolean;
     Wid,Dreset,UpdateSkipBar,Pri,HaveLyric,HaveChapters,HaveMsg:boolean;
     AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
@@ -408,15 +408,16 @@ begin
 end;
 
 function CheckSubfont(Sfont:string):string;
-var i:integer;
+var i:integer; s:string;
 begin
   if FileExists(Sfont) then
     Result:=Sfont
   else begin
     Result:='';
     for i:=0 to FontPaths.Count-1 do begin
-      if (LowerCase(FontNames[i])=LowerCase(Sfont)) or
-         (LowerCase(FontPaths[i])=LowerCase(Sfont)) then begin
+      s:=Trim(LowerCase(Sfont));
+      if (LowerCase(FontNames[i])=s) or
+         (LowerCase(FontPaths[i])=s) then begin
         Result:=FontPaths[i];
         exit;
       end;
@@ -426,8 +427,6 @@ begin
       if DefaultFontIndex>-1 then Result:=FontPaths[DefaultFontIndex]
       else if FileExists(SystemDir+'Fonts\arial.ttf') then
         Result:=SystemDir+'Fonts\arial.ttf'
-      else if FileExists(SystemDir+'Fonts\simhei.ttf') then
-        Result:=SystemDir+'Fonts\simhei.ttf'
       else if FileExists(HomeDir+'mplayer\subfont.ttf') then
         Result:=HomeDir+'mplayer\subfont.ttf';
     end;
@@ -597,10 +596,14 @@ begin
       1:CmdLine:=CmdLine+' -vf-add rotate=1';
       2:CmdLine:=CmdLine+' -vf-add rotate=2';
   end;
+  
+  sf:=Trim(LowerCase(VideoOut));
+  if sf<>'' then begin
+    if sf='novideo' then CmdLine:=CmdLine+' -novideo'
+    else if sf<>'auto' then CmdLine:=CmdLine+' -vo '+sf+',';
+  end;
 
-  if Dda then
-    CmdLine:=CmdLine+' -vo directx:noaccel'
-  else begin
+  if not Dda then begin
     if Yuy2 then CmdLine:=CmdLine+' -vf-add yuy2';
     if Eq2 then CmdLine:=CmdLine+' -vf-add eq2';
     case Deinterlace of
@@ -790,7 +793,7 @@ begin
     else CmdLine:=CmdLine+' -subcp '+subcode;
   end;
   if MAspect<>'' then begin
-    if MAspect='Default' then
+    if Trim(LowerCase(MAspect))='default' then
       CmdLine:=CmdLine+' -monitoraspect '+IntTostr(Screen.Width)+':'+IntTostr(Screen.Height)
     else CmdLine:=CmdLine+' -monitoraspect '+MAspect;
   end;
@@ -2248,7 +2251,7 @@ begin
   nobps:=false; Ccap:='Chapter'; Acap:='Angle'; CurPlay:=-1; Status:=sNone;
   LTextColor:=clWindowText; LBGColor:=clWindow; LHGColor:=$93; ClientProcess:=0;
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; UseekC:=true; CP:=0;
-  LyricF:='Tahoma'; LyricS:=8; MaxLenLyric:=''; UpdatePW:=false;
+  LyricF:='Tahoma'; LyricS:=8; MaxLenLyric:=''; UpdatePW:=false; VideoOut:='Auto';
   ResetStreamInfo;
 end.
 

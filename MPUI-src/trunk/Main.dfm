@@ -1289,15 +1289,6 @@ object MainForm: TMainForm
         Caption = '-'
         GroupIndex = 169
       end
-      object MDDA: TTntMenuItem
-        Caption = 'Disable DirectX accelaration'
-        GroupIndex = 169
-        OnClick = MDDAClick
-      end
-      object N21: TTntMenuItem
-        Caption = '-'
-        GroupIndex = 169
-      end
       object MScale: TTntMenuItem
         Caption = 'Scale image'
         GroupIndex = 169

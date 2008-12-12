@@ -314,8 +314,7 @@ begin
     RCMplayer.Caption:='In the same directory as MPUI';
     CWid.Caption:='Use WID';
     LMAspect.Caption:='Monitor Aspect ratio';
-    CDDXA.Caption:='Disable DirectX accelaration';
-    CDDXA.Hint:='Try this option if you have display problems';
+    LVideoOut.Caption:='Video output driver';
     CEq2.Caption:='Use Software video Equalizer';
     CEq2.Hint:='for cards/drivers that do not support brightness and contrast controls in hardware';
     CVSync.Caption:='vsync';

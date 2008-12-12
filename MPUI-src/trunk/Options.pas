@@ -50,7 +50,6 @@ type
     CAspect: TTntComboBox;
     LDeinterlace: TTntLabel;
     CDeinterlace: TTntComboBox;
-    CDDXA: TTntCheckBox;
     LLanguage: TTntLabel;
     CLanguage: TTntComboBox;
     LAudioDev: TTntLabel;
@@ -143,6 +142,8 @@ type
     CVSync: TTntCheckBox;
     BFont: TButton;
     FontDialog1: TFontDialog;
+    LVideoout: TTntLabel;
+    CVideoOut: TComboBox;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -280,7 +281,7 @@ begin
 end;
 
 procedure TOptionsForm.LoadValues;
-var i:integer;
+var i:integer; s:string;
 begin
   CAudioOut.ItemIndex:=Core.AudioOut;
   CAudioDev.ItemIndex:=Core.AudioDev;
@@ -302,6 +303,7 @@ begin
 
   EMplayerLocation.Text:=Core.MplayerLocation;
   CMAspect.Text:=Core.MAspect;
+  CVideoOut.Text:=Core.VideoOut;
   CCh.ItemIndex:=Core.Ch;
   CRot.ItemIndex:=Core.Rot;
   CSPDIF.Checked:=Core.SPDIF;
@@ -311,8 +313,7 @@ begin
   CYuy2.Checked:=Core.Yuy2;
   CUseekC.Checked:=Core.UseekC;
   CVSync.Checked:=Core.vsync;
-  CDDXA.Checked:=Core.Dda;
-    CEq2.Enabled:=not Core.Dda;
+  CEq2.Enabled:=not Core.Dda;
     CYuy2.Enabled:=CEq2.Enabled;
     LDeinterlace.Enabled:=CEq2.Enabled;
     CDeinterlace.Enabled:=CEq2.Enabled;
@@ -375,8 +376,9 @@ begin
   
   PShow.Caption:='';
   for i:=0 to FontPaths.Count-1 do begin
-    if (LowerCase(FontNames[i])=LowerCase(CSubfont.Text)) or
-       (LowerCase(FontPaths[i])=LowerCase(CSubfont.Text)) then begin
+    s:= Trim(LowerCase(CSubfont.Text));
+    if (LowerCase(FontNames[i])=s) or
+       (LowerCase(FontPaths[i])=s) then begin
       PShow.Font.Name:=FontNames[i];
       PShow.Caption:=FontNames[i];
       break;
@@ -407,6 +409,8 @@ begin
   Core.subfont:=CSubfont.Text;
   Core.MplayerLocation:=EMplayerLocation.Text;
   Core.MAspect:=CMAspect.Text;
+  Core.VideoOut:=CVideoOut.Text;
+  Core.Dda:=Trim(LowerCase(VideoOut))='directx:noaccel';
   Core.Ch:=CCh.ItemIndex;
   Core.Rot:=CRot.ItemIndex;
   Core.SPDIF:=CSPDIF.Checked;
@@ -415,7 +419,6 @@ begin
   Core.Mirror:=CMir.Checked;
   Core.Eq2:=CEq2.Checked;
   Core.Yuy2:=CYuy2.Checked;
-  Core.Dda:=CDDXA.Checked;
   Core.ni:=CNi.Checked;
   Core.nobps:=CNobps.Checked;
   Core.FilterDrop:=CFilter.Checked;
@@ -590,7 +593,7 @@ end;
 procedure TOptionsForm.CDDXAClick(Sender: TObject);
 begin
   Changed:=true;
-  CEq2.Enabled:=not CDDXA.Checked;
+  CEq2.Enabled:=Trim(LowerCase(CVideoOut.Text))<>'directx:noaccel';
   LDeinterlace.Enabled:=CEq2.Enabled;
   CDeinterlace.Enabled:=CEq2.Enabled;
   CYuy2.Enabled:=CEq2.Enabled;
@@ -678,7 +681,7 @@ begin
   end
   else begin
     for i:=0 to FontPaths.Count-1 do begin
-      if LowerCase(FontPaths[i])=LowerCase((Sender as TComboBox).Text) then begin
+      if LowerCase(FontPaths[i])=Trim(LowerCase((Sender as TComboBox).Text)) then begin
         PShow.Font.Name:=FontNames[i];
         PShow.Caption:=FontNames[i];
         exit;
