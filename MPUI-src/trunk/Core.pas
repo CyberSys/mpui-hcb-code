@@ -118,7 +118,7 @@ var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
     LastPos,SecondPos,OSDLevel,OpenM,MSecPos:integer;
 var Volume,MWC,CP:integer;
-    tEnd,Mute,LastMute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
+    tEnd,Mute,LastMute,Ass,Efont,ISub,AutoNext,UpdatePW,NoAccess:boolean;
     FormatSet:TFormatSettings;
     ExplicitStop,Rot,DefaultFontIndex:integer;
     TextColor,OutColor,LTextColor,LbgColor,LhgColor:Longint;
@@ -390,8 +390,6 @@ begin
       if DefaultFontIndex>-1 then Result:=FontPaths[DefaultFontIndex]
       else if FileExists(SystemDir+'Fonts\arial.ttf') then
         Result:=SystemDir+'Fonts\arial.ttf'
-      else if FileExists(SystemDir+'Fonts\simhei.ttf') then
-        Result:=SystemDir+'Fonts\simhei.ttf'
       else if FileExists(HomeDir+'mplayer\subfont.ttf') then
         Result:=HomeDir+'mplayer\subfont.ttf';
     end;
@@ -419,7 +417,7 @@ end;
 
 procedure Init;
 //var WinDir:array[0..MAX_PATH]of char;
-begin
+begin    /// %USERPROFILE%\Local Settings\Temp
   //GetWindowsDirectory(@WinDir[0],MAX_PATH);
  // GetEnvironmentVariable('windir',@WinDir[0],MAX_PATH);
  // SystemDir:=IncludeTrailingPathDelimiter(WinDir);
@@ -428,7 +426,7 @@ begin
  // TempDir:=IncludeTrailingPathDelimiter(WinDir)+'MPUISub\';
   TempDir:=IncludeTrailingPathDelimiter(GetEnvironmentVariable('TEMP'))+'MPUI\';
   HomeDir:=IncludeTrailingPathDelimiter(ExtractFileDir(ExpandFileName(ParamStr(0))));
-  ShotDir:='C:\';
+  ShotDir:='C:\';  
   if DirectoryExists(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap'
   else if CreateDir(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap';
   // check for Win9x
@@ -2200,7 +2198,7 @@ begin
   nobps:=false; Ccap:='Chapter'; Acap:='Angle'; CurPlay:=-1; Status:=sNone;
   LTextColor:=clWindowText; LBGColor:=clWindow; LHGColor:=$93; ClientProcess:=0;
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; UseekC:=true; CP:=0;
-  LyricF:='Tahoma'; LyricS:=8; MaxLenLyric:=''; UpdatePW:=false;
+  LyricF:='Tahoma'; LyricS:=8; MaxLenLyric:=''; UpdatePW:=false; 
   ResetStreamInfo;
 end.
 

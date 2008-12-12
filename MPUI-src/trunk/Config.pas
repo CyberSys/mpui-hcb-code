@@ -129,6 +129,7 @@ end;
 procedure Save(const FileName:string; Mode:integer);
 var INI:TINIFile;
 begin
+  if NoAccess then exit;
   try INI:=TINIFile.Create(FileName); except exit; end;
   with INI do try
   finally

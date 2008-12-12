@@ -524,7 +524,7 @@ begin
   HideMouseAt:=0; UpdateSeekBarAt:=0; PlayMsgAt:=0; 
   WantFullscreen:=false; WantCompact:=false;
   Constraints.MinWidth:=Width; Constraints.MinHeight:=Height;
-  Core.Init; Config.Load(HomeDir+'autorun.inf'); Config.Load(SystemDir+DefaultFileName);
+  Core.Init; Config.Load(HomeDir+'autorun.inf'); Config.Load(HomeDir+DefaultFileName);
   if winos<>'WIN9X' then DirectDrawEnumerateEx(DDrawEnumCallbackEx,nil,1);
   if not FileExists(MplayerLocation) then MplayerLocation:=HomeDir+'mplayer.exe';
   if subcode='' then subcode:='CP'+IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT)); //AnsiCodePage
@@ -562,7 +562,7 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   Core.ForceStop; ClearTmpFiles(TempDir);
 //  SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, ScreenSaverActive, nil, 0);
-  Config.Save(SystemDir+Config.DefaultFileName,1);
+  Config.Save(HomeDir+Config.DefaultFileName,1);
   if IsRarLoaded>0 then UnLoadRarLibrary;
   if IsZipLoaded>0 then UnLoadZipLibrary;
   if Is7zLoaded>0 then UnLoad7zLibrary;
@@ -1676,8 +1676,10 @@ end;
 
 procedure TMainForm.Init_MOpenDrive;
 var Mask:cardinal; Name:array[0..3]of char; Drive:char;
-    Item:TTntMenuItem;
+    Item:TTntMenuItem; MDrive:WideString;
 begin
+  MDrive:=Tnt_WideLowerCase(WideExtractFileDrive(HomeDir));
+  NoAccess:=length(MDrive)<>2;
   Name:='@:\';
   Mask:=GetLogicalDrives;
   for Drive:='A' to 'Z' do
@@ -1690,6 +1692,7 @@ begin
           Tag:=Ord(Drive);
           RadioItem:=true;
           OnClick:=MOpenDriveClick;
+          NoAccess:=MDrive=Tnt_WideLowerCase(Caption);
         end;
         MOpenDrive.Add(Item);
         MOpenDrive.Enabled:=true;
@@ -1821,7 +1824,7 @@ begin
     MPCtrl.Checked:=CV and MV;
     if not MSizeAny.Checked then LastScale:=100;
     ControlledResize:=true; FormResize(nil);
-    if CV then UpdateCaption;
+    if CV then UpdateCaption;  
   end;
 end;
 

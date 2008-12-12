@@ -513,7 +513,7 @@ begin
     CRot.ItemIndex:=Core.Rot;
     ESsf.Text:=Core.ShotDir;
   end;
-  Config.Save(SystemDir+Config.DefaultFileName,0);
+  Config.Save(HomeDir+Config.DefaultFileName,0);
 end;
 
 function EnumFunc(lpGuid:PGUID; lpcstrDescription,lpcstrModule:PChar; lpContext:pointer):LongBool; stdcall;
@@ -526,6 +526,7 @@ procedure TOptionsForm.FormCreate(Sender: TObject);
 begin
   CSubfont.Items:=FontNames; COsdfont.Items:=CSubfont.Items; Tab.TabIndex:=0;
   DirectSoundEnumerate(EnumFunc,@CAudioDev);
+  BSave.Enabled:= not NoAccess;
   {$IFDEF VER150}
   // some fixes for Delphi>=7 VCLs
     PTc.ParentBackground:=False; POc.ParentBackground:=False;
