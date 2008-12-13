@@ -31,16 +31,19 @@ const AspectMap:array[0..10]of string=('auto','4:3','16:9','2.35:1','14:9','5:4'
 const ChMap:array[0..2]of string=('2','4','6');
 const RotMap:array[0..2]of string=('0','90','-90');
 
-procedure Load(const FileName:string);
-procedure Save(const FileName:string; Mode:integer);
+procedure Load(FileName:string);
+procedure Save(FileName:string; Mode:integer);
 
 implementation
 uses SysUtils, INIFiles;
 
-procedure Load(const FileName:string);
+procedure Load(FileName:string);
 var INI:TINIFile;
 begin
-  if not FileExists(FileName) then exit;
+  if not FileExists(FileName) then begin
+    FileName:=AppdataDir+ExtractFileName(FileName);
+    if not FileExists(FileName) then exit;
+  end;
   INI:=TINIFile.Create(FileName);
   with INI do begin
     DefaultLocale:=ReadInteger(SectionName,'Locale',DefaultLocale);
@@ -127,11 +130,16 @@ begin
   end;
 end;
 
-procedure Save(const FileName:string; Mode:integer);
+procedure Save(FileName:string; Mode:integer);
 var INI:TINIFile;
 begin
-  if NoAccess then exit;
-  try INI:=TINIFile.Create(FileName); except exit; end;
+  try INI:=TINIFile.Create(AppdataDir+ExtractFileName(FileName));
+  except
+    if NoAccess=IncludeTrailingPathDelimiter(ExtractFileDir(FileName)) then exit;
+    try INI:=TINIFile.Create(FileName);
+    except exit;
+    end;
+  end;
   with INI do try
   finally
     case mode of

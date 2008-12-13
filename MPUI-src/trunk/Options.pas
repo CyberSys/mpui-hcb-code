@@ -529,7 +529,6 @@ procedure TOptionsForm.FormCreate(Sender: TObject);
 begin
   CSubfont.Items:=FontNames; COsdfont.Items:=CSubfont.Items; Tab.TabIndex:=0;
   DirectSoundEnumerate(EnumFunc,@CAudioDev);
-  BSave.Enabled:= not NoAccess;
   {$IFDEF VER150}
   // some fixes for Delphi>=7 VCLs
     PTc.ParentBackground:=False; POc.ParentBackground:=False;

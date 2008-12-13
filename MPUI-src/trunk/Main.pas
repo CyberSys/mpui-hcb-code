@@ -559,7 +559,7 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   Core.ForceStop; ClearTmpFiles(TempDir);
 //  SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, ScreenSaverActive, nil, 0);
-  Config.Save(HomeDir+Config.DefaultFileName,1);
+  Config.Save(HomeDir+DefaultFileName,1);
   if IsRarLoaded>0 then UnLoadRarLibrary;
   if IsZipLoaded>0 then UnLoadZipLibrary;
   if Is7zLoaded>0 then UnLoad7zLibrary;
@@ -1673,16 +1673,19 @@ end;
 
 procedure TMainForm.Init_MOpenDrive;
 var Mask:cardinal; Name:array[0..3]of char; Drive:char;
-    Item:TTntMenuItem; MDrive,s:WideString;
+    Item:TTntMenuItem; MDrive,s:String;
 begin
-  NoAccess:=false;
+  NoAccess:='';
   MDrive:=HomeDir+DefaultFileName;
   repeat
-    if GetFileAttributesw(pwidechar(mdrive))=FILE_ATTRIBUTE_READONLY then NoAccess:=true;
-    s:=WideExtractFileDir(MDrive);
+    if GetFileAttributes(PChar(MDrive))=FILE_ATTRIBUTE_READONLY then begin
+      NoAccess:=HomeDir; break;
+    end;
+    s:=ExtractFileDir(MDrive);
     if s<>MDrive then MDrive:=s else break;
   until False;
-
+  MDrive:=LowerCase(ExtractFileDrive(HomeDir));
+  if length(MDrive)<>2 then NoAccess:=HomeDir;
   Name:='@:\';
   Mask:=GetLogicalDrives;
   for Drive:='A' to 'Z' do
@@ -1695,6 +1698,7 @@ begin
           Tag:=Ord(Drive);
           RadioItem:=true;
           OnClick:=MOpenDriveClick;
+          if MDrive=LowerCase(Caption) then NoAccess:=HomeDir;
         end;
         MOpenDrive.Add(Item);
         MOpenDrive.Enabled:=true;

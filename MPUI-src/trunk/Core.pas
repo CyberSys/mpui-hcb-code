@@ -18,7 +18,7 @@
 unit Core;
 interface
 uses Windows, SysUtils, TntSysUtils, Classes, Forms, Menus,TntMenus,
-     Controls, Dialogs, Graphics, ComCtrls, TntForms, MultiMon; //,ShellAPI;
+     Controls, Dialogs, Graphics, ComCtrls, TntForms, MultiMon, ShFolder; //,ShellAPI;
 
 const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
 
@@ -85,7 +85,7 @@ var Status:TStatus;
 type TWin9xWarnLevel=(wlWarn,wlReject,wlAccept);
 var Win9xWarnLevel:TWin9xWarnLevel;
 
-var HomeDir,TempDir,SystemDir,AudioFile:string;
+var HomeDir,TempDir,SystemDir,AppdataDir,NoAccess,AudioFile:string;
 var ArcPW,TmpPW,DisplayURL,MediaURL,TmpURL,ArcMovie:WideString;
     substring,Vobfile,winos,afChain:String;
     subfont,osdfont,ShotDir,LyricDir,LyricURL,LyricF:String;
@@ -118,7 +118,7 @@ var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
     LastPos,SecondPos,OSDLevel,OpenM,MSecPos:integer;
 var Volume,MWC,CP:integer;
-    tEnd,Mute,LastMute,Ass,Efont,ISub,AutoNext,UpdatePW,NoAccess:boolean;
+    tEnd,Mute,LastMute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
     FormatSet:TFormatSettings;
     ExplicitStop,Rot,DefaultFontIndex:integer;
     TextColor,OutColor,LTextColor,LbgColor,LhgColor:Longint;
@@ -152,6 +152,7 @@ function EscapePath(Path:string):string;
 function CheckSubfont(Sfont:string):string;
 function CheckInfo(const Map:array of string; Value:string):integer;
 function ColorToStr(Color:Longint):string;
+function GetShellDirectory(csidl:integer):String;
 procedure SetLastPos;
 procedure Init;
 procedure Start;
@@ -416,18 +417,24 @@ begin
   end;
 end;
 
+function GetShellDirectory(csidl:integer):String;
+var Buffer: PAnsiChar;
+begin
+  GetMem(Buffer,MAX_PATH+1);
+  SHGetFolderPath(0,csidl,0,0,Buffer);
+  Result:=Buffer;
+  FreeMem(Buffer);
+end;
+
 procedure Init;
-//var WinDir:array[0..MAX_PATH]of char;
-begin    /// %USERPROFILE%\Local Settings\Temp
-  //GetWindowsDirectory(@WinDir[0],MAX_PATH);
- // GetEnvironmentVariable('windir',@WinDir[0],MAX_PATH);
- // SystemDir:=IncludeTrailingPathDelimiter(WinDir);
+begin
   SystemDir:=IncludeTrailingPathDelimiter(GetEnvironmentVariable('windir'));
- // GetEnvironmentVariable('TEMP',@WinDir[0],MAX_PATH);
- // TempDir:=IncludeTrailingPathDelimiter(WinDir)+'MPUISub\';
   TempDir:=IncludeTrailingPathDelimiter(GetEnvironmentVariable('TEMP'))+'MPUI\';
   HomeDir:=IncludeTrailingPathDelimiter(ExtractFileDir(ExpandFileName(ParamStr(0))));
-  ShotDir:='C:\';  
+  AppdataDir:=IncludeTrailingPathDelimiter(GetShellDirectory(CSIDL_COMMON_APPDATA));
+  if AppdataDir='' then AppdataDir:=HomeDir;
+  ShotDir:=IncludeTrailingPathDelimiter(GetShellDirectory(CSIDL_MYPICTURES));
+  if ShotDir='' then ShotDir:=HomeDir;
   if DirectoryExists(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap'
   else if CreateDir(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap';
   // check for Win9x
@@ -654,37 +661,13 @@ begin
       UnRART.FreeOnTerminate:=true;
       UnRART.Priority:=tpTimeCritical;
       if IsLoaded(s) then begin
-       { if ((s='.7z') and Is7zLoaded) or (s='.rar') then
-          MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie)
-        else MediaURL:=TempDir+ArcMovie; }
-       { if s='.rar' then  MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie)
-        else if s='.zip' then begin
-          if IsZipLoaded<>0 then MediaURL:=TempDir+ArcMovie
-          else MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie);
-        end
-        else if s='.7z' then begin
-          if Is7zLoaded<>0 then MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie)
-          else MediaURL:=TempDir+ArcMovie;
-        end
-        else MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie); }
-
         if ((s='.zip') and (IsZipLoaded<>0)) or ((s='.7z') and (Is7zLoaded=0)) then
           MediaURL:=TempDir+ArcMovie
         else MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie);
 
         UNRART.Resume;
         SwitchToThread;
-     { //  for i:=24 downto 1 do begin
-        repeat //WaitForSingleObject(unrart.ThreadID,100);
-     //     Sleep(1000);
-          Application.ProcessMessages;
-        //  if tEnd then break;
-          if WideFileExists(MediaURL) then begin
-            Sleep(500); break;
-          end;
-          until WaitForSingleObject(unrart.Handle,100)<>WAIT_TIMEOUT;//=WAIT_OBJECT_0;
-         // MainForm.LStatus.Caption:='-'+ intToStr(i);
-        //end;   }
+
         while not tEnd do begin
           WaitForSingleObject(UNRART.Handle,100);
           if WideFileExists(MediaURL) then begin
