@@ -129,7 +129,7 @@ type
     ImageList1: TImageList;
     TLyric: TTntGroupBox;
     LTCL: TTntLabel;
-    PLTC: TTntPanel;
+    PLTC: TPanel;
     LHCL: TTntLabel;
     PLBC: TPanel;
     LBCL: TTntLabel;
