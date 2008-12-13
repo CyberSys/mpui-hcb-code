@@ -658,16 +658,18 @@ object OptionsForm: TOptionsForm
         TabOrder = 15
         OnChange = CDDXAClick
         Items.Strings = (
-          'null'
           'novideo'
+          'null'
           'Auto'
           'directx:noaccel'
+          'direct3d'
           'gl'
           'gl:yuv=2:force-pbo'
           'gl:yuv=2:force-pbo:ati-hack'
           'gl:yuv=3'
           'gl2'
-          'gl2:yuv=3')
+          'gl2:yuv=3'
+          'matrixview')
       end
     end
     object TabSheet3: TTntTabSheet
