@@ -431,7 +431,7 @@ begin
   SystemDir:=IncludeTrailingPathDelimiter(GetEnvironmentVariable('windir'));
   TempDir:=IncludeTrailingPathDelimiter(GetEnvironmentVariable('TEMP'))+'MPUI\';
   HomeDir:=IncludeTrailingPathDelimiter(ExtractFileDir(ExpandFileName(ParamStr(0))));
-  AppdataDir:=IncludeTrailingPathDelimiter(GetShellDirectory(CSIDL_COMMON_APPDATA));
+  AppdataDir:=IncludeTrailingPathDelimiter(GetShellDirectory(CSIDL_APPDATA));
   if AppdataDir='' then AppdataDir:=HomeDir;
   ShotDir:=IncludeTrailingPathDelimiter(GetShellDirectory(CSIDL_MYPICTURES));
   if ShotDir='' then ShotDir:=HomeDir;
