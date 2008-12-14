@@ -18,7 +18,7 @@
 unit Core;
 interface
 uses Windows, SysUtils, TntSysUtils, Classes, Forms, Menus,TntMenus,
-     Controls, Dialogs, Graphics, ComCtrls, TntForms, MultiMon, ShFolder; //,ShellAPI;
+     Controls, Dialogs, Graphics, ComCtrls, TntForms, MultiMon, ShlObj; //,ShellAPI;
 
 const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
 
@@ -87,7 +87,7 @@ var Win9xWarnLevel:TWin9xWarnLevel;
 
 var HomeDir,TempDir,SystemDir,AppdataDir,NoAccess,AudioFile:string;
 var ArcPW,TmpPW,DisplayURL,MediaURL,TmpURL,ArcMovie:WideString;
-    substring,Vobfile,winos,afChain:String;
+    substring,Vobfile,afChain:String;
     subfont,osdfont,ShotDir,LyricDir,LyricURL,LyricF:String;
     Ccap,Acap:WideString;
     DemuxerName,CacheV:string;
@@ -152,7 +152,7 @@ function EscapePath(Path:string):string;
 function CheckSubfont(Sfont:string):string;
 function CheckInfo(const Map:array of string; Value:string):integer;
 function ColorToStr(Color:Longint):string;
-function GetShellDirectory(csidl:integer):String;
+function GetFolderPath(csidl:integer):String;
 procedure SetLastPos;
 procedure Init;
 procedure Start;
@@ -417,37 +417,37 @@ begin
   end;
 end;
 
-function GetShellDirectory(csidl:integer):String;
+function GetFolderPath(csidl:integer):String;
 var Buffer: PAnsiChar;
 begin
   GetMem(Buffer,MAX_PATH+1);
-  SHGetFolderPath(0,csidl,0,0,Buffer);
-  Result:=Buffer;
+  if SHGetSpecialFolderPath(0,Buffer,csidl,false) then
+    Result:=Buffer
+  else Result:='';
   FreeMem(Buffer);
 end;
 
 procedure Init;
-begin
+begin                
   SystemDir:=IncludeTrailingPathDelimiter(GetEnvironmentVariable('windir'));
   TempDir:=IncludeTrailingPathDelimiter(GetEnvironmentVariable('TEMP'))+'MPUI\';
   HomeDir:=IncludeTrailingPathDelimiter(ExtractFileDir(ExpandFileName(ParamStr(0))));
-  AppdataDir:=GetShellDirectory(CSIDL_APPDATA);
+
+  if Win32PlatformIsVista then AppdataDir:=GetShellPath(RFID_APPDATA)
+  else AppdataDir:=GetFolderPath(CSIDL_APPDATA);
   if AppdataDir='' then AppdataDir:=HomeDir else AppdataDir:=IncludeTrailingPathDelimiter(AppdataDir);
-  ShotDir:=GetShellDirectory(CSIDL_PERSONAL);
+
+  if Win32PlatformIsVista then ShotDir:=GetShellPath(RFID_PERSONAL)
+  else ShotDir:=GetFolderPath(CSIDL_PERSONAL);
   if ShotDir='' then ShotDir:=HomeDir else ShotDir:=IncludeTrailingPathDelimiter(ShotDir);
   if DirectoryExists(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap'
   else if CreateDir(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap';
+  
   // check for Win9x
-  if Win32Platform<VER_PLATFORM_WIN32_NT then begin
-    Win9xWarnLevel:=wlWarn; winos:='WIN9X';
-  end
-  else begin
-    Win9xWarnLevel:=wlAccept; winos:='WINNT';
-  end;
+  if Win32PlatformIsUnicode then Win9xWarnLevel:=wlAccept
+  else Win9xWarnLevel:=wlWarn;
 
-  if (Win32MajorVersion=5) and (Win32MinorVersion>0) then begin
-     MainForm.Imagery.Clear; winos:='WINXP';
-  end;
+  if Win32PlatformIsXP then MainForm.Imagery.Clear;
 
   MWC:=GetSystemMetrics(SM_CYCAPTION);
   GetLocaleFormatSettings(GetUserDefaultLCID,FormatSet);
@@ -526,7 +526,7 @@ begin
   if Utf then CmdLine:=CmdLine+' -utf8';
   if lavf then CmdLine:=CmdLine+' -demuxer lavf';
   if vsync then CmdLine:=CmdLine+' -vsync';
-  if Wid and (winos<>'WIN9X') then
+  if Wid and Win32PlatformIsUnicode then
     CmdLine:=CmdLine+' -colorkey 0x101010 -nokeepaspect'+' -wid '+IntToStr(MainForm.IPanel.Handle)
   else if ontop>0 then CmdLine:=CmdLine+' -ontop';
   if OSDLevel<>1 then CmdLine:=CmdLine+' -osdlevel '+IntToStr(OSDLevel);
@@ -808,7 +808,7 @@ begin
     s:=CmdLine;
     while length(s)>0 do
       AddLine(SplitLine(s));
-      if (winos='WINXP') and (Byte(GetUserDefaultLangID)=LANG_CHINESE) then
+      if Win32PlatformIsXP and (Byte(GetUserDefaultLangID)=LANG_CHINESE) then
         AddLine(
 '                   ®q= = = = = = = = = = = = = = = = ®r'^M^J+
 '                    ®U  °Ë®q°–®r ®q°–®rª∂”≠ π”√        ®U'^M^J+
@@ -978,7 +978,7 @@ begin
   Status:=sClosing;
   MainForm.LStatus.Caption:=LOCstr_Status_Closing;
   ExplicitStop:=1;
-  if winos='WIN9X' then FirstChance:=false;
+  if not Win32PlatformIsUnicode then FirstChance:=false;
   if FirstChance then begin
     SendCommand('quit');
     FirstChance:=false;
@@ -1008,7 +1008,7 @@ end;
 procedure SendCommand(Command:String);
 var Dummy:cardinal;
 begin
-  if (ClientProcess=0) OR (WritePipe=0) OR (winos='WIN9X') then exit;
+  if (ClientProcess=0) OR (WritePipe=0) OR (not Win32PlatformIsUnicode) then exit;
   Command:=Command+#10;
   WriteFile(WritePipe,Command[1],length(Command),Dummy,nil);
 end;
@@ -1588,15 +1588,6 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     end;
   end;
 
-  {function CheckNoAudio:boolean;
-  begin
-    Result:=false;
-    if CheckInfo(NoAudio,Line)=-1 then exit;
-    HaveAudio:=false; MainForm.MAudios.Visible:=false;
-    MainForm.BMute.Enabled:=false;
-    Result:=true;
-  end; }
-
   procedure CheckNoAudio;
   begin
     if ChkAudio and (StreamInfo.Audio.Codec='') then begin
@@ -1620,27 +1611,6 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       Result:=true;
     end
   end;
-
-  {function CheckNoVideo:boolean;
-  begin
-    Result:=false;
-    if CheckInfo(NoVideo,Line)=-1 then exit;
-    if LastHaveVideo then begin
-      if MainForm.MFullscreen.Checked then MainForm.SetFullscreen(false);
-      if MainForm.MCompact.Checked  or MainForm.MMaxW.Checked then MainForm.SetCompact(false);
-      MainForm.Mctrl.Checked:=false; MainForm.Hide_menu.Checked:=false; MainForm.MPCtrl.Checked:=true;
-      MainForm.CPanel.Visible:=true; MainForm.MenuBar.Visible:=true;
-      MainForm.UpdateMenuEV(false);
-      SetWindowLong(MainForm.Handle,GWL_STYLE,DWORD(GetWindowLong(MainForm.Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX));
-      MainForm.Left:=MainForm.Left+((MainForm.OPanel.ClientWidth-353) DIV 2);
-      MainForm.Top:=MainForm.Top+(MainForm.OPanel.ClientHeight DIV 2);
-      MainForm.Width:=MainForm.Constraints.MinWidth;
-      MainForm.Height:=MainForm.Constraints.MinHeight;
-      LastHaveVideo:=false; MFunc:=0;
-    end;
-    HaveVideo:=false;
-    Result:=true;
-  end; }
 
   procedure CheckNoVideo;
   begin
@@ -1667,17 +1637,6 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     end;
   end;
 
-  {function CheckStartPlayback:boolean;
-  begin
-    Result:=false;
-    if CheckInfo(PlayBack,Line)=-1 then exit;
-    if not(HaveVideo) then begin
-      Status:=sPlaying; MainForm.UpdateStatus;
-      MainForm.SetupPlay;
-    end;
-    Result:=true;
-  end; }
-
   procedure CheckStartPlayback;
   begin
     if ChkStartPlay then begin
@@ -1700,7 +1659,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     Val(Copy(Line,p+1,5),j,r); if (r<>0) OR (j<16) OR (j>=4096) then exit;
     ChkVideo:=false;
     with MainForm do begin
-      if winos='WIN9X' then begin
+      if not Win32PlatformIsUnicode then begin
         HaveVideo:=false; LastHaveVideo:=false;
         MVideos.Visible:=true; MSub.Visible:=true;
         Status:=sPlaying; UpdateStatus;

@@ -8,14 +8,7 @@ unit UnRar;
 interface
 
 uses
-  Windows,SysUtils,Classes,Dialogs,TntSysUtils,TntDialogs;
-
-const
-  // Constants from UnRar.h
-  RAR_OM_LIST          = 0;
-  RAR_OM_EXTRACT       = 1;
-  RAR_SKIP             = 0;
-  RAR_EXTRACT          = 2;
+  Windows,SysUtils,Classes,Dialogs,TntSysUtils,TntDialogs,ComObj;
 
 type
   // Header for every file in an archive
@@ -64,25 +57,46 @@ type
                   protected
                     procedure Execute; override;
                 end;
+                
+  // used by SHGetKnownFolderPath
+  KNOWNFOLDERID    = TGUID;
+  REFKNOWNFOLDERID = ^KNOWNFOLDERID;
+  PWSTR            = PWideChar;
+  PPWSTR           = ^PWSTR;
 
+const
+  // Constants from UnRar.h
+  RAR_OM_LIST          = 0;
+  RAR_OM_EXTRACT       = 1;
+  RAR_SKIP             = 0;
+  RAR_EXTRACT          = 2;
+  // use by SHGetKnownFolderPath http://msdn.microsoft.com/en-us/library/bb762584(VS.85).aspx
+  RFID_APPDATA:KNOWNFOLDERID='{3EB685DB-65F9-4CF6-A03A-E3EF65729F3D}';
+  RFID_PERSONAL:KNOWNFOLDERID='{FDD39AD0-238F-46AF-ADB4-6C85480369C7}';
+  
 var
   // Flag for: Is Dll loaded...
-  IsRarLoaded: integer = 0;
+  IsRarLoaded: integer = 0; IsShell32Loaded:boolean = false;
   // function Pointer - Dll is always dynamicly loaded
   RAROpenArchive        : function(ArchiveData: PTRAROpenArchiveData): THandle; stdcall;
   RARCloseArchive       : function(hArcData: THandle): integer; stdcall;
   RARReadHeader         : function(hArcData: THandle; HeaderData: PTRARHeaderData): Integer; stdcall;
   RARProcessFile        : function(hArcData: THandle; Operation: Integer; DestPath, DestName: PChar): Integer; stdcall;
   RARSetPassword        : procedure(hArcData: THandle; Password: PChar); stdcall;
-
+  SHGetKnownFolderPath  : function(rfid:REFKNOWNFOLDERID; dwFlags:DWord; hToken:THandle; var ppszPath:PPWSTR):HRESULT; stdcall;
+  
 // helper functions for (un)loading the Dll and check for loaded
 procedure LoadRarLibrary;
 procedure UnLoadRarLibrary;
+procedure LoadShell32Library;
+procedure UnLoadShell32Library;
 procedure ClearTmpFiles(Directory:string);
 function AddRarMovies(ArcName,PW:widestring; Add:boolean):integer;
 procedure ExtractRarMovie(ArcName,MovieName,PW:widestring);
 procedure ExtractRarLyric(ArcName,PW:WideString; Mode:integer);
 function ExtractRarSub(ArcName,PW:WideString):String;
+Procedure CoTaskMemFree(pv:Pointer); stdcall; external 'ole32.dll';
+function GetShellPath(rfid:KNOWNFOLDERID):String;
 
 implementation
 uses Main,Core,plist,locale,SevenZip;
@@ -107,7 +121,7 @@ type
   end;
 
 var
-   h: THandle=0; // Dll-Handle
+   h: THandle=0; SFHandle:THandle=0; // Dll-Handle
 
 procedure TUnRARThread.SetName;
 var ThreadNameInfo: TThreadNameInfo;
@@ -164,6 +178,38 @@ begin
     RARProcessFile        := nil;
     RARSetPassword        := nil;
   end;
+end;
+
+procedure LoadShell32Library;
+begin
+  SFHandle := LoadLibrary('shell32.dll'); 
+  if SFHandle <> 0 then begin
+    IsShell32Loaded:=true;
+    @SHGetKnownFolderPath:= GetProcAddress(SFHandle, 'SHGetKnownFolderPath');
+  end;
+end;
+
+procedure UnLoadShell32Library;
+begin
+  if SFHandle <> 0 then begin
+    FreeLibrary(SFHandle);
+    IsShell32Loaded:=false;
+    SFHandle := 0;
+    SHGetKnownFolderPath:= nil;
+  end;
+end;
+
+
+function GetShellPath(rfid:KNOWNFOLDERID):String;
+var PathBuf:PPWSTR; APIResult:HRESULT;
+begin //http://msdn.microsoft.com/en-us/library/bb762188(VS.85).aspx
+  Result:='';
+  if SFHandle=0 then LoadShell32Library;
+  if SFHandle=0 then exit;
+  APIResult:=SHGetKnownFolderPath(@rfid,0,0,PathBuf);
+  OleCheck(APIResult);
+  Result:=WideCharToString(PWideChar(PathBuf));
+  CoTaskMemFree(PathBuf);
 end;
 
 procedure ClearTmpFiles(Directory:string);
@@ -353,7 +399,7 @@ begin
         if RARProcessFile(hArcData, RAR_EXTRACT, nil, PChar(FName))<>0 then
           Break
         else begin
-          if Firstrun or (winos='WIN9X') then begin
+          if Firstrun or (not Win32PlatformIsUnicode) then begin
             Loadsub:=2; Loadsrt:=2;
             AddChain(j,substring,EscapePath(EscapeParam(FName)));
           end
@@ -387,7 +433,7 @@ begin
     end;
   until False;
   RARCloseArchive(hArcData); 
-  if (winos='WIN9X') and (j>0) then Core.Restart;
+  if (not Win32PlatformIsUnicode) and (j>0) then Core.Restart;
 end;
 
 end.

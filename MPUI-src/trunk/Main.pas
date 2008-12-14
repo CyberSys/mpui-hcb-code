@@ -473,7 +473,7 @@ var key:HKEY; FontName,FontPath:array[0..MAX_PATH]of Char;
 begin
   DefaultFont:=TFont.Create;
   DefaultFont.Handle:=GetStockObject(DEFAULT_GUI_FONT);
-  if winos<>'WIN9X' then s:='SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts'
+  if Win32PlatformIsUnicode then s:='SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts'
   else s:='SOFTWARE\Microsoft\Windows\CurrentVersion\Fonts';
   if RegOpenKeyEx(HKEY_LOCAL_MACHINE,PChar(s),0,KEY_READ,key)=ERROR_SUCCESS then begin
     FontNames:=TStringList.Create; FontPaths:=TStringList.Create;
@@ -522,7 +522,7 @@ begin
   WantFullscreen:=false; WantCompact:=false;
   Constraints.MinWidth:=Width; Constraints.MinHeight:=Height;
   Core.Init; Config.Load(HomeDir+'autorun.inf'); Config.Load(HomeDir+DefaultFileName);
-  if winos<>'WIN9X' then DirectDrawEnumerateEx(DDrawEnumCallbackEx,nil,1);
+  if Win32PlatformIsUnicode then DirectDrawEnumerateEx(DDrawEnumCallbackEx,nil,1);
   if not FileExists(MplayerLocation) then MplayerLocation:=HomeDir+'mplayer.exe';
   if subcode='' then subcode:='CP'+IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT)); //AnsiCodePage
   //OEM CodePage
@@ -537,9 +537,9 @@ begin
   end
   else VolSlider.Left:=Core.Volume*(VolFrame.ClientWidth-VolSlider.Width) DIV 100;
   Left:=(screen.Width-Width) DIV 2;
-  if (not Wid) OR (winos='WIN9X') then
-    Top:=screen.WorkAreaHeight-Constraints.MinHeight
-  else Top:=(screen.Height-Height) Div 2;
+  if Wid and Win32PlatformIsUnicode then
+    Top:=(screen.Height-Height) Div 2
+  else Top:=screen.WorkAreaHeight-Constraints.MinHeight;
   if Core.RFScr then begin
       OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
   end
@@ -563,6 +563,7 @@ begin
   if IsRarLoaded>0 then UnLoadRarLibrary;
   if IsZipLoaded>0 then UnLoadZipLibrary;
   if Is7zLoaded>0 then UnLoad7zLibrary;
+  if IsShell32Loaded then UnLoadShell32Library;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -572,7 +573,7 @@ begin
   if FirstShow then begin
     FirstShow:=false; MonitorID:=0;
     CurMonitor:=Screen.MonitorFromWindow(Handle);
-    if winos<>'WIN9X' then begin
+    if Win32PlatformIsUnicode then begin
       for i:=low(HMonitorList) to high(HMonitorList) do begin
         if HMonitorList[i]=CurMonitor.Handle then begin
           MonitorID:=i; break;
@@ -690,7 +691,7 @@ begin
             end
             else begin
               Loadsub:=1;
-              if winos='WIN9X' then begin
+              if not Win32PlatformIsUnicode then begin
                 Loadsub:=2; Loadsrt:=2;
                 AddChain(s,substring,EscapePath(EscapeParam(FName)));
               end
@@ -705,7 +706,7 @@ begin
     end;
   end;
   DragFinish(hDrop);
-  if (winos='WIN9X') and (s>0) then Core.Restart;
+  if (not Win32PlatformIsUnicode) and (s>0) then Core.Restart;
   if Loadsub=0 then Application.OnIdle:=OpenDroppedFile;
   msg.Result:=0;
 end;
@@ -810,12 +811,12 @@ end;
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
   procedure HandleCommand(const Command:string); begin
-    if winos='WIN9X' then exit;
+    if not Win32PlatformIsUnicode then exit;
     Unpaused;
     Core.SendCommand(Command);
   end;
   procedure HandleSeekCommand(const Command:string); begin
-    if winos='WIN9X' then exit;
+    if not Win32PlatformIsUnicode then exit;
     Unpaused;
     Core.SendCommand(Command);
     if HaveChapters then Sendcommand('get_property chapter');
@@ -1145,7 +1146,7 @@ begin
       if TickCount>=UpdateSeekBarAt then UpdateSeekBar;
       if MVideos.Visible then begin
         CurMonitor:=Screen.MonitorFromWindow(Handle);
-        if (winos<>'WIN9X') or WID then begin
+        if Win32PlatformIsUnicode then begin
           for i:=low(HMonitorList) to high(HMonitorList) do begin
             if HMonitorList[i]=CurMonitor.Handle then begin
               if MonitorID<>i then begin
@@ -1335,7 +1336,7 @@ begin
   if Mute then SendCommand('set_property mute 1');
   Seeking:=false; SeekBarSlider.ShowHint:=true;
   UpdateSeekBarAt:=GetTickCount()+1000;
-  if winos='WIN9X' then Core.Restart;
+  if not Win32PlatformIsUnicode then Core.Restart;
 end;
 
 procedure TMainForm.SeekBarMouseDown(Sender: TObject; Button: TMouseButton;
@@ -1361,7 +1362,7 @@ begin
   if HaveVideo then SendCommand('osd_show_text '+IntToStr(100*X DIV MaxPos)+'%');
   if Mute then SendCommand('set_property mute 1');
   SeekBarSlider.Left:=X; UpdateSeekBarAt:=GetTickCount()+1000;
-  if winos='WIN9X' then Core.Restart;
+  if not Win32PlatformIsUnicode then Core.Restart;
 end;
 
 procedure TMainForm.SimulateKey(Sender: TObject);
@@ -1376,7 +1377,7 @@ end;
 procedure TMainForm.VideoSizeChanged;
 var SX,SY,PX,PY:integer;
 begin
-  if (not Wid) OR (winos='WIN9X') OR
+  if (not Wid) OR (not Win32PlatformIsUnicode) OR
     (NativeWidth=0) OR (NativeHeight=0) then exit;
   if MSizeAny.Checked OR MFullscreen.Checked then begin
     FixSize;
@@ -1431,7 +1432,7 @@ begin
     1: SendCommand('osd_show_text "OSD: '+OSD_Enable_Prompt+'"');
   end;
   SendCommand('osd '+IntToStr(OSDLevel));
-  if winos='WIN9X' then Core.Restart;
+  if not Win32PlatformIsUnicode then Core.Restart;
   MOSD.Items[OSDLevel].Checked:=true;
   OSDMenu.Items[OSDLevel].Checked:=true;
 end;
@@ -1488,7 +1489,7 @@ begin
     6: begin Speed:= 8; Core.SendCommand('speed_set 8'); end;
     7: Core.SendCommand('speed_set '+FloatToStr(Speed));
   end;
-  if winos='WIN9X' then Core.Restart;
+  if not Win32PlatformIsUnicode then Core.Restart;
   (Sender as TMenuItem).Checked:=True;
 end;
 
@@ -1496,7 +1497,7 @@ procedure TMainForm.MVideoClick(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
   VideoID:=(Sender as TMenuItem).Tag;
-  if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (winos='WIN9X') then
+  if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Core.Restart
   else begin
      Unpaused;
@@ -1510,7 +1511,7 @@ procedure TMainForm.MAudioClick(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
   AudioID:=(Sender as TMenuItem).Tag;
-  if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (winos='WIN9X') then
+  if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Core.Restart
   else begin
     Unpaused;
@@ -1615,7 +1616,7 @@ begin
   if (Sender as TMenuItem).Checked then exit;
   MKaspect.Checked:=true;
   Core.Aspect:=(Sender as TMenuItem).Tag;
-  if (Expand=2) OR (winos='WIN9X') then Core.Restart
+  if (Expand=2) OR (not Win32PlatformIsUnicode) then Core.Restart
   else begin
     CBHSA:=3; Unpaused;
     case Core.Aspect of
@@ -1939,7 +1940,7 @@ begin
     Checked:=True;
     Core.AudioID:=Tag;
   end;
-  if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (winos='WIN9X') then
+  if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Core.Restart
   else begin
      Unpaused;
@@ -1964,7 +1965,7 @@ begin
     Checked:=True;
     Core.VideoID:=Tag;
   end;
-  if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (winos='WIN9X') then
+  if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Core.Restart
   else begin
      Unpaused;
@@ -1978,7 +1979,7 @@ begin
   MKaspect.Checked:=true;
   Aspect:=(Aspect+1) MOD MAspect.Count;
   MAspect.Items[Aspect].Checked:=True;
-  if (Expand=2) OR (winos='WIN9X') then Core.Restart
+  if (Expand=2) OR (not Win32PlatformIsUnicode) then Core.Restart
   else begin
     CBHSA:=3; Unpaused;
     case Core.Aspect of
@@ -2028,7 +2029,7 @@ begin
   Index:=Playlist.GetNext(ExitState,Direction);
   if Index<0 then begin
     if AutoQuit then Close;
-    if winos='WIN9X' then Core.Terminate else Core.Stop;
+    if not Win32PlatformIsUnicode then Core.Terminate else Core.Stop;
     exit;
   end;
   Playlist.NowPlaying(Index);
@@ -2703,7 +2704,7 @@ begin
             end;
           end
           else begin
-            if winos='WIN9X' then begin
+            if not Win32PlatformIsUnicode then begin
               Loadsub:=2; Loadsrt:=2;
               AddChain(s,substring,EscapePath(EscapeParam(Files[i])));
             end
@@ -2714,7 +2715,7 @@ begin
           end;
         end;
       end;
-      if (winos='WIN9X') and (s>0) then Core.Restart;
+      if (not Win32PlatformIsUnicode) and (s>0) then Core.Restart;
     end;
   end;
 end;

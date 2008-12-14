@@ -472,7 +472,7 @@ begin
             if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,nil)<>0 then
               Break
             else begin
-              if Firstrun or (winos='WIN9X') then begin
+              if Firstrun or (not Win32PlatformIsUnicode) then begin
                 Loadsub:=2; Loadsrt:=2;
                 AddChain(j,substring,EscapePath(EscapeParam(FName)));
               end
@@ -512,7 +512,7 @@ begin
       until ZipFindNext(hArc,fileInfo)<>0;
     end;
     ZipCloseArchive(hArc);
-    if (winos='WIN9X') and (j>0) then Core.Restart;
+    if (not Win32PlatformIsUnicode) and (j>0) then Core.Restart;
   end;
 end;
 
@@ -556,7 +556,7 @@ begin
         FName:=TempDir+Flist.wstrings[z];
         if sz.Extract<>0 then Break
         else begin
-          if Firstrun or (winos='WIN9X') then begin
+          if Firstrun or (not Win32PlatformIsUnicode) then begin
             Loadsub:=2; Loadsrt:=2;
             AddChain(j,substring,EscapePath(EscapeParam(FName)));
           end
@@ -595,7 +595,7 @@ begin
   sz.Free;
   Flist.Clear;
   Flist.Free;
-  if (winos='WIN9X') and (j>0) then Core.Restart;
+  if (not Win32PlatformIsUnicode) and (j>0) then Core.Restart;
 end; 
 
 end.

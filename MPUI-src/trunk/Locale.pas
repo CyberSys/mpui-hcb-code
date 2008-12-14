@@ -17,7 +17,7 @@
 }
 unit Locale;
 interface
-uses Graphics, SysUtils,TntForms;
+uses Graphics, SysUtils, TntForms, TntSysUtils;
 
 type proc=procedure;
      TLocale=record
@@ -131,7 +131,7 @@ begin
   if (Index<Low(Locales)) OR (Index>High(Locales)) then exit;
   case Locales[Index].LangID of
     $804,$404: begin
-                 if winos='WIN9X' then begin
+                 if not Win32PlatformIsUnicode then begin
                    MainForm.Font.Size:=9; OptionsForm.Font.Size:=9;
                    PlaylistForm.Font.Size:=9; HelpForm.Font.Size:=9;
                    InfoForm.Font.Size:=9; LogForm.Font.Size:=9;
@@ -139,7 +139,7 @@ begin
                  DTFormat:='dddddd@tt';
                end;
     else begin
-              if winos='WIN9X' then begin
+              if not Win32PlatformIsUnicode then begin
                 MainForm.Font.Size:=8; OptionsForm.Font.Size:=8;
                 PlaylistForm.Font.Size:=8; HelpForm.Font.Size:=8;
                 InfoForm.Font.Size:=8; LogForm.Font.Size:=8;

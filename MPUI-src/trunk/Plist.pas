@@ -756,7 +756,7 @@ begin
   BMPpsPlayed :=LoadBitmapResource('PS_PLAYED' ,true);
   BMPpsSkipped:=LoadBitmapResource('PS_SKIPPED',true);
   ControlledMove:=true; TDocked:=true;
-  if (not Wid) OR (winos='WIN9X') then begin
+  if (not Wid) OR (not Win32PlatformIsUnicode) then begin
     Left:=MainForm.Left+MainForm.Width;
     Top:=MainForm.Top+MainForm.Height-Height;
   end;
