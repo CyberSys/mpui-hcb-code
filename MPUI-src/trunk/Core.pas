@@ -433,7 +433,7 @@ begin
   HomeDir:=IncludeTrailingPathDelimiter(ExtractFileDir(ExpandFileName(ParamStr(0))));
   AppdataDir:=GetShellDirectory(CSIDL_APPDATA);
   if AppdataDir='' then AppdataDir:=HomeDir else AppdataDir:=IncludeTrailingPathDelimiter(AppdataDir);
-  ShotDir:=GetShellDirectory(CSIDL_MYPICTURES);
+  ShotDir:=GetShellDirectory(CSIDL_PERSONAL);
   if ShotDir='' then ShotDir:=HomeDir else ShotDir:=IncludeTrailingPathDelimiter(ShotDir);
   if DirectoryExists(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap'
   else if CreateDir(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap';
