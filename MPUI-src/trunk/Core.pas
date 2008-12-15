@@ -518,7 +518,7 @@ begin
   end;
   if FileExists(s) then CmdLine:=CmdLine+' -font '+EscapeParam(s);
 
-  if MonitorID>0 then CmdLine:=CmdLine+' -adapter '+IntToStr(MonitorID);
+  if (not CurMonitor.Primary) and (MonitorID>0) then CmdLine:=CmdLine+' -adapter '+IntToStr(MonitorID);
   if UseUni then CmdLine:=CmdLine+' -msgcharset noconv';
   if Fd then CmdLine:=CmdLine+' -framedrop';
   if ni then CmdLine:=CmdLine+' -ni';
