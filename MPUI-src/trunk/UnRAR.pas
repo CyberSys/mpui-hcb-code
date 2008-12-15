@@ -10,6 +10,13 @@ interface
 uses
   Windows,SysUtils,Classes,Dialogs,TntSysUtils,TntDialogs,ComObj;
 
+const
+  // Constants from UnRar.h
+  RAR_OM_LIST          = 0;
+  RAR_OM_EXTRACT       = 1;
+  RAR_SKIP             = 0;
+  RAR_EXTRACT          = 2;
+
 type
   // Header for every file in an archive
   TRARHeaderData = record
@@ -57,23 +64,7 @@ type
                   protected
                     procedure Execute; override;
                 end;
-                
-  // used by SHGetKnownFolderPath
-  KNOWNFOLDERID    = TGUID;
-  REFKNOWNFOLDERID = ^KNOWNFOLDERID;
-  PWSTR            = PWideChar;
-  PPWSTR           = ^PWSTR;
 
-const
-  // Constants from UnRar.h
-  RAR_OM_LIST          = 0;
-  RAR_OM_EXTRACT       = 1;
-  RAR_SKIP             = 0;
-  RAR_EXTRACT          = 2;
-  // use by SHGetKnownFolderPath http://msdn.microsoft.com/en-us/library/bb762584(VS.85).aspx
-  RFID_APPDATA:KNOWNFOLDERID='{3EB685DB-65F9-4CF6-A03A-E3EF65729F3D}';
-  RFID_PERSONAL:KNOWNFOLDERID='{FDD39AD0-238F-46AF-ADB4-6C85480369C7}';
-  
 var
   // Flag for: Is Dll loaded...
   IsRarLoaded: integer = 0; IsShell32Loaded:boolean = false;
@@ -83,7 +74,7 @@ var
   RARReadHeader         : function(hArcData: THandle; HeaderData: PTRARHeaderData): Integer; stdcall;
   RARProcessFile        : function(hArcData: THandle; Operation: Integer; DestPath, DestName: PChar): Integer; stdcall;
   RARSetPassword        : procedure(hArcData: THandle; Password: PChar); stdcall;
-  SHGetKnownFolderPath  : function(rfid:REFKNOWNFOLDERID; dwFlags:DWord; hToken:THandle; var ppszPath:PPWSTR):HRESULT; stdcall;
+  SHGetKnownFolderPath  : function(rfid:PGUID; dwFlags:DWord; hToken:THandle; var ppszPath:PPWideChar):HRESULT; stdcall;
   
 // helper functions for (un)loading the Dll and check for loaded
 procedure LoadRarLibrary;
@@ -96,7 +87,7 @@ procedure ExtractRarMovie(ArcName,MovieName,PW:widestring);
 procedure ExtractRarLyric(ArcName,PW:WideString; Mode:integer);
 function ExtractRarSub(ArcName,PW:WideString):String;
 Procedure CoTaskMemFree(pv:Pointer); stdcall; external 'ole32.dll';
-function GetShellPath(rfid:KNOWNFOLDERID):String;
+function GetShellPath(rfid:TGUID):String;
 
 implementation
 uses Main,Core,plist,locale,SevenZip;
@@ -200,8 +191,8 @@ begin
 end;
 
 
-function GetShellPath(rfid:KNOWNFOLDERID):String;
-var PathBuf:PPWSTR; APIResult:HRESULT;
+function GetShellPath(rfid:TGUID):String;
+var PathBuf:PPWideChar; APIResult:HRESULT;
 begin //http://msdn.microsoft.com/en-us/library/bb762188(VS.85).aspx
   Result:='';
   if SFHandle=0 then LoadShell32Library;

@@ -428,6 +428,9 @@ begin
 end;
 
 procedure Init;
+const RFID_APPDATA:TGUID='{3EB685DB-65F9-4CF6-A03A-E3EF65729F3D}';
+      RFID_PERSONAL:TGUID='{FDD39AD0-238F-46AF-ADB4-6C85480369C7}';
+      // use by SHGetKnownFolderPath http://msdn.microsoft.com/en-us/library/bb762584(VS.85).aspx
 begin                
   SystemDir:=IncludeTrailingPathDelimiter(GetEnvironmentVariable('windir'));
   TempDir:=IncludeTrailingPathDelimiter(GetEnvironmentVariable('TEMP'))+'MPUI\';
