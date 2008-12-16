@@ -1654,6 +1654,7 @@ object MainForm: TMainForm
         end
         object MAudioDelay2: TTntMenuItem
           Caption = 'Reset Audio Delay'
+          ShortCut = 16392
           OnClick = MAudioDelay2Click
         end
       end
@@ -1740,6 +1741,7 @@ object MainForm: TMainForm
         end
         object MSubDelay2: TTntMenuItem
           Caption = 'Reset Subtitle Delay'
+          ShortCut = 8282
           OnClick = MSubDelay2Click
         end
       end
@@ -1757,6 +1759,27 @@ object MainForm: TMainForm
           Caption = 'Next'
           ShortCut = 85
           OnClick = SimulateKey
+        end
+      end
+      object MSubScale: TTntMenuItem
+        Caption = 'Subtitle Scale'
+        GroupIndex = 169
+        object MSubScale0: TTntMenuItem
+          Caption = 'Scale+'
+          ShortCut = 16571
+          OnClick = SimulateKey
+        end
+        object MSubScale1: TTntMenuItem
+          Caption = 'Scale-'
+          ShortCut = 16573
+          OnClick = SimulateKey
+        end
+        object N21: TTntMenuItem
+          Caption = '-'
+        end
+        object MSubScale2: TTntMenuItem
+          Caption = 'Reset Scale'
+          OnClick = MSubScale2Click
         end
       end
       object N17: TTntMenuItem

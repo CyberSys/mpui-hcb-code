@@ -291,6 +291,11 @@ type
     N33: TTntMenuItem;
     N34: TTntMenuItem;
     MUUni: TTntMenuItem;
+    MSubScale: TTntMenuItem;
+    MSubScale0: TTntMenuItem;
+    MSubScale1: TTntMenuItem;
+    N21: TTntMenuItem;
+    MSubScale2: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -399,6 +404,7 @@ type
     procedure MSubDelay2Click(Sender: TObject);
     procedure MLoadlyricClick(Sender: TObject);
     procedure MUUniClick(Sender: TObject);
+    procedure MSubScale2Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -873,6 +879,7 @@ if MVideos.Visible then begin
           Ord('E'):   MEqualizerClick(nil);
           {`~} 192:   if Wid then MScale0Click(nil);
           Ord('S'):   HandleCommand('screenshot 1');
+          Ord('Z'):   MSubDelay2Click(nil);
         end;
       end
       else begin
@@ -1010,6 +1017,7 @@ if ssCtrl in Shift then begin
     {`~} 192:   MPanClick(nil);
     Ord('Q'):   Close;
     Ord('D'):   MOpenDirClick(nil);
+     VK_BACK:   MAudioDelay2Click(nil);
   end;
 end
 else begin
@@ -1366,12 +1374,15 @@ begin
 end;
 
 procedure TMainForm.SimulateKey(Sender: TObject);
-var Key:word;
+var Key:word; Shift:TShiftState;
 begin
-  if sender=MRnMenu then Key:=186
-  else if sender=MRmMenu then Key:=81
+  Shift:=[];
+  if Sender=MRnMenu then Key:=186  //;
+  else if Sender=MRmMenu then Key:=81 //g
+  else if Sender=MSubScale0 then begin Key:=187; Shift:=[ssCtrl]; end //-_
+  else if Sender=MSubScale1 then begin Key:=189; Shift:=[ssCtrl]; end //+=
   else Key:=(Sender as TComponent).Tag;
-  FormKeyDown(Sender,Key,[]);
+  FormKeyDown(Sender,Key,Shift);
 end;
 
 procedure TMainForm.VideoSizeChanged;
@@ -3013,6 +3024,13 @@ begin
   MUUni.Checked:=not Core.UseUni;
   Core.UseUni:=MUUni.Checked;
   Core.Restart;
+end;
+
+procedure TMainForm.MSubScale2Click(Sender: TObject);
+begin
+  Unpaused;
+  SendCommand('set_property sub_scale 4.5'); FSize:=4.5;
+  SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_Scale_Prompt+'"');
 end;
 
 end.
