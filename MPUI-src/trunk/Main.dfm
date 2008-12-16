@@ -4,10 +4,10 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'MainForm'
-  ClientHeight = 82
+  ClientHeight = 84
   ClientWidth = 357
   Color = clBtnFace
-  Constraints.MinHeight = 111
+  Constraints.MinHeight = 118
   Constraints.MinWidth = 365
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,9 +26,90 @@ object MainForm: TMainForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object MenuBar: TTntToolBar
+    Left = 0
+    Top = 0
+    Width = 357
+    Height = 25
+    BorderWidth = 1
+    ButtonHeight = 21
+    ButtonWidth = 48
+    Caption = 'MenuBar'
+    EdgeBorders = []
+    Flat = True
+    ShowCaptions = True
+    TabOrder = 0
+    object MFile: TTntToolButton
+      Left = 0
+      Top = 0
+      AutoSize = True
+      Caption = 'File'
+      Grouped = True
+      MenuItem = OMFile
+    end
+    object MView: TTntToolButton
+      Left = 27
+      Top = 0
+      AutoSize = True
+      Caption = 'View'
+      Grouped = True
+      MenuItem = OMView
+    end
+    object MSeek: TTntToolButton
+      Left = 60
+      Top = 0
+      AutoSize = True
+      Caption = 'Seek'
+      Grouped = True
+      MenuItem = OMSeek
+    end
+    object MVideos: TTntToolButton
+      Left = 94
+      Top = 0
+      AutoSize = True
+      Caption = 'Video'
+      Grouped = True
+      MenuItem = OMVideo
+      Visible = False
+    end
+    object MAudios: TTntToolButton
+      Left = 131
+      Top = 0
+      AutoSize = True
+      Caption = 'Audio'
+      Grouped = True
+      MenuItem = OMAudio
+      Visible = False
+    end
+    object MSub: TTntToolButton
+      Left = 169
+      Top = 0
+      AutoSize = True
+      Caption = 'Subtitles'
+      Grouped = True
+      MenuItem = OMSub
+      Visible = False
+    end
+    object MExtra: TTntToolButton
+      Left = 221
+      Top = 0
+      AutoSize = True
+      Caption = 'Extra'
+      Grouped = True
+      MenuItem = OMExtra
+    end
+    object MHelp: TTntToolButton
+      Left = 258
+      Top = 0
+      AutoSize = True
+      Caption = 'Help'
+      Grouped = True
+      MenuItem = OMHelp
+    end
+  end
   object OPanel: TPanel
     Left = 0
-    Top = 23
+    Top = 25
     Width = 357
     Height = 100
     Align = alClient
@@ -217,7 +298,7 @@ object MainForm: TMainForm
   end
   object CPanel: TPanel
     Left = 0
-    Top = 19
+    Top = 21
     Width = 357
     Height = 63
     Align = alBottom
@@ -710,87 +791,6 @@ object MainForm: TMainForm
       TabOrder = 3
       Visible = False
       OnClick = VolBoostClick
-    end
-  end
-  object MenuBar: TTntToolBar
-    Left = 0
-    Top = 0
-    Width = 357
-    Height = 23
-    BorderWidth = 1
-    ButtonHeight = 21
-    ButtonWidth = 48
-    Caption = 'MenuBar'
-    EdgeBorders = []
-    Flat = True
-    ShowCaptions = True
-    TabOrder = 0
-    object MFile: TTntToolButton
-      Left = 0
-      Top = 0
-      AutoSize = True
-      Caption = 'File'
-      Grouped = True
-      MenuItem = OMFile
-    end
-    object MView: TTntToolButton
-      Left = 27
-      Top = 0
-      AutoSize = True
-      Caption = 'View'
-      Grouped = True
-      MenuItem = OMView
-    end
-    object MSeek: TTntToolButton
-      Left = 60
-      Top = 0
-      AutoSize = True
-      Caption = 'Seek'
-      Grouped = True
-      MenuItem = OMSeek
-    end
-    object MVideos: TTntToolButton
-      Left = 94
-      Top = 0
-      AutoSize = True
-      Caption = 'Video'
-      Grouped = True
-      MenuItem = OMVideo
-      Visible = False
-    end
-    object MAudios: TTntToolButton
-      Left = 131
-      Top = 0
-      AutoSize = True
-      Caption = 'Audio'
-      Grouped = True
-      MenuItem = OMAudio
-      Visible = False
-    end
-    object MSub: TTntToolButton
-      Left = 169
-      Top = 0
-      AutoSize = True
-      Caption = 'Subtitles'
-      Grouped = True
-      MenuItem = OMSub
-      Visible = False
-    end
-    object MExtra: TTntToolButton
-      Left = 221
-      Top = 0
-      AutoSize = True
-      Caption = 'Extra'
-      Grouped = True
-      MenuItem = OMExtra
-    end
-    object MHelp: TTntToolButton
-      Left = 258
-      Top = 0
-      AutoSize = True
-      Caption = 'Help'
-      Grouped = True
-      MenuItem = OMHelp
     end
   end
   object MainMenu: TTntMainMenu
