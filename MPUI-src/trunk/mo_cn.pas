@@ -281,16 +281,20 @@ begin
     LOCstr_AutoLocale:=UTF8Decode('(自动-选择)');
     CDrag.Caption:=UTF8Decode('使用系统的窗体拖动方式');
     CIndex.Caption:=UTF8Decode('重建 文件索引');
-    CIndex.Hint:=UTF8Decode('在没有找到索引的情况下重建AVI文件的索引, 从而允许搜索.对于损坏的/不完整的下载, 或制作低劣的AVI.');
+    CIndex.Hint:=UTF8Decode('在没有找到索引的情况下重建AVI文件的索引, 从而允许搜索.'^M^J+
+                            '对于损坏的/不完整的下载, 或制作低劣的AVI.');
     CSoftVol.Caption:=UTF8Decode('音量增益10倍');
     CGUI.Caption:=UTF8Decode('使用Mplayer的GUI');
     CGUI.Hint:=UTF8Decode('对于那些没有-nogui选项的Mplayer，也可以勾选此项避免错误');
     CRFScr.Caption:=UTF8Decode('右键全屏');
     CRFScr.Hint:=UTF8Decode('右键进行切换全屏操作时，右键菜单将不会弹出');
     CDr.Caption:=UTF8Decode('直接渲染');
-    CDr.Hint:=UTF8Decode('打开直接渲染功能(不是所有的编解码器和视频输出都支持),警告: 可能导致OSD/字幕损坏!');
+    CDr.Hint:=UTF8Decode('打开直接渲染功能(不是所有的编解码器和视频输出都支持),'^M^J+
+                         '警告: 可能导致OSD/字幕损坏!');
     double.Caption:=UTF8Decode('双倍缓存');
-    double.Hint:=UTF8Decode('启用双缓冲. 通过在内存里储存两帧来解决闪烁问题, 在显示一帧的同时解码另一帧.会影响OSD. 需要单一缓冲方式两倍的内存. 所以不能用于显存很少的显卡.');
+    double.Hint:=UTF8Decode('启用双缓冲. 通过在内存里储存两帧来解决闪烁问题, 在显示'^M^J+
+                            '一帧的同时解码另一帧.会影响OSD. 需要单一缓冲方式两倍的'^M^J+
+                            '内存. 所以不能用于显存很少的显卡.');
     CVolnorm.Caption:=UTF8Decode('标准化音量');
     CVolnorm.Hint:=UTF8Decode('最大化文件的音量而不失真');
     Defaultslang.Caption:=UTF8Decode('优先选择中文字幕/音频轨');
@@ -310,7 +314,8 @@ begin
     CEq2.Caption:=UTF8Decode('使用软件视频均衡器');
     CEq2.Hint:=UTF8Decode('用于不支持硬件亮度对比度控制的显卡/驱动');
     CYuy2.Caption:=UTF8Decode('YUY2色域');
-    CYuy2.Hint:=UTF8Decode('指定使用YV12/I420或422P到YUY2的软件转换.用于当显卡/驱动显示YV12速度慢而YUY2速度快的情况.');
+    CYuy2.Hint:=UTF8Decode('指定使用YV12/I420或422P到YUY2的软件转换.用于当显卡/驱动'^M^J+
+                           '显示YV12速度慢而YUY2速度快的情况.');
     CFlip.Caption:=UTF8Decode('上下翻转视频');
     CMir.Caption:=UTF8Decode('左右翻转视频');
     CUseekC.Caption:=UTF8Decode('快速切换DVD章节');
@@ -320,7 +325,8 @@ begin
     CNi.Caption:=UTF8Decode('使用非交错的AVI解析器');
     CNi.Hint:=UTF8Decode('用来处理某些质量差的AVI文件的播放');
     CNobps.Caption:=UTF8Decode('不用平均比特率维持AV同步');
-    CNobps.Hint:=UTF8Decode('不使用平均比特率值来维持AV同步(AVI),对某些文件头损坏的AVI文件有帮助');
+    CNobps.Hint:=UTF8Decode('不使用平均比特率值来维持AV同步(AVI),'^M^J+
+                            '对某些文件头损坏的AVI文件有帮助');
     CFilter.Caption:=UTF8Decode('过滤 拖放的文件');
     CFilter.Hint:=UTF8Decode('通过拖放载入文件时，仅载入支持的媒体文件');
     CDnav.Caption:=UTF8Decode('使用DVDNav');
@@ -332,7 +338,8 @@ begin
     CEfont.Caption:=UTF8Decode('使用内嵌字体');
     CEfont.Hint:=UTF8Decode('允许抽取 Matroska 内嵌字体，这些字体能用于 SSA/ASS 字幕渲染');
     CAss.Caption:=UTF8Decode('使用SSA/ASS库渲染字幕');
-    CAss.Hint:=UTF8Decode('打开 SSA/ASS 字幕渲染，libass 将用于 SSA/ASS 外部字幕和 Matroska 内部字幕');
+    CAss.Hint:=UTF8Decode('打开 SSA/ASS 字幕渲染，libass 将用于 SSA/ASS'^M^J+
+                          '外部字幕和 Matroska 内部字幕');
     CISub.Caption:=UTF8Decode('截图包含字幕');
     SFol.Caption:=UTF8Decode('字幕文字轮廓宽度:');
     SFsize.Caption:=UTF8Decode('字幕文字大小:');
@@ -341,13 +348,16 @@ begin
     Clavf.Caption:=UTF8Decode('使用libavformat进行Demux');
     Clavf.Hint:=UTF8Decode('对某些不能播放的文件,可以试试这个选项,可能造成时间显示不准确');
     CFd.Caption:=UTF8Decode('启用丢帧');
-    CFd.Hint:=UTF8Decode('跳过一些帧从而在慢的机器上实现A/V同步.视频滤镜不会应用到这些帧上.对于B帧解码也会完全跳过');
+    CFd.Hint:=UTF8Decode('跳过一些帧从而在慢的机器上实现A/V同步.视频滤镜不会应用到这些帧上.'^M^J+
+                         '对于B帧解码也会完全跳过');
     CAsync.Caption:=UTF8Decode('自动同步');
-    CAsync.Hint:=UTF8Decode('基于音频延迟的检测逐步调整A/V同步,对于某些不能连续读取、帧速较低的文件（如一些屏幕捕捉的视频）反而不是很好');
+    CAsync.Hint:=UTF8Decode('基于音频延迟的检测逐步调整A/V同步,对于某些不能连续读取、帧速较低'^M^J+
+                            '的文件（如一些屏幕捕捉的视频）反而不是很好');
     CCache.Caption:=UTF8Decode('缓存');
     CCache.Hint:=UTF8Decode('设定播放 文件/URL的预缓冲(以kBytes为单位),对速度慢的媒体特别有用');
     CPriorityBoost.Caption:=UTF8Decode('以高优先级运行');
-    CPriorityBoost.Hint:=UTF8Decode('使用高的优先级会避免因系统繁忙造成的播放不流畅的现象，有时候可能造成其他的一些问题');
+    CPriorityBoost.Hint:=UTF8Decode('使用高的优先级会避免因系统繁忙造成的播放不流畅的现象，'^M^J+
+                                    '有时候可能造成其他的一些问题');
     LParams.Caption:=UTF8Decode('其它 MPlayer 播放参数:');
     LHelp.Caption:=UTF8Decode('帮助');
     SSF.Caption:=UTF8Decode('保存截图的目录');
