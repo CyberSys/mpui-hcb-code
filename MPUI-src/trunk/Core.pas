@@ -116,7 +116,7 @@ var AudioOut,AudioDev,Postproc,Deinterlace,Aspect:integer;
     Params,Duration,DTFormat:string;
 var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
-    LastPos,SecondPos,OSDLevel,OpenM,MSecPos:integer;
+    LastPos,SecondPos,OSDLevel,MSecPos:integer;
 var Volume,MWC,CP:integer;
     tEnd,Mute,LastMute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
     FormatSet:TFormatSettings;
@@ -2128,7 +2128,7 @@ begin
 end;
 
 begin
-  DecimalSeparator:='.'; Wadsp:=false; OpenM:=0; GUI:=false; HaveMsg:=false;
+  DecimalSeparator:='.'; Wadsp:=false; GUI:=false; HaveMsg:=false;
   MFunc:=0; ETime:=false; InSubDir:=true; ML:=false; InterW:=4; InterH:=3;
   AudiochannelsID:=0; OSDLevel:=1; Ch:=0; Wid:=true; Fd:=false; DragM:=false;
   Deinterlace:=0; Aspect:=0; Postproc:=0; VobsubCount:=0; IntersubCount:=0;

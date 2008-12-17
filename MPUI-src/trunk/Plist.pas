@@ -469,7 +469,7 @@ begin
       PlaylistForm.PlaylistBox.Count:=Count;
     PlaylistForm.PlaylistBox.Invalidate;
   end;
-  if (Count=0) AND not(Core.Running) then MainForm.BPlay.Enabled:=false;
+  if (Count=0) AND (not Core.Running) then MainForm.BPlay.Enabled:=false;
   //if CurPlay<0 then CurPlay:=0;
   MainForm.BPrev.Enabled:=(CurPlay>0);
   MainForm.BNext.Enabled:=(CurPlay+1<Playlist.Count);
@@ -810,27 +810,6 @@ begin
   end;
 end;
 
-procedure TPlaylistForm.BPlayClick(Sender: TObject);
-var Index:integer;
-begin
-  if Playlist.Count>0 then begin
-    if OpenM=1 then Index:=0
-    else begin
-      if PlaylistBox.SelCount>0 then
-        Index:=PlaylistBox.ItemIndex-(PlaylistBox.SelCount-1)
-      else Index:=0;
-    end;
-  end
-  else exit;
-  //Core.ForceStop;
-  MainForm.UpdateParams;
-  if CurPlay>-1 then Playlist.Data[CurPlay].State:=psSkipped;
-  MainForm.BPrev.Enabled:=(Index>0);
-  MainForm.BNext.Enabled:=(Index+1<Playlist.Count);
-  Playlist.NowPlaying(Index); CurPlay:=Index;
-  MainForm.DoOpen(Playlist[Index].FullURL,Playlist[Index].DisplayURL);
-end;
-
 procedure TPlaylistForm.BDeleteClick(Sender: TObject);
 var iOld,iNew:integer;
 begin
@@ -850,6 +829,27 @@ begin
     SetLength(Data,iNew);
     Changed;
   end;
+end;
+
+procedure TPlaylistForm.BPlayClick(Sender: TObject);
+var Index:integer;
+begin
+  if Playlist.Count>0 then begin
+    if Sender<>BPlay then Index:=0
+    else begin
+      if PlaylistBox.SelCount>0 then
+        Index:=PlaylistBox.ItemIndex-(PlaylistBox.SelCount-1)
+      else Index:=0;
+    end;
+  end
+  else exit;
+  //Core.ForceStop;
+  MainForm.UpdateParams;
+  if CurPlay>-1 then Playlist.Data[CurPlay].State:=psSkipped;
+  MainForm.BPrev.Enabled:=(Index>0);
+  MainForm.BNext.Enabled:=(Index+1<Playlist.Count);
+  Playlist.NowPlaying(Index); CurPlay:=Index;
+  MainForm.DoOpen(Playlist[Index].FullURL,Playlist[Index].DisplayURL);
 end;
 
 procedure TPlaylistForm.BAddClick(Sender: TObject);
@@ -872,11 +872,11 @@ begin
 
  
     if Execute then begin
-      if OpenM=1 then Playlist.Clear;
+      if Sender<>BAdd then Playlist.Clear;
       for i:=0 to Files.Count-1 do
         Playlist.AddFiles(Files[i]);
       Playlist.Changed;
-      if OpenM=1 then PlaylistForm.BPlayClick(nil);
+      if Sender<>BAdd then PlaylistForm.BPlayClick(Sender);
     end;
   end;
 end;
@@ -1017,7 +1017,10 @@ end;
 
 procedure TPlaylistForm.BAddDirClick(Sender: TObject);
 begin
-  if not AddDirForm.Visible then AddDirForm.Showmodal;
+  if AddDirForm.Execute(true) then begin
+    Playlist.AddDirectory(AddDirForm.DirView.SelectedFolder.PathName);
+    empty:=true; Playlist.Changed;
+  end;
 end;
 
 procedure TPlaylistForm.FormKeyDown(Sender: TObject; var Key: Word;

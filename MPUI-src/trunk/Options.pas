@@ -716,13 +716,15 @@ end;
 
 procedure TOptionsForm.BSsfClick(Sender: TObject);
 begin
-  case (Sender as TComponent).Tag of
-    0: OpenM:=2;
-    1: OpenM:=3;
-  end;
-  if not AddDirForm.Visible then begin
-    AddDirForm.CInSubDir.Visible:=false;
-    AddDirForm.Showmodal;
+  if AddDirForm.Execute(false) then begin
+    case (Sender as TComponent).Tag of
+      0: if ESsf.Text<>AddDirForm.DirView.SelectedFolder.PathName then begin
+           Changed:=true; ESsf.Text:=AddDirForm.DirView.SelectedFolder.PathName;
+         end;
+      1: if ELyric.Text<>AddDirForm.DirView.SelectedFolder.PathName then begin
+           Changed:=true; ELyric.Text:=AddDirForm.DirView.SelectedFolder.PathName;
+         end;
+    end;
   end;
 end;
 

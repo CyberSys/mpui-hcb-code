@@ -458,7 +458,8 @@ var
   MainForm: TMainForm;
 
 implementation
-uses Locale, Config, Log, Help, About, Options, Info, UnRAR, Equalizer, SevenZip;
+uses Locale, Config, Log, Help, About, Options, Info,
+     UnRAR, Equalizer, SevenZip, AddDir;
 
 {$R *.dfm}
 
@@ -1652,15 +1653,18 @@ end;
 
 procedure TMainForm.MOpenFileClick(Sender: TObject);
 begin
-  OpenM:=1;
-  PlaylistForm.BAddClick(nil);
-  OpenM:=0;
+  PlaylistForm.BAddClick(Sender);
 end;
 
 procedure TMainForm.MOpenDirClick(Sender: TObject);
+var s:string;
 begin
-  OpenM:=1;
-  PlaylistForm.BAddDirClick(nil);
+  if AddDirForm.Execute(true) then begin
+    Playlist.Clear;
+    Playlist.AddDirectory(AddDirForm.DirView.SelectedFolder.PathName);
+    empty:=true; Playlist.Changed;
+    PlaylistForm.BPlayClick(Sender);
+  end;
 end;
 
 procedure TMainForm.MOpenURLClick(Sender: TObject);
