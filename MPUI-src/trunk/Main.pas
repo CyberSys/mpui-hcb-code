@@ -1657,7 +1657,6 @@ begin
 end;
 
 procedure TMainForm.MOpenDirClick(Sender: TObject);
-var s:string;
 begin
   if AddDirForm.Execute(true) then begin
     Playlist.Clear;

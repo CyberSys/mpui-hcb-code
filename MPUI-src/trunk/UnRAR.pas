@@ -226,17 +226,21 @@ var hArcData:THandle; HeaderData:TRARHeaderData;
     First:boolean;
 begin
   Result:=0;
+  FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
   OpenArchiveData.ArcNameW := PWideChar(ArcName);
   OpenArchiveData.OpenMode := RAR_OM_LIST;
   hArcData := RAROpenArchive(OpenArchiveData);
-  if (OpenArchiveData.OpenResult <> 0) then begin Result:=-1; exit; end;
+  if (hArcData = 0) OR (OpenArchiveData.OpenResult <> 0) then begin
+    RARCloseArchive(hArcData);
+    Result:=-1; exit;
+  end;
   TmpPW:=PW; First:=true; k:=WideExtractFileName(ArcName);
   if (OpenArchiveData.Flags and $00000080) = $00000080 then begin
     First:=false;
     if PW='' then WideInputQuery(LOCstr_SetPW_Caption,k,TmpPW);
     if TmpPW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(TmpPW)));
   end;
-  HeaderData.CmtBuf := nil;
+  FillChar(HeaderData ,sizeof(HeaderData),0);
   repeat
     if RARReadHeader(hArcData, HeaderData) <> 0 then Break;
     if First then begin
@@ -260,7 +264,7 @@ begin
       end
       else Break;
     end;
-    RARProcessFile(hArcData, RAR_SKIP, nil, nil);
+    if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
   until False;
   RARCloseArchive(hArcData);
 end;
@@ -269,15 +273,18 @@ procedure ExtractRarMovie(ArcName,MovieName,PW:widestring);
 var hArcData:THandle; First:boolean;
     HeaderData:TRARHeaderData; OpenArchiveData:TRAROpenArchiveData;
 begin
+  FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
   OpenArchiveData.ArcNameW := PWideChar(ArcName);
   OpenArchiveData.OpenMode := RAR_OM_EXTRACT;
   hArcData := RAROpenArchive(OpenArchiveData);
-  if (OpenArchiveData.OpenResult <> 0) then exit;
+  if (hArcData = 0) OR (OpenArchiveData.OpenResult <> 0) then begin
+    RARCloseArchive(hArcData); exit;
+  end;
   First:=true;
   if (OpenArchiveData.Flags and $00000080) = $00000080 then begin
     First:=false; RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
   end;
-  HeaderData.CmtBuf := nil;
+  FillChar(HeaderData ,sizeof(HeaderData),0);
   repeat
     if RARReadHeader(hArcData,HeaderData) <> 0 then Break;
     if HeaderData.FileNameW=MovieName then begin
@@ -285,7 +292,7 @@ begin
       RARProcessFile(hArcData, RAR_EXTRACT, nil, PChar(TempDir+'hcb428'+ExtractFileExt(HeaderData.FileName)));
       Break;
     end
-    else RARProcessFile(hArcData, RAR_SKIP, nil, nil);
+    else if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
   until False;
   RARCloseArchive(hArcData);
 end;
@@ -295,15 +302,18 @@ procedure ExtractRarLyric(ArcName,PW:widestring; Mode:integer);
 var hArcData:THandle; First:boolean; FName:string;
     HeaderData:TRARHeaderData; OpenArchiveData:TRAROpenArchiveData;
 begin
+  FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
   OpenArchiveData.ArcNameW := PWideChar(ArcName);
   OpenArchiveData.OpenMode := RAR_OM_EXTRACT;
   hArcData := RAROpenArchive(OpenArchiveData);
-  if (OpenArchiveData.OpenResult <> 0) then exit;
+  if (hArcData = 0) OR (OpenArchiveData.OpenResult <> 0) then begin
+    RARCloseArchive(hArcData); exit;
+  end;
   First:=true;
   if (OpenArchiveData.Flags and $00000080) = $00000080 then begin
     First:=false; RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
   end;
-  HeaderData.CmtBuf := nil;
+  FillChar(HeaderData ,sizeof(HeaderData),0);
   if Mode>0 then FName:=LowerCase(copy(ArcMovie,1,length(ArcMovie)-length(ExtractFileExt(ArcMovie))))+'.lrc'
   else if Mode<0 then begin
     FName:=ExtractFileName(MediaURL);
@@ -318,10 +328,10 @@ begin
       else begin
         LyricURL:=TempDir+'hcb428.lrc';
         HaveLyric:=Lyric.ParseLyric(LyricURL);
-		if HaveLyric then Break;
+        if HaveLyric then Break;
       end;
     end
-    else RARProcessFile(hArcData, RAR_SKIP, nil, nil);
+    else if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
   until False;
   RARCloseArchive(hArcData);
 end;
@@ -333,6 +343,7 @@ var i,j,HaveIdx,HaveSub:integer; FExt,FName:string;
 begin
   Result:=''; j:=0; TmpPW:=PW; First:=true;
   HaveIdx:=0; HaveSub:=0;
+  FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
   OpenArchiveData.ArcNameW := PWideChar(ArcName);
   {如果当前播放文档目录下有同名VOBSUB字幕或部分VOBSUB字幕就扫描同名RAR文档，
   检查是否含有VOBSUB字幕及VOBSUB字幕组成情况，以便决定是否解压RAR文档内的
@@ -340,20 +351,22 @@ begin
   if (DirHIdx+DirHSub)=1 then begin
     OpenArchiveData.OpenMode := RAR_OM_LIST;
     hArcData := RAROpenArchive(OpenArchiveData);
-    if (OpenArchiveData.OpenResult <> 0) then exit;
+    if (hArcData = 0) OR (OpenArchiveData.OpenResult <> 0) then begin
+      RARCloseArchive(hArcData); exit;
+    end;
     if (OpenArchiveData.Flags and $00000080) = $00000080 then begin
       First:=false;
       if PW='' then WideInputQuery(LOCstr_SetPW_Caption,WideExtractFileName(ArcName),TmpPW);
       if TmpPW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(TmpPW)));
     end;
-    HeaderData.CmtBuf := nil;
+    FillChar(HeaderData ,sizeof(HeaderData),0);
     repeat
       if RARReadHeader(hArcData, HeaderData) <> 0 then Break;
       FExt:=LowerCase(ExtractFileExt(HeaderData.FileName));
       if FExt='.idx' then HaveIdx:=1;
       if FExt='.sub' then HaveSub:=1;
       if HaveIdx+HaveSub=2 then Break;
-      RARProcessFile(hArcData, RAR_SKIP, nil, nil);
+      if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
     until False;
     if RARCloseArchive(hArcData)<>0 then exit;
     if HaveIdx+HaveSub=0 then exit;
@@ -361,7 +374,9 @@ begin
   //开始解压RAR文档
   OpenArchiveData.OpenMode := RAR_OM_EXTRACT;
   hArcData := RAROpenArchive(OpenArchiveData);
-  if (OpenArchiveData.OpenResult <> 0) then exit;
+  if (hArcData = 0) OR (OpenArchiveData.OpenResult <> 0) then begin
+    RARCloseArchive(hArcData); exit;
+  end;
   if First then begin
     if (OpenArchiveData.Flags and $00000080) = $00000080 then begin
       First:=false;
@@ -369,7 +384,7 @@ begin
       if TmpPW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(TmpPW)));
     end;
   end;
-  HeaderData.CmtBuf := nil;
+  FillChar(HeaderData ,sizeof(HeaderData),0);
   repeat
     if RARReadHeader(hArcData, HeaderData) <> 0 then Break;
     if First then begin
@@ -380,8 +395,9 @@ begin
     end;
     FExt:=LowerCase(ExtractFileExt(HeaderData.FileName));
     i:=CheckInfo(SubType,FExt);
-    if i<=ZipTypeCount then
-      RARProcessFile(hArcData, RAR_SKIP, nil, nil)
+    if i<=ZipTypeCount then begin
+      if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
+    end
     else begin
       if i<SubTypeCount-1 then begin
         FName:=TempDir+HeaderData.FileName;
@@ -416,7 +432,7 @@ begin
             else
               Result:=FName;
           end
-          else RARProcessFile(hArcData, RAR_SKIP, nil, nil);
+          else if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
         end;
       end;
     end;
