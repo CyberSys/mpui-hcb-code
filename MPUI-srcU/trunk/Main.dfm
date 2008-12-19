@@ -1,13 +1,13 @@
 object MainForm: TMainForm
-  Left = 181
-  Top = 181
+  Left = 187
+  Top = 175
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'MainForm'
   ClientHeight = 84
   ClientWidth = 357
   Color = clBtnFace
-  Constraints.MinHeight = 111
+  Constraints.MinHeight = 118
   Constraints.MinWidth = 365
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -28,7 +28,7 @@ object MainForm: TMainForm
   TextHeight = 13
   object OPanel: TTntPanel
     Left = 0
-    Top = 23
+    Top = 25
     Width = 357
     Height = 100
     Align = alClient
@@ -616,7 +616,7 @@ object MainForm: TMainForm
         353
         21)
       object LTime: TTntLabel
-        Left = 341
+        Left = 346
         Top = 0
         Width = 5
         Height = 19
@@ -716,7 +716,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 357
-    Height = 23
+    Height = 25
     BorderWidth = 1
     ButtonHeight = 21
     ButtonWidth = 48
@@ -1654,6 +1654,7 @@ object MainForm: TMainForm
         end
         object MAudioDelay2: TTntMenuItem
           Caption = 'Reset Audio Delay'
+          ShortCut = 16392
           OnClick = MAudioDelay2Click
         end
       end
@@ -1740,6 +1741,7 @@ object MainForm: TMainForm
         end
         object MSubDelay2: TTntMenuItem
           Caption = 'Reset Subtitle Delay'
+          ShortCut = 8282
           OnClick = MSubDelay2Click
         end
       end
@@ -1757,6 +1759,27 @@ object MainForm: TMainForm
           Caption = 'Next'
           ShortCut = 85
           OnClick = SimulateKey
+        end
+      end
+      object MSubScale: TTntMenuItem
+        Caption = 'Subtitle Scale'
+        GroupIndex = 169
+        object MSubScale0: TTntMenuItem
+          Caption = 'Scale+'
+          ShortCut = 16571
+          OnClick = SimulateKey
+        end
+        object MSubScale1: TTntMenuItem
+          Caption = 'Scale-'
+          ShortCut = 16573
+          OnClick = SimulateKey
+        end
+        object N21: TTntMenuItem
+          Caption = '-'
+        end
+        object MSubScale2: TTntMenuItem
+          Caption = 'Reset Scale'
+          OnClick = MSubScale2Click
         end
       end
       object N17: TTntMenuItem

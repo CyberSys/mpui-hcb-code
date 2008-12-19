@@ -614,9 +614,7 @@ object OptionsForm: TOptionsForm
         Top = 218
         Width = 160
         Height = 17
-        BiDiMode = bdRightToLeft
-        Caption = 'Fast DVD Chapter Swithing'
-        ParentBiDiMode = False
+        Caption = 'Fast DVD Chapter Switching'
         ParentShowHint = False
         ShowHint = True
         TabOrder = 13

@@ -292,8 +292,8 @@ begin
     CFilter.Hint:=UTF8Decode('Когато зареждате файлове с включен филтър DropFiles, ще се зареждат само файлове поддържани от Mplayer.');
     CFlip.Caption:=UTF8Decode('Завърти изображението');
     CMir.Caption:=UTF8Decode('Огледално изображение');
-    CseekC.Caption:=UTF8Decode('Бързо превключване на главите');
-    CseekC.Hint:=UTF8Decode('На някои DVD, трябва да се рестартира Mplayer, когато се превключва главата');
+    CUseekC.Caption:=UTF8Decode('Бързо превключване на главите');
+    CUseekC.Hint:=UTF8Decode('На някои DVD, трябва да се рестартира Mplayer, когато се превключва главата');
     CGUI.Caption:=UTF8Decode('Използвай GUI на Mplayer');
     SSF.Caption:=UTF8Decode('Директория за снимките на екрана');
     CSoftVol.Caption:=UTF8Decode('Софтуерна настройка на звука / Допълнително усилване');

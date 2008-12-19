@@ -210,6 +210,10 @@ begin
      MSubDelay0.Caption:=MAudioDelay0.Caption;
      MSubDelay1.Caption:=MAudioDelay1.Caption;
      MSubDelay2.Caption:=OSD_Reset_Prompt+' '+OSD_SubDelay_Prompt;
+   MSubScale.Caption:=MSub.Caption+' '+UTF8Decode(OSD_Scale_Prompt);
+     MSubScale0.Caption:=MScale1.Caption;
+     MSubScale1.Caption:=MScale2.Caption;
+     MSubScale2.Caption:=UTF8Decode(OSD_Reset_Prompt)+' '+MSubScale.Caption;
   end;
   LogForm.Caption:='MPlayer output';
   LogForm.BClose.Caption:='Close';
@@ -279,30 +283,42 @@ begin
       CPostproc.Items[2]:='Maximum quality';
     LOCstr_AutoLocale:='(Auto-select)';
     CIndex.Caption:='Rebuild file index if necessary';
-    CIndex.Hint:='Useful with broken/incomplete downloads, or badly created files';
+    CIndex.Hint:='Useful with broken/incomplete downloads,'^M^J+
+                 'or badly created files';
     CNi.Caption:='Use non-interleaved AVI parser';
     CNi.Hint:='Fixes playback of some bad AVI files';
     CDrag.Caption:='Use DragMode of System';
     CDnav.Caption:='Use DVDNav';
+    CDnav.Hint:='if Mplayer is compiled with DVDnav lib, you can use'^M^J+
+                'mouse to handle DVD menu on screen';
     CNobps.Caption:='Don''t use avg b/s for A-V sync';
-    CNobps.Hint:='Don''t use average byte/second value for A-V sync. Helps with some AVI files with broken header';
+    CNobps.Hint:='Don''t use average byte/second value for A-V sync.'^M^J+
+                 'Helps with some AVI files with broken header';
     CFilter.Caption:='Filter DropFiles';
-    CFilter.Hint:='When to load files by drop,only load files supported by Mplayer.';
+    CFilter.Hint:='When to load files by drop, only load'^M^J+
+                  'files supported by Mplayer.';
     CFlip.Caption:='Flip image';
     CMir.Caption:='Mirrors image';
-    CSeekC.Caption:='Fast DVD Chapter Switching';
-    CSeekC.Hint:='For some DVD, Switching Chapter need to reboot Mplayer';
+    CUseekC.Caption:='Fast Chapter Switching';
+    CUseekC.Hint:='For some DVD, it need to reboot '^M^J+
+                  'Mplayer when switch chapter';
     CGUI.Caption:='Use GUI of Mplayer';
+    CGUI.Hint:='Avoid GMplayer to use GUI of itself.';
     SSF.Caption:='ScreenShot Folder';
     CSoftVol.Caption:='Software volume boost';
     CDr.Caption:='Direct rendering';
-    CDr.Hint:='Turns on direct rendering (not supported by all codecs and video outputs)';
+    CDr.Hint:='Turns on direct rendering (not supported by'^M^J+
+              'all codecs and video outputs)';
     double.Caption:='double buffer';
-    double.Hint:='Double buffering fixes OSD flicker by storing two frames in memory';
+    double.Hint:='Double buffering fixes OSD flicker by '^M^J+
+                 'storing two frames in memory';
     CVolnorm.Caption:='Normalize volume';
     CVolnorm.Hint:='Maximizes the volume without distorting the sound';
     Defaultslang.Caption:='Chinese as default a/slang';
+    Defaultslang.Hint:='Mainly to play DVD. As result, Mplayer sometimes may'^M^J+
+                       'not find other languages audio track.';
     CRFScr.Caption:='Click MBR to FullScreen';
+    CRFScr.Hint:='Click Right button of Mouse to FullScreen.';
     CSPDIF.Caption:='Passthrough S/PDIF';
     LCh.Caption:='Stereo Mode';
     LRot.Caption:='Rotate image';
@@ -316,11 +332,13 @@ begin
     LMAspect.Caption:='Monitor Aspect ratio';
     LVideoOut.Caption:='Video output driver';
     CEq2.Caption:='Use Software video Equalizer';
-    CEq2.Hint:='for cards/drivers that do not support brightness and contrast controls in hardware';
+    CEq2.Hint:='for cards/drivers that do not support brightness'^M^J+
+               ' and contrast controls in hardware';
     CVSync.Caption:='vsync';
     CVSync.Hint:='Useful for video laniated';
     CYuy2.Caption:='YUY2 colorspace';
-    CYuy2.Hint:='Useful for video cards/drivers with slow YV12 but fast YUY2 support';
+    CYuy2.Hint:='Useful for video cards/drivers with '^M^J+
+                'slow YV12 but fast YUY2 support';
     CUni.Caption:='Handle subtitle as unicode';
     CUtf.Caption:='Handle subtitle as UTF-8';
     SFol.Caption:='Font outline thickness';
@@ -328,20 +346,26 @@ begin
     SFB.Caption:='Font blur radius';
     CWadsp.Caption:='Use Winamp DSP plugins';
     Clavf.Caption:='Use lavf Demuxer';
+    Clavf.Hint:='For unplayable files, try this option, TimeCode may be wrong.';
     CFd.Caption:='Enable framedrop';
-    CFd.Hint:='Skip displaying some frames to maintain A/V sync on slow systems';
+    CFd.Hint:='Skip displaying some frames to maintain '^M^J+
+              'A/V sync on slow systems';
     CAsync.Caption:='Autosync';
-    CAsync.Hint:='Gradually adjusts the A/V sync based on audio delay measurements';
+    CAsync.Hint:='Gradually adjusts the A/V sync based '^M^J+
+                 'on audio delay measurements';
     CCache.Caption:='Cache';
-    CCache.Hint:='Specifies how much memory (in kBytes) to use when precaching a file or URL. Especially useful on slow media';
+    CCache.Hint:='Specifies how much memory (in kBytes) to use when precaching'^M^J+
+                 'a file or URL. Especially useful on slow media';
     CPriorityBoost.Caption:='Priority boost';
     SFontColor.Caption:='Text Color';
     SOutline.Caption:='Outline Color';
     CISub.Caption:='Include Subtitles on Screenshot';
     CEfont.Caption:='Use embedded fonts';
-    CEfont.Hint:='Enables extraction of Matroska embedded fonts.These fonts can be used for SSA/ASS subtitle rendering';
+    CEfont.Hint:='Enables extraction of Matroska embedded fonts.These fonts'^M^J+
+                 'can be used for SSA/ASS subtitle rendering';
     CAss.Caption:='Use libass for SubRender';
-    CAss.Hint:='Turn on SSA/ASS subtitle rendering. With this option, libass will be used for SSA/ASS external subtitles and Matroska tracks';
+    CAss.Hint:='Turn on SSA/ASS subtitle rendering. With this option, libass will'^M^J+
+               'be used for SSA/ASS external subtitles and Matroska tracks';
     LParams.Caption:='Additional MPlayer parameters:';
     LHelp.Caption:='Help';
     SLyric.Caption:='Lyric folder';
@@ -371,38 +395,40 @@ begin
     CPO.Caption:='Other';
     SC.Caption:=UTF8Decode('简体中文 (Simplified Chinese)');
     TC.Caption:=UTF8Decode('繁體中文 (Traditional Chinese)');
-    CY0.Caption:=UTF8Decode('Русский (Russian)');
+    CY0.Caption:=UTF8Decode('Русский (Russian OEM866)');
     CY.Caption:='Cyrillic';
+    CY4.Caption:=UTF8Decode('Русский (Russian,20866,KOI8-R)');
+    CY6.Caption:=UTF8Decode('Українська (UKrainian,21866,KOI8-U)');
     AR.Caption:=UTF8Decode('العربية (Arabic)');
-    TU.Caption:='Turkish';
-    HE.Caption:='Hebrew';
-    JA.Caption:='Japanese';
+    TU.Caption:=UTF8Decode('Türkiye (Turkish)');
+    HE.Caption:=UTF8Decode('עִבְרִית‎ (Hebrew)');
+    JA.Caption:=UTF8Decode('日本語 (Japanese)');
     KO.Caption:=UTF8Decode('한국어 (Korean)');
-    TH.Caption:='Thai';
+    TH.Caption:=UTF8Decode('ภาษาไทย (Thai)');
     FR.Caption:=UTF8Decode('Français(French)');
-    IC.Caption:='Icelandic';
+    IC.Caption:=UTF8Decode('íslenska (Icelandic)');
     BG.Caption:=UTF8Decode('Български (Bulgarian)');
     PO.Caption:=UTF8Decode('Português (Portuguese)');
-    GR.Caption:='Greek';
+    GR.Caption:=UTF8Decode('Ελληνικά (Greek)');
     BA.Caption:='Baltic';
-    VI.Caption:='Vietnamese(1258,windows-1258)';
+    VI.Caption:=UTF8Decode('Việt (Vietnamese,1258,windows-1258)');
     WE.Caption:='Western European (1252,iso-8859-1)';
     CE.Caption:='Central European';
-    ND.Caption:='Nordic (OEM 865)';
+    ND.Caption:=UTF8Decode('Norsk (Nordic OEM865)');
     i18.Caption:='IBM EBCDIC-International (500)';
-    co.Caption:='Croatia (MAC 10082)';
-    rm.Caption:='Romania (MAC 10010)';
+    co.Caption:=UTF8Decode('Hrvatska (Croatia MAC10082)');
+    rm.Caption:=UTF8Decode('Română (Romania MAC10010)');
     ro.Caption:='Roman (MAC 10000)';
-    pg.Caption:='Punjabi(Gurmukhi) 57011';
-    gu.Caption:='Gujarati (57010)';
-    ma.Caption:='Malayalam (57009)';
-    ka.Caption:='Kannada (57008)';
+    pg.Caption:=UTF8Decode('ਪੰਜਾਬੀ Punjabi(Gurmukhi) 57011');
+    gu.Caption:=UTF8Decode('ગુજરાતી (Gujarati 57010)');
+    ma.Caption:=UTF8Decode('മലയാളം (Malayalam 57009)');
+    ka.Caption:=UTF8Decode('ಕನ್ನಡ (Kannada 57008)');
     oy.Caption:='Oriya (57007)';
-    am.Caption:='Assamese (57006)';
-    te.Caption:='Telugu (57005)';
-    ta.Caption:='Tamil (57004)';
-    be.Caption:='Bengali (57003)';
-    dv.Caption:='Devanagari (57002)';
+    am.Caption:=UTF8Decode('অসমীয়া (Assamese 57006)');
+    te.Caption:=UTF8Decode('తెలుగు (Telugu 57005)');
+    ta.Caption:=UTF8Decode('தமிழ் (Tamil 57004)');
+    be.Caption:=UTF8Decode('বাংলা (Bengali 57003)');
+    dv.Caption:=UTF8Decode('संस्कृतम् (Devanagari 57002)');
   end;
   AddDirCP:='Select a folder';
   with EqualizerForm do begin

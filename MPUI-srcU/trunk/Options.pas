@@ -138,9 +138,9 @@ type
     ELyric: TTntEdit;
     BLyric: TTntButton;
     LScroll: TTntCheckBox;
+    CUseekC: TTntCheckBox;
     CVSync: TTntCheckBox;
     BFont: TButton;
-    CSeekC: TTntCheckBox;
     FontDialog1: TFontDialog;
     LVideoout: TTntLabel;
     CVideoOut: TComboBox;
@@ -238,7 +238,7 @@ begin
     else SendCommand('set_property vsync 0');
   end;
   Core.vsync:=CVSync.Checked;
-  Core.UseekC:=CSeekC.Checked;
+  Core.UseekC:=CUseekC.Checked;
   Core.DragM:=CDrag.Checked;
   Core.PScroll:=LScroll.Checked;
   Core.LTextColor:=ColorToRGB(PLTC.Color);
@@ -312,7 +312,7 @@ begin
   CMir.Checked:=Core.Mirror;
   CEq2.Checked:=Core.Eq2;
   CYuy2.Checked:=Core.Yuy2;
-  CSeekC.Checked:=Core.UseekC;
+  CUseekC.Checked:=Core.UseekC;
   CVSync.Checked:=Core.vsync;
   CEq2.Enabled:=not Core.Dda;
     CYuy2.Enabled:=CEq2.Enabled;
@@ -720,14 +720,14 @@ var s:widestring;
 begin
   if WideSelectDirectory(AddDirCp,'',s) then begin
     case (Sender as TComponent).Tag of
-      0: begin 
-	         if ESsf.Text<>s then changed:=true;
-		       ESsf.Text:=s;
-	       end;
-      1: begin
-	         if ELyric.Text<>s then changed:=true;
-		       ELyric.Text:=s;
-	       end;
+      0: if ESsf.Text<>s then begin
+	       changed:=true;
+		   ESsf.Text:=s;
+	     end;
+      1: if ELyric.Text<>s then begin
+	       changed:=true;
+		   ELyric.Text:=s;
+	     end;
     end;
   end;
 end;

@@ -86,14 +86,14 @@ type TWin9xWarnLevel=(wlWarn,wlReject,wlAccept);
 var Win9xWarnLevel:TWin9xWarnLevel;
 
 var HomeDir,TempDir,SystemDir,AppdataDir,NoAccess,AudioFile:string;
-var ArcPW,TmpPW,DisplayURL,MediaURL,TmpURL,ArcMovie:WideString;
+var ArcPW,TmpPW,DisplayURL,MediaURL,ArcMovie:WideString;
     substring,Vobfile,afChain:String;
     subfont,osdfont,ShotDir,LyricDir,LyricURL,LyricF:String;
     Ccap,Acap:WideString;
     DemuxerName,CacheV:string;
     MplayerLocation,WadspL,AsyncV:string;
     MAspect,subcode,MaxLenLyric,VideoOut:string;
-    FirstOpen,Fd,Async,Cache,uof,DragM,FilterDrop:boolean;
+    FirstOpen,PClear,Fd,Async,Cache,uof,DragM,FilterDrop:boolean;
     Wid,Dreset,UpdateSkipBar,Pri,HaveLyric,HaveChapters,HaveMsg:boolean;
     AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
@@ -466,7 +466,7 @@ var DummyPipe1,DummyPipe2:THandle;
     si:TStartupInfo;
     pi:TProcessInformation;
     sec:TSecurityAttributes;
-    CmdLine,s:string;
+    CmdLine,s,j:string;
     Success:boolean; Error:DWORD;
     ErrorMessage:array[0..1023]of char;
     i,t:integer; UnRART:TUnRARThread;
@@ -603,11 +603,11 @@ begin
     if Defaultslang then CmdLine:=CmdLine+' -alang zh,ch,tw,en -slang zh,ch,tw,en';
 
     if FileExists(LyricURL) then begin //拖放的歌词或用户指定的歌词
-      TmpURL:=ExtractFileName(MediaURL);
-      TmpURL:=LowerCase(Copy(TmpURL,1,length(TmpURL)-length(ExtractFileExt(MediaURL))));
+      j:=ExtractFileName(MediaURL);
+      j:=LowerCase(Copy(j,1,length(j)-length(ExtractFileExt(MediaURL))));
       s:=ExtractFileName(LyricURL);
       s:=LowerCase(Copy(s,1,length(s)-4));
-      if TmpURL=s then HaveLyric:=Lyric.ParseLyric(LyricURL);
+      if j=s then HaveLyric:=Lyric.ParseLyric(LyricURL);
     end;
     s:=LowerCase(ExtractFileExt(MediaURL));
     if CheckInfo(ZipType,s)>-1 then begin
@@ -618,10 +618,10 @@ begin
       if i>0 then ArcMovie:=copy(DisplayURL,1,i-1)
       else ArcMovie:=DisplayURL;
       if not HaveLyric then begin  //播放的Arc文件所在的目录下有包内当前播放文件同名的歌词
-        TmpURL:=copy(ArcMovie,1,length(ArcMovie)-length(ExtractFileExt(ArcMovie)))+'.lrc';
-        LyricURL:=ExtractFilePath(MediaURL)+TmpURL;
+        j:=copy(ArcMovie,1,length(ArcMovie)-length(ExtractFileExt(ArcMovie)))+'.lrc';
+        LyricURL:=ExtractFilePath(MediaURL)+j;
         if not FileExists(LyricURL) then
-          LyricURL:=IncludeTrailingPathDelimiter(LyricDir)+TmpURL;
+          LyricURL:=IncludeTrailingPathDelimiter(LyricDir)+j;
         if FileExists(LyricURL) then HaveLyric:=Lyric.ParseLyric(LyricURL);
       end;
     end
@@ -648,8 +648,8 @@ begin
         if IsLoaded(ZipType[t]) then begin   //当前播放文件所在的目录下有同名Arc文件中的同名歌词
           if (not HaveLyric) and (i<>0) then ExtractLyric(Vobfile+ZipType[t],ArcPW,ZipType[t],i);
           if LoadVob<>1 then begin
-            TmpURL:=ExtractSub(Vobfile+ZipType[t],ArcPW,ZipType[t]);
-            if TmpURL<>'' then begin Vobfile:=TmpURL; LoadVob:=1; end;
+            j:=ExtractSub(Vobfile+ZipType[t],ArcPW,ZipType[t]);
+            if j<>'' then begin Vobfile:=j; LoadVob:=1; end;
           end;
         end;
       end;
@@ -658,7 +658,6 @@ begin
     DirHIdx:=0; DirHSub:=0;
 
     if i>0 then begin
-      TmpURL:=MediaURL; //避免系统调度UNRART线程的不确定性造成线程执行时获取的是已经变化的MediaURL
       tEnd:=false;
       UnRART:=TUnRARThread.Create(true);
       UnRART.FreeOnTerminate:=true;
@@ -683,6 +682,9 @@ begin
         if not WideFileExists(MediaURL) then begin
          MainForm.LStatus.Caption:=''; exit;
         end;
+        if ((s='.zip') and (IsZipLoaded<>0)) or ((s='.7z') and (Is7zLoaded=0)) then
+          MediaURL:=TempDir+ArcMovie
+        else MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie);
       end;
     end;
 
@@ -2128,7 +2130,7 @@ begin
 end;
 
 begin
-  DecimalSeparator:='.'; Wadsp:=false; GUI:=false; HaveMsg:=false;
+  DecimalSeparator:='.'; Wadsp:=false; GUI:=false; HaveMsg:=false; Uni:=false;
   MFunc:=0; ETime:=false; InSubDir:=true; ML:=false; InterW:=4; InterH:=3;
   AudiochannelsID:=0; OSDLevel:=1; Ch:=0; Wid:=true; Fd:=false; DragM:=false;
   Deinterlace:=0; Aspect:=0; Postproc:=0; VobsubCount:=0; IntersubCount:=0;
@@ -2136,7 +2138,7 @@ begin
   ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=false; Fol:=2;
   dbbuf:=true; Dr:=false; Volnorm:=false; Defaultslang:=false; Pri:=true;
   Params:=''; OnTop:=0; MAspect:='Default'; empty:=true; lavf:=false; vsync:=false;
-  Status:=sNone; Shuffle:=false; Loop:=false; OneLoop:=false; Uni:=false;
+  Status:=sNone; Shuffle:=false; Loop:=false; OneLoop:=false; PClear:=false;
   Volume:=100; Mute:=False; Duration:=''; MouseMode:=0; SubPos:=96; FSize:=4.5;
   Flip:=false; Mirror:=false; Yuy2:=false; Eq2:=false; LastEq2:=false; Rot:=0;
   Bp:=0; Ep:=0; FB:=2; UpdateSkipBar:=false; Async:=false; AsyncV:='100';

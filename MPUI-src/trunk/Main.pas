@@ -601,7 +601,7 @@ begin
       for i:=1 to PCount do begin
         FileName:=ParamStr(i);
         if not CheckOption(FileName) then begin
-          if IsFirst then begin Playlist.Clear; IsFirst:=false; end;
+          if IsFirst then begin PClear:=true; IsFirst:=false; end;
           if DirectoryExists(FileName) then begin
             Playlist.AddDirectory(FileName);
             empty:=true;
@@ -616,6 +616,7 @@ begin
         empty:=true;
       end;
     end;
+    Playlist.Changed;
     if Playlist.Count>0 then Application.OnIdle:=OpenDroppedFile;
   end;
   DragAcceptFiles(Handle,true);
@@ -637,7 +638,7 @@ begin
   for i:=0 to DropCount-1 do begin
     DragQueryFile(hDrop,i,@fnbuf[0],1024);
     if DirectoryExists(fnbuf) then begin
-      if i=0 then Playlist.Clear;
+      if i=0 then PClear:=true;
       Playlist.AddDirectory(fnbuf);
       empty:=true;
       Loadsub:=0;
@@ -647,7 +648,7 @@ begin
       if FilterDrop then k:=CheckInfo(MediaType,j)>ZipTypeCount
       else k:=CheckInfo(SubType,j)=-1;
       if k then begin
-        if i=0 then Playlist.Clear;
+        if i=0 then PClear:=true;
         Playlist.AddFiles(fnbuf);
         Loadsub:=0;
       end
@@ -676,7 +677,7 @@ begin
               h:=AddMovies(fnbuf,TmpPW,false,j);
               if h<>0 then begin
                 Loadsub:=0;
-                if i=0 then Playlist.Clear;
+                if i=0 then PClear:=true;
               end;
               if h>0 then AddMovies(fnbuf,TmpPW,true,j);
               if (h<0) and ((Pos('://',fnbuf)>1) or FileExists(fnbuf)) then begin
@@ -713,6 +714,7 @@ begin
     end;
   end;
   DragFinish(hDrop);
+  Playlist.Changed;
   if (not Win32PlatformIsUnicode) and (s>0) then Core.Restart;
   if Loadsub=0 then Application.OnIdle:=OpenDroppedFile;
   msg.Result:=0;
@@ -720,7 +722,7 @@ end;
 
 procedure TMainForm.OpenDroppedFile(Sender: TObject; var Done: Boolean);
 begin
-  Done:=true; Playlist.Changed;
+  Done:=true; 
   Application.OnIdle:=nil;
   UpdateParams;
   NextFile(0,psPlaying);
@@ -745,6 +747,7 @@ begin
       empty:=true;
     end
     else Playlist.AddFiles(OpenFileName);
+    Playlist.Changed;
   end;
   PlayMsgAt:=GetTickCount()+500;
 end;
@@ -1142,7 +1145,7 @@ begin
   if (TickCount>=PlayMsgAt) and HaveMsg then begin
     HaveMsg:=false;
     if Playlist.Count>0 then begin
-      Playlist.Changed; UpdateParams;
+      UpdateParams;
       NextFile(0,psPlaying);
       if IsIconic(Application.Handle) then Application.Restore
       else Application.BringToFront;
@@ -1659,7 +1662,7 @@ end;
 procedure TMainForm.MOpenDirClick(Sender: TObject);
 begin
   if AddDirForm.Execute(true) then begin
-    Playlist.Clear;
+    PClear:=true;
     Playlist.AddDirectory(AddDirForm.DirView.SelectedFolder.PathName);
     empty:=true; Playlist.Changed;
     PlaylistForm.BPlayClick(Sender);
@@ -1674,7 +1677,7 @@ begin
      ((Pos('//',s)=0) AND (Pos('\\',s)=0) AND (Pos(':',s)=0))
      then s:='';
   if (InputQuery(LOCstr_OpenURL_Caption,LOCstr_OpenURL_Prompt,s)) and (s<>'') then begin
-    Playlist.Clear;
+    PClear:=true;
     if DirectoryExists(s) then begin
       Playlist.AddDirectory(s);
       empty:=true;
@@ -1723,7 +1726,7 @@ end;
 
 procedure TMainForm.MOpenDriveClick(Sender: TObject);
 begin
-  Playlist.Clear;
+  PClear:=true;
   Playlist.AddDirectory(char((Sender as TMenuItem).Tag)+':');
   empty:=true;
   Playlist.Changed;

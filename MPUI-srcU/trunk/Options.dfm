@@ -607,9 +607,9 @@ object OptionsForm: TOptionsForm
         BevelInner = bvNone
         BevelOuter = bvNone
         Caption = 'Rotate'
-        TabOrder = 11
+        TabOrder = 12
       end
-      object CSeekC: TTntCheckBox
+      object CUseekC: TTntCheckBox
         Left = 8
         Top = 218
         Width = 160
@@ -617,7 +617,7 @@ object OptionsForm: TOptionsForm
         Caption = 'Fast DVD Chapter Switching'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 14
+        TabOrder = 13
       end
       object CVSync: TTntCheckBox
         Left = 170
@@ -628,7 +628,7 @@ object OptionsForm: TOptionsForm
         Caption = 'VSync'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 13
+        TabOrder = 14
       end
       object CRot: TComboBox
         Left = 239
@@ -638,7 +638,7 @@ object OptionsForm: TOptionsForm
         Style = csDropDownList
         Anchors = [akTop, akRight]
         ItemHeight = 13
-        TabOrder = 12
+        TabOrder = 11
         OnChange = SomethingChanged
         Items.Strings = (
           '0'
@@ -656,16 +656,18 @@ object OptionsForm: TOptionsForm
         TabOrder = 15
         OnChange = CDDXAClick
         Items.Strings = (
-          'null'
           'novideo'
+          'null'
           'Auto'
           'directx:noaccel'
+          'direct3d'
           'gl'
           'gl:yuv=2:force-pbo'
           'gl:yuv=2:force-pbo:ati-hack'
           'gl:yuv=3'
           'gl2'
-          'gl2:yuv=3')
+          'gl2:yuv=3'
+          'matrixview')
       end
     end
     object TabSheet3: TTntTabSheet
@@ -804,16 +806,16 @@ object OptionsForm: TOptionsForm
         Left = 1
         Top = 102
         Width = 298
-        Height = 107
+        Height = 110
         Anchors = [akLeft, akTop, akRight, akBottom]
         Caption = 'Lyric'
         TabOrder = 10
         DesignSize = (
           298
-          107)
+          110)
         object LTCL: TTntLabel
           Left = 14
-          Top = 49
+          Top = 51
           Width = 48
           Height = 13
           Alignment = taRightJustify
@@ -821,7 +823,7 @@ object OptionsForm: TOptionsForm
         end
         object LHCL: TTntLabel
           Left = 117
-          Top = 49
+          Top = 51
           Width = 39
           Height = 13
           Alignment = taRightJustify
@@ -829,7 +831,7 @@ object OptionsForm: TOptionsForm
         end
         object LBCL: TTntLabel
           Left = 215
-          Top = 49
+          Top = 51
           Width = 38
           Height = 13
           Alignment = taRightJustify
@@ -837,14 +839,14 @@ object OptionsForm: TOptionsForm
         end
         object SLyric: TTntLabel
           Left = 8
-          Top = 82
+          Top = 84
           Width = 55
           Height = 13
           Caption = 'Lyric Folder'
         end
         object PLTC: TPanel
           Left = 64
-          Top = 44
+          Top = 46
           Width = 36
           Height = 25
           Cursor = crHandPoint
@@ -858,7 +860,7 @@ object OptionsForm: TOptionsForm
         end
         object PLBC: TPanel
           Left = 254
-          Top = 44
+          Top = 46
           Width = 36
           Height = 25
           Cursor = crHandPoint
@@ -873,7 +875,7 @@ object OptionsForm: TOptionsForm
         end
         object PLHC: TPanel
           Left = 158
-          Top = 44
+          Top = 46
           Width = 36
           Height = 25
           Cursor = crHandPoint
@@ -887,7 +889,7 @@ object OptionsForm: TOptionsForm
         end
         object ELyric: TTntEdit
           Left = 67
-          Top = 78
+          Top = 80
           Width = 197
           Height = 21
           Anchors = [akLeft, akTop, akRight]
@@ -897,7 +899,7 @@ object OptionsForm: TOptionsForm
         object BLyric: TTntButton
           Tag = 1
           Left = 265
-          Top = 78
+          Top = 80
           Width = 28
           Height = 21
           Anchors = [akTop, akRight]
@@ -907,7 +909,7 @@ object OptionsForm: TOptionsForm
         end
         object LScroll: TTntCheckBox
           Left = 8
-          Top = 18
+          Top = 20
           Width = 122
           Height = 17
           Anchors = [akLeft, akTop, akRight]
@@ -918,7 +920,7 @@ object OptionsForm: TOptionsForm
         end
         object BFont: TButton
           Left = 132
-          Top = 13
+          Top = 15
           Width = 161
           Height = 25
           Anchors = [akTop, akRight]
@@ -1021,7 +1023,7 @@ object OptionsForm: TOptionsForm
         Left = 8
         Top = 78
         Width = 286
-        Height = 45
+        Height = 47
         Anchors = [akLeft, akTop, akRight, akBottom]
         BevelOuter = bvNone
         Font.Charset = DEFAULT_CHARSET

@@ -306,6 +306,7 @@ end;
 procedure TPlaylist.Add(const Entry:TPlaylistEntry);
 var len:integer;
 begin
+  if PClear then begin PClear:=false; Clear; end;
   len:=length(Data);
   SetLength(Data,len+1);
   Data[len]:=Entry;
@@ -464,6 +465,7 @@ end;
 
 procedure TPlaylist.Changed;
 begin
+  PClear:=false;
   if PlaylistForm.Visible then begin
     if PlaylistForm.PlaylistBox.Count<>Count then
       PlaylistForm.PlaylistBox.Count:=Count;
@@ -835,7 +837,7 @@ procedure TPlaylistForm.BPlayClick(Sender: TObject);
 var Index:integer;
 begin
   if Playlist.Count>0 then begin
-    if Sender<>BPlay then Index:=0
+    if (Sender<>BPlay) and (Sender<>PlaylistBox) then Index:=0
     else begin
       if PlaylistBox.SelCount>0 then
         Index:=PlaylistBox.ItemIndex-(PlaylistBox.SelCount-1)
@@ -872,7 +874,7 @@ begin
 
  
     if Execute then begin
-      if Sender<>BAdd then Playlist.Clear;
+      if Sender<>BAdd then PClear:=true;
       for i:=0 to Files.Count-1 do
         Playlist.AddFiles(Files[i]);
       Playlist.Changed;

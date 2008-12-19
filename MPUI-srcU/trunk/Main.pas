@@ -22,7 +22,7 @@ interface
 uses
   Windows, TntWindows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,TntForms,
   Dialogs, ComCtrls, Buttons, ExtCtrls, Menus,TntMenus, ShellAPI, AppEvnts, StdCtrls,
-  Math, plist, ImgList, Clipbrd, ToolWin, jpeg, TntDialogs, TntStdCtrls, TntSysUtils,
+  Math, plist, ImgList, Clipbrd, ToolWin, jpeg, TntDialogs, TntStdCtrls, TntSysutils,
   TntComCtrls, TntExtCtrls, Core, TntButtons, MultiMon, TntSystem, TntFileCtrl;
 
 type PDDEnumCallbackEx=function(lpGuid:PGUID; lpDriverDescription,lpDriverName:PChar; lpContext:pointer; hm:HMONITOR):LongBool; stdcall;
@@ -291,6 +291,11 @@ type
     N33: TTntMenuItem;
     N34: TTntMenuItem;
     MUUni: TTntMenuItem;
+    MSubScale: TTntMenuItem;
+    MSubScale0: TTntMenuItem;
+    MSubScale1: TTntMenuItem;
+    N21: TTntMenuItem;
+    MSubScale2: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -399,6 +404,7 @@ type
     procedure MSubDelay2Click(Sender: TObject);
     procedure MLoadlyricClick(Sender: TObject);
     procedure MUUniClick(Sender: TObject);
+    procedure MSubScale2Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -452,7 +458,8 @@ var
   MainForm: TMainForm;
 
 implementation
-uses Locale, Config, Log, Help, About, Options, Info, UnRAR, Equalizer, SevenZip;
+uses Locale, Config, Log, Help, About, Options, Info,
+     UnRAR, Equalizer, SevenZip;
 
 {$R *.dfm}
 
@@ -473,7 +480,7 @@ var key:HKEY; FontName,FontPath:array[0..MAX_PATH]of Char;
 begin
   DefaultFont:=TFont.Create;
   DefaultFont.Handle:=GetStockObject(DEFAULT_GUI_FONT);
-  if winos<>'WIN9X' then s:='SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts'
+  if Win32PlatformIsUnicode then s:='SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts'
   else s:='SOFTWARE\Microsoft\Windows\CurrentVersion\Fonts';
   if RegOpenKeyEx(HKEY_LOCAL_MACHINE,PChar(s),0,KEY_READ,key)=ERROR_SUCCESS then begin
     FontNames:=TStringList.Create; FontPaths:=TStringList.Create;
@@ -522,7 +529,7 @@ begin
   WantFullscreen:=false; WantCompact:=false;
   Constraints.MinWidth:=Width; Constraints.MinHeight:=Height;
   Core.Init; Config.Load(HomeDir+'autorun.inf'); Config.Load;//(SystemDir+DefaultFileName);
-  if winos<>'WIN9X' then DirectDrawEnumerateEx(DDrawEnumCallbackEx,nil,1);
+  if Win32PlatformIsUnicode then DirectDrawEnumerateEx(DDrawEnumCallbackEx,nil,1);
   if not WideFileExists(MplayerLocation) then MplayerLocation:=HomeDir+'mplayer.exe';
   if subcode='' then subcode:='CP'+IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT)); //AnsiCodePage
   //OEM CodePage
@@ -537,9 +544,9 @@ begin
   end
   else VolSlider.Left:=Core.Volume*(VolFrame.ClientWidth-VolSlider.Width) DIV 100;
   Left:=(screen.Width-Width) DIV 2;
-  if (not Wid) OR (winos='WIN9X') then
-    Top:=screen.WorkAreaHeight-Constraints.MinHeight
-  else Top:=(screen.Height-Height) Div 2;
+  if Wid and Win32PlatformIsUnicode then
+    Top:=(screen.Height-Height) Div 2
+  else Top:=screen.WorkAreaHeight-Constraints.MinHeight;
   if Core.RFScr then begin
       OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
   end
@@ -563,6 +570,7 @@ begin
   if IsRarLoaded>0 then UnLoadRarLibrary;
   if IsZipLoaded>0 then UnLoadZipLibrary;
   if Is7zLoaded>0 then UnLoad7zLibrary;
+  if IsShell32Loaded then UnLoadShell32Library;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -572,7 +580,7 @@ begin
   if FirstShow then begin
     FirstShow:=false; MonitorID:=0;
     CurMonitor:=Screen.MonitorFromWindow(Handle);
-    if winos<>'WIN9X' then begin
+    if Win32PlatformIsUnicode then begin
       for i:=low(HMonitorList) to high(HMonitorList) do begin
         if HMonitorList[i]=CurMonitor.Handle then begin
           MonitorID:=i; break;
@@ -593,7 +601,7 @@ begin
       for i:=1 to PCount do begin
         FileName:=WideParamStr(i);
         if not CheckOption(FileName) then begin
-          if IsFirst then begin Playlist.Clear; IsFirst:=false; end;
+          if IsFirst then begin PClear:=true; IsFirst:=false; end;
           if WideDirectoryExists(FileName) then begin
             Playlist.AddDirectory(FileName);
             empty:=true;
@@ -608,6 +616,7 @@ begin
         empty:=true;
       end;
     end;
+    Playlist.Changed;
     if Playlist.Count>0 then Application.OnIdle:=OpenDroppedFile;
   end;
   DragAcceptFiles(Handle,true);
@@ -635,7 +644,7 @@ begin
       DragQueryFile(hDrop,i,ta,1024); fnbuf:=WideString(ta);
     end;
     if WideDirectoryExists(fnbuf) then begin
-      if i=0 then Playlist.Clear;
+      if i=0 then PClear:=true;
       Playlist.AddDirectory(fnbuf);
       empty:=true;
       Loadsub:=0;
@@ -645,7 +654,7 @@ begin
       if FilterDrop then k:=CheckInfo(MediaType,j)>ZipTypeCount
       else k:=CheckInfo(SubType,j)=-1;
       if k then begin
-        if i=0 then Playlist.Clear;
+        if i=0 then PClear:=true;
         Playlist.AddFiles(fnbuf);
         Loadsub:=0;
       end
@@ -674,7 +683,7 @@ begin
               h:=AddMovies(fnbuf,TmpPW,false,j);
               if h<>0 then begin
                 Loadsub:=0;
-                if i=0 then Playlist.Clear;
+                if i=0 then PClear:=true;
               end;
               if h>0 then AddMovies(fnbuf,TmpPW,true,j);
               if (h<0) and ((Pos('://',fnbuf)>1) or WideFileExists(fnbuf)) then begin
@@ -696,7 +705,7 @@ begin
             end
             else begin
               Loadsub:=1;
-              if winos='WIN9X' then begin
+              if not Win32PlatformIsUnicode then begin
                 Loadsub:=2; Loadsrt:=2;
                 AddChain(s,substring,EscapePath(EscapeParam(FName)));
               end
@@ -711,14 +720,15 @@ begin
     end;
   end;
   DragFinish(hDrop);
-  if (winos='WIN9X') and (s>0) then Core.Restart;
+  Playlist.Changed;
+  if (not Win32PlatformIsUnicode) and (s>0) then Core.Restart;
   if Loadsub=0 then Application.OnIdle:=OpenDroppedFile;
   msg.Result:=0;
 end;
 
 procedure TMainForm.OpenDroppedFile(Sender: TObject; var Done: Boolean);
 begin
-  Done:=true; Playlist.Changed;
+  Done:=true; 
   Application.OnIdle:=nil;
   UpdateParams;
   NextFile(0,psPlaying);
@@ -733,7 +743,7 @@ end;
 procedure TMainForm.PassMsg(var msg:Tmessage);
 var OpenFileName:WideString; t:string;
 begin
-  if winos='WIN9X' then begin
+  if not Win32PlatformIsUnicode then begin
     SetLength(t,msg.LParam);
     GlobalGetAtomName(msg.WParam,@t[1],msg.LParam+1);
     OpenFileName:=WideString(t);
@@ -744,12 +754,13 @@ begin
   end;
   GlobalDeleteAtom(msg.WParam);
   if not CheckOption(OpenFileName) then begin
-    if not HaveMsg then begin Playlist.Clear; HaveMsg:=true; end;
+    if not HaveMsg then begin PClear:=true; HaveMsg:=true; end;
     if WideDirectoryExists(OpenFileName) then begin
       Playlist.AddDirectory(OpenFileName);
       empty:=true;
     end
     else Playlist.AddFiles(OpenFileName);
+    Playlist.Changed;
   end;
   PlayMsgAt:=GetTickCount()+500;
 end;
@@ -823,12 +834,12 @@ end;
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
   procedure HandleCommand(const Command:string); begin
-    if winos='WIN9X' then exit;
+    if not Win32PlatformIsUnicode then exit;
     Unpaused;
     Core.SendCommand(Command);
   end;
   procedure HandleSeekCommand(const Command:string); begin
-    if winos='WIN9X' then exit;
+    if not Win32PlatformIsUnicode then exit;
     Unpaused;
     Core.SendCommand(Command);
     if HaveChapters then Sendcommand('get_property chapter');
@@ -885,6 +896,7 @@ if MVideos.Visible then begin
           Ord('E'):   MEqualizerClick(nil);
           {`~} 192:   if Wid then MScale0Click(nil);
           Ord('S'):   HandleCommand('screenshot 1');
+          Ord('Z'):   MSubDelay2Click(nil);
         end;
       end
       else begin
@@ -1022,6 +1034,7 @@ if ssCtrl in Shift then begin
     {`~} 192:   MPanClick(nil);
     Ord('Q'):   Close;
     Ord('D'):   MOpenDirClick(nil);
+     VK_BACK:   MAudioDelay2Click(nil);
   end;
 end
 else begin
@@ -1145,7 +1158,7 @@ begin
   if (TickCount>=PlayMsgAt) and HaveMsg then begin
     HaveMsg:=false;
     if Playlist.Count>0 then begin
-      Playlist.Changed; UpdateParams;
+      UpdateParams;
       NextFile(0,psPlaying);
       if IsIconic(Application.Handle) then Application.Restore
       else Application.BringToFront;
@@ -1158,7 +1171,7 @@ begin
       if TickCount>=UpdateSeekBarAt then UpdateSeekBar;
       if MVideos.Visible then begin
         CurMonitor:=Screen.MonitorFromWindow(Handle);
-        if (winos<>'WIN9X') or WID then begin
+        if Win32PlatformIsUnicode then begin
           for i:=low(HMonitorList) to high(HMonitorList) do begin
             if HMonitorList[i]=CurMonitor.Handle then begin
               if MonitorID<>i then begin
@@ -1348,7 +1361,7 @@ begin
   if Mute then SendCommand('set_property mute 1');
   Seeking:=false; SeekBarSlider.ShowHint:=true;
   UpdateSeekBarAt:=GetTickCount()+1000;
-  if winos='WIN9X' then Core.Restart;
+  if not Win32PlatformIsUnicode then Core.Restart;
 end;
 
 procedure TMainForm.SeekBarMouseDown(Sender: TObject; Button: TMouseButton;
@@ -1374,22 +1387,25 @@ begin
   if HaveVideo then SendCommand('osd_show_text '+IntToStr(100*X DIV MaxPos)+'%');
   if Mute then SendCommand('set_property mute 1');
   SeekBarSlider.Left:=X; UpdateSeekBarAt:=GetTickCount()+1000;
-  if winos='WIN9X' then Core.Restart;
+  if not Win32PlatformIsUnicode then Core.Restart;
 end;
 
 procedure TMainForm.SimulateKey(Sender: TObject);
-var Key:word;
+var Key:word; Shift:TShiftState;
 begin
-  if sender=MRnMenu then Key:=186
-  else if sender=MRmMenu then Key:=81
+  Shift:=[];
+  if Sender=MRnMenu then Key:=186  //;
+  else if Sender=MRmMenu then Key:=81 //g
+  else if Sender=MSubScale0 then begin Key:=187; Shift:=[ssCtrl]; end //-_
+  else if Sender=MSubScale1 then begin Key:=189; Shift:=[ssCtrl]; end //+=
   else Key:=(Sender as TComponent).Tag;
-  FormKeyDown(Sender,Key,[]);
+  FormKeyDown(Sender,Key,Shift);
 end;
 
 procedure TMainForm.VideoSizeChanged;
 var SX,SY,PX,PY:integer;
 begin
-  if (not Wid) OR (winos='WIN9X') OR
+  if (not Wid) OR (not Win32PlatformIsUnicode) OR
     (NativeWidth=0) OR (NativeHeight=0) then exit;
   if MSizeAny.Checked OR MFullscreen.Checked then begin
     FixSize;
@@ -1444,7 +1460,7 @@ begin
     1: SendCommand('osd_show_text "OSD: '+OSD_Enable_Prompt+'"');
   end;
   SendCommand('osd '+IntToStr(OSDLevel));
-  if winos='WIN9X' then Core.Restart;
+  if not Win32PlatformIsUnicode then Core.Restart;
   MOSD.Items[OSDLevel].Checked:=true;
   OSDMenu.Items[OSDLevel].Checked:=true;
 end;
@@ -1501,7 +1517,7 @@ begin
     6: begin Speed:= 8; Core.SendCommand('speed_set 8'); end;
     7: Core.SendCommand('speed_set '+FloatToStr(Speed));
   end;
-  if winos='WIN9X' then Core.Restart;
+  if not Win32PlatformIsUnicode then Core.Restart;
   (Sender as TMenuItem).Checked:=True;
 end;
 
@@ -1509,7 +1525,7 @@ procedure TMainForm.MVideoClick(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
   VideoID:=(Sender as TMenuItem).Tag;
-  if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (winos='WIN9X') then
+  if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Core.Restart
   else begin
      Unpaused;
@@ -1523,7 +1539,7 @@ procedure TMainForm.MAudioClick(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
   AudioID:=(Sender as TMenuItem).Tag;
-  if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (winos='WIN9X') then
+  if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Core.Restart
   else begin
     Unpaused;
@@ -1628,7 +1644,7 @@ begin
   if (Sender as TMenuItem).Checked then exit;
   MKaspect.Checked:=true;
   Core.Aspect:=(Sender as TMenuItem).Tag;
-  if (Expand=2) OR (winos='WIN9X') then Core.Restart
+  if (Expand=2) OR (not Win32PlatformIsUnicode) then Core.Restart
   else begin
     CBHSA:=3; Unpaused;
     case Core.Aspect of
@@ -1653,19 +1669,17 @@ end;
 
 procedure TMainForm.MOpenFileClick(Sender: TObject);
 begin
-  OpenM:=1;
-  PlaylistForm.BAddClick(nil);
-  OpenM:=0;
+  PlaylistForm.BAddClick(Sender);
 end;
 
 procedure TMainForm.MOpenDirClick(Sender: TObject);
 var s:widestring;
 begin
   if WideSelectDirectory(AddDirCp,'',s) then begin
-    Playlist.Clear;
+    PClear:=true;
     Playlist.AddDirectory(s);
     empty:=true; Playlist.Changed;
-    PlaylistForm.BPlayClick(nil);
+    PlaylistForm.BPlayClick(Sender);
   end;
 end;
 
@@ -1677,7 +1691,7 @@ begin
      ((Pos('//',s)=0) AND (Pos('\\',s)=0) AND (Pos(':',s)=0))
      then s:='';
   if (WideInputQuery(LOCstr_OpenURL_Caption,LOCstr_OpenURL_Prompt,s)) and (s<>'') then begin
-    Playlist.Clear;
+    PClear:=true;
     if WideDirectoryExists(s) then begin
       Playlist.AddDirectory(s);
       empty:=true;
@@ -1714,7 +1728,7 @@ end;
 
 procedure TMainForm.MOpenDriveClick(Sender: TObject);
 begin
-  Playlist.Clear;
+  PClear:=true;
   Playlist.AddDirectory(char((Sender as TMenuItem).Tag)+':');
   empty:=true;
   Playlist.Changed;
@@ -1836,7 +1850,7 @@ begin
     MPCtrl.Checked:=CV and MV;
     if not MSizeAny.Checked then LastScale:=100;
     ControlledResize:=true; FormResize(nil);
-    if CV then UpdateCaption;
+    if CV then UpdateCaption;  
   end;
 end;
 
@@ -1945,7 +1959,7 @@ begin
     Checked:=True;
     Core.AudioID:=Tag;
   end;
-  if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (winos='WIN9X') then
+  if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Core.Restart
   else begin
      Unpaused;
@@ -1970,7 +1984,7 @@ begin
     Checked:=True;
     Core.VideoID:=Tag;
   end;
-  if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (winos='WIN9X') then
+  if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Core.Restart
   else begin
      Unpaused;
@@ -1984,7 +1998,7 @@ begin
   MKaspect.Checked:=true;
   Aspect:=(Aspect+1) MOD MAspect.Count;
   MAspect.Items[Aspect].Checked:=True;
-  if (Expand=2) OR (winos='WIN9X') then Core.Restart
+  if (Expand=2) OR (not Win32PlatformIsUnicode) then Core.Restart
   else begin
     CBHSA:=3; Unpaused;
     case Core.Aspect of
@@ -2034,7 +2048,7 @@ begin
   Index:=Playlist.GetNext(ExitState,Direction);
   if Index<0 then begin
     if AutoQuit then Close;
-    if winos='WIN9X' then Core.Terminate else Core.Stop;
+    if not Win32PlatformIsUnicode then Core.Terminate else Core.Stop;
     exit;
   end;
   Playlist.NowPlaying(Index);
@@ -2300,7 +2314,7 @@ begin
   MChannels.Caption:=OptionsForm.LCh.Caption; MSoftVol.Caption:=OptionsForm.CSoftVol.Caption;
   MSpdif.Caption:=OptionsForm.CSPDIF.Caption; MUseASS.Caption:=OptionsForm.CAss.Caption;
   MShuffle.Caption:=Playlistform.CShuffle.Hint; MLoopAll.Caption:=Playlistform.CLoop.Hint;
-  MOneLoop.Caption:=PlaylistForm.COneLoop.Hint;
+  MOneLoop.Caption:=PlaylistForm.COneLoop.Hint; 
 end;
 
 procedure TMainForm.DisplayClick(Sender: TObject);
@@ -2709,7 +2723,7 @@ begin
             end;
           end
           else begin
-            if winos='WIN9X' then begin
+            if not Win32PlatformIsUnicode then begin
               Loadsub:=2; Loadsrt:=2;
               AddChain(s,substring,EscapePath(EscapeParam(Files[i])));
             end
@@ -2720,7 +2734,7 @@ begin
           end;
         end;
       end;
-      if (winos='WIN9X') and (s>0) then Core.Restart;
+      if (not Win32PlatformIsUnicode) and (s>0) then Core.Restart;
     end;
   end;
 end;
@@ -3018,6 +3032,13 @@ begin
   MUUni.Checked:=not Core.UseUni;
   Core.UseUni:=MUUni.Checked;
   Core.Restart;
+end;
+
+procedure TMainForm.MSubScale2Click(Sender: TObject);
+begin
+  Unpaused;
+  SendCommand('set_property sub_scale 4.5'); FSize:=4.5;
+  SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_Scale_Prompt+'"');
 end;
 
 end.

@@ -175,10 +175,11 @@ type
   private
     { Private declarations }
     HelpFile:string;
+    Changed:boolean;
     procedure ApplyNCValues;
   public
     { Public declarations }
-    Changed:boolean;
+
     procedure Localize;
     procedure ApplyValues;
     procedure LoadValues;

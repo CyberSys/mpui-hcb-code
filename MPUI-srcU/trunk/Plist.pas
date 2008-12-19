@@ -307,6 +307,7 @@ end;
 procedure TPlaylist.Add(const Entry:TPlaylistEntry);
 var len:integer;
 begin
+  if PClear then begin PClear:=false; Clear; end;
   len:=length(Data);
   SetLength(Data,len+1);
   Data[len]:=Entry;
@@ -316,7 +317,7 @@ end;
 procedure TPlaylist.AddFiles(const URL:widestring);
 var PlistEntry:TPlaylistEntry; j:WideString; i:integer;
 begin
-  // check for .m3u .pls .asx .wpl playlist file
+  // check for .m3u .pls .asx .wpl .xspf playlist file
   j:=Tnt_WideLowerCase(WideExtractFileExt(URL));
   i:=CheckInfo(PlaylistType,j);
   if (i>-1) AND AddM3U(URL,i) then exit;
@@ -465,12 +466,13 @@ end;
 
 procedure TPlaylist.Changed;
 begin
+  PClear:=false;
   if PlaylistForm.Visible then begin
     if PlaylistForm.PlaylistBox.Count<>Count then
       PlaylistForm.PlaylistBox.Count:=Count;
     PlaylistForm.PlaylistBox.Invalidate;
   end;
-  if (Count=0) AND not(Core.Running) then MainForm.BPlay.Enabled:=false;
+  if (Count=0) AND (not Core.Running) then MainForm.BPlay.Enabled:=false;
   //if CurPlay<0 then CurPlay:=0;
   MainForm.BPrev.Enabled:=(CurPlay>0);
   MainForm.BNext.Enabled:=(CurPlay+1<Playlist.Count);
@@ -753,7 +755,7 @@ begin
   BMPpsPlayed :=LoadBitmapResource('PS_PLAYED' ,true);
   BMPpsSkipped:=LoadBitmapResource('PS_SKIPPED',true);
   ControlledMove:=true; TDocked:=true;
-  if (not Wid) OR (winos='WIN9X') then begin
+  if (not Wid) OR (not Win32PlatformIsUnicode) then begin
     Left:=MainForm.Left+MainForm.Width;
     Top:=MainForm.Top+MainForm.Height-Height;
   end;
@@ -811,7 +813,7 @@ procedure TPlaylistForm.BPlayClick(Sender: TObject);
 var Index:integer;
 begin
   if Playlist.Count>0 then begin
-    if OpenM=1 then Index:=0
+    if (Sender<>BPlay) and (Sender<>PlaylistBox) then Index:=0
     else begin
       if PlaylistBox.SelCount>0 then
         Index:=PlaylistBox.ItemIndex-(PlaylistBox.SelCount-1)
@@ -867,13 +869,12 @@ begin
            +'*.snd;*.pss;*.tta;*.umx;*.ram;*.ra;*.it*;*.xspf;*.smpl|'
            +AnyFilter+'(*.*)|*.*';
 
- 
     if Execute then begin
-      if OpenM=1 then Playlist.Clear;
+      if Sender<>BAdd then PClear:=true;
       for i:=0 to Files.Count-1 do
         Playlist.AddFiles(Files[i]);
       Playlist.Changed;
-      if OpenM=1 then PlaylistForm.BPlayClick(nil);
+      if Sender<>BAdd then PlaylistForm.BPlayClick(Sender);
     end;
   end;
 end;

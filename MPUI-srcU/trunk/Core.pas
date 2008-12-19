@@ -18,7 +18,7 @@
 unit Core;
 interface
 uses Windows, TntWindows, SysUtils, TntSysUtils, TntSystem, Classes, Forms, Menus,TntMenus, 
-     Controls,Graphics, Dialogs, MultiMon; //,ShellAPI;
+     Controls,Graphics, Dialogs, MultiMon, ShlObj; //,ShellAPI;
 
 const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
 
@@ -85,15 +85,15 @@ var Status:TStatus;
 type TWin9xWarnLevel=(wlWarn,wlReject,wlAccept);
 var Win9xWarnLevel:TWin9xWarnLevel;
 
-var HomeDir,SystemDir,TempDir:WideString;
-var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
+var HomeDir,SystemDir,TempDir,AppdataDir:WideString;
+var MediaURL,ArcMovie,Params,AddDirCP:WideString;
     ArcPW,TmpPW,DisplayURL,AudioFile:WideString;
-    winos,subfont,osdfont,Duration,LyricF:String;
+    subfont,osdfont,Duration,LyricF:String;
     substring,afChain,Vobfile,ShotDir,LyricDir,LyricURL:wideString;
     Ccap,Acap,DemuxerName:WideString;
     MplayerLocation,WadspL,AsyncV,CacheV:widestring;
     MAspect,subcode,MaxLenLyric,VideoOut:string;
-    FirstOpen,Fd,Async,Cache,uof,DragM,FilterDrop:boolean;
+    FirstOpen,PClear,Fd,Async,Cache,uof,DragM,FilterDrop:boolean;
     Wid,Dreset,UpdateSkipBar,Pri,HaveLyric,HaveChapters,HaveMsg:boolean;
     AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
@@ -115,7 +115,7 @@ var AudioOut,AudioDev,Postproc,Deinterlace,Aspect:integer;
     Loadsrt,LoadVob,Loadsub,Expand,TotalTime,TTime:integer;
 var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
-    LastPos,SecondPos,OSDLevel,OpenM,MSecPos:integer;
+    LastPos,SecondPos,OSDLevel,MSecPos:integer;
 var Volume,MWC,CP:integer;
     tEnd,Mute,LastMute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
     DTFormat:string;
@@ -155,6 +155,7 @@ function EscapePath(Path:WideString):WideString;
 function CheckSubfont(Sfont:string):string;
 function CheckInfo(const Map:array of WideString; Value:WideString):integer;
 function ColorToStr(Color:Longint):WideString;
+function GetFolderPath(csidl:integer):WideString;
 procedure SetLastPos;
 procedure Init;
 procedure Start;
@@ -452,7 +453,29 @@ begin
   end;
 end;
 
+function GetFolderPath(csidl:integer):WideString;
+var Buffer:PAnsiChar; BufferW:PWideChar;
+begin
+  if Win32PlatformIsUnicode then begin
+    GetMem(BufferW,MAX_PATH+1);
+    if SHGetSpecialFolderPathW(0,BufferW,csidl,false) then
+      Result:=BufferW
+    else Result:='';
+    FreeMem(BufferW);
+  end
+  else begin
+    GetMem(Buffer,MAX_PATH+1);
+    if SHGetSpecialFolderPath(0,Buffer,csidl,false) then
+      Result:=WideString(Buffer)
+    else Result:='';
+    FreeMem(Buffer);
+  end;
+end;
+
 procedure Init;
+const RFID_APPDATA:TGUID='{3EB685DB-65F9-4CF6-A03A-E3EF65729F3D}';
+      RFID_PERSONAL:TGUID='{FDD39AD0-238F-46AF-ADB4-6C85480369C7}';
+      // use by SHGetKnownFolderPath http://msdn.microsoft.com/en-us/library/bb762584(VS.85).aspx
 //var WinDir:array[0..MAX_PATH]of char;
 //var  Workarea:TRECT; //OSVersion:_OSVERSIONINFOA; //TaskBar:_AppBarData;
 begin
@@ -463,8 +486,13 @@ begin
  // GetEnvironmentVariable('TEMP',@WinDir[0],MAX_PATH);
  // TempDir:=IncludeTrailingPathDelimiter(WinDir)+'MPUISub\';
   TempDir:=WideIncludeTrailingPathDelimiter(WideGetEnvironmentVariable('TEMP'))+'MPUI\';
-  HomeDir:=WideIncludeTrailingPathDelimiter(WideExtractFileDir(WideExpandFileName(WideParamStr(0))));
-  ShotDir:='C:\';
+  if Win32PlatformIsVista then AppdataDir:=GetShellPath(RFID_APPDATA)
+  else AppdataDir:=GetFolderPath(CSIDL_APPDATA);
+  if AppdataDir='' then AppdataDir:=HomeDir else AppdataDir:=IncludeTrailingPathDelimiter(AppdataDir);
+
+  if Win32PlatformIsVista then ShotDir:=GetShellPath(RFID_PERSONAL)
+  else ShotDir:=GetFolderPath(CSIDL_PERSONAL);
+  if ShotDir='' then ShotDir:=HomeDir else ShotDir:=IncludeTrailingPathDelimiter(ShotDir);
   if WideDirectoryExists(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap'
   else if WideCreateDir(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap';
   // check for Win9x
@@ -472,16 +500,11 @@ begin
  // OSVersion.dwOSVersionInfoSize:=sizeof(OSVersion);
  // GetVersionEx(OSVersion);
  // if OSVersion.dwPlatformId<VER_PLATFORM_WIN32_NT then begin
-  if Win32Platform<VER_PLATFORM_WIN32_NT then begin
-    Win9xWarnLevel:=wlWarn; winos:='WIN9X';
-  end
-  else begin
-    Win9xWarnLevel:=wlAccept; winos:='WINNT';
-  end;
+  if Win32PlatformIsUnicode then Win9xWarnLevel:=wlAccept
+  else Win9xWarnLevel:=wlWarn;
  // if (OSVersion.dwMajorVersion=5) and (OSVersion.dwMinorVersion>0) then begin
-  if (Win32MajorVersion=5) and (Win32MinorVersion>0) then begin
-     MainForm.Imagery.Clear; winos:='WINXP';
-  end;
+  if Win32PlatformIsXP then MainForm.Imagery.Clear;
+
   //TaskBar.cbSize:=sizeof(TaskBar);
   //SHAppBarMessage(ABM_GETTASKBARPOS,TaskBar);
   //WorkareaH:=Screen.Height-(TaskBar.rc.Bottom-TaskBar.rc.Top);
@@ -501,7 +524,7 @@ var DummyPipe1,DummyPipe2:THandle;
     si:TStartupInfoW;
     pi:TProcessInformation;
     sec:TSecurityAttributes;
-    CmdLine,S:WideString;
+    CmdLine,S,j:WideString;
     sf:string;
     Success:boolean; Error:DWORD;
     ErrorMessage:array[0..1023]of WideChar;
@@ -554,7 +577,7 @@ begin
   end;
   if FileExists(sf) then CmdLine:=CmdLine+' -font '+EscapeParam(sf);
 
-  if MonitorID>0 then CmdLine:=CmdLine+' -adapter '+IntToStr(MonitorID);
+  if (not CurMonitor.Primary) and (MonitorID>0) then CmdLine:=CmdLine+' -adapter '+IntToStr(MonitorID);
   if UseUni then CmdLine:=CmdLine+' -msgcharset noconv';
   if Fd then CmdLine:=CmdLine+' -framedrop';
   if ni then CmdLine:=CmdLine+' -ni';
@@ -565,7 +588,7 @@ begin
   if Utf then CmdLine:=CmdLine+' -utf8';
   if lavf then CmdLine:=CmdLine+' -demuxer lavf';
   if vsync then CmdLine:=CmdLine+' -vsync';
-  if Wid and (winos<>'WIN9X') then
+  if Wid and Win32PlatformIsUnicode then
     CmdLine:=CmdLine+' -colorkey 0x101010 -nokeepaspect'+' -wid '+IntToStr(MainForm.IPanel.Handle)
   else if ontop>0 then CmdLine:=CmdLine+' -ontop';
   if OSDLevel<>1 then CmdLine:=CmdLine+' -osdlevel '+IntToStr(OSDLevel);
@@ -639,11 +662,11 @@ begin
     if Defaultslang then CmdLine:=CmdLine+' -alang zh,ch,tw,en -slang zh,ch,tw,en';
 
     if WideFileExists(LyricURL) then begin //拖放的歌词或用户指定的歌词
-      TmpURL:=WideExtractFileName(MediaURL);
-      TmpURL:=Tnt_WideLowerCase(Copy(TmpURL,1,length(TmpURL)-length(WideExtractFileExt(MediaURL))));
+      j:=WideExtractFileName(MediaURL);
+      j:=Tnt_WideLowerCase(Copy(j,1,length(j)-length(WideExtractFileExt(MediaURL))));
       s:=WideExtractFileName(LyricURL);
       s:=Tnt_WideLowerCase(Copy(s,1,length(s)-4));
-      if TmpURL=s then HaveLyric:=Lyric.ParseLyric(LyricURL);
+      if j=s then HaveLyric:=Lyric.ParseLyric(LyricURL);
     end;
 
     s:=Tnt_WideLowerCase(WideExtractFileExt(MediaURL));
@@ -655,10 +678,10 @@ begin
       if i>0 then ArcMovie:=copy(DisplayURL,1,i-1)
       else ArcMovie:=DisplayURL;
       if not HaveLyric then begin  //播放的Arc文件所在的目录下有包内当前播放文件同名的歌词
-        TmpURL:=copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie)))+'.lrc';
-        LyricURL:=WideExtractFilePath(MediaURL)+TmpURL;
+        j:=copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie)))+'.lrc';
+        LyricURL:=WideExtractFilePath(MediaURL)+j;
         if not WideFileExists(LyricURL) then
-          LyricURL:=WideIncludeTrailingPathDelimiter(LyricDir)+TmpURL;
+          LyricURL:=WideIncludeTrailingPathDelimiter(LyricDir)+j;
         if WideFileExists(LyricURL) then HaveLyric:=Lyric.ParseLyric(LyricURL);
       end;
     end
@@ -685,8 +708,8 @@ begin
         if IsLoaded(ZipType[t]) then begin   //当前播放文件所在的目录下有同名Arc文件中的同名歌词
           if (not HaveLyric) and (i<>0) then ExtractLyric(Vobfile+ZipType[t],ArcPW,ZipType[t],i);
           if LoadVob<>1 then begin
-            TmpURL:=ExtractSub(Vobfile+ZipType[t],ArcPW,ZipType[t]);
-            if TmpURL<>'' then begin Vobfile:=TmpURL; LoadVob:=1; end;
+            j:=ExtractSub(Vobfile+ZipType[t],ArcPW,ZipType[t]);
+            if j<>'' then begin Vobfile:=j; LoadVob:=1; end;
           end;
         end;
       end;
@@ -695,7 +718,6 @@ begin
     DirHIdx:=0; DirHSub:=0;
 
     if i>0 then begin
-      TmpURL:=MediaURL; //避免系统调度UNRART线程的不确定性造成线程执行时获取的是已经变化的MediaURL
       tEnd:=false;
       UnRART:=TUnRARThread.Create(true);
       UnRART.FreeOnTerminate:=true;
@@ -714,10 +736,6 @@ begin
           else MediaURL:=TempDir+ArcMovie;
         end
         else MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie); }
-
-        if ((s='.zip') and (IsZipLoaded<>0)) or ((s='.7z') and (Is7zLoaded=0)) then
-          MediaURL:=TempDir+ArcMovie
-        else MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie);
 
         UNRART.Resume;
         SwitchToThread;
@@ -744,6 +762,9 @@ begin
         if not WideFileExists(MediaURL) then begin
          MainForm.LStatus.Caption:=''; exit;
         end;
+        if ((s='.zip') and (IsZipLoaded<>0)) or ((s='.7z') and (Is7zLoaded=0)) then
+          MediaURL:=TempDir+ArcMovie
+        else MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie);
       end;
     end;
 
@@ -807,9 +828,9 @@ begin
     7: CmdLine:=CmdLine+' -aspect 2.21';
     8: CmdLine:=CmdLine+' -aspect 1';
     9: CmdLine:=CmdLine+' -aspect 1.22';
-    10: begin if InterW>3*InterH then InterW:=3*InterH;
+   10: begin if InterW>3*InterH then InterW:=3*InterH;
         CmdLine:=CmdLine+' -aspect '+IntToStr(InterW)+':'+IntToStr(InterH);
-       end;
+       end;  
   end;
 
   case AudiochannelsID of
@@ -872,7 +893,7 @@ begin
     s:=CmdLine;
     while length(s)>0 do
       AddLine(SplitLine(s));
-      if (winos='WINXP') and (Byte(GetUserDefaultLangID)=LANG_CHINESE) then
+      if Win32PlatformIsXP and (Byte(GetUserDefaultLangID)=LANG_CHINESE) then
         AddLine(
 '                   ╭= = = = = = = = = = = = = = = = ╮'^M^J+
 '                    ║  ¤╭⌒╮ ╭⌒╮欢迎使用        ║'^M^J+
@@ -1043,7 +1064,7 @@ begin
   Status:=sClosing;
   MainForm.LStatus.Caption:=LOCstr_Status_Closing;
   ExplicitStop:=1;
-  if winos='WIN9X' then FirstChance:=false;
+  if not Win32PlatformIsUnicode then FirstChance:=false;
   if FirstChance then begin
     SendCommand('quit');
     FirstChance:=false;
@@ -1073,7 +1094,7 @@ end;
 procedure SendCommand(Command:String);
 var Dummy:cardinal;
 begin
-  if (ClientProcess=0) OR (WritePipe=0) OR (winos='WIN9X') then exit;
+  if (ClientProcess=0) OR (WritePipe=0) OR (not Win32PlatformIsUnicode) then exit;
   Command:=Command+#10;
   WriteFile(WritePipe,Command[1],length(Command),Dummy,nil);
 end;
@@ -1765,7 +1786,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     Val(Copy(Line,p+1,5),j,r); if (r<>0) OR (j<16) OR (j>=4096) then exit;
     ChkVideo:=false;
     with MainForm do begin
-      if winos='WIN9X' then begin
+      if not Win32PlatformIsUnicode then begin
         HaveVideo:=false; LastHaveVideo:=false;
         MVideos.Visible:=true; MSub.Visible:=true;
         Status:=sPlaying; UpdateStatus;
@@ -2231,7 +2252,7 @@ begin
 end;
 
 begin
-  DecimalSeparator:='.'; Wadsp:=false; OpenM:=0; GUI:=false; HaveMsg:=false;
+  DecimalSeparator:='.'; Wadsp:=false; GUI:=false; HaveMsg:=false; Uni:=false;
   MFunc:=0; ETime:=false; InSubDir:=true; ML:=false; InterW:=4; InterH:=3;
   AudiochannelsID:=0; OSDLevel:=1; Ch:=0; Wid:=true; Fd:=false; DragM:=false;
   Deinterlace:=0; Aspect:=0; Postproc:=0; VobsubCount:=0; IntersubCount:=0;
@@ -2239,7 +2260,7 @@ begin
   ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=false; Fol:=2;
   dbbuf:=true; Dr:=false; Volnorm:=false; Defaultslang:=false; Pri:=true;
   Params:=''; OnTop:=0; MAspect:='Default'; empty:=true; lavf:=false; vsync:=false;
-  Status:=sNone; Shuffle:=false; Loop:=false; OneLoop:=false; Uni:=false;
+  Status:=sNone; Shuffle:=false; Loop:=false; OneLoop:=false; PClear:=false;
   Volume:=100; Mute:=False; Duration:=''; MouseMode:=0; SubPos:=96; FSize:=4.5;
   Flip:=false; Mirror:=false; Yuy2:=false; Eq2:=false; LastEq2:=false; Rot:=0;
   Bp:=0; Ep:=0; FB:=2; UpdateSkipBar:=false; Async:=false; AsyncV:='100';

@@ -130,7 +130,7 @@ procedure TUnRARThread.Execute;
 begin
   SetName;
   { Place thread code here }
-  ExtractMovie(TmpURL,ArcMovie,ArcPW,LowerCase(ExtractFileExt(TmpURL)));
+  ExtractMovie(MediaURL,ArcMovie,ArcPW,LowerCase(ExtractFileExt(MediaURL)));
   tEnd:=true;
 end;
 

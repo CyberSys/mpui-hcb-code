@@ -24,7 +24,7 @@ object PlaylistForm: TPlaylistForm
   OnShow = FormShow
   DesignSize = (
     357
-    233)
+    226)
   PixelsPerInch = 96
   TextHeight = 13
   object TntPageControl1: TTntPageControl
@@ -208,7 +208,7 @@ object PlaylistForm: TPlaylistForm
         Left = 0
         Top = 28
         Width = 358
-        Height = 181
+        Height = 175
         Style = lbVirtualOwnerDraw
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 16

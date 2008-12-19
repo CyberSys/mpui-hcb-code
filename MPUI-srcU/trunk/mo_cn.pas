@@ -210,6 +210,10 @@ begin
      MSubDelay0.Caption:=MAudioDelay0.Caption;
      MSubDelay1.Caption:=MAudioDelay1.Caption;
      MSubDelay2.Caption:=UTF8Decode(OSD_Reset_Prompt+' '+OSD_SubDelay_Prompt);
+   MSubScale.Caption:=UTF8Decode(OSD_Scale_Prompt)+' '+MSub.Caption;
+     MSubScale0.Caption:=MScale1.Caption;
+     MSubScale1.Caption:=MScale2.Caption;
+     MSubScale2.Caption:=UTF8Decode(OSD_Reset_Prompt)+' '+MSub.Caption+UTF8Decode(OSD_Scale_Prompt);
   end;
   LogForm.Caption:=UTF8Decode('MPlayer 输出');
   LogForm.BClose.Caption:=UTF8Decode('关闭');
@@ -281,16 +285,20 @@ begin
     LOCstr_AutoLocale:=UTF8Decode('(自动-选择)');
     CDrag.Caption:=UTF8Decode('使用系统的窗体拖动方式');
     CIndex.Caption:=UTF8Decode('重建 文件索引');
-    CIndex.Hint:=UTF8Decode('在没有找到索引的情况下重建AVI文件的索引, 从而允许搜索.对于损坏的/不完整的下载, 或制作低劣的AVI.');
+    CIndex.Hint:=UTF8Decode('在没有找到索引的情况下重建AVI文件的索引, 从而允许搜索.'^M^J+
+                            '对于损坏的/不完整的下载, 或制作低劣的AVI.');
     CSoftVol.Caption:=UTF8Decode('音量增益10倍');
     CGUI.Caption:=UTF8Decode('使用Mplayer的GUI');
     CGUI.Hint:=UTF8Decode('对于那些没有-nogui选项的Mplayer，也可以勾选此项避免错误');
     CRFScr.Caption:=UTF8Decode('右键全屏');
     CRFScr.Hint:=UTF8Decode('右键进行切换全屏操作时，右键菜单将不会弹出');
     CDr.Caption:=UTF8Decode('直接渲染');
-    CDr.Hint:=UTF8Decode('打开直接渲染功能(不是所有的编解码器和视频输出都支持),警告: 可能导致OSD/字幕损坏!');
+    CDr.Hint:=UTF8Decode('打开直接渲染功能(不是所有的编解码器和视频输出都支持),'^M^J+
+                         '警告: 可能导致OSD/字幕损坏!');
     double.Caption:=UTF8Decode('双倍缓存');
-    double.Hint:=UTF8Decode('启用双缓冲. 通过在内存里储存两帧来解决闪烁问题, 在显示一帧的同时解码另一帧.会影响OSD. 需要单一缓冲方式两倍的内存. 所以不能用于显存很少的显卡.');
+    double.Hint:=UTF8Decode('启用双缓冲. 通过在内存里储存两帧来解决闪烁问题, 在显示'^M^J+
+                            '一帧的同时解码另一帧.会影响OSD. 需要单一缓冲方式两倍的'^M^J+
+                            '内存. 所以不能用于显存很少的显卡.');
     CVolnorm.Caption:=UTF8Decode('标准化音量');
     CVolnorm.Hint:=UTF8Decode('最大化文件的音量而不失真');
     Defaultslang.Caption:=UTF8Decode('优先选择中文字幕/音频轨');
@@ -310,17 +318,19 @@ begin
     CEq2.Caption:=UTF8Decode('使用软件视频均衡器');
     CEq2.Hint:=UTF8Decode('用于不支持硬件亮度对比度控制的显卡/驱动');
     CYuy2.Caption:=UTF8Decode('YUY2色域');
-    CYuy2.Hint:=UTF8Decode('指定使用YV12/I420或422P到YUY2的软件转换.用于当显卡/驱动显示YV12速度慢而YUY2速度快的情况.');
+    CYuy2.Hint:=UTF8Decode('指定使用YV12/I420或422P到YUY2的软件转换.用于当显卡/驱动'^M^J+
+                           '显示YV12速度慢而YUY2速度快的情况.');
     CFlip.Caption:=UTF8Decode('上下翻转视频');
     CMir.Caption:=UTF8Decode('左右翻转视频');
-    CseekC.Caption:=UTF8Decode('快速切换DVD章节');
-    CseekC.Hint:=UTF8Decode('对于一些DVD,切换DVD章节的时候需要重启Mplayer');
+    CUseekC.Caption:=UTF8Decode('快速切换DVD章节');
+    CUseekC.Hint:=UTF8Decode('对于一些DVD,切换DVD章节的时候需要重启Mplayer');
     CVSync.Caption:=UTF8Decode('vsync垂直同步');
     CVSync.Hint:=UTF8Decode('对于解决图像撕裂情况有所帮助');
     CNi.Caption:=UTF8Decode('使用非交错的AVI解析器');
     CNi.Hint:=UTF8Decode('用来处理某些质量差的AVI文件的播放');
     CNobps.Caption:=UTF8Decode('不用平均比特率维持AV同步');
-    CNobps.Hint:=UTF8Decode('不使用平均比特率值来维持AV同步(AVI),对某些文件头损坏的AVI文件有帮助');
+    CNobps.Hint:=UTF8Decode('不使用平均比特率值来维持AV同步(AVI),'^M^J+
+                            '对某些文件头损坏的AVI文件有帮助');
     CFilter.Caption:=UTF8Decode('过滤 拖放的文件');
     CFilter.Hint:=UTF8Decode('通过拖放载入文件时，仅载入支持的媒体文件');
     CDnav.Caption:=UTF8Decode('使用DVDNav');
@@ -332,7 +342,8 @@ begin
     CEfont.Caption:=UTF8Decode('使用内嵌字体');
     CEfont.Hint:=UTF8Decode('允许抽取 Matroska 内嵌字体，这些字体能用于 SSA/ASS 字幕渲染');
     CAss.Caption:=UTF8Decode('使用SSA/ASS库渲染字幕');
-    CAss.Hint:=UTF8Decode('打开 SSA/ASS 字幕渲染，libass 将用于 SSA/ASS 外部字幕和 Matroska 内部字幕');
+    CAss.Hint:=UTF8Decode('打开 SSA/ASS 字幕渲染，libass 将用于 SSA/ASS'^M^J+
+                          '外部字幕和 Matroska 内部字幕');
     CISub.Caption:=UTF8Decode('截图包含字幕');
     SFol.Caption:=UTF8Decode('字幕文字轮廓宽度:');
     SFsize.Caption:=UTF8Decode('字幕文字大小:');
@@ -341,13 +352,16 @@ begin
     Clavf.Caption:=UTF8Decode('使用libavformat进行Demux');
     Clavf.Hint:=UTF8Decode('对某些不能播放的文件,可以试试这个选项,可能造成时间显示不准确');
     CFd.Caption:=UTF8Decode('启用丢帧');
-    CFd.Hint:=UTF8Decode('跳过一些帧从而在慢的机器上实现A/V同步.视频滤镜不会应用到这些帧上.对于B帧解码也会完全跳过');
+    CFd.Hint:=UTF8Decode('跳过一些帧从而在慢的机器上实现A/V同步.视频滤镜不会应用到这些帧上.'^M^J+
+                         '对于B帧解码也会完全跳过');
     CAsync.Caption:=UTF8Decode('自动同步');
-    CAsync.Hint:=UTF8Decode('基于音频延迟的检测逐步调整A/V同步,对于某些不能连续读取、帧速较低的文件（如一些屏幕捕捉的视频）反而不是很好');
+    CAsync.Hint:=UTF8Decode('基于音频延迟的检测逐步调整A/V同步,对于某些不能连续读取、帧速较低'^M^J+
+                            '的文件（如一些屏幕捕捉的视频）反而不是很好');
     CCache.Caption:=UTF8Decode('缓存');
     CCache.Hint:=UTF8Decode('设定播放 文件/URL的预缓冲(以kBytes为单位),对速度慢的媒体特别有用');
     CPriorityBoost.Caption:=UTF8Decode('以高优先级运行');
-    CPriorityBoost.Hint:=UTF8Decode('使用高的优先级会避免因系统繁忙造成的播放不流畅的现象，有时候可能造成其他的一些问题');
+    CPriorityBoost.Hint:=UTF8Decode('使用高的优先级会避免因系统繁忙造成的播放不流畅的现象，'^M^J+
+                                    '有时候可能造成其他的一些问题');
     LParams.Caption:=UTF8Decode('其它 MPlayer 播放参数:');
     LHelp.Caption:=UTF8Decode('帮助');
     SSF.Caption:=UTF8Decode('保存截图的目录');
@@ -378,38 +392,40 @@ begin
     CPO.Caption:=UTF8Decode('其他');
     SC.Caption:=UTF8Decode('简体中文');
     TC.Caption:=UTF8Decode('繁體中文');
-    CY0.Caption:=UTF8Decode('Русский (俄文)');
+    CY0.Caption:=UTF8Decode('Русский (俄文 OEM866)');
     CY.Caption:=UTF8Decode('西里尔文');
-    BG.Caption:=UTF8Decode('Български (保加利亚)');
+    CY4.Caption:=UTF8Decode('Русский (俄文, 20866,KOI8-R)');
+    CY6.Caption:=UTF8Decode('Українська (乌克兰文,21866,KOI8-U)');
+    BG.Caption:=UTF8Decode('Български (保加利亚文)');
     AR.Caption:=UTF8Decode('العربية (阿拉伯文)');
-    TU.Caption:=UTF8Decode('土耳其文');
-    HE.Caption:=UTF8Decode('希伯来文');
+    TU.Caption:=UTF8Decode('Türkiye (土耳其文)');
+    HE.Caption:=UTF8Decode('עִבְרִית‎ (希伯来文)');
     JA.Caption:=UTF8Decode('日文');
     KO.Caption:=UTF8Decode('한국어 (韩文)');
-    TH.Caption:=UTF8Decode('泰文');
+    TH.Caption:=UTF8Decode('ภาษาไทย (泰文)');
     FR.Caption:=UTF8Decode('Français(法文)');
-    IC.Caption:=UTF8Decode('冰岛文');
+    IC.Caption:=UTF8Decode('íslenska (冰岛文)');
     PO.Caption:=UTF8Decode('Português(葡萄牙文)');
-    GR.Caption:=UTF8Decode('希腊文');
+    GR.Caption:=UTF8Decode('Ελληνικά (希腊文)');
     BA.Caption:=UTF8Decode('波罗的海文');
-    VI.Caption:=UTF8Decode('越南文(1258,windows-1258)');
+    VI.Caption:=UTF8Decode('Việt (越南文1258,windows-1258)');
     WE.Caption:=UTF8Decode('西欧(1252,iso-8859-1)');
     CE.Caption:=UTF8Decode('中欧');
-    ND.Caption:=UTF8Decode('挪威文');
+    ND.Caption:=UTF8Decode('Norsk (挪威文)');
     i18.Caption:=UTF8Decode('国际');
-    co.Caption:=UTF8Decode('克罗地亚文');
-    rm.Caption:=UTF8Decode('罗马尼亚文');
+    co.Caption:=UTF8Decode('Hrvatska (克罗地亚文)');
+    rm.Caption:=UTF8Decode('Română (罗马尼亚文)');
     ro.Caption:=UTF8Decode('罗马文');
-    pg.Caption:=UTF8Decode('旁遮普(古尔木其)文');
-    gu.Caption:=UTF8Decode('古吉拉特文');
-    ma.Caption:=UTF8Decode('马拉亚拉姆文');
-    ka.Caption:=UTF8Decode('卡纳达文');
+    pg.Caption:=UTF8Decode('ਪੰਜਾਬੀ 旁遮普(古尔木其)文');
+    gu.Caption:=UTF8Decode('ગુજરાતી (古吉拉特文)');
+    ma.Caption:=UTF8Decode('മലയാളം (马拉亚拉姆文)');
+    ka.Caption:=UTF8Decode('ಕನ್ನಡ (卡纳达文)');
     oy.Caption:=UTF8Decode('奥里亚文');
-    am.Caption:=UTF8Decode('阿萨姆文');
-    te.Caption:=UTF8Decode('泰卢固文');
-    ta.Caption:=UTF8Decode('泰米尔文');
-    be.Caption:=UTF8Decode('孟加拉文');
-    dv.Caption:=UTF8Decode('梵文');
+    am.Caption:=UTF8Decode('অসমীয়া (阿萨姆文)');
+    te.Caption:=UTF8Decode('తెలుగు (泰卢固文)');
+    ta.Caption:=UTF8Decode('தமிழ் (泰米尔文)');
+    be.Caption:=UTF8Decode('বাংলা (孟加拉文)');
+    dv.Caption:=UTF8Decode('संस्कृतम् (梵文)');
   end;
   AddDircp:=UTF8Decode('选择一个文件夹');
   with EqualizerForm do begin

@@ -21,7 +21,7 @@ object LogForm: TLogForm
     Left = 0
     Top = 0
     Width = 542
-    Height = 381
+    Height = 388
     Align = alClient
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -35,7 +35,7 @@ object LogForm: TLogForm
   end
   object ControlPanel: TTntPanel
     Left = 0
-    Top = 381
+    Top = 388
     Width = 542
     Height = 25
     Align = alBottom
