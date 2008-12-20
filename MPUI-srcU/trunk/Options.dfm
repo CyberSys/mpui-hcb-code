@@ -713,6 +713,7 @@ object OptionsForm: TOptionsForm
         Items.Strings = (
           'don'#39't decode'
           'dont'#39'play'
+          'Auto'
           'Win32'
           'DirectSound')
       end

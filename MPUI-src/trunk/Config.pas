@@ -24,7 +24,7 @@ const DefaultFileName='MPUI.ini';
 
 var DefaultLocale:integer=AutoLocale;
 
-const AudioOutMap:array[0..3]of string=('nosound','null','win32','dsound');
+const AudioOutMap:array[0..4]of string=('nosound','null','auto','win32','dsound');
 const PostprocMap:array[0..2]of string=('off','auto','max');
 const DeinterlaceMap:array[0..2]of string=('off','simple','adaptive');
 const AspectMap:array[0..10]of string=('auto','4:3','16:9','2.35:1','14:9','5:4','16:10','2.21:1','1:1','1.22:1','custom');

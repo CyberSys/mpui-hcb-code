@@ -159,8 +159,9 @@ begin
   AboutForm.Font.Charset:=Locales[Index].Charset;
   AboutForm.LVersionMPUI.Font.Charset:=Locales[Index].Charset;
   AboutForm.LVersionMPlayer.Font.Charset:=Locales[Index].Charset;
-         
+
   CurrentLocale:=Index;
+  MainForm.MLanguage.Items[CurrentLocale].Checked:=true;
   Locales[Index].Func;
   HelpForm.Format;
   OptionsForm.Localize;

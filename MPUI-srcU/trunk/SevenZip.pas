@@ -147,7 +147,7 @@ function ZipExtractArchive( hWnd : HWND; // parent window handle
                             : integer; // 0 = success
 
 var
-  IsZipLoaded: integer =0; F7zaLibh: THandle = 0;
+  IsZipLoaded: THandle =0; F7zaLibh: THandle = 0;
   Is7zLoaded: integer =0;
   _ZipCommand              : TZipCommand              = nil;
   ZipGetRunning            : TZipGetRunning           = nil;
@@ -166,8 +166,6 @@ var
 implementation
 uses main, core, plist, locale;
 
-var _ZipDLLHandle : THandle = 0;
-
 procedure Load7zLibrary;
 var i:integer;
 begin
@@ -183,7 +181,7 @@ end;
 
 procedure UnLoad7zLibrary;
 begin
-  if F7zaLibh > 0 then begin
+  if F7zaLibh <> 0 then begin
     FreeLibrary( F7zaLibh );
     Is7zLoaded:=0;
   end;
@@ -191,32 +189,30 @@ end;
 
 procedure LoadZipLibrary;
 begin
-  if _ZipDLLHandle<>0 then exit;
-  _ZipDLLHandle:=Tnt_LoadLibraryW('7-zip32.dll');
-  if _ZipDLLHandle>0 then begin
-    IsZipLoaded:=1;
-    _ZipCommand             := GetProcAddress( _ZipDLLHandle, 'SevenZip' );
-    ZipGetRunning           := GetProcAddress( _ZipDLLHandle, 'SevenZipGetRunning' );
-    ZipCheckArchive         := GetProcAddress( _ZipDLLHandle, 'SevenZipCheckArchive' );
-    ZipOpenArchive          := GetProcAddress( _ZipDLLHandle, 'SevenZipOpenArchive' );
-    ZipCloseArchive         := GetProcAddress( _ZipDLLHandle, 'SevenZipCloseArchive' );
-    ZipFindFirst            := GetProcAddress( _ZipDLLHandle, 'SevenZipFindFirst' );
-    ZipFindNext             := GetProcAddress( _ZipDLLHandle, 'SevenZipFindNext' );
-    ZipGetAttribute         := GetProcAddress( _ZipDLLHandle, 'SevenZipGetAttribute' );
-    ZipSetOwnerWindow       := GetProcAddress( _ZipDLLHandle, 'SevenZipSetOwnerWindow' );
-    ZipClearOwnerWindow     := GetProcAddress( _ZipDLLHandle, 'SevenZipClearOwnerWindow' );
-    ZipSetOwnerWindowEx     := GetProcAddress( _ZipDLLHandle, 'SevenZipSetOwnerWindowEx' );
-    ZipKillOwnerWindowEx    := GetProcAddress( _ZipDLLHandle, 'SevenZipKillOwnerWindowEx' );
-    ZipSetUnicodeMode       := GetProcAddress( _ZipDLLHandle, 'SevenZipSetUnicodeMode' );
+  if IsZipLoaded<>0 then exit;
+  IsZipLoaded:=Tnt_LoadLibraryW('7-zip32.dll');
+  if IsZipLoaded<>0 then begin
+    _ZipCommand             := GetProcAddress( IsZipLoaded, 'SevenZip' );
+    ZipGetRunning           := GetProcAddress( IsZipLoaded, 'SevenZipGetRunning' );
+    ZipCheckArchive         := GetProcAddress( IsZipLoaded, 'SevenZipCheckArchive' );
+    ZipOpenArchive          := GetProcAddress( IsZipLoaded, 'SevenZipOpenArchive' );
+    ZipCloseArchive         := GetProcAddress( IsZipLoaded, 'SevenZipCloseArchive' );
+    ZipFindFirst            := GetProcAddress( IsZipLoaded, 'SevenZipFindFirst' );
+    ZipFindNext             := GetProcAddress( IsZipLoaded, 'SevenZipFindNext' );
+    ZipGetAttribute         := GetProcAddress( IsZipLoaded, 'SevenZipGetAttribute' );
+    ZipSetOwnerWindow       := GetProcAddress( IsZipLoaded, 'SevenZipSetOwnerWindow' );
+    ZipClearOwnerWindow     := GetProcAddress( IsZipLoaded, 'SevenZipClearOwnerWindow' );
+    ZipSetOwnerWindowEx     := GetProcAddress( IsZipLoaded, 'SevenZipSetOwnerWindowEx' );
+    ZipKillOwnerWindowEx    := GetProcAddress( IsZipLoaded, 'SevenZipKillOwnerWindowEx' );
+    ZipSetUnicodeMode       := GetProcAddress( IsZipLoaded, 'SevenZipSetUnicodeMode' );
   end;
 end;
 
 procedure UnLoadZipLibrary;
 begin
-  if _ZipDLLHandle<>0 then begin
-    FreeLibrary(_ZipDLLHandle);
+  if IsZipLoaded<>0 then begin
+    FreeLibrary(IsZipLoaded);
     IsZipLoaded:=0;
-    _ZipDLLHandle:=0;
   end;
 end;
 

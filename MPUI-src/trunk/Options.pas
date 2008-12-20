@@ -24,10 +24,6 @@ uses
   Dialogs, StdCtrls, ShellAPI, ComCtrls, Tabs, TabNotBk, ExtCtrls,
   TntExtCtrls, TntComCtrls, TntStdCtrls, ImgList;
 
-type PDSEnumCallback=function(lpGuid:PGUID; lpcstrDescription,lpcstrModule:PChar; lpContext:pointer):LongBool; stdcall;
-function DirectSoundEnumerate(lpDSEnumCallback:PDSEnumCallback; lpContext:pointer):HRESULT;
-         stdcall; external 'dsound.dll' name 'DirectSoundEnumerateA';
-
 type
   TOptionsForm = class(TTntForm)
     BOK: TTntButton;
@@ -184,14 +180,37 @@ type
     procedure ApplyValues;
     procedure LoadValues;
   end;
+  
+  PDSEnumCallback = function(lpGuid:PGUID; lpcstrDescription,lpcstrModule:PChar; lpContext:pointer):LongBool; stdcall;
+
+procedure LoadDsLibrary;
+procedure UnLoadDsLibrary;
 
 var
-  OptionsForm: TOptionsForm;
+  OptionsForm: TOptionsForm; IsDsLoaded:THandle=0;
 
 implementation
 uses Core, Config, Main, Locale, About, AddDir,plist;
 
 {$R *.dfm}
+var DirectSoundEnumerate: function (lpDSEnumCallback:PDSEnumCallback; lpContext:pointer):HRESULT; stdcall;
+
+procedure LoadDsLibrary;
+begin
+  if IsDsLoaded <> 0 then exit;   
+  IsDsLoaded := LoadLibrary('dsound.dll');
+  if IsDsLoaded <> 0 then
+    @DirectSoundEnumerate:= GetProcAddress(IsDsLoaded, 'DirectSoundEnumerateA');
+end;
+
+procedure UnLoadDsLibrary;
+begin
+  if IsDsLoaded <> 0 then begin
+    FreeLibrary(IsDsLoaded);
+    IsDsLoaded := 0;
+    DirectSoundEnumerate:= nil;
+  end;
+end;
 
 procedure TOptionsForm.BCloseClick(Sender: TObject);
 begin
@@ -208,6 +227,7 @@ begin
     CDeinterlace.Items[0]:=MNoDeint.Caption;
     CDeinterlace.Items[1]:=MSimpleDeint.Caption;
     CDeinterlace.Items[2]:=MAdaptiveDeint.Caption;
+    CAudioOut.Items[2]:=LOCstr_AutoLocale;
     LLanguage.Caption:=MLanguage.Caption;
     PlaylistForm.PLTC.Hint:=LTCL.Caption;
     PlaylistForm.PLHC.Hint:=LHCL.Caption;
@@ -409,8 +429,8 @@ begin
   Core.osdfont:=COsdfont.Text;
   Core.subfont:=CSubfont.Text;
   Core.MplayerLocation:=EMplayerLocation.Text;
-  Core.MAspect:=CMAspect.Text;
-  Core.VideoOut:=CVideoOut.Text;
+  Core.MAspect:=Trim(CMAspect.Text);
+  Core.VideoOut:=Trim(CVideoOut.Text);
   Core.Dda:=Trim(LowerCase(VideoOut))='directx:noaccel';
   Core.Ch:=CCh.ItemIndex;
   Core.Rot:=CRot.ItemIndex;
@@ -529,7 +549,8 @@ end;
 procedure TOptionsForm.FormCreate(Sender: TObject);
 begin
   CSubfont.Items:=FontNames; COsdfont.Items:=CSubfont.Items; Tab.TabIndex:=0;
-  DirectSoundEnumerate(EnumFunc,@CAudioDev);
+  if IsDsLoaded=0 then LoadDsLibrary;
+  if IsDsLoaded<>0 then DirectSoundEnumerate(EnumFunc,@CAudioDev);
   {$IFDEF VER150}
   // some fixes for Delphi>=7 VCLs
     PTc.ParentBackground:=False; POc.ParentBackground:=False;
@@ -539,7 +560,7 @@ end;
 procedure TOptionsForm.CAudioOutChange(Sender: TObject);
 var e:boolean;
 begin
-  e:=(CAudioOut.ItemIndex=3);
+  e:=(CAudioOut.ItemIndex=4);
   LAudioDev.Enabled:=e;
   CAudioDev.Enabled:=e;
   if Assigned(Sender) then SomethingChanged(Sender);
@@ -672,7 +693,7 @@ begin
 end;
 
 procedure TOptionsForm.FontChange(Sender: TObject);
-var i:integer;
+var i:integer; s:string;
 begin
   changed:=true;
   if (Sender as TComboBox).ItemIndex>-1 then begin
@@ -680,8 +701,9 @@ begin
     PShow.Caption:=(Sender as TComboBox).Text;
   end
   else begin
+    s:=Trim(LowerCase((Sender as TComboBox).Text));
     for i:=0 to FontPaths.Count-1 do begin
-      if LowerCase(FontPaths[i])=Trim(LowerCase((Sender as TComboBox).Text)) then begin
+      if LowerCase(FontPaths[i])=s then begin
         PShow.Font.Name:=FontNames[i];
         PShow.Caption:=FontNames[i];
         exit;

@@ -25,10 +25,6 @@ uses
   Math, plist, ImgList, Clipbrd, ToolWin, jpeg, TntDialogs, TntStdCtrls, TntSysutils,
   TntComCtrls, TntExtCtrls, Core, TntButtons, MultiMon, TntSystem;
 
-type PDDEnumCallbackEx=function(lpGuid:PGUID; lpDriverDescription,lpDriverName:PChar; lpContext:pointer; hm:HMONITOR):LongBool; stdcall;
-function DirectDrawEnumerateEx(lpDDEnumCallbackEx:PDDEnumCallbackEx; lpContelxt:pointer; dwFlags:DWORD):HRESULT;
-         stdcall; external 'ddraw.dll' name 'DirectDrawEnumerateExA';
-function SetThreadExecutionState(esFlags:Cardinal):Cardinal; stdcall; external kernel32;
 const
     ES_SYSTEM_REQUIRED  = $01;
     ES_DISPLAY_REQUIRED = $02;
@@ -454,6 +450,8 @@ type
     Procedure PassMsg(var msg: Tmessage); message $0401;
   end;
 
+  PDDEnumCallbackEx=function(lpGuid:PGUID; lpDriverDescription,lpDriverName:PChar; lpContext:pointer; hm:HMONITOR):LongBool; stdcall;
+
 var
   MainForm: TMainForm;
 
@@ -462,6 +460,27 @@ uses Locale, Config, Log, Help, About, Options, Info,
      UnRAR, Equalizer, SevenZip, AddDir;
 
 {$R *.dfm}
+var IsDrLoaded:THandle = 0;
+    DirectDrawEnumerateEx: function(lpDDEnumCallbackEx:PDDEnumCallbackEx; lpContelxt:pointer; dwFlags:DWORD):HRESULT; stdcall;
+
+function SetThreadExecutionState(esFlags:Cardinal):Cardinal; stdcall; external kernel32;
+
+procedure LoadDrLibrary;
+begin
+  if IsDrLoaded <> 0 then exit;   
+  IsDrLoaded := LoadLibrary('ddraw.dll');
+  if IsDrLoaded <> 0 then
+    @DirectDrawEnumerateEx:= GetProcAddress(IsDrLoaded, 'DirectDrawEnumerateExA');
+end;
+
+procedure UnLoadDrLibrary;
+begin
+  if IsDrLoaded <> 0 then begin
+    FreeLibrary(IsDrLoaded);
+    IsDrLoaded := 0;
+    DirectDrawEnumerateEx:= nil;
+  end;
+end;
 
 function DDrawEnumCallbackEx(lpGUID:PGUID; lpDriverDescription,lpDriverName:PChar; lpContext:pointer; hm:HMONITOR):LongBool; stdcall;
 var len:integer;
@@ -469,6 +488,7 @@ begin
   len:=length(HMonitorList);
   SetLength(HMonitorList,len+1);
   HMonitorList[len]:=hm;
+  if hm=CurMonitor.Handle then MonitorID:=len;
   Result:=True;
 end;
 
@@ -529,11 +549,10 @@ begin
   WantFullscreen:=false; WantCompact:=false;
   Constraints.MinWidth:=Width; Constraints.MinHeight:=Height;
   Core.Init; Config.Load(HomeDir+'autorun.inf'); Config.Load(HomeDir+DefaultFileName);
-  if Win32PlatformIsUnicode then DirectDrawEnumerateEx(DDrawEnumCallbackEx,nil,1);
   if not FileExists(MplayerLocation) then MplayerLocation:=HomeDir+'mplayer.exe';
   if subcode='' then subcode:='CP'+IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT)); //AnsiCodePage
   //OEM CodePage
-  {if subcode='' then begin   
+  {if subcode='' then begin
     GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_IDEFAULTCODEPAGE,Buf,6);
     Val(Buf,i,e);
     if e <> 0 then i:=GetOEMCP;
@@ -548,10 +567,10 @@ begin
     Top:=(screen.Height-Height) Div 2
   else Top:=screen.WorkAreaHeight-Constraints.MinHeight;
   if Core.RFScr then begin
-      OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
+    OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
   end
   else begin
-      OPanel.PopupMenu:=MPopup; IPanel.PopupMenu:=MPopup;
+    OPanel.PopupMenu:=MPopup; IPanel.PopupMenu:=MPopup;
   end;
   Init_MOpenDrive; Init_MLanguage; initFontList;
   with Logo do ControlStyle:=ControlStyle+[csOpaque];
@@ -567,10 +586,8 @@ begin
   Core.ForceStop; ClearTmpFiles(TempDir);
 //  SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, ScreenSaverActive, nil, 0);
   Config.Save(HomeDir+DefaultFileName,1);
-  if IsRarLoaded>0 then UnLoadRarLibrary;
-  if IsZipLoaded>0 then UnLoadZipLibrary;
-  if Is7zLoaded>0 then UnLoad7zLibrary;
-  if IsShell32Loaded then UnLoadShell32Library;
+  UnLoadRarLibrary; UnLoadZipLibrary; UnLoad7zLibrary;
+  UnLoadShell32Library; UnLoadDsLibrary; UnLoadDrLibrary;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -581,19 +598,11 @@ begin
     FirstShow:=false; MonitorID:=0;
     CurMonitor:=Screen.MonitorFromWindow(Handle);
     if Win32PlatformIsUnicode then begin
-      for i:=low(HMonitorList) to high(HMonitorList) do begin
-        if HMonitorList[i]=CurMonitor.Handle then begin
-          MonitorID:=i; break;
-        end;
-      end;
+      if IsDrLoaded=0 then LoadDrLibrary;
+      if IsDrLoaded<>0 then DirectDrawEnumerateEx(DDrawEnumCallbackEx,nil,1);
     end;
     MonitorW:=CurMonitor.Width; MonitorH:=CurMonitor.Height;
     ActivateLocale(DefaultLocale);
-    with MLanguage do begin
-      for i:=0 to Count-1 do begin
-        if Items[i].Tag=CurrentLocale then Items[i].Checked:=true;
-      end;
-    end;
     Application.ProcessMessages;
 
     if ParamStr(1)<>'' then begin
@@ -741,7 +750,7 @@ begin
   GlobalGetAtomName(msg.WParam,@OpenFileName[1],msg.LParam+1);
   GlobalDeleteAtom(msg.WParam);
   if not CheckOption(OpenFileName) then begin
-    if not HaveMsg then begin Playlist.Clear; HaveMsg:=true; end;
+    if not HaveMsg then begin PClear:=true; HaveMsg:=true; end;
     if DirectoryExists(OpenFileName) then begin
       Playlist.AddDirectory(OpenFileName);
       empty:=true;

@@ -86,7 +86,7 @@ type TWin9xWarnLevel=(wlWarn,wlReject,wlAccept);
 var Win9xWarnLevel:TWin9xWarnLevel;
 
 var HomeDir,SystemDir,TempDir,AppdataDir:WideString;
-var MediaURL,ArcMovie,Params,AddDirCP:WideString;
+var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     ArcPW,TmpPW,DisplayURL,AudioFile:WideString;
     subfont,osdfont,Duration,LyricF:String;
     substring,afChain,Vobfile,ShotDir,LyricDir,LyricURL:wideString;
@@ -486,6 +486,8 @@ begin
  // GetEnvironmentVariable('TEMP',@WinDir[0],MAX_PATH);
  // TempDir:=IncludeTrailingPathDelimiter(WinDir)+'MPUISub\';
   TempDir:=WideIncludeTrailingPathDelimiter(WideGetEnvironmentVariable('TEMP'))+'MPUI\';
+  HomeDir:=WideIncludeTrailingPathDelimiter(WideExtractFileDir(WideExpandFileName(WideParamStr(0))));
+
   if Win32PlatformIsVista then AppdataDir:=GetShellPath(RFID_APPDATA)
   else AppdataDir:=GetFolderPath(CSIDL_APPDATA);
   if AppdataDir='' then AppdataDir:=HomeDir else AppdataDir:=IncludeTrailingPathDelimiter(AppdataDir);
@@ -524,7 +526,7 @@ var DummyPipe1,DummyPipe2:THandle;
     si:TStartupInfoW;
     pi:TProcessInformation;
     sec:TSecurityAttributes;
-    CmdLine,S,j:WideString;
+    CmdLine,S:WideString;
     sf:string;
     Success:boolean; Error:DWORD;
     ErrorMessage:array[0..1023]of WideChar;
@@ -648,8 +650,8 @@ begin
   case AudioOut of
     0:CmdLine:=CmdLine+' -nosound';
     1:CmdLine:=CmdLine+' -ao null';
-    2:CmdLine:=CmdLine+' -ao win32,';
-    3:CmdLine:=CmdLine+' -ao dsound:device='+IntToStr(AudioDev)+',';
+    3: CmdLine:=CmdLine+' -ao win32,';
+    4: if AudioDev>-1 then CmdLine:=CmdLine+' -ao dsound:device='+IntToStr(AudioDev)+',';
   end;
 
   case Ch of
@@ -662,11 +664,11 @@ begin
     if Defaultslang then CmdLine:=CmdLine+' -alang zh,ch,tw,en -slang zh,ch,tw,en';
 
     if WideFileExists(LyricURL) then begin //拖放的歌词或用户指定的歌词
-      j:=WideExtractFileName(MediaURL);
-      j:=Tnt_WideLowerCase(Copy(j,1,length(j)-length(WideExtractFileExt(MediaURL))));
+      TmpURL:=WideExtractFileName(MediaURL);
+      TmpURL:=Tnt_WideLowerCase(Copy(TmpURL,1,length(TmpURL)-length(WideExtractFileExt(MediaURL))));
       s:=WideExtractFileName(LyricURL);
       s:=Tnt_WideLowerCase(Copy(s,1,length(s)-4));
-      if j=s then HaveLyric:=Lyric.ParseLyric(LyricURL);
+      if TmpURL=s then HaveLyric:=Lyric.ParseLyric(LyricURL);
     end;
 
     s:=Tnt_WideLowerCase(WideExtractFileExt(MediaURL));
@@ -678,10 +680,10 @@ begin
       if i>0 then ArcMovie:=copy(DisplayURL,1,i-1)
       else ArcMovie:=DisplayURL;
       if not HaveLyric then begin  //播放的Arc文件所在的目录下有包内当前播放文件同名的歌词
-        j:=copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie)))+'.lrc';
-        LyricURL:=WideExtractFilePath(MediaURL)+j;
+        TmpURL:=copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie)))+'.lrc';
+        LyricURL:=WideExtractFilePath(MediaURL)+TmpURL;
         if not WideFileExists(LyricURL) then
-          LyricURL:=WideIncludeTrailingPathDelimiter(LyricDir)+j;
+          LyricURL:=WideIncludeTrailingPathDelimiter(LyricDir)+TmpURL;
         if WideFileExists(LyricURL) then HaveLyric:=Lyric.ParseLyric(LyricURL);
       end;
     end
@@ -708,8 +710,8 @@ begin
         if IsLoaded(ZipType[t]) then begin   //当前播放文件所在的目录下有同名Arc文件中的同名歌词
           if (not HaveLyric) and (i<>0) then ExtractLyric(Vobfile+ZipType[t],ArcPW,ZipType[t],i);
           if LoadVob<>1 then begin
-            j:=ExtractSub(Vobfile+ZipType[t],ArcPW,ZipType[t]);
-            if j<>'' then begin Vobfile:=j; LoadVob:=1; end;
+            TmpURL:=ExtractSub(Vobfile+ZipType[t],ArcPW,ZipType[t]);
+            if TmpURL<>'' then begin Vobfile:=TmpURL; LoadVob:=1; end;
           end;
         end;
       end;
@@ -717,12 +719,15 @@ begin
 
     DirHIdx:=0; DirHSub:=0;
 
-    if i>0 then begin
+    if (i>0) and IsLoaded(s) then begin
       tEnd:=false;
+      TmpURL:=MediaURL; //避免系统调度UNRART线程的不确定性造成线程执行时获取的是已经变化的MediaURL
+      if ((s='.zip') and (IsZipLoaded<>0)) or ((s='.7z') and (Is7zLoaded=0)) then
+        MediaURL:=TempDir+ArcMovie
+      else MediaURL:=TempDir+'hcb428'+WideExtractFileExt(ArcMovie);
       UnRART:=TUnRARThread.Create(true);
       UnRART.FreeOnTerminate:=true;
       UnRART.Priority:=tpTimeCritical;
-      if IsLoaded(s) then begin
        { if ((s='.7z') and Is7zLoaded) or (s='.rar') then
           MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie)
         else MediaURL:=TempDir+ArcMovie; }
@@ -762,12 +767,7 @@ begin
         if not WideFileExists(MediaURL) then begin
          MainForm.LStatus.Caption:=''; exit;
         end;
-        if ((s='.zip') and (IsZipLoaded<>0)) or ((s='.7z') and (Is7zLoaded=0)) then
-          MediaURL:=TempDir+ArcMovie
-        else MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie);
-      end;
     end;
-
   end;
 
    {   ____________________________________________________________
@@ -2256,7 +2256,7 @@ begin
   MFunc:=0; ETime:=false; InSubDir:=true; ML:=false; InterW:=4; InterH:=3;
   AudiochannelsID:=0; OSDLevel:=1; Ch:=0; Wid:=true; Fd:=false; DragM:=false;
   Deinterlace:=0; Aspect:=0; Postproc:=0; VobsubCount:=0; IntersubCount:=0;
-  AudioOut:=3; AudioDev:=0; Expand:=0; SPDIF:=false; DirHIdx:=0; DirHSub:=0;
+  AudioOut:=2; AudioDev:=0; Expand:=0; SPDIF:=false; DirHIdx:=0; DirHSub:=0;
   ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=false; Fol:=2;
   dbbuf:=true; Dr:=false; Volnorm:=false; Defaultslang:=false; Pri:=true;
   Params:=''; OnTop:=0; MAspect:='Default'; empty:=true; lavf:=false; vsync:=false;

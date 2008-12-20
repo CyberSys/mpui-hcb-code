@@ -65,7 +65,7 @@ type
 
 var
   // Flag for: Is Dll loaded...
-  IsRarLoaded: integer = 0; IsShell32Loaded:boolean = false;
+  IsRarLoaded:THandle=0; IsShell32Loaded:THandle = 0;
   // function Pointer - Dll is always dynamicly loaded
   RAROpenArchive        : function(var ArchiveData: TRAROpenArchiveData): THandle; stdcall;
   RARCloseArchive       : function(hArcData: THandle): integer; stdcall;
@@ -109,9 +109,6 @@ type
     FFlags: LongWord;    // reserved for future use, must be zero
   end;
 
-var
-   h: THandle=0; SFHandle:THandle=0; // Dll-Handle
-
 procedure TUnRARThread.SetName;
 var ThreadNameInfo: TThreadNameInfo;
 begin
@@ -130,7 +127,7 @@ procedure TUnRARThread.Execute;
 begin
   SetName;
   { Place thread code here }
-  ExtractMovie(MediaURL,ArcMovie,ArcPW,LowerCase(ExtractFileExt(MediaURL)));
+  ExtractMovie(TmpURL,ArcMovie,ArcPW,LowerCase(ExtractFileExt(TmpURL)));
   tEnd:=true;
 end;
 
@@ -143,24 +140,23 @@ begin
   // 3. System-Directory
   // 4. Windows-Direcory
   // 5. Directories from PATH-Variable
-  h := Tnt_LoadLibraryW('unrar.dll');
-  if h <> 0 then begin
-    IsRarLoaded := 1;
-    @RAROpenArchive        := GetProcAddress(h, 'RAROpenArchiveEx');
-    @RARCloseArchive       := GetProcAddress(h, 'RARCloseArchive');
-    @RARReadHeader         := GetProcAddress(h, 'RARReadHeaderEx');
-    @RARProcessFile        := GetProcAddress(h, 'RARProcessFileW');
-    @RARSetPassword        := GetProcAddress(h, 'RARSetPassword');
+  if IsRarLoaded <> 0 then exit;
+  IsRarLoaded := Tnt_LoadLibraryW('unrar.dll');
+  if IsRarLoaded <> 0 then begin
+    @RAROpenArchive        := GetProcAddress(IsRarLoaded, 'RAROpenArchiveEx');
+    @RARCloseArchive       := GetProcAddress(IsRarLoaded, 'RARCloseArchive');
+    @RARReadHeader         := GetProcAddress(IsRarLoaded, 'RARReadHeaderEx');
+    @RARProcessFile        := GetProcAddress(IsRarLoaded, 'RARProcessFileW');
+    @RARSetPassword        := GetProcAddress(IsRarLoaded, 'RARSetPassword');
   end;
 end;
 
 // Unloading Library
 procedure UnLoadRarLibrary;
 begin
-  if h <> 0 then begin
-    FreeLibrary(h);
+  if IsRarLoaded <> 0 then begin
+    FreeLibrary(IsRarLoaded);
     IsRarLoaded := 0;
-    h := 0;
     RAROpenArchive        := nil;
     RARCloseArchive       := nil;
     RARReadHeader         := nil;
@@ -171,19 +167,17 @@ end;
 
 procedure LoadShell32Library;
 begin
-  SFHandle := Tnt_LoadLibraryW('shell32.dll'); 
-  if SFHandle <> 0 then begin
-    IsShell32Loaded:=true;
-    @SHGetKnownFolderPath:= GetProcAddress(SFHandle, 'SHGetKnownFolderPath');
-  end;
+  if IsShell32Loaded <> 0 then exit;
+  IsShell32Loaded := Tnt_LoadLibraryW('shell32.dll'); 
+  if IsShell32Loaded <> 0 then
+    @SHGetKnownFolderPath:= GetProcAddress(IsShell32Loaded, 'SHGetKnownFolderPath');
 end;
 
 procedure UnLoadShell32Library;
 begin
-  if SFHandle <> 0 then begin
-    FreeLibrary(SFHandle);
-    IsShell32Loaded:=false;
-    SFHandle := 0;
+  if IsShell32Loaded <> 0 then begin
+    FreeLibrary(IsShell32Loaded);
+    IsShell32Loaded := 0;
     SHGetKnownFolderPath:= nil;
   end;
 end;
@@ -193,8 +187,8 @@ function GetShellPath(rfid:TGUID):WideString;
 var PathBuf:PPWideChar; APIResult:HRESULT;
 begin //http://msdn.microsoft.com/en-us/library/bb762188(VS.85).aspx
   Result:='';
-  if SFHandle=0 then LoadShell32Library;
-  if SFHandle=0 then exit;
+  if IsShell32Loaded=0 then LoadShell32Library;
+  if IsShell32Loaded=0 then exit;
   APIResult:=SHGetKnownFolderPath(@rfid,0,0,PathBuf);
   OleCheck(APIResult);
   Result:=PWideChar(PathBuf);
