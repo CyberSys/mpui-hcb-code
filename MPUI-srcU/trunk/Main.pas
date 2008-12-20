@@ -528,7 +528,7 @@ begin
   HideMouseAt:=0; UpdateSeekBarAt:=0; PlayMsgAt:=0; 
   WantFullscreen:=false; WantCompact:=false;
   Constraints.MinWidth:=Width; Constraints.MinHeight:=Height;
-  Core.Init; Config.Load(HomeDir+'autorun.inf'); Config.Load;//(SystemDir+DefaultFileName);
+  Core.Init; Config.Load(HomeDir+'autorun.inf'); Config.Load(SystemDir+DefaultFileName);
   if Win32PlatformIsUnicode then DirectDrawEnumerateEx(DDrawEnumCallbackEx,nil,1);
   if not WideFileExists(MplayerLocation) then MplayerLocation:=HomeDir+'mplayer.exe';
   if subcode='' then subcode:='CP'+IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT)); //AnsiCodePage

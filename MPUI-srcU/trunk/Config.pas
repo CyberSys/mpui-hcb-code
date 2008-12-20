@@ -19,7 +19,7 @@ unit Config;
 interface
 uses Core, Main, Locale;
 
-const //DefaultFileName='MPUI.ini';
+const DefaultFileName='MPUI.ini';
       SectionName='MPUI';
 
 var DefaultLocale:integer=AutoLocale;
@@ -32,22 +32,101 @@ const ChMap:array[0..2]of WideString=('2','4','6');
 const RotMap:array[0..2]of WideString=('0','90','-90');
 
 procedure Load; overload;
-procedure Load(const FileName:string); overload;
+procedure Load(FileName:string); overload;
 procedure Save(Mode:integer);
 
 implementation
 uses SysUtils, TntRegistry, INIFiles ,windows,RTLConsts;
 
-procedure Load(const FileName:string);
+procedure Load(FileName:string);
 var INI:TINIFile;
 begin
-  if not FileExists(FileName) then exit;
+  if not FileExists(FileName) then begin
+    FileName:=AppdataDir+ExtractFileName(FileName);
+    if not FileExists(FileName) then begin  Load; exit; end;
+  end;
   INI:=TINIFile.Create(FileName);
   with INI do begin
+    DefaultLocale:=ReadInteger(SectionName,'Locale',DefaultLocale);
+    Core.AudioOut:=CheckInfo(AudioOutMap,ReadString(SectionName,'AudioOut',AudioOutMap[Core.AudioOut]));
+    Core.AudioDev:=ReadInteger(SectionName,'AudioDev',Core.AudioDev);
+    Core.Postproc:=CheckInfo(PostprocMap,ReadString(SectionName,'Postproc',PostprocMap[Core.Postproc]));
+    Core.Deinterlace:=CheckInfo(DeinterlaceMap,ReadString(SectionName,'Deinterlace',DeinterlaceMap[Core.Deinterlace]));
+    Core.Aspect:=CheckInfo(AspectMap,ReadString(SectionName,'Aspect',AspectMap[Core.Aspect]));
+    Core.Ch:=CheckInfo(ChMap,ReadString(SectionName,'Channels',ChMap[Core.Ch]));
+    Core.Rot:=CheckInfo(RotMap,ReadString(SectionName,'Rotate',RotMap[Core.Rot]));
+    Core.MAspect:=ReadString(SectionName,'MAspect',Core.MAspect);
+    Core.subcode:=ReadString(SectionName,'Subcode',Core.subcode);
+    Core.ReIndex:=ReadBool(SectionName,'ReIndex',Core.ReIndex);
+    Core.SoftVol:=ReadBool(SectionName,'SoftVol',Core.SoftVol);
+    Core.RFScr:=ReadBool(SectionName,'MBRFullScreen',Core.RFScr);
+    Core.UseekC:=ReadBool(SectionName,'Seek_Chapter',Core.UseekC);
+    Core.Dr:=ReadBool(SectionName,'Dr',Core.Dr);
+    Core.dbbuf:=ReadBool(SectionName,'Double',Core.dbbuf);
+    Core.Volnorm:=ReadBool(SectionName,'Volnorm',Core.Volnorm);
+    Core.Defaultslang:=ReadBool(SectionName,'Defaultslang',Core.Defaultslang);
+    Core.subfont:=ReadString(SectionName,'Subfont',Core.subfont);
+    Core.osdfont:=ReadString(SectionName,'OSDfont',Core.osdfont);
+    Core.ShotDir:=ReadString(SectionName,'ShotDir',Core.ShotDir);
+    Core.LyricDir:=ReadString(SectionName,'LyricDir',Core.LyricDir);
+    Core.ML:=ReadBool(SectionName,'ML',Core.ML);
+    Core.MplayerLocation:=ReadString(SectionName,'MplayerLocation',Core.MplayerLocation);
+    Core.Wid:=ReadBool(SectionName,'Wid',Core.Wid);
+    Core.Flip:=ReadBool(SectionName,'Flip',Core.Flip);
+    Core.Mirror:=ReadBool(SectionName,'Mirror',Core.Mirror);
+    Core.Eq2:=ReadBool(SectionName,'Eq2',Core.Eq2);
+    Core.Yuy2:=ReadBool(SectionName,'Yuy2',Core.Yuy2);
+    Core.VideoOut:=ReadString(SectionName,'VideoOut',Core.VideoOut);
+    Core.Dda:=Trim(LowerCase(Core.VideoOut))='directx:noaccel';
+    Core.ni:=ReadBool(SectionName,'Ni',Core.ni);
+    Core.nobps:=ReadBool(SectionName,'NoBPS',Core.nobps);
+    Core.Dnav:=ReadBool(SectionName,'DVDNav',Core.Dnav);
+    Core.UseUni:=ReadBool(SectionName,'UseUni',Core.UseUni);
+    Core.vsync:=ReadBool(SectionName,'VSync',Core.vsync);
+    Core.Uni:=ReadBool(SectionName,'Unicode',Core.Uni);
+    Core.Utf:=ReadBool(SectionName,'Utf8',Core.Utf);
+    Core.FSize:=ReadFloat(SectionName,'FontSize',Core.FSize);
+    Core.Fol:=ReadFloat(SectionName,'Outline',Core.Fol);
+    Core.FB:=ReadFloat(SectionName,'FontBlur',Core.FB);
+    Core.Wadsp:=ReadBool(SectionName,'Wadsp',Core.Wadsp);
+    Core.WadspL:=ReadString(SectionName,'WadspL',Core.WadspL);
+    Core.lavf:=ReadBool(SectionName,'Lavf',Core.lavf);
+    Core.Fd:=ReadBool(SectionName,'Framedrop',Core.Fd);
+    Core.Async:=ReadBool(SectionName,'Autosync',Core.Async);
+    Core.AsyncV:=ReadString(SectionName,'AutosyncV',Core.AsyncV);
+    Core.Cache:=ReadBool(SectionName,'Cache',Core.Cache);
+    Core.CacheV:=ReadString(SectionName,'CacheV',Core.CacheV);
+    Core.Pri:=ReadBool(SectionName,'Priority',Core.Pri);
+    Core.Ass:=ReadBool(SectionName,'ASS',Core.Ass);
+    Core.Efont:=ReadBool(SectionName,'EFont',Core.Efont);
+    Core.ISub:=ReadBool(SectionName,'ISub',Core.ISub);
+    Core.TextColor:=ReadInteger(SectionName,'TextColor',Core.TextColor);
+    Core.OutColor:=ReadInteger(SectionName,'OutColor',Core.OutColor);
+    Core.LTextColor:=ReadInteger(SectionName,'LyricTextColor',Core.LTextColor);
+    Core.LbgColor:=ReadInteger(SectionName,'BGColor',Core.LbgColor);
+    Core.LhgColor:=ReadInteger(SectionName,'HGColor',Core.LhgColor);
+    Core.Params:=ReadString(SectionName,'Params',Core.Params);
+    Core.AutoPlay:=ReadBool(SectionName,'AutoPlay',Core.AutoPlay);
+    Core.DragM:=ReadBool(SectionName,'DragMode',Core.DragM);
+    Core.uof:=ReadBool(SectionName,'UseOSDfont',Core.uof);
+    Core.GUI:=ReadBool(SectionName,'GUI',Core.GUI);
+    Core.InterW:=ReadInteger(SectionName,'InnerPanel_Width',Core.InterW);
+    Core.InterH:=ReadInteger(SectionName,'InnerPanel_Height',Core.InterH);
+    Core.Bp:=ReadInteger(SectionName,'Intro',Core.Bp);
+    Core.Ep:=ReadInteger(SectionName,'Ending',Core.Ep);
+    Core.Volume:=ReadInteger(SectionName,'Volume',Core.Volume);
+    Core.OnTop:=ReadInteger(SectionName,'OnTop',Core.OnTop);
+    Core.FilterDrop:=ReadBool(SectionName,'FilterDrop',Core.FilterDrop);
+    Core.Speed:=ReadFloat(SectionName,'Speed',Core.Speed);
     Core.WantFullscreen:=ReadBool(SectionName,'Fullscreen',Core.WantFullscreen);
     Core.AutoQuit:=ReadBool(SectionName,'AutoQuit',Core.AutoQuit);
     Core.WantCompact:=ReadBool(SectionName,'Compact',Core.WantCompact);
-    Core.AutoPlay:=ReadBool(SectionName,'AutoPlay',Core.AutoPlay);
+    Core.PScroll:=ReadBool(SectionName,'Scroll',Core.PScroll);
+    Core.LyricF:=ReadString(SectionName,'LyricFont',Core.LyricF);
+    Core.LyricS:=ReadInteger(SectionName,'LyricSize',Core.LyricS);
+    MainForm.MOnTop.Items[Core.OnTop].Checked:=true;
+    MainForm.MUUni.Checked:=Core.UseUni;
+    MainForm.UpdateMenuCheck;
     Free;
   end;
 end;
@@ -90,7 +169,7 @@ begin
         if ValueExists('Seek_Chapter') then UseekC:=ReadBool('Seek_Chapter');
         if ValueExists('Dr') then Dr:=ReadBool('Dr');
         if ValueExists('Double') then dbbuf:=ReadBool('Double');
-        if ValueExists('SourceFile') then Volnorm:=ReadBool('Volnorm');
+        if ValueExists('Volnorm') then Volnorm:=ReadBool('Volnorm');
         if ValueExists('Defaultslang') then Defaultslang:=ReadBool('Defaultslang');
         if ValueExists('Subfont') then subfont:=ReadString('Subfont');
         if ValueExists('OSDfont') then osdfont:=ReadString('OSDfont');
@@ -156,7 +235,7 @@ begin
     end;
     MainForm.MOnTop.Items[OnTop].Checked:=true;
     MainForm.MUUni.Checked:=UseUni;
-	MainForm.UpdateMenuCheck;
+    MainForm.UpdateMenuCheck;
   end;
 end;
 
