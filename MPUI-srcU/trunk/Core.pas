@@ -651,7 +651,7 @@ begin
     0:CmdLine:=CmdLine+' -nosound';
     1:CmdLine:=CmdLine+' -ao null';
     3: CmdLine:=CmdLine+' -ao win32,';
-    4: if AudioDev>-1 then CmdLine:=CmdLine+' -ao dsound:device='+IntToStr(AudioDev)+',';
+    4: if OptionsForm.CAudioDev.ItemIndex>-1 then CmdLine:=CmdLine+' -ao dsound:device='+IntToStr(AudioDev)+',';
   end;
 
   case Ch of
