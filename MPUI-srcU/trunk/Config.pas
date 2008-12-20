@@ -68,7 +68,7 @@ begin
   reg:=TTntRegistry.Create;
   with reg do begin
     try
-      RootKey := HKEY_LOCAL_MACHINE;
+      RootKey := HKEY_CURRENT_USER;
       if OpenKeyReadOnly('SOFTWARE\MPUI') then begin
         if ValueExists('Locale') then DefaultLocale:=ReadInteger('Locale');
         if ValueExists('AudioOut') then AudioOut:=CheckInfo(AudioOutMap,ReadString('AudioOut'));
@@ -170,7 +170,7 @@ begin
   reg:=TTntRegistry.Create;
   with reg do begin
     try
-      RootKey := HKEY_LOCAL_MACHINE;
+      RootKey := HKEY_CURRENT_USER;
       if OpenKey('SOFTWARE\MPUI',true) then begin
         case mode of
           0: begin
