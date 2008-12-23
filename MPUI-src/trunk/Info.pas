@@ -77,14 +77,14 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
     if W>TabOffset then TabOffset:=W;
     InfoBox.Items.Add(Key+WideString(^I+Value));
   end;
-  procedure T(const Key:WideString; const Value:string);
+  procedure T(const Key:WideString; const Value:WideString);
     begin AddHeader(HaveTagHeader,LOCstr_InfoTags); AddItem(Key,Value); end;
-  procedure V(const Key:WideString; const Value:string);
+  procedure V(const Key:WideString; const Value:WideString);
     begin AddHeader(HaveVideoHeader,LOCstr_InfoVideo); AddItem(Key,Value); end;
-  procedure A(const Key:WideString; const Value:string);
+  procedure A(const Key:WideString; const Value:WideString);
     begin AddHeader(HaveAudioHeader,LOCstr_InfoAudio); AddItem(Key,Value); end;
 begin
-  with Core.StreamInfo do begin
+  with StreamInfo do begin
     if not Visible then exit;
   InfoBox.Items.Clear;
   TabOffset:=0;

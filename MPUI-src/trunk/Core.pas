@@ -17,32 +17,32 @@
 }
 unit Core;
 interface
-uses Windows, SysUtils, TntSysUtils, Classes, Forms, Menus,TntMenus,
-     Controls, Dialogs, Graphics, ComCtrls, TntForms, MultiMon, ShlObj; //,ShellAPI;
+uses Windows, TntWindows, SysUtils, TntSysUtils, TntSystem, Classes, Forms, Menus,TntMenus, 
+     Controls,Graphics, Dialogs, MultiMon, ShlObj, TntClasses; //,ShellAPI;
 
 const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
 
-const CacheFill:array[0..3]of String=('缓存填充:','缓冲填充:','緩存填充:','緩沖填充:');
-const GenIndex:array[0..1]of String=('正在生成索引:','正在生成索引:');
+const CacheFill:array[0..3]of WideString=('缓存填充:','缓冲填充:','緩存填充:','緩沖填充:');
+const GenIndex:array[0..1]of WideString=('正在生成索引:','正在生成索引:');
 
 const szdllCount=2;
-const szdll:array[0..szdllCount]of string=('7zxa.dll','7za.dll','7z.dll');
+const szdll:array[0..szdllCount]of WideString=('7zxa.dll','7za.dll','7z.dll');
 
 const ZipTypeCount=19;
-const ZipType:array[0..ZipTypeCount]of string=('.7z','.rar','.zip','.arj','.bz2','.z','.lzh',
+const ZipType:array[0..ZipTypeCount]of WideString=('.7z','.rar','.zip','.arj','.bz2','.z','.lzh',
             '.cab','.lzma','.xar','.hfs','.dmg','.wim','.iso','.split','.rpm','.deb','.cpio',
             '.tar','.gz'
       );
 
 const SubTypeCount=35;
-      SubType:array[0..SubTypeCount]of string=('.7z','.rar','.zip','.arj','.bz2','.z','.lzh',
+      SubType:array[0..SubTypeCount]of WideString=('.7z','.rar','.zip','.arj','.bz2','.z','.lzh',
             '.cab','.lzma','.xar','.hfs','.dmg','.wim','.iso','.split','.rpm','.deb','.cpio',
             '.tar','.gz',
             '.lrc','.utf','.utf8','.utf-8','.srt','.smi','.rt','.txt','.ssa','.aqt','.jss',
             '.js','.ass','.mpsub','.idx','.sub'
       );
       
-const MediaType:array[0..202]of string=('.7z','.rar','.zip','.arj','.bz2','.z','.lzh',
+const MediaType:array[0..202]of WideString=('.7z','.rar','.zip','.arj','.bz2','.z','.lzh',
         '.cab','.lzma','.xar','.hfs','.dmg','.wim','.iso','.split','.rpm','.deb','.cpio',
         '.tar','.gz',
         '.aac','.ac3','.acc','.act','.aif','.aifc','.aiff','.amf','.amr','.amv','.ape',
@@ -65,16 +65,16 @@ const MediaType:array[0..202]of string=('.7z','.rar','.zip','.arj','.bz2','.z','
         '.26l','.264','.3g2','.3gp','.3gpp','.3gp2','.669'
       );
 
-const PlaylistType:array[0..10]of string=(
+const PlaylistType:array[0..10]of WideString=(
         '.m3u','.asx','.wpl','.pls','.ttpl','.rmp','.xspf',
         '.smpl','.m3u8','.mpcpl','.wmx'
       );
 
-const VideoDemuxer:array[0..5]of string=(
+const VideoDemuxer:array[0..5]of WideString=(
         'avinini','avini','avi','mpegts','lavf','lavfpref'
       );
 
-const AudioDemuxer:array[0..11]of string=(
+const AudioDemuxer:array[0..11]of WideString=(
         'mkv','mpegts','mpegps','mpegpes','mpeges',
         'mpeg4es','h264es','lavf','lavfpref','avinini','avini','avi'
       );
@@ -85,13 +85,13 @@ var Status:TStatus;
 type TWin9xWarnLevel=(wlWarn,wlReject,wlAccept);
 var Win9xWarnLevel:TWin9xWarnLevel;
 
-var HomeDir,TempDir,SystemDir,AppdataDir,NoAccess,AudioFile:string;
-var ArcPW,TmpPW,DisplayURL,MediaURL,TmpURL,ArcMovie:WideString;
-    substring,Vobfile,afChain:String;
-    subfont,osdfont,ShotDir,LyricDir,LyricURL,LyricF:String;
-    Ccap,Acap:WideString;
-    DemuxerName,CacheV:string;
-    MplayerLocation,WadspL,AsyncV:string;
+var HomeDir,SystemDir,TempDir,AppdataDir:WideString;
+var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
+    ArcPW,TmpPW,DisplayURL,AudioFile:WideString;
+    Duration,LyricF:String;
+    substring,afChain,Vobfile,ShotDir,LyricDir,LyricURL:wideString;
+    subfont,osdfont,Ccap,Acap,DemuxerName:WideString;
+    MplayerLocation,WadspL,AsyncV,CacheV:widestring;
     MAspect,subcode,MaxLenLyric,VideoOut:string;
     FirstOpen,PClear,Fd,Async,Cache,uof,DragM,FilterDrop:boolean;
     Wid,Dreset,UpdateSkipBar,Pri,HaveLyric,HaveChapters,HaveMsg:boolean;
@@ -99,7 +99,7 @@ var ArcPW,TmpPW,DisplayURL,MediaURL,TmpURL,ArcMovie:WideString;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
     ControlledResize,ni,nobps,Dnav,lavf,UseekC,vsync:boolean;
     Flip,Mirror,Yuy2,Eq2,LastEq2,Dda,LastDda,Wadsp:boolean;
-    WantFullscreen,WantCompact,AutoQuit:boolean;
+    WantFullscreen,WantCompact,AutoQuit,NoAccess:boolean;
 var VideoID,Ch,CurPlay,LyricS:integer;
     AudioID,MouseMode,SubPos:integer;
     SubID,TID,CID,AID,VCDST,VCDET,CDID:integer;
@@ -111,48 +111,51 @@ var VideoID,Ch,CurPlay,LyricS:integer;
     InterW,InterH,OldX,OldY,Scale,LastScale:integer;
     MFunc,CBHSA,bri,briD,contr,contrD,hu,huD,sat,satD,gam,gamD:integer;
 var AudioOut,AudioDev,Postproc,Deinterlace,Aspect:integer;
-    ReIndex,SoftVol,RFScr,dbbuf,Defaultslang,Firstrun,Volnorm,Dr:boolean;
+    ReIndex,SoftVol,RFScr,dbbuf,Dlang,Firstrun,Volnorm,Dr:boolean;
     Loadsrt,LoadVob,Loadsub,Expand,TotalTime,TTime:integer;
-    Params,Duration,DTFormat:string;
 var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
     LastPos,SecondPos,OSDLevel,MSecPos:integer;
 var Volume,MWC,CP:integer;
     tEnd,Mute,LastMute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
+    DTFormat:string;
     FormatSet:TFormatSettings;
     ExplicitStop,Rot,DefaultFontIndex:integer;
     TextColor,OutColor,LTextColor,LbgColor,LhgColor:Longint;
     Speed,FSize,Fol,FB,dy,LyricV,Adelay,Sdelay:real;
     CurMonitor:TMonitor;
     HMonitorList:array of HMonitor;
-    FontNames,FontPaths:TStringList;
-    
+    FontPaths:TTntStringList;
+
 var StreamInfo:record
-      FileName, FileFormat, PlaybackTime: string;
+      FileName, FileFormat, PlaybackTime: WideString;
       Video:record
-        Decoder, Codec: string;
+        Decoder, Codec: WideString;
         Bitrate, Width, Height: integer;
         FPS, Aspect: real;
       end;
       Audio:record
-        Decoder, Codec: string;
+        Decoder, Codec: Widestring;
         Bitrate, Rate, Channels: integer;
       end;
       ClipInfo:array[0..9]of record
-        Key, Value: string;
+        Key, Value: WideString;
       end;
     end;
 
-procedure AddChain(var Count:integer; var rs:string; const s:string);
-function CheckOption(OPTN:string):boolean;
+procedure AddChain(var Count:integer; var rs:WideString; const s:WideString);
+function WideGetEnvironmentVariable(const Name:WideString):WideString;
+function WideExpandUNCFileName(const FileName:WideString):WideString;
+function WideGetUniversalName(const FileName:WideString):WideString;    
+function CheckOption(OPTN:WideString):boolean;
 function SecondsToTime(Seconds:integer):String;
 function TimeToSeconds(TimeCode:string):integer;
-function EscapeParam(const Param:string):string;
-function EscapePath(Path:string):string;
-function CheckSubfont(Sfont:string):string;
-function CheckInfo(const Map:array of string; Value:string):integer;
-function ColorToStr(Color:Longint):string;
-function GetFolderPath(csidl:integer):String;
+function EscapeParam(const Param:widestring):widestring;
+function EscapePath(Path:WideString):WideString;
+function CheckSubfont(Sfont:WideString):WideString;
+function CheckInfo(const Map:array of WideString; Value:WideString):integer;
+function ColorToStr(Color:Longint):WideString;
+function GetFolderPath(csidl:integer):WideString;
 procedure SetLastPos;
 procedure Init;
 procedure Start;
@@ -160,18 +163,18 @@ procedure Stop;
 procedure Restart;
 procedure ForceStop;
 function Running:boolean;
-function IsLoaded(ArcType:string):boolean;
-function AddMovies(ArcName,PW:widestring; Add:boolean; ArcType:string):integer;
-procedure ExtractMovie(ArcName,MovieName,PW:widestring; ArcType:string);
-procedure ExtractLyric(ArcName,PW:WideString; ArcType:string; Mode:integer);
-function ExtractSub(ArcName,PW:WideString; ArcType:string):String;
+function IsLoaded(ArcType:WideString):boolean;
+function AddMovies(ArcName,PW:widestring; Add:boolean; ArcType:WideString):integer;
+procedure ExtractMovie(ArcName,MovieName,PW,ArcType:WideString);
+procedure ExtractLyric(ArcName,PW,ArcType:WideString; Mode:integer);
+function ExtractSub(ArcName,PW,ArcType:WideString):WideString;
 procedure Terminate;
 procedure SendCommand(Command:String);
 procedure SendVolumeChangeCommand(Vol:integer);
 procedure ResetStreamInfo;
 
 implementation
-uses Main,Log,plist,Info,UnRAR,Equalizer,Locale,Options,About,AddDir,Help,SevenZip;
+uses Main,Log,plist,Info,UnRAR,Equalizer,Locale,Options,About,Help,SevenZip;
 
 type TClientWaitThread=class(TThread)
                          private procedure ClientDone;
@@ -195,9 +198,9 @@ var ClientWaitThread:TClientWaitThread;
     LastCacheFill:string;
 
 procedure HandleInputLine(Line:String); forward;
-procedure HandleIDLine(ID, Content: string); forward;
+procedure HandleIDLine(ID:string; Content:WideString); forward;
 
-function IsLoaded(ArcType:string):boolean;
+function IsLoaded(ArcType:WideString):boolean;
 begin
   if ArcType='.rar' then begin
     if IsRarLoaded=0 then LoadRarLibrary;
@@ -228,7 +231,7 @@ begin
   end;
 end;
 
-function AddMovies(ArcName,PW:widestring; Add:boolean; ArcType:string):integer;
+function AddMovies(ArcName,PW:widestring; Add:boolean; ArcType:WideString):integer;
 begin
   Result:=0;
   if ArcType='.rar' then begin
@@ -246,7 +249,7 @@ begin
   else if Is7zLoaded>2 then Result:=Add7zMovies(ArcName,PW,Add);
 end;
 
-procedure ExtractMovie(ArcName,MovieName,PW:widestring; ArcType:string);
+procedure ExtractMovie(ArcName,MovieName,PW,ArcType:widestring);
 begin
   if ArcType='.rar' then begin
     if IsRarLoaded<>0 then ExtractRarMovie(ArcName,MovieName,PW)
@@ -263,7 +266,7 @@ begin
   else if Is7zLoaded>2 then Extract7zMovie(ArcName,MovieName,PW);
 end;
 
-procedure ExtractLyric(ArcName,PW:WideString; ArcType:string; Mode:integer);
+procedure ExtractLyric(ArcName,PW,ArcType:WideString; Mode:integer);
 begin
   if ArcType='.rar' then begin
     if IsRarLoaded<>0 then ExtractRarLyric(ArcName,PW,Mode)
@@ -280,7 +283,7 @@ begin
   else if Is7zLoaded>2 then Extract7zLyric(ArcName,PW,Mode);
 end;
 
-function ExtractSub(ArcName,PW:WideString; ArcType:string):String;
+function ExtractSub(ArcName,PW,ArcType:WideString):WideString;
 begin
   Result:='';
   if ArcType='.rar' then begin
@@ -298,7 +301,40 @@ begin
   else if Is7zLoaded>2 then Result:=Extract7zSub(ArcName,PW);
 end;
 
-function SplitLine(var Line:string):string;
+function WideGetEnvironmentVariable(const Name:WideString):WideString;
+var Len:integer;
+begin
+  Result:='';
+  if Win32PlatformIsUnicode then begin
+    Len:=GetEnvironmentVariableW(PWideChar(Name),nil,0);
+    if Len > 0 then begin
+      SetLength(Result, Len - 1);
+      GetEnvironmentVariableW(PWideChar(Name),PWideChar(Result),Len);
+    end;
+  end
+  else Result:=WideString(GetEnvironmentVariable(string(Name)));
+end;
+
+function WideExpandUNCFileName(const FileName:WideString):WideString;
+begin
+  Result:=WideExpandFileName(FileName);
+  if (Length(Result)>=3) and (Result[2]=':') and (Upcase(char(Result[1]))>='A')
+    and (Upcase(char(Result[1]))<='Z') then
+    Result:=WideGetUniversalName(Result);
+end;
+
+function WideGetUniversalName(const FileName:WideString):WideString;
+var Size:LongWord; RemoteNameInfo:array[0..1023] of Byte;
+begin
+  Result:=FileName;
+  if (Win32Platform<>VER_PLATFORM_WIN32_WINDOWS) or (Win32MajorVersion > 4) then begin
+    Size:=SizeOf(RemoteNameInfo);
+    if WNetGetUniversalNameW(PWideChar(FileName),UNIVERSAL_NAME_INFO_LEVEL,@RemoteNameInfo,Size)<>NO_ERROR then Exit;
+    Result:=PRemoteNameInfoW(@RemoteNameInfo).lpUniversalName;
+  end
+end;
+
+function SplitLine(var Line:widestring):widestring;
 var i:integer;
 begin
   i:=Pos(#32,Line);
@@ -317,28 +353,28 @@ begin
   Delete(Line,1,i);
 end;
 
-procedure AddChain(var Count:integer; var rs:string; const s:string);
+procedure AddChain(var Count:integer; var rs:WideString; const s:WideString);
 begin
   inc(Count);
   if Count>1 then rs:=rs+','+s
   else rs:=s;
 end;
 
-function CheckOption(OPTN:string):boolean;
+function CheckOption(OPTN:WideString):boolean;
 begin
-  OPTN:=LowerCase(OPTN); Result:=False;
+  OPTN:=Tnt_WideLowerCase(OPTN); Result:=False;
   if OPTN='-fs' then begin WantFullscreen:=True; Result:=True; end;
   if OPTN='-compact' then begin WantCompact:=True; Result:=True; end;
   if OPTN='-autoquit' then begin AutoQuit:=True; Result:=True; end;
   if OPTN='-enqueue' then Result:=True;
 end;
 
-function EscapeParam(const Param:string):string;
+function EscapeParam(const Param:widestring):widestring;
 begin
   if Pos(#32,Param)>0 then Result:=#34+Param+#34 else Result:=Param;
 end;
 
-function EscapePath(Path:string):string;
+function EscapePath(Path:WideString):WideString;
 var i:integer;
 begin
   for i:=1 to length(Path) do if Path[i]='\' then Path[i]:='/';
@@ -361,7 +397,7 @@ begin
   Result:=(StrToIntDef(copy(TimeCode,1,2),0)*60+StrToIntDef(copy(TimeCode,4,2),0))*60+StrToIntDef(copy(TimeCode,7,2),0);
 end;
 
-function CheckInfo(const Map:array of string; Value:string):integer;
+function CheckInfo(const Map:array of WideString; Value:WideString):integer;
 var i:integer;
 begin
   for i:=Low(Map) to High(Map) do
@@ -372,17 +408,18 @@ begin
   Result:=-1;
 end;
 
-function CheckSubfont(Sfont:string):string;
-var i:integer; s:string;
+function CheckSubfont(Sfont:WideString):WideString;
+var i:integer; s:WideString;
 begin
-  if FileExists(Sfont) then
-    Result:=Sfont
+  if WideFileExists(Sfont) then begin
+    Result:=Sfont;
+    if not IsWideStringMappableToAnsi(Sfont) then Result:=WideExtractShortPathName(Sfont);
+  end
   else begin
-    Result:='';
+    Result:=''; s:=Trim(Tnt_WideLowerCase(Sfont));
     for i:=0 to FontPaths.Count-1 do begin
-      s:=Trim(LowerCase(Sfont));
-      if (LowerCase(FontNames[i])=s) or
-         (LowerCase(FontPaths[i])=s) then begin
+      if (Tnt_WideLowerCase(SystemDir+'Fonts\'+s)=Tnt_WideLowerCase(FontPaths[i])) OR
+        (s=Tnt_WideLowerCase(OptionsForm.CSubfont.Items[i])) then begin
         Result:=FontPaths[i];
         exit;
       end;
@@ -392,16 +429,20 @@ begin
       if DefaultFontIndex>-1 then Result:=FontPaths[DefaultFontIndex]
       else if FileExists(SystemDir+'Fonts\arial.ttf') then
         Result:=SystemDir+'Fonts\arial.ttf'
-      else if FileExists(HomeDir+'mplayer\subfont.ttf') then
-        Result:=HomeDir+'mplayer\subfont.ttf';
+      else if WideFileExists(HomeDir+'mplayer\subfont.ttf') then begin
+        if IsWideStringMappableToAnsi(HomeDir+'mplayer\subfont.ttf') then
+          Result:=HomeDir+'mplayer\subfont.ttf'
+        else
+          Result:=WideExtractShortPathName(HomeDir+'mplayer\subfont.ttf');
+      end;
     end;
   end;
 end;
 
-function ColorToStr(Color:Longint):string;
+function ColorToStr(Color:Longint):WideString;
 var i:integer; s:string;
 begin
-  s:=Format('%.8x',[Color]);
+  s:=Tnt_WideFormat('%.8x',[Color]);
   for i:=length(s) downto 1 do Result:=Result+s[i];
 end;
 
@@ -417,14 +458,23 @@ begin
   end;
 end;
 
-function GetFolderPath(csidl:integer):String;
-var Buffer: PAnsiChar;
+function GetFolderPath(csidl:integer):WideString;
+var Buffer:PAnsiChar; BufferW:PWideChar;
 begin
-  GetMem(Buffer,MAX_PATH+1);
-  if SHGetSpecialFolderPath(0,Buffer,csidl,false) then
-    Result:=Buffer
-  else Result:='';
-  FreeMem(Buffer);
+  if Win32PlatformIsUnicode then begin
+    GetMem(BufferW,MAX_PATH+1);
+    if SHGetSpecialFolderPathW(0,BufferW,csidl,false) then
+      Result:=BufferW
+    else Result:='';
+    FreeMem(BufferW);
+  end
+  else begin
+    GetMem(Buffer,MAX_PATH+1);
+    if SHGetSpecialFolderPath(0,Buffer,csidl,false) then
+      Result:=WideString(Buffer)
+    else Result:='';
+    FreeMem(Buffer);
+  end;
 end;
 
 procedure Init;
@@ -432,9 +482,9 @@ const RFID_APPDATA:TGUID='{3EB685DB-65F9-4CF6-A03A-E3EF65729F3D}';
       RFID_PERSONAL:TGUID='{FDD39AD0-238F-46AF-ADB4-6C85480369C7}';
       // use by SHGetKnownFolderPath http://msdn.microsoft.com/en-us/library/bb762584(VS.85).aspx
 begin
-  SystemDir:=IncludeTrailingPathDelimiter(GetEnvironmentVariable('windir'));
-  TempDir:=IncludeTrailingPathDelimiter(GetEnvironmentVariable('TEMP'))+'MPUI\';
-  HomeDir:=IncludeTrailingPathDelimiter(ExtractFileDir(ExpandFileName(ParamStr(0))));
+  SystemDir:=WideIncludeTrailingPathDelimiter(WideGetEnvironmentVariable('windir'));
+  TempDir:=WideIncludeTrailingPathDelimiter(WideGetEnvironmentVariable('TEMP'))+'MPUI\';
+  HomeDir:=WideIncludeTrailingPathDelimiter(WideExtractFileDir(WideExpandFileName(WideParamStr(0))));
 
   if Win32PlatformIsVista then AppdataDir:=GetShellPath(RFID_APPDATA)
   else AppdataDir:=GetFolderPath(CSIDL_APPDATA);
@@ -443,9 +493,8 @@ begin
   if Win32PlatformIsVista then ShotDir:=GetShellPath(RFID_PERSONAL)
   else ShotDir:=GetFolderPath(CSIDL_PERSONAL);
   if ShotDir='' then ShotDir:=HomeDir else ShotDir:=IncludeTrailingPathDelimiter(ShotDir);
-  if DirectoryExists(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap'
-  else if CreateDir(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap';
-  
+  if WideDirectoryExists(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap'
+  else if WideCreateDir(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap';
   // check for Win9x
   if Win32PlatformIsUnicode then Win9xWarnLevel:=wlAccept
   else Win9xWarnLevel:=wlWarn;
@@ -456,19 +505,21 @@ begin
   GetLocaleFormatSettings(GetUserDefaultLCID,FormatSet);
   if Pos('ddd',FormatSet.ShortDateFormat)=0 then FormatSet.ShortDateFormat:='ddd '+FormatSet.ShortDateFormat;
   if Pos('ddd',FormatSet.LongDateFormat)=0 then FormatSet.LongDateFormat:='dddd '+FormatSet.LongDateFormat;
-  SetThreadLocale(LOCALE_SYSTEM_DEFAULT);
+  SetErrorMode(SEM_FAILCRITICALERRORS);
+  //SetThreadLocale(LOCALE_SYSTEM_DEFAULT);
   {//在user_def和sys_def不同时，为了使mpui能够正常播放sys_def的文件添加了这句，但菜单可能显示不正常。
   原因就是string和widestring在ansi环境下默认转化造成的。}
 end;
 
 procedure Start;
 var DummyPipe1,DummyPipe2:THandle;
-    si:TStartupInfo;
+    si:TStartupInfoW;
     pi:TProcessInformation;
     sec:TSecurityAttributes;
-    CmdLine,s:string;
+    CmdLine,S,j:WideString;
     Success:boolean; Error:DWORD;
-    ErrorMessage:array[0..1023]of char;
+    ErrorMessage:array[0..1023]of Char;
+    ErrorMessageW:array[0..1023]of WideChar;
     i,t:integer; UnRART:TUnRARThread;
 begin
   if (ClientProcess<>0) or (length(MediaURL)=0) then exit;
@@ -587,8 +638,8 @@ begin
   end;
 
   case AudioOut of
-    0: CmdLine:=CmdLine+' -nosound';
-    1: CmdLine:=CmdLine+' -ao null';
+    0:CmdLine:=CmdLine+' -nosound';
+    1:CmdLine:=CmdLine+' -ao null';
     3: CmdLine:=CmdLine+' -ao win32,';
     4: if OptionsForm.CAudioDev.ItemIndex>-1 then CmdLine:=CmdLine+' -ao dsound:device='+IntToStr(AudioDev)+',';
   end;
@@ -600,16 +651,17 @@ begin
 
   if Firstrun then begin
     ClearTmpFiles(TempDir); Lyric.ClearLyric;
-    if Defaultslang then CmdLine:=CmdLine+' -alang zh,ch,tw,en -slang zh,ch,tw,en';
+    if Dlang then CmdLine:=CmdLine+' -alang zh,ch,tw,en -slang zh,ch,tw,en';
 
-    if FileExists(LyricURL) then begin //拖放的歌词或用户指定的歌词
-      TmpURL:=ExtractFileName(MediaURL);
-      TmpURL:=LowerCase(Copy(TmpURL,1,length(TmpURL)-length(ExtractFileExt(MediaURL))));
-      s:=ExtractFileName(LyricURL);
-      s:=LowerCase(Copy(s,1,length(s)-4));
+    if WideFileExists(LyricURL) then begin //拖放的歌词或用户指定的歌词
+      TmpURL:=WideExtractFileName(MediaURL);
+      TmpURL:=Tnt_WideLowerCase(Copy(TmpURL,1,length(TmpURL)-length(WideExtractFileExt(MediaURL))));
+      s:=WideExtractFileName(LyricURL);
+      s:=Tnt_WideLowerCase(Copy(s,1,length(s)-4));
       if TmpURL=s then HaveLyric:=Lyric.ParseLyric(LyricURL);
     end;
-    s:=LowerCase(ExtractFileExt(MediaURL));
+
+    s:=Tnt_WideLowerCase(WideExtractFileExt(MediaURL));
     if CheckInfo(ZipType,s)>-1 then begin
       i:=Pos(':',DisplayURL);
       if i>0 then ArcPW:=copy(DisplayURL,i+1,length(DisplayURL)-i)
@@ -618,37 +670,38 @@ begin
       if i>0 then ArcMovie:=copy(DisplayURL,1,i-1)
       else ArcMovie:=DisplayURL;
       if not HaveLyric then begin  //播放的Arc文件所在的目录下有包内当前播放文件同名的歌词
-        TmpURL:=copy(ArcMovie,1,length(ArcMovie)-length(ExtractFileExt(ArcMovie)))+'.lrc';
-        LyricURL:=ExtractFilePath(MediaURL)+TmpURL;
-        if not FileExists(LyricURL) then
-          LyricURL:=IncludeTrailingPathDelimiter(LyricDir)+TmpURL;
-        if FileExists(LyricURL) then HaveLyric:=Lyric.ParseLyric(LyricURL);
+        TmpURL:=copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie)))+'.lrc';
+        LyricURL:=WideExtractFilePath(MediaURL)+TmpURL;
+        if not WideFileExists(LyricURL) then
+          LyricURL:=WideIncludeTrailingPathDelimiter(LyricDir)+TmpURL;
+        if WideFileExists(LyricURL) then HaveLyric:=Lyric.ParseLyric(LyricURL);
       end;
     end
     else i:=-1;
 
-    Vobfile:=copy(MediaURL,1,length(MediaURL)-length(ExtractFileExt(MediaURL)));
+    Vobfile:=copy(MediaURL,1,length(MediaURL)-length(WideExtractFileExt(MediaURL)));
     if not HaveLyric then begin //当前播放文件所在的目录下有同名的歌词
-      LyricURL:=Vobfile+'.lrc';
-      if FileExists(LyricURL) then
+      LyricURL:=j+'.lrc';
+      if WideFileExists(LyricURL) then
         HaveLyric:=Lyric.ParseLyric(LyricURL)
       else begin
-        LyricURL:=ExtractFileName(MediaURL);
-        LyricURL:=IncludeTrailingPathDelimiter(LyricDir)
-               +copy(LyricURL,1,length(LyricURL)-length(ExtractFileExt(MediaURL)))+'.lrc';
-        if FileExists(LyricURL) then HaveLyric:=Lyric.ParseLyric(LyricURL);
+        LyricURL:=WideExtractFileName(MediaURL);
+        LyricURL:=WideIncludeTrailingPathDelimiter(LyricDir)
+               +copy(LyricURL,1,length(LyricURL)-length(WideExtractFileExt(MediaURL)))+'.lrc';
+        if WideFileExists(LyricURL) then HaveLyric:=Lyric.ParseLyric(LyricURL);
       end;
     end;
 
-    if FileExists(Vobfile+'.idx') then DirHIdx:=1;
-    if FileExists(Vobfile+'.sub') then DirHSub:=1;
+    if WideFileExists(Vobfile+'.idx') then DirHIdx:=1;
+    if WideFileExists(Vobfile+'.sub') then DirHSub:=1;
     if (DirHIdx+DirHSub)=2 then LoadVob:=1;
+    j:=Vobfile;
     for t:=Low(ZipType) to High(ZipType) do begin
-      if FileExists(Vobfile+ZipType[t]) then begin
+      if WideFileExists(j+ZipType[t]) then begin
         if IsLoaded(ZipType[t]) then begin   //当前播放文件所在的目录下有同名Arc文件中的同名歌词
-          if (not HaveLyric) and (i<>0) then ExtractLyric(Vobfile+ZipType[t],ArcPW,ZipType[t],i);
+          if (not HaveLyric) and (i<>0) then ExtractLyric(j+ZipType[t],ArcPW,ZipType[t],i);
           if LoadVob<>1 then begin
-            TmpURL:=ExtractSub(Vobfile+ZipType[t],ArcPW,ZipType[t]);
+            TmpURL:=ExtractSub(j+ZipType[t],ArcPW,ZipType[t]);
             if TmpURL<>'' then begin Vobfile:=TmpURL; LoadVob:=1; end;
           end;
         end;
@@ -662,7 +715,7 @@ begin
       TmpURL:=MediaURL; //避免系统调度UNRART线程的不确定性造成线程执行时获取的是已经变化的MediaURL
       if ((s='.zip') and (IsZipLoaded<>0)) or ((s='.7z') and (Is7zLoaded=0)) then
         MediaURL:=TempDir+ArcMovie
-      else MediaURL:=TempDir+'hcb428'+ExtractFileExt(ArcMovie);
+      else MediaURL:=TempDir+'hcb428'+WideExtractFileExt(ArcMovie);
       UnRART:=TUnRARThread.Create(true);
       UnRART.FreeOnTerminate:=true;
       UnRART.Priority:=tpTimeCritical;
@@ -717,7 +770,13 @@ begin
     if LoadVob=1 then begin
       LoadVob:=3; SubID:=SubID-VobsubCount; //考虑到VOB字幕加载失败时需要对SubID进行调整
     end;
-    if Vobfile<>'' then CmdLine:=CmdLine+' -vobsub '+EscapeParam(Vobfile);
+    if Vobfile<>'' then begin
+      s:=Vobfile;
+      if not IsWideStringMappableToAnsi(s) then begin
+        s:=WideExtractShortPathName(Vobfile+'.idx'); s:=copy(s,1,length(s)-4);
+      end;
+      CmdLine:=CmdLine+' -vobsub '+EscapeParam(s);
+    end;
   end;
 
   if (VideoID>=0) then CmdLine:=CmdLine+' -vid '+IntToStr(VideoID);
@@ -752,7 +811,12 @@ begin
     2: AddChain(afCount,afChain,'channels=2:2:1:0:1:1');
     3: AddChain(afCount,afChain,'pan=2:0.65:0.35:0.35:0.65');
   end;
-  if Wadsp and (WadspL<>'') then AddChain(afCount,afChain,'wadsp='+EscapeParam(WadspL));
+  if Wadsp then begin
+    s:=Trim(WadspL);
+    if WideFileExists(WadspL) and (not IsWideStringMappableToAnsi(WadspL)) then
+      s:=WideExtractShortPathName(WadspL);
+    if s<>'' then AddChain(afCount,afChain,'wadsp='+EscapeParam(s));
+  end;
   if Volnorm then AddChain(afCount,afChain,'volnorm');
 
   if afCount>0 then CmdLine:=CmdLine+' -af '+afChain;
@@ -798,7 +862,9 @@ begin
       CmdLine:=CmdLine+MediaURL;
       if CDID>1 then CmdLine:=CmdLine+IntToStr(CDID);
     end
-    else CmdLine:=CmdLine+#32+EscapeParam(MediaURL);
+    else if (Pos('://',MediaURL)>1) or IsWideStringMappableToAnsi(MediaURL) then
+      CmdLine:=CmdLine+#32+EscapeParam(MediaURL)
+    else CmdLine:=CmdLine+#32+EscapeParam(WideExtractShortPathName(MediaURL));
   end;
 
   with LogForm do begin
@@ -868,7 +934,8 @@ begin
   si.hStdInput:=DummyPipe2;
   si.hStdOutput:=DummyPipe1;
   si.hStdError:=DummyPipe1;
-  Success:=CreateProcess(nil,PChar(CmdLine),nil,nil,true,DETACHED_PROCESS,nil,PChar(ShotDir),si,pi);
+  
+  Success:=Tnt_CreateProcessW(nil,PwideChar(CmdLine),nil,nil,true,DETACHED_PROCESS,nil,PwideChar(ShotDir),si,pi);
   Error:=GetLastError;
 
   CloseHandle(DummyPipe1);
@@ -876,8 +943,14 @@ begin
 
   if not Success then begin
     LogForm.AddLine(LOCstr_Error1_Prompt+IntToStr(Error)+LOCstr_Error2_Prompt);
-    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,nil,Error,0,@ErrorMessage[0],1023,nil);
-    LogForm.AddLine(ErrorMessage);
+    if Win32PlatformIsUnicode then begin
+      FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM,nil,Error,0,@ErrorMessageW[0],1023,nil);
+      LogForm.AddLine(ErrorMessageW);
+    end
+    else begin
+      FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM,nil,Error,0,@ErrorMessage[0],1023,nil);
+      LogForm.AddLine(ErrorMessage);
+    end;
     if Error=2 then LogForm.AddLine(LOCstr_Check_Mplayer_Prompt);
     ClientWaitThread.ClientDone;  // this is a synchronized function, so I may
                                   // call it here from this thread as well
@@ -1041,7 +1114,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   function MenuItemIsExist(Menu:TMenuItem; ID:integer):boolean;
   var a:integer;
   begin
-    for a:=0 to Menu.Count-1 do begin
+    for a:=Menu.Count-1 downto 0 do begin
       if Menu.Items[a].Tag=ID then begin
         Result:=true; exit;
       end;
@@ -1073,7 +1146,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   procedure SubMenu_SetNameLang(Menu:TTntMenuItem; ID:integer; NameLang:string);
   var j:integer;
   begin
-    for j:=0 to Menu.Count-1 do begin
+    for j:=Menu.Count-1 downto 0 do begin
       with Menu.Items[j] do begin
         if Tag=ID then begin
           Caption:=Caption+' ('+NameLang+')';
@@ -1091,7 +1164,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if (r=0) AND (i>=0) AND (i<256) then begin
         if LoadVob=3 then begin
            LoadVob:=2; SubID:=0;
-           Core.SendCommand('set_property sub 0');
+           SendCommand('set_property sub 0');
            MainForm.MShowSub.Checked:=true;
         end;
         if not MenuItemIsExist(MainForm.MSubtitle,i) then begin
@@ -1494,14 +1567,14 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     p:=len-21;
     Result:=(p>0) AND (Copy(Line,p,22)=' file format detected.');
     if Result then begin
-      StreamInfo.FileFormat:=Copy(Line,1,p-1);
+      StreamInfo.FileFormat:=Widestring(Copy(Line,1,p-1));
       exit;
      end;
   //Chinese version
     p:=len-9;
     Result:=(p>0) AND (Copy(Line,p,10)='文件格式。') AND (Copy(Line,1,6)='检测到');
     if Result then begin
-      StreamInfo.FileFormat:=Copy(Line,7,p-7);
+      StreamInfo.FileFormat:=Widestring(Copy(Line,7,p-7));
     end;
   end;
 
@@ -1514,9 +1587,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       Result:=(p>24);
       if Result then begin
         if Copy(Line,9,4)='vide' then
-          StreamInfo.Video.Decoder:=Copy(Line,p+2,length(Line))
+          StreamInfo.Video.Decoder:=Widestring(Copy(Line,p+2,length(Line)))
         else if Copy(Line,9,4)='audi' then
-          StreamInfo.Audio.Decoder:=Copy(Line,p+2,length(Line))
+          StreamInfo.Audio.Decoder:=Widestring(Copy(Line,p+2,length(Line)))
           else Result:=false;
         end;
        exit;
@@ -1528,9 +1601,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       Result:=(p>17);
       if Result then begin
         if Copy(Line,5,2)='视' then
-          StreamInfo.Video.Decoder:=Copy(Line,p+2,length(Line))
+          StreamInfo.Video.Decoder:=Widestring(Copy(Line,p+2,length(Line)))
         else if Copy(Line,5,2)='音' then
-          StreamInfo.Audio.Decoder:=Copy(Line,p+2,length(Line))
+          StreamInfo.Audio.Decoder:=Widestring(Copy(Line,p+2,length(Line)))
           else Result:=false;
         end;
       end;
@@ -1545,9 +1618,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       Result:=(p>23);
       if Result then begin
         if Copy(Line,10,4)='vide' then
-          StreamInfo.Video.Codec:=Copy(Line,p+2,length(Line)-p-2);
+          StreamInfo.Video.Codec:=Widestring(Copy(Line,p+2,length(Line)-p-2));
         if Copy(Line,10,4)='audi' then
-          StreamInfo.Audio.Codec:=Copy(Line,p+2,length(Line)-p-2)
+          StreamInfo.Audio.Codec:=Widestring(Copy(Line,p+2,length(Line)-p-2))
           else Result:=false;
         end;
       exit;
@@ -1559,9 +1632,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       Result:=(p>19);
       if Result then begin
         if Copy(Line,5,2)='视' then
-          StreamInfo.Video.Codec:=Copy(Line,p+2,length(Line)-p-2);
+          StreamInfo.Video.Codec:=Widestring(Copy(Line,p+2,length(Line)-p-2));
         if Copy(Line,5,2)='音' then
-          StreamInfo.Audio.Codec:=Copy(Line,p+2,length(Line)-p-2)
+          StreamInfo.Audio.Codec:=Widestring(Copy(Line,p+2,length(Line)-p-2))
           else Result:=false;
        end;
      end;
@@ -1581,8 +1654,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
             AND (StreamInfo.ClipInfo[P].Key<>'Title')
           do inc(P);
     StreamInfo.ClipInfo[P].Key:='Title';
-    if StreamInfo.ClipInfo[P].Value<>Line then begin
-      StreamInfo.ClipInfo[P].Value:=Line;
+    if StreamInfo.ClipInfo[P].Value<>Widestring(Line) then begin
+      StreamInfo.ClipInfo[P].Value:=Widestring(Line);
       InfoForm.UpdateInfo;
     end;
   end;
@@ -1616,7 +1689,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     with MainForm do begin
       if ChkVideo and (StreamInfo.Video.Codec='') then begin
         if LastHaveVideo then begin
-          if not (OptionsForm.Visible or AboutForm.Visible or AddDirForm.Visible
+          if not (OptionsForm.Visible or AboutForm.Visible
             or EqualizerForm.Visible or HelpForm.Visible) then Enabled:=true;
           if MFullscreen.Checked then SetFullscreen(false);
           if MCompact.Checked  or MMaxW.Checked then SetCompact(false);
@@ -1726,7 +1799,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       end
       else begin
         if LastHaveVideo then begin
-          if not (OptionsForm.Visible or AboutForm.Visible or AddDirForm.Visible
+          if not (OptionsForm.Visible or AboutForm.Visible
             or EqualizerForm.Visible or HelpForm.Visible) then Enabled:=true;
           if MFullscreen.Checked then SetFullscreen(false);
           if MCompact.Checked or MMaxW.Checked then SetCompact(false);
@@ -2043,7 +2116,7 @@ begin
   // check for generic ID_ pattern
   if (len>3) and (Copy(Line,1,3)='ID_') then begin
     p:=Pos('=',Line);
-    HandleIDLine(Copy(Line,4,p-4), Trim(Copy(Line,p+1,length(Line))));
+    HandleIDLine(Copy(Line,4,p-4),widestring(Trim(Copy(Line,p+1,length(Line)))));
   end;
 
 end;
@@ -2051,7 +2124,7 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure HandleIDLine(ID, Content: string);
+procedure HandleIDLine(ID:string; Content:WideString);
 var AsInt,r:integer; AsFloat:real;
 begin
   with StreamInfo do begin
@@ -2088,9 +2161,9 @@ begin
     AsFloat:=Frac(AsFloat);
     if (AsFloat>0.0009) then begin
       str(AsFloat:0:3, PlaybackTime);
-      PlaybackTime:=SecondsToTime(AsInt) + Copy(PlaybackTime,2,20);
+      PlaybackTime:=WideString(SecondsToTime(AsInt)) + Copy(PlaybackTime,2,20);
     end else
-      PlaybackTime:=SecondsToTime(AsInt);
+      PlaybackTime:=WideString(SecondsToTime(AsInt));
   end else if (Copy(ID,1,14)='CLIP_INFO_NAME') AND (length(ID)=15) then begin
     r:=Ord(ID[15])-Ord('0');
     if (r>=0) AND (r<=9) then ClipInfo[r].Key:=Content;
@@ -2127,10 +2200,10 @@ begin
   DecimalSeparator:='.'; Wadsp:=false; GUI:=false; HaveMsg:=false; Uni:=false;
   MFunc:=0; ETime:=false; InSubDir:=true; ML:=false; InterW:=4; InterH:=3;
   AudiochannelsID:=0; OSDLevel:=1; Ch:=0; Wid:=true; Fd:=false; DragM:=false;
-  Deinterlace:=0; Aspect:=0; Postproc:=0; VobsubCount:=0; IntersubCount:=0;
+  Deinterlace:=0; Aspect:=0; Postproc:=0;  IntersubCount:=0;
   AudioOut:=2; AudioDev:=0; Expand:=0; SPDIF:=false; DirHIdx:=0; DirHSub:=0;
   ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=false; Fol:=2;
-  dbbuf:=true; Dr:=false; Volnorm:=false; Defaultslang:=false; Pri:=true;
+  dbbuf:=true; Dr:=false; Volnorm:=false; Dlang:=false; Pri:=true;
   Params:=''; OnTop:=0; MAspect:='Default'; empty:=true; lavf:=false; vsync:=false;
   Status:=sNone; Shuffle:=false; Loop:=false; OneLoop:=false; PClear:=false;
   Volume:=100; Mute:=False; Duration:=''; MouseMode:=0; SubPos:=96; FSize:=4.5;

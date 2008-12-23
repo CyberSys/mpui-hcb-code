@@ -44,7 +44,7 @@
 unit SevenZip;
 
 interface
-uses classes, sysutils, TntSysUtils,  windows, TntDialogs, SevenZipVCL;
+uses classes, sysutils, TntSysUtils,  windows, TntWindows, TntDialogs, SevenZipVCL;
 
 const
   // codes returned by SevenZipCreateArchive and SevenZipExtractArchive
@@ -119,8 +119,8 @@ procedure Load7zLibrary;
 procedure UnLoad7zLibrary;
 procedure Extract7zLyric(ArcName,PW:WideString; Mode:integer);
 procedure ExtractZipLyric(ArcName,PW:WideString; Mode:integer);
-function Extract7zSub(ArcName,PW:WideString):String;
-function ExtractZipSub(ArcName,PW:WideString):String;
+function Extract7zSub(ArcName,PW:WideString):WideString;
+function ExtractZipSub(ArcName,PW:WideString):WideString;
 function Add7zMovies(ArcName,PW:WideString; Add:boolean):integer;
 function AddZipMovies(ArcName,PW:WideString; Add:boolean):integer;
 procedure Extract7zMovie(ArcName,MovieName,PW:WideString);
@@ -171,7 +171,7 @@ var i:integer;
 begin
   if F7zaLibh<>0 then exit;
   for i:=szdllCount downto 0 do begin
-    F7zaLibh := LoadLibrary( PChar(szdll[i]) );
+    F7zaLibh := Tnt_LoadLibraryW(PWideChar(szdll[i]) );
     if F7zaLibh <> 0 then begin
       Is7zLoaded:=i+1;
       break;
@@ -190,7 +190,7 @@ end;
 procedure LoadZipLibrary;
 begin
   if IsZipLoaded<>0 then exit;
-  IsZipLoaded:=LoadLibrary('7-zip32.dll');
+  IsZipLoaded:=Tnt_LoadLibraryW('7-zip32.dll');
   if IsZipLoaded<>0 then begin
     _ZipCommand             := GetProcAddress( IsZipLoaded, 'SevenZip' );
     ZipGetRunning           := GetProcAddress( IsZipLoaded, 'SevenZipGetRunning' );
@@ -280,7 +280,7 @@ begin
     if ZipFindFirst(hArc,'*',fileInfo)=0 then begin
       k:=WideExtractFileName(ArcName); TmpPW:=PW; First:=true;
       repeat
-        if CheckInfo(MediaType,LowerCase(ExtractFileExt(UTF8Decode(fileInfo.szFilename))))>ZipTypeCount then begin
+        if CheckInfo(MediaType,Tnt_WideLowerCase(WideExtractFileExt(UTF8Decode(fileInfo.szFilename))))>ZipTypeCount then begin
           inc(Result);
           if First then begin
             First:=false; //fileinfo.szAttribute[4]='G' 而不是'-'或#0时，文件是加密的
@@ -310,14 +310,14 @@ end;
 function Add7zMovies(ArcName,PW:widestring; Add:boolean):integer;
 var k,i:widestring; Entry:TPlaylistEntry; x,z:integer; sz:TSevenZip;
 begin
-  Result:=0; sz:=TSevenZip.Create(nil,LowerCase(ExtractFileExt(ArcName)));
+  Result:=0; sz:=TSevenZip.Create(nil,Tnt_WideLowerCase(WideExtractFileExt(ArcName)));
   sz.Password:=PW; sz.SZFileName:=ArcName;
   x:=sz.List;
   if sz.Password<>'' then TmpPW:=sz.Password;
   if x=-1 then begin Result:=x; sz.Free; exit; end;
   k:=WideExtractFileName(ArcName);
   for z:=0 to x-1 do begin
-    if CheckInfo(MediaType,LowerCase(ExtractFileExt(sz.Files.wstrings[z])))>ZipTypeCount then begin
+    if CheckInfo(MediaType,Tnt_WideLowerCase(WideExtractFileExt(sz.Files.wstrings[z])))>ZipTypeCount then begin
       inc(Result);
       if Add then begin
         i:=sz.Files.wstrings[z]+' <-- '+k;
@@ -345,9 +345,9 @@ end;
 procedure Extract7zMovie(ArcName,MovieName,PW:widestring);
 var sz:TSevenZip;
 begin       
-  sz:=TSevenZip.Create(nil,LowerCase(ExtractFileExt(ArcName)));
+  sz:=TSevenZip.Create(nil,Tnt_WideLowerCase(WideExtractFileExt(ArcName)));
   sz.Password:=PW; sz.SZFileName:=ArcName;
-  sz.ExtrBaseDir:=core.TempDir;
+  sz.ExtrBaseDir:=TempDir;
   sz.Files.Clear;
   sz.Files.AddString(MovieName);
   sz.ExtractOptions:=sz.ExtractOptions + [ExtractNoPath];
@@ -356,7 +356,7 @@ begin
 end;
 
 procedure ExtractZipLyric(ArcName,PW:widestring; Mode:integer);
-var hArc:integer; FName:String; fileInfo:TZipINDIVIDUALINFO;
+var hArc:integer; FName:WideString; fileInfo:TZipINDIVIDUALINFO;
     UArcName:UTF8String;
 begin
   if ZipGetRunning then exit
@@ -366,13 +366,13 @@ begin
     hArc:=ZipOpenArchive(0,PChar(UArcName),0);
     if hArc=0 then exit;
     if ZipFindFirst(hArc,'*',fileInfo)=0 then begin
-      if Mode>0 then FName:=LowerCase(copy(ArcMovie,1,length(ArcMovie)-length(ExtractFileExt(ArcMovie))))+'.lrc'
+      if Mode>0 then FName:=Tnt_WideLowerCase(copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie))))+'.lrc'
       else if Mode<0 then begin
-        FName:=ExtractFileName(MediaURL);
-        FName:=LowerCase(Copy(FName,1,length(FName)-length(ExtractFileExt(MediaURL))))+'.lrc';
+        FName:=WideExtractFileName(MediaURL);
+        FName:=Tnt_WideLowerCase(Copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL))))+'.lrc';
       end;
       repeat
-        if FName=LowerCase(ExtractFileName(UTF8Decode(fileInfo.szFilename))) then begin
+        if FName=Tnt_WideLowerCase(WideExtractFileName(UTF8Decode(fileInfo.szFilename))) then begin
           if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,nil)<>0 then
             Break
           else begin
@@ -388,23 +388,23 @@ begin
 end;
 
 procedure Extract7zLyric(ArcName,PW:widestring; Mode:integer);
-var FName:string; x,z:integer; sz:TSevenZip; Flist:TWideStringList_;
+var FName:WideString; x,z:integer; sz:TSevenZip; Flist:TWideStringList_;
 begin
-  sz:=TSevenZip.Create(nil,LowerCase(ExtractFileExt(ArcName)));
+  sz:=TSevenZip.Create(nil,Tnt_WideLowerCase(WideExtractFileExt(ArcName)));
   sz.Password:=PW; sz.SZFileName:=ArcName;
-  sz.ExtrBaseDir:=core.TempDir;
+  sz.ExtrBaseDir:=TempDir;
   sz.ExtractOptions:=sz.ExtractOptions+[ExtractNoPath];
   x:=sz.List;
   if x<1 then begin sz.Free; exit; end;
   Flist:=TWideStringList_.Create;
   Flist.WStrings:=sz.Files.wstrings;
-  if Mode>0 then FName:=LowerCase(copy(ArcMovie,1,length(ArcMovie)-length(ExtractFileExt(ArcMovie))))+'.lrc'
+  if Mode>0 then FName:=Tnt_WideLowerCase(copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie))))+'.lrc'
   else if Mode<0 then begin
-    FName:=ExtractFileName(MediaURL);
-    FName:=LowerCase(Copy(FName,1,length(FName)-length(ExtractFileExt(MediaURL))))+'.lrc';
+    FName:=WideExtractFileName(MediaURL);
+    FName:=Tnt_WideLowerCase(Copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL))))+'.lrc';
   end;
   for z:=0 to x-1 do begin
-    if LowerCase(ExtractFileName(Flist.wstrings[z]))=FName then begin
+    if Tnt_WideLowerCase(WideExtractFileName(Flist.wstrings[z]))=FName then begin
       sz.Files.Clear;
       sz.Files.AddString(Flist.wstrings[z]);
       if sz.Extract<>0 then Break
@@ -420,7 +420,7 @@ begin
   Flist.Free;
 end;
 
-function ExtractZipSub(ArcName,PW:widestring):String;
+function ExtractZipSub(ArcName,PW:widestring):WideString;
 var i,j,HaveIdx,HaveSub:integer; FExt,FName:string;
     hArc:integer; UArcName:UTF8String; First:boolean;
     fileInfo:TZipINDIVIDUALINFO;
@@ -438,7 +438,7 @@ begin
       if hArc=0 then exit;
       if ZipFindFirst(hArc,'*',fileInfo)=0 then begin
         repeat
-          FExt:=LowerCase(ExtractFileExt(UTF8Decode(fileInfo.szFilename)));
+          FExt:=Tnt_WideLowerCase(WideExtractFileExt(UTF8Decode(fileInfo.szFilename)));
           if FExt='.idx' then HaveIdx:=1;
           if FExt='.sub' then HaveSub:=1;
           if HaveIdx+HaveSub=2 then Break;
@@ -460,7 +460,7 @@ begin
           if ((ZipGetAttribute(hArc) and FA_ENCRYPTED)=FA_ENCRYPTED) and (PW='') then
             WideInputQuery(LOCstr_SetPW_Caption,ExtractFileName(ArcName),TmpPW);
         end;
-        FExt:=LowerCase(ExtractFileExt(UTF8Decode(fileInfo.szFilename)));
+        FExt:=Tnt_WideLowerCase(WideExtractFileExt(UTF8Decode(fileInfo.szFilename)));
         i:=CheckInfo(SubType,FExt);
         if i>ZipTypeCount then begin
           if i<SubTypeCount-1 then begin
@@ -468,6 +468,7 @@ begin
             if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,nil)<>0 then
               Break
             else begin
+              if not IsWideStringMappableToAnsi(FName) then FName:=WideExtractShortPathName(FName);
               if Firstrun or (not Win32PlatformIsUnicode) then begin
                 Loadsub:=2; Loadsrt:=2;
                 AddChain(j,substring,EscapePath(EscapeParam(FName)));
@@ -480,26 +481,26 @@ begin
           end
           else begin
             if (DirHIdx+DirHSub=0) OR (HaveIdx+HaveSub=2) then begin
-              FName:=ExtractFileName(MediaURL);
-              FName:=TempDir+copy(FName,1,length(FName)-length(ExtractFileExt(MediaURL)));
+              FName:=WideExtractFileName(MediaURL);
+              FName:=TempDir+copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL)));
               if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,nil)<>0 then
                 Break
               else begin
                 if WideCopyFile(TempDir+UTF8Decode(fileInfo.szFilename),FName+FExt,false) then
                   Result:=FName
-                else Result:=TempDir+ExtractFileName(UTF8Decode(fileInfo.szFilename));
+                else Result:=TempDir+WideExtractFileName(UTF8Decode(fileInfo.szFilename));
               end;
             end
             else begin
               if ((HaveIdx+DirHSub=2) and (FExt='.idx')) OR
                  ((DirHIdx+HaveSub=2) and (FExt='.sub')) then begin
-                FName:=copy(MediaURL,1,length(MediaURL)-length(ExtractFileExt(MediaURL)));
+                FName:=copy(MediaURL,1,length(MediaURL)-length(WideExtractFileExt(MediaURL)));
                 if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,nil)<>0 then
                   Break
                 else begin
                   if WideCopyFile(TempDir+UTF8Decode(fileInfo.szFilename),FName+FExt,false) then
                     Result:=FName
-                  else Result:=TempDir+ExtractFileName(UTF8Decode(fileInfo.szFilename));
+                  else Result:=TempDir+WideExtractFileName(UTF8Decode(fileInfo.szFilename));
                 end;
               end;
             end;
@@ -508,18 +509,18 @@ begin
       until ZipFindNext(hArc,fileInfo)<>0;
     end;
     ZipCloseArchive(hArc);
-    if (not Win32PlatformIsUnicode) and (j>0) then Core.Restart;
+    if (not Win32PlatformIsUnicode) and (j>0) then Restart;
   end;
 end;
 
-function Extract7zSub(ArcName,PW:widestring):String;
-var i,j,z,x,HaveIdx,HaveSub:integer; FExt,FName:string;
+function Extract7zSub(ArcName,PW:widestring):WideString;
+var i,j,z,x,HaveIdx,HaveSub:integer; FExt,FName:WideString;
     sz:TsevenZip; Flist:TWideStringList_;
 begin
   Result:=''; HaveIdx:=0; HaveSub:=0;
-  sz:=TSevenZip.Create(nil,LowerCase(ExtractFileExt(ArcName)));
+  sz:=TSevenZip.Create(nil,Tnt_WideLowerCase(WideExtractFileExt(ArcName)));
   sz.Password:=PW; sz.SZFileName:=ArcName;
-  sz.ExtrBaseDir:=core.TempDir;
+  sz.ExtrBaseDir:=TempDir;
   x:=sz.List;
   if sz.Password<>'' then TmpPW:=sz.Password;
   if x<1 then begin sz.Free; exit; end;
@@ -528,7 +529,7 @@ begin
   全部VOBSUB字幕或VOBSUB字幕的部分组件*)
   if (DirHIdx+DirHSub)=1 then begin
     for z:=0 to x-1 do begin
-      FExt:=LowerCase(ExtractFileExt(sz.Files.wstrings[z]));
+      FExt:=Tnt_WideLowerCase(WideExtractFileExt(sz.Files.wstrings[z]));
       if FExt='.idx' then HaveIdx:=1;
       if FExt='.sub' then HaveSub:=1;
       if HaveIdx+HaveSub=2 then Break;
@@ -542,7 +543,7 @@ begin
   Flist.WStrings:=sz.Files.wstrings;
   j:=0;
   for z:=0 to x-1 do begin
-    FExt:=LowerCase(ExtractFileExt(sz.Files.wstrings[z]));
+    FExt:=Tnt_WideLowerCase(WideExtractFileExt(Flist.wstrings[z]));
     i:=CheckInfo(SubType,FExt);
     if i>ZipTypeCount then begin
       if i<SubTypeCount-1 then begin
@@ -552,6 +553,7 @@ begin
         FName:=TempDir+Flist.wstrings[z];
         if sz.Extract<>0 then Break
         else begin
+          if not IsWideStringMappableToAnsi(FName) then FName:=WideExtractShortPathName(FName);
           if Firstrun or (not Win32PlatformIsUnicode) then begin
             Loadsub:=2; Loadsrt:=2;
             AddChain(j,substring,EscapePath(EscapeParam(FName)));
@@ -573,7 +575,7 @@ begin
         else begin
           if ((HaveIdx+DirHSub=2) and (FExt='.idx')) OR
              ((DirHIdx+HaveSub=2) and (FExt='.sub')) then begin
-            FName:=copy(MediaURL,1,length(MediaURL)-length(ExtractFileExt(MediaURL)));
+            FName:=copy(MediaURL,1,length(MediaURL)-length(WideExtractFileExt(MediaURL)));
             sz.Files.Clear;
             sz.Files.AddString(Flist.wstrings[z]);
             sz.ExtractOptions:=sz.ExtractOptions+[ExtractNoPath];
@@ -581,7 +583,7 @@ begin
             else begin
               if WideCopyFile(TempDir+Flist.wstrings[z],FName+FExt,false) then
                 Result:=FName
-              else Result:=TempDir+ExtractFileName(Flist.wstrings[z]);
+              else Result:=TempDir+WideExtractFileName(Flist.wstrings[z]);
             end;
           end;
         end;
@@ -591,7 +593,7 @@ begin
   sz.Free;
   Flist.Clear;
   Flist.Free;
-  if (not Win32PlatformIsUnicode) and (j>0) then Core.Restart;
+  if (not Win32PlatformIsUnicode) and (j>0) then Restart;
 end; 
 
 end.

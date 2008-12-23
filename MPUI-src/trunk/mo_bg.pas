@@ -1,6 +1,6 @@
 {   MPUI, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
-    Copyright (C) 2008 Boyan B. Boychev <boyan7640@gmail.com>
+    Copyright (C) 2006 Boyan Boychev <boyan7640@gmail.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 unit mo_bg;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info,AddDir,Core,Equalizer;
+uses Windows,Locale,Main,Log,Help,About,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -407,12 +407,7 @@ begin
     be.Caption:='Bengali (57003)';
     dv.Caption:='Devanagari (57002)';
   end;
-  with AddDirForm do begin
-    Caption:=UTF8Decode('Избери директория');
-    BOK.Caption:=UTF8Decode('ДА');
-    BCancel.Caption:=UTF8Decode('Отказ');
-    CInSubDir.Caption:=UTF8Decode('Включи поддиректориите');
-  end;
+
   with EqualizerForm do begin
     Caption:=MainForm.MEqualizer.Caption;
     BReset.Caption:=OSD_Reset_Prompt;
@@ -422,6 +417,7 @@ begin
     SSat.Caption:=OSD_Saturation_Prompt;
     SHue.Caption:=OSD_Hue_Prompt;
   end;
+  
   InfoForm.Caption:=UTF8Decode('Информация за клипа');
   InfoForm.BClose.Caption:=UTF8Decode('Затвори');
   LOCstr_NoInfo:=UTF8Decode('Няма информация за клипа.');

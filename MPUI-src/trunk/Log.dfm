@@ -33,7 +33,7 @@ object LogForm: TLogForm
     ScrollBars = ssVertical
     TabOrder = 0
   end
-  object ControlPanel: TPanel
+  object ControlPanel: TTntPanel
     Left = 0
     Top = 388
     Width = 542

@@ -21,10 +21,11 @@ interface
 {$WARN SYMBOL_PLATFORM OFF}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,TntForms,
-  Dialogs, TntDialogs,StdCtrls, TntStdCtrls, Buttons,TntButtons,Menus, TntMenus,
-  ShellAPI, ToolWin, ComCtrls, TntComCtrls, ExtCtrls,  TntSystem ,TntGraphics,
-  TntExtCtrls, TntSysUtils;
+  Windows, Messages, SysUtils, TntSysUtils, Variants, Graphics, TntGraphics,
+  Forms, TntForms, StdCtrls, TntStdCtrls,  Controls, ShellAPI,
+  Dialogs, TntDialogs, Buttons, TntButtons, Menus, TntMenus,
+  ComCtrls, TntComCtrls, Classes, TntClasses, TntSystem, ExtCtrls,
+  TntExtCtrls,TntFileCtrl;
 
 type TPlaybackState=(psNotPlayed,psPlaying,psPlayed,psSkipped);
      TPlaylistEntry=record
@@ -48,8 +49,8 @@ type TPlaylist=class
                  procedure Clear;
                  procedure Add(const Entry:TPlaylistEntry);
                  procedure AddFiles(const URL:widestring);
-                 function AddM3U(const FileName:string; FileExtIndex:integer):boolean;
-                 procedure AddDirectory(Directory:string);
+                 function AddM3U(const FileName:WideString; FileExtIndex:integer):boolean;
+                 procedure AddDirectory(Directory:WideString);
                  property Count:integer read GetCount;
                  property Items[Index:integer]:TPlaylistEntry read GetItem; default;
                  property Selected[Index:integer]:boolean read GetSelected write SetSelected;
@@ -58,7 +59,7 @@ type TPlaylist=class
                  procedure Changed;
                  procedure MoveSelectedUp;
                  procedure MoveSelectedDown;
-                 procedure SaveToFile(const FileName:string);
+                 procedure SaveToFile(FileName:WideString);
                  function FindItem(CheckStr,MovieName:widestring):boolean;
                  function FindPW(FileURL:widestring):String;
                end;
@@ -69,7 +70,7 @@ type TLyric=class
               LyricStrings:TStringList;
               procedure SortLyric;
             public
-              function ParseLyric(const FileName:string):boolean;
+              function ParseLyric(const FileName:WideString):boolean;
               procedure GetCurrentLyric;
               procedure ClearLyric;
             end;
@@ -274,7 +275,7 @@ var
 
 implementation
 
-uses Main, Core, AddDir, UnRAR, Locale, About, Options, SevenZip;
+uses Main, Core, UnRAR, Locale,About, Options, SevenZip;
 
 {$R *.dfm}
 {$R plist_img.res}
@@ -314,10 +315,10 @@ begin
 end;
 
 procedure TPlaylist.AddFiles(const URL:widestring);
-var PlistEntry:TPlaylistEntry; j:string; i:integer;
+var PlistEntry:TPlaylistEntry; j:WideString; i:integer;
 begin
   // check for .m3u .pls .asx .wpl .xspf playlist file
-  j:=LowerCase(ExtractFileExt(URL));
+  j:=Tnt_WideLowerCase(WideExtractFileExt(URL));
   i:=CheckInfo(PlaylistType,j);
   if (i>-1) AND AddM3U(URL,i) then exit;
   // no playlist -> check for Arc file
@@ -326,7 +327,7 @@ begin
   end;
 
   // no playlist and Arc file-> enter directly
-  if (Pos('://',URL)>1) or FileExists(URL) then begin
+  if (Pos('://',URL)>1) or WideFileExists(URL) then begin
     with PlistEntry do begin
       State:=psNotPlayed;
       FullURL:=URL;
@@ -384,19 +385,19 @@ begin
 end;
 
 function TPlaylist.FindPW(FileURL:widestring):String;
-var i,k,h:integer; j,s:string;
+var i,k,h:integer; j,s:WideString;
 begin
   Result:='';
   if Count>0 then begin
-    j:=ExtractFileName(FileURL);
+    j:=WideExtractFileName(FileURL);
     i:=Pos('.part',j);
     if i>0 then begin
       j:=copy(j,1,i-1);
       for i:=High(Data) downto Low(Data) do begin
-        if LowerCase(ExtractFileExt(Data[i].FullURL))='.rar' then begin
+        if Tnt_WideLowerCase(WideExtractFileExt(Data[i].FullURL))='.rar' then begin
           h:=Pos(':',Data[i].DisplayURL);
           if h>0 then begin
-            s:=ExtractFileName(Data[i].FullURL);
+            s:=WideExtractFileName(Data[i].FullURL);
             k:=Pos('.part',s);
             if k>0 then begin
               s:=copy(s,1,k-1);
@@ -471,7 +472,7 @@ begin
       PlaylistForm.PlaylistBox.Count:=Count;
     PlaylistForm.PlaylistBox.Invalidate;
   end;
-  if (Count=0) AND (not Core.Running) then MainForm.BPlay.Enabled:=false;
+  if (Count=0) AND (not Running) then MainForm.BPlay.Enabled:=false;
   //if CurPlay<0 then CurPlay:=0;
   MainForm.BPrev.Enabled:=(CurPlay>0);
   MainForm.BNext.Enabled:=(CurPlay+1<Playlist.Count);
@@ -503,40 +504,55 @@ begin
   Changed;
 end;
 
-procedure TPlaylist.SaveToFile(const FileName:string);
-var t:System.Text; i:integer;
+procedure TPlaylist.SaveToFile(FileName:WideString);
+var t:TextFile{System.Text}; i:integer; d:WideString; h:integer;
 begin
+  h:=WideFileCreate(FileName);
+  case GetLastError of
+    ERROR_ALREADY_EXISTS,0: if not IsWideStringMappableToAnsi(FileName) then
+                               FileName:=WideExtractShortPathName(FileName);
+  end;
+  if h<0 then begin
+    d:=WideExtractFilePath(FileName);
+    if not IsWideStringMappableToAnsi(FileName) then
+      FileName:=WideExtractShortPathName(d)+WideExtractFileName(FileName);
+  end
+  else CloseHandle(h);
   Assign(t,FileName);
   {$I-} Rewrite(t); {$I+}
   if IOresult<>0 then exit;
-  for i:=Low(Data) to High(Data) do
-    writeln(t,Data[i].FullURL);
+  for i:=Low(Data) to High(Data) do begin
+    if (Pos('://',Data[i].FullURL)<1) and (not IsWideStringMappableToAnsi(Data[i].FullURL)) then
+      writeln(t,WideExtractShortPathName(Data[i].FullURL))
+    else writeln(t,Data[i].FullURL);
+  end;
   CloseFile(t);
 end;
 
 
 
-function TryOpen(const FileName:string; var t:System.Text):boolean;
+function TryOpen(FileName:WideString; var t:System.Text):boolean;
 var OFM:byte;
 begin
   Result:=False;
   OFM:=FileMode; FileMode:=0;
+  if not IsWideStringMappableToAnsi(FileName) then FileName:=WideExtractShortPathName(FileName);
   {$I-} AssignFile(t,FileName); Reset(t); {$I+}
   if IOResult<>0 then exit;
   FileMode:=OFM;
   Result:=True;
 end;
 
-function ExpandName(const BasePath, FileName:string):string;
+function ExpandName(const BasePath, FileName:WideString):WideString;
 begin
   Result:=FileName;
   if Pos(':',FileName)>0 then exit;
   if (length(FileName)>1) AND ((FileName[1]='/') OR (FileName[1]='\')) then exit;
-  Result:=ExpandUNCFileName(BasePath+FileName);
+  Result:=WideExpandUNCFileName(BasePath+FileName);
 end;
 
-function TPlaylist.AddM3U(const FileName:string; FileExtIndex:integer):boolean;
-var t:System.Text; BasePath,s:string; i:integer;
+function TPlaylist.AddM3U(const FileName:WideString; FileExtIndex:integer):boolean;
+var t:System.Text; BasePath:WideString; s:string; i:integer;
 procedure AddToPls(str:string; Mode:boolean);
 begin
    if Mode then str:=UTF8Decode(str);
@@ -562,7 +578,7 @@ end;
 begin
   Result:=TryOpen(FileName, t);
   if not Result then exit;
-  BasePath:=IncludeTrailingPathDelimiter(ExtractFilePath(FileName));
+  BasePath:=WideIncludeTrailingPathDelimiter(WideExtractFilePath(FileName));
   while not EOF(t) do begin
     Readln(t,s);
     if length(s)<1 then continue;
@@ -583,7 +599,7 @@ begin
   Result:=True;
 end;
 
-function TLyric.ParseLyric(const FileName:string):boolean;
+function TLyric.ParseLyric(const FileName:WideString):boolean;
 var t:System.Text; s,timeTab:string; TimeEntry:TLyricTimeCodeEntry;
     lc,rc,offset,mins,secs,ms,len,Lyricindex,sMaxLen,i:integer;
     First:boolean;
@@ -642,7 +658,7 @@ begin
   SortLyric; dy:=0; CurLyric:=0;
   NextLyric:=0; LyricV:=0;
   with PlaylistForm do begin
-    Core.UpdatePW:=True;
+    UpdatePW:=True;
     if Visible then TMLyric.Invalidate
     else begin
       TntPageControl1.TabIndex:=1;
@@ -702,16 +718,19 @@ begin
   PlaylistForm.TMLyric.Refresh;
 end;
 
-procedure TPlaylist.AddDirectory(Directory:string);
-var SR:TSearchRec; Entry:TPlaylistEntry;
+procedure TPlaylist.AddDirectory(Directory:Widestring);
+var SR:TSearchRecW; Entry:TPlaylistEntry;
 begin
-  Directory:=IncludeTrailingPathDelimiter(ExpandUNCFileName(Directory));
+  Directory:=WideIncludeTrailingPathDelimiter(WideExpandUNCFileName(Directory));
 
   // check for DVD directory
-  if (DirectoryExists(Directory+'VIDEO_TS')) then begin
+  if (WideDirectoryExists(Directory+'VIDEO_TS')) then begin
     with Entry do begin
       State:=psNotPlayed;
-      FullURL:=' -dvd-device '+EscapeParam(Directory)+' dvd';
+      if IsWideStringMappableToAnsi(Directory) then
+        FullURL:=' -dvd-device '+EscapeParam(Directory)+' dvd'
+      else
+        FullURL:=' -dvd-device '+EscapeParam(WideExtractShortPathName(Directory))+' dvd';
       DisplayURL:='DVD-1 <-- '+Directory;
     end;
     Add(Entry);
@@ -719,33 +738,32 @@ begin
   end;
 
   // no DVD ->is it a (S)VCD directory?
-  if (DirectoryExists(Directory+'MPEGAV'))then begin
+  if (WideDirectoryExists(Directory+'MPEGAV'))then begin
     Directory:=Directory+'MPEGAV';
-    if DirectoryExists(Directory+'MPEG2') then Directory:=Directory+'MPEG2';
+    if WideDirectoryExists(Directory+'MPEG2') then Directory:=Directory+'\MPEG2';
   end;
 
   // no (S)VCD -> search the directory recursively
-  if FindFirst(Directory+'*.*',faAnyFile,SR)=0 then begin
+  if WideFindFirst(Directory+'*.*',faAnyFile,SR)=0 then begin
     repeat
       if SR.Name[1]<>'.' then begin   // exclude . or .. Directory
         empty:=false;
-        if (SR.Attr AND faDirectory)<>0 then begin
-          if Core.InSubDir then AddDirectory(Directory+SR.Name);
-        end
-        else begin
-          if CheckInfo(MediaType,LowerCase(ExtractFileExt(SR.Name)))>-1 then
-            AddFiles(Directory+SR.Name);
-        end;
+        if (SR.Attr AND faDirectory)<>0 then AddDirectory(Directory+SR.Name)
+        else if CheckInfo(MediaType,Tnt_WideLowerCase(WideExtractFileExt(SR.Name)))>-1 then
+          AddFiles(Directory+SR.Name);
       end;
-    until FindNext(SR)<>0;
-    FindClose(SR);
+    until WideFindNext(SR)<>0;
+    WideFindClose(SR);
   end;
-
+  
   // directory is empty, or no filesystem -> try use TrackMode to access directory
   if empty then begin
     with Entry do begin
       State:=psNotPlayed;
-      FullURL:=' -cdrom-device '+EscapeParam(Directory)+' vcd://';
+      if IsWideStringMappableToAnsi(Directory) then
+        FullURL:=' -cdrom-device '+EscapeParam(Directory)+' vcd://'
+      else
+        FullURL:=' -cdrom-device '+EscapeParam(WideExtractShortPathName(Directory))+' vcd://';
       DisplayURL:='VCD <-- '+Directory;
     end;
     Add(Entry);
@@ -763,9 +781,9 @@ begin
     Top:=MainForm.Top+MainForm.Height-Height;
   end;
   TntPageControl1.TabIndex:=0;
-  TMLyric.Color:=Core.LbgColor; TMLyric.Font.Color:=Core.LTextColor;
-  TMLyric.Font.Name:=Core.LyricF; TMLyric.Font.Size:=Core.LyricS;
-  TMLyric.ItemHeight:=2*Core.LyricS;
+  TMLyric.Color:=LbgColor; TMLyric.Font.Color:=LTextColor;
+  TMLyric.Font.Name:=LyricF; TMLyric.Font.Size:=LyricS;
+  TMLyric.ItemHeight:=2*LyricS;
   TMLyric.Count:=round(TMLyric.Height/TMLyric.ItemHeight)-1;
 end;
 
@@ -773,8 +791,8 @@ procedure TPlaylistForm.FormShow(Sender: TObject);
 begin
   CLyricF.Items:=Screen.Fonts; CLyricF.Text:=TMLyric.Font.Name; 
   CLyricS.Text:=intToStr(TMLyric.Font.Size);
-  PLTC.Color:=Core.LTextColor; PLBC.Color:=Core.LbgColor;
-  PLHC.Color:=Core.LhgColor; LScroll.Checked:=Core.PScroll;
+  PLTC.Color:=LTextColor; PLBC.Color:=LbgColor;
+  PLHC.Color:=LhgColor; LScroll.Checked:=PScroll;
   PlaylistBox.Count:=Playlist.Count;
   DragAcceptFiles(Handle,true);
   MainForm.MShowPlaylist.Checked:=true;
@@ -812,27 +830,6 @@ begin
   end;
 end;
 
-procedure TPlaylistForm.BDeleteClick(Sender: TObject);
-var iOld,iNew:integer;
-begin
-  with Playlist do begin
-    iNew:=0;
-    for iOld:=0 to High(Data) do begin
-      if not PlaylistBox.Selected[iOld] then begin
-        if iNew<iOld then Data[iNew]:=Data[iOld];
-        inc(iNew);
-      end
-      else begin
-        if data[iOld].State=psPlaying then begin
-          CurPlay:=-1; Core.Firstrun:=true;
-        end;
-      end;
-    end;
-    SetLength(Data,iNew);
-    Changed;
-  end;
-end;
-
 procedure TPlaylistForm.BPlayClick(Sender: TObject);
 var Index:integer;
 begin
@@ -845,13 +842,34 @@ begin
     end;
   end
   else exit;
-  //Core.ForceStop;
+  //ForceStop;
   MainForm.UpdateParams;
   if CurPlay>-1 then Playlist.Data[CurPlay].State:=psSkipped;
   MainForm.BPrev.Enabled:=(Index>0);
   MainForm.BNext.Enabled:=(Index+1<Playlist.Count);
   Playlist.NowPlaying(Index); CurPlay:=Index;
   MainForm.DoOpen(Playlist[Index].FullURL,Playlist[Index].DisplayURL);
+end;
+
+procedure TPlaylistForm.BDeleteClick(Sender: TObject);
+var iOld,iNew:integer;
+begin
+  with Playlist do begin
+    iNew:=0;
+    for iOld:=0 to High(Data) do begin
+      if not PlaylistBox.Selected[iOld] then begin
+        if iNew<iOld then Data[iNew]:=Data[iOld];
+        inc(iNew);
+      end
+      else begin
+        if data[iOld].State=psPlaying then begin
+          CurPlay:=-1; Firstrun:=true;
+        end;
+      end;
+    end;
+    SetLength(Data,iNew);
+    Changed;
+  end;
 end;
 
 procedure TPlaylistForm.BAddClick(Sender: TObject);
@@ -872,7 +890,6 @@ begin
            +'*.snd;*.pss;*.tta;*.umx;*.ram;*.ra;*.it*;*.xspf;*.smpl|'
            +AnyFilter+'(*.*)|*.*';
 
- 
     if Execute then begin
       if Sender<>BAdd then PClear:=true;
       for i:=0 to Files.Count-1 do
@@ -885,28 +902,34 @@ end;
 
 procedure TPlaylistForm.FormDropFiles(var msg:TMessage);
 var hDrop:THandle; i,h,DropCount:integer; j:boolean;
-    fnbuf:array[0..1024]of char; k,FName,Lname:string;
-    Entry:TPlaylistEntry;
+    fnbuf,k,FName,Lname:WideString; Entry:TPlaylistEntry;
+    tw:array[0..1024]of wideChar; ta:array[0..1024]of Char;
 begin
   hDrop:=msg.wParam;
-  DropCount:=DragQueryFile(hDrop,cardinal(-1),nil,0);
+  if Win32PlatformIsUnicode then DropCount:=DragQueryFileW(hDrop,cardinal(-1),nil,0)
+  else DropCount:=DragQueryFile(hDrop,cardinal(-1),nil,0);
   for i:=0 to DropCount-1 do begin
-    DragQueryFile(hDrop,i,@fnbuf[0],1024);
-    if DirectoryExists(fnbuf) then begin
+    if Win32PlatformIsUnicode then begin
+      DragQueryFileW(hDrop,i,tw,1024); fnbuf:=tw;
+    end
+    else begin
+      DragQueryFile(hDrop,i,ta,1024); fnbuf:=WideString(ta);
+    end;
+    if WideDirectoryExists(fnbuf) then begin
       Playlist.AddDirectory(fnbuf);
       empty:=true; 
     end
     else begin
-      k:=LowerCase(ExtractFileExt(fnbuf));
+      k:=Tnt_WideLowerCase(WideExtractFileExt(fnbuf));
       if FilterDrop then j:=CheckInfo(MediaType,k)>ZipTypeCount
       else j:=CheckInfo(SubType,k)=-1;
       if j then Playlist.AddFiles(fnbuf)
       else begin
         if Running and (k='.lrc') and (not HaveLyric) then begin
-          FName:=ExtractFileName(MediaURL);
-          FName:=LowerCase(Copy(FName,1,length(FName)-length(ExtractFileExt(MediaURL))));
-          LName:=ExtractFileName(fnbuf);
-          LName:=LowerCase(Copy(LName,1,length(LName)-4));
+          FName:=WideExtractFileName(MediaURL);
+          FName:=Tnt_WideLowerCase(Copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL))));
+          LName:=WideExtractFileName(fnbuf);
+          LName:=Tnt_WideLowerCase(Copy(LName,1,length(LName)-4));
           if FName=LName then HaveLyric:=Lyric.ParseLyric(fnbuf);
         end
         else begin
@@ -915,7 +938,7 @@ begin
               TmpPW:='';
               h:=AddMovies(fnbuf,playlist.FindPW(fnbuf),true,k);
               if not HaveLyric then ExtractLyric(fnbuf,TmpPW,k,-1);
-              if (h<0) and ((Pos('://',fnbuf)>1) or FileExists(fnbuf)) then begin
+              if (h<0) and ((Pos('://',fnbuf)>1) or WideFileExists(fnbuf)) then begin
                 Entry.State:=psNotPlayed;
                 Entry.FullURL:=fnbuf;
                 if Pos('://',fnbuf)>1 then Entry.DisplayURL:=fnbuf
@@ -1018,11 +1041,16 @@ begin
 end;
 
 procedure TPlaylistForm.BAddDirClick(Sender: TObject);
+var s:widestring;
 begin
-  if AddDirForm.Execute(true) then begin
-    Playlist.AddDirectory(AddDirForm.DirView.SelectedFolder.PathName);
+  if WideSelectDirectory(AddDirCp,'',s) then begin
+    Playlist.AddDirectory(s);
     empty:=true; Playlist.Changed;
   end;
+  {if AddDirForm.Execute(true) then begin
+    Playlist.AddDirectory(AddDirForm.DirView.SelectedFolder.PathName);
+    empty:=true; Playlist.Changed;
+  end;}
 end;
 
 procedure TPlaylistForm.FormKeyDown(Sender: TObject; var Key: Word;
@@ -1079,16 +1107,16 @@ begin
         k:=LyricStrings[LyricTime[j].LyricEntry];
         if MG2B.Checked then k:=Gb2Big5(k);
         if MB2G.Checked then k:=Big52Gb(k);
-        s:=StringToWideStringEx(k,Core.CP);
+        s:=StringToWideStringEx(k,CP);
         L:=(Rect.Left+Rect.Right-WideCanvasTextWidth(TMLyric.Canvas,s)) div 2;
        // T:=(Rect.Top+Rect.Bottom-WideCanvasTextHeight(TMLyric.Canvas,s)) div 2;
         WideCanvasTextOut(TMLyric.Canvas,L,Rect.Top,s);
         if UpdatePW then begin
           UpdatePW:=false;
-          h:=Core.MaxLenLyric;
+          h:=MaxLenLyric;
           if MG2B.Checked then h:=Gb2Big5(h);
           if MB2G.Checked then h:=Big52Gb(h);
-          i:=10+WideCanvasTextWidth(TMLyric.Canvas,StringToWideStringEx(h,Core.CP))+width+rect.Left-rect.Right;
+          i:=10+WideCanvasTextWidth(TMLyric.Canvas,StringToWideStringEx(h,CP))+width+rect.Left-rect.Right;
           if i>Screen.Width then i:=Screen.Width;
           if i<Constraints.MinWidth then i:=Constraints.MinWidth;
           d:=(i-Width) div 2;
@@ -1097,7 +1125,7 @@ begin
           else if (Left-d)<(MainForm.Left+MainForm.Width) then Left:=Left-d;
           Width:=i;
         end;
-       { if Core.CP=0 then s:=k else s:=StringToWideStringEx(k,Core.CP);
+       { if CP=0 then s:=k else s:=StringToWideStringEx(k,CP);
         L:=(Rect.Left+Rect.Right-WideCanvasTextWidth(TMLyric.Canvas,s))SHR 1;
         //TextOutW(Handle,l,Rect.Top,PWideChar(s),length(s));
         WideCanvasTextOut(TMLyric.Canvas,L,Rect.Top,s); }
@@ -1122,7 +1150,7 @@ procedure TPlaylistForm.TntCPClick(Sender: TObject);
 var i,j,k:integer;
 begin
   if (Sender as TMenuItem).Checked then exit;
-  Core.CP:=(Sender as TMenuItem).Tag;
+  CP:=(Sender as TMenuItem).Tag;
   for i:=0 to TntCP.Items.Count-1 do begin
     TntCP.Items[i].Checked:=false;
     for j:=0 to TntCP.Items[i].Count-1 do begin
@@ -1131,7 +1159,7 @@ begin
         TntCP.Items[i].Items[j].Items[k].Checked:=false;
     end;
   end;
-  Core.UpdatePW:=True;
+  UpdatePW:=True;
   if Visible then TMLyric.Invalidate;
   (Sender as TMenuItem).Checked:=true;
 end;
@@ -1139,7 +1167,7 @@ end;
 procedure TPlaylistForm.CLyricFChange(Sender: TObject);
 begin
   if CLyricF.ItemIndex>-1 then begin
-    TMLyric.Font.Name:=CLyricF.Text; Core.UpdatePW:=True;
+    TMLyric.Font.Name:=CLyricF.Text; UpdatePW:=True;
   end;
 end;
 
@@ -1150,13 +1178,13 @@ begin
   if (e=0) and (i>0) then begin
     TMLyric.Font.Size:=i; TMLyric.ItemHeight:=2*i;
     TMLyric.Count:=round(TMLyric.Height/TMLyric.ItemHeight)-1;
-    Core.UpdatePW:=True;
+    UpdatePW:=True;
   end;
 end;
 
 procedure TPlaylistForm.LScrollClick(Sender: TObject);
 begin
-  Core.PScroll:=LScroll.Checked; 
+  PScroll:=LScroll.Checked; 
 end;
 
 procedure TPlaylistForm.PLTCClick(Sender: TObject);
@@ -1164,8 +1192,8 @@ begin
   OptionsForm.ColorDialog1.Color:=PLTC.Color;
   if OptionsForm.ColorDialog1.Execute then
     PLTC.Color := OptionsForm.ColorDialog1.Color;
-  Core.LTextColor:=ColorToRGB(PLTC.Color);
-  TMLyric.Font.Color:=Core.LTextColor;
+  LTextColor:=ColorToRGB(PLTC.Color);
+  TMLyric.Font.Color:=LTextColor;
 end;
 
 procedure TPlaylistForm.PLHCClick(Sender: TObject);
@@ -1173,7 +1201,7 @@ begin
   OptionsForm.ColorDialog1.Color:=PLHC.Color;
   if OptionsForm.ColorDialog1.Execute then
     PLHC.Color := OptionsForm.ColorDialog1.Color;
-  Core.LhgColor:=ColorToRGB(PLHC.Color);
+  LhgColor:=ColorToRGB(PLHC.Color);
   if Visible then TMLyric.Invalidate;
 end;
 
@@ -1182,8 +1210,8 @@ begin
   OptionsForm.ColorDialog1.Color:=PLBC.Color;
   if OptionsForm.ColorDialog1.Execute then
     PLBC.Color := OptionsForm.ColorDialog1.Color;
-  Core.LbgColor:=ColorToRGB(PLBC.Color);
-  TMLyric.Color:=Core.LbgColor; 
+  LbgColor:=ColorToRGB(PLBC.Color);
+  TMLyric.Color:=LbgColor; 
 end;
 
 initialization

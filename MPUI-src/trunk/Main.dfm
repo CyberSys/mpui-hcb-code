@@ -7,7 +7,7 @@ object MainForm: TMainForm
   ClientHeight = 84
   ClientWidth = 357
   Color = clBtnFace
-  Constraints.MinHeight = 118
+  Constraints.MinHeight = 111
   Constraints.MinWidth = 365
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,88 +26,7 @@ object MainForm: TMainForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object MenuBar: TTntToolBar
-    Left = 0
-    Top = 0
-    Width = 357
-    Height = 25
-    BorderWidth = 1
-    ButtonHeight = 21
-    ButtonWidth = 48
-    Caption = 'MenuBar'
-    EdgeBorders = []
-    Flat = True
-    ShowCaptions = True
-    TabOrder = 0
-    object MFile: TTntToolButton
-      Left = 0
-      Top = 0
-      AutoSize = True
-      Caption = 'File'
-      Grouped = True
-      MenuItem = OMFile
-    end
-    object MView: TTntToolButton
-      Left = 27
-      Top = 0
-      AutoSize = True
-      Caption = 'View'
-      Grouped = True
-      MenuItem = OMView
-    end
-    object MSeek: TTntToolButton
-      Left = 60
-      Top = 0
-      AutoSize = True
-      Caption = 'Seek'
-      Grouped = True
-      MenuItem = OMSeek
-    end
-    object MVideos: TTntToolButton
-      Left = 94
-      Top = 0
-      AutoSize = True
-      Caption = 'Video'
-      Grouped = True
-      MenuItem = OMVideo
-      Visible = False
-    end
-    object MAudios: TTntToolButton
-      Left = 131
-      Top = 0
-      AutoSize = True
-      Caption = 'Audio'
-      Grouped = True
-      MenuItem = OMAudio
-      Visible = False
-    end
-    object MSub: TTntToolButton
-      Left = 169
-      Top = 0
-      AutoSize = True
-      Caption = 'Subtitles'
-      Grouped = True
-      MenuItem = OMSub
-      Visible = False
-    end
-    object MExtra: TTntToolButton
-      Left = 221
-      Top = 0
-      AutoSize = True
-      Caption = 'Extra'
-      Grouped = True
-      MenuItem = OMExtra
-    end
-    object MHelp: TTntToolButton
-      Left = 258
-      Top = 0
-      AutoSize = True
-      Caption = 'Help'
-      Grouped = True
-      MenuItem = OMHelp
-    end
-  end
-  object OPanel: TPanel
+  object OPanel: TTntPanel
     Left = 0
     Top = 25
     Width = 357
@@ -124,7 +43,7 @@ object MainForm: TMainForm
     OnMouseDown = DisplayMouseDown
     OnMouseMove = DisplayMouseMove
     OnMouseUp = DisplayMouseUp
-    object Logo: TImage
+    object Logo: TTntImage
       Left = 48
       Top = 8
       Width = 116
@@ -278,7 +197,7 @@ object MainForm: TMainForm
       OnMouseMove = DisplayMouseMove
       OnMouseUp = DisplayMouseUp
     end
-    object IPanel: TPanel
+    object IPanel: TTntPanel
       Left = 192
       Top = 8
       Width = 145
@@ -296,7 +215,7 @@ object MainForm: TMainForm
       OnMouseUp = DisplayMouseUp
     end
   end
-  object CPanel: TPanel
+  object CPanel: TTntPanel
     Left = 0
     Top = 21
     Width = 357
@@ -307,7 +226,7 @@ object MainForm: TMainForm
     DesignSize = (
       357
       63)
-    object BPlay: TSpeedButton
+    object BPlay: TTntSpeedButton
       Left = 0
       Top = 16
       Width = 23
@@ -380,7 +299,7 @@ object MainForm: TMainForm
       ShowHint = True
       OnClick = MStreamInfoClick
     end
-    object BPrev: TSpeedButton
+    object BPrev: TTntSpeedButton
       Tag = -1
       Left = 78
       Top = 16
@@ -395,7 +314,7 @@ object MainForm: TMainForm
         000098C000009CE000009EF00000FFF80000FFF80000}
       OnClick = BPrevNextClick
     end
-    object BNext: TSpeedButton
+    object BNext: TTntSpeedButton
       Tag = 1
       Left = 102
       Top = 16
@@ -410,7 +329,7 @@ object MainForm: TMainForm
         000018C8000039C800007BC80000FFF80000FFF80000}
       OnClick = BPrevNextClick
     end
-    object BStop: TSpeedButton
+    object BStop: TTntSpeedButton
       Left = 48
       Top = 16
       Width = 23
@@ -604,7 +523,7 @@ object MainForm: TMainForm
       ShowHint = True
       OnClick = MSIEClick
     end
-    object SeekBarFrame: TPanel
+    object SeekBarFrame: TTntPanel
       Left = 0
       Top = 2
       Width = 357
@@ -618,7 +537,7 @@ object MainForm: TMainForm
       DesignSize = (
         357
         13)
-      object BackBar: TPanel
+      object BackBar: TTntPanel
         Left = 6
         Top = 9
         Width = 345
@@ -631,7 +550,7 @@ object MainForm: TMainForm
         Visible = False
         OnMouseDown = SeekBarMouseDown
       end
-      object SkipBar: TPanel
+      object SkipBar: TTntPanel
         Left = 6
         Top = 9
         Width = 345
@@ -644,7 +563,7 @@ object MainForm: TMainForm
         Visible = False
         OnMouseDown = SeekBarMouseDown
       end
-      object SeekBar: TPanel
+      object SeekBar: TTntPanel
         Left = 6
         Top = 4
         Width = 345
@@ -675,7 +594,7 @@ object MainForm: TMainForm
         OnMouseUp = SeekBarSliderMouseUp
       end
     end
-    object PStatus: TPanel
+    object PStatus: TTntPanel
       Left = 0
       Top = 39
       Width = 357
@@ -696,7 +615,7 @@ object MainForm: TMainForm
       DesignSize = (
         353
         21)
-      object LTime: TLabel
+      object LTime: TTntLabel
         Left = 346
         Top = 0
         Width = 5
@@ -725,7 +644,7 @@ object MainForm: TMainForm
         OnClick = LStatusClick
       end
     end
-    object VolFrame: TPanel
+    object VolFrame: TTntPanel
       Left = 313
       Top = 16
       Width = 43
@@ -734,7 +653,7 @@ object MainForm: TMainForm
       BevelOuter = bvNone
       ParentBackground = False
       TabOrder = 2
-      object VolImage: TImage
+      object VolImage: TTntImage
         Left = 0
         Top = 0
         Width = 43
@@ -765,7 +684,7 @@ object MainForm: TMainForm
         Transparent = True
         OnMouseDown = VolImageMouseDown
       end
-      object VolSlider: TPanel
+      object VolSlider: TTntPanel
         Left = 33
         Top = 0
         Width = 10
@@ -779,7 +698,7 @@ object MainForm: TMainForm
         OnMouseUp = VolSliderMouseUp
       end
     end
-    object VolBoost: TPanel
+    object VolBoost: TTntPanel
       Left = 313
       Top = 16
       Width = 43
@@ -791,6 +710,87 @@ object MainForm: TMainForm
       TabOrder = 3
       Visible = False
       OnClick = VolBoostClick
+    end
+  end
+  object MenuBar: TTntToolBar
+    Left = 0
+    Top = 0
+    Width = 357
+    Height = 25
+    BorderWidth = 1
+    ButtonHeight = 21
+    ButtonWidth = 48
+    Caption = 'MenuBar'
+    EdgeBorders = []
+    Flat = True
+    ShowCaptions = True
+    TabOrder = 0
+    object MFile: TTntToolButton
+      Left = 0
+      Top = 0
+      AutoSize = True
+      Caption = 'File'
+      Grouped = True
+      MenuItem = OMFile
+    end
+    object MView: TTntToolButton
+      Left = 27
+      Top = 0
+      AutoSize = True
+      Caption = 'View'
+      Grouped = True
+      MenuItem = OMView
+    end
+    object MSeek: TTntToolButton
+      Left = 60
+      Top = 0
+      AutoSize = True
+      Caption = 'Seek'
+      Grouped = True
+      MenuItem = OMSeek
+    end
+    object MVideos: TTntToolButton
+      Left = 94
+      Top = 0
+      AutoSize = True
+      Caption = 'Video'
+      Grouped = True
+      MenuItem = OMVideo
+      Visible = False
+    end
+    object MAudios: TTntToolButton
+      Left = 131
+      Top = 0
+      AutoSize = True
+      Caption = 'Audio'
+      Grouped = True
+      MenuItem = OMAudio
+      Visible = False
+    end
+    object MSub: TTntToolButton
+      Left = 169
+      Top = 0
+      AutoSize = True
+      Caption = 'Subtitles'
+      Grouped = True
+      MenuItem = OMSub
+      Visible = False
+    end
+    object MExtra: TTntToolButton
+      Left = 221
+      Top = 0
+      AutoSize = True
+      Caption = 'Extra'
+      Grouped = True
+      MenuItem = OMExtra
+    end
+    object MHelp: TTntToolButton
+      Left = 258
+      Top = 0
+      AutoSize = True
+      Caption = 'Help'
+      Grouped = True
+      MenuItem = OMHelp
     end
   end
   object MainMenu: TTntMainMenu

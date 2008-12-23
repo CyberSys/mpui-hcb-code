@@ -18,7 +18,7 @@
 unit mo_cn;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info,AddDir,Core,Equalizer;
+uses Windows,Locale,Main,Log,Help,About,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -427,12 +427,7 @@ begin
     be.Caption:=UTF8Decode('বাংলা (孟加拉文)');
     dv.Caption:=UTF8Decode('संस्कृतम् (梵文)');
   end;
-  with AddDirForm do begin
-    Caption:=UTF8Decode('选择一个文件夹');
-    BOK.Caption:=UTF8Decode('确定');
-    BCancel.Caption:=UTF8Decode('取消');
-    CInSubDir.Caption:=UTF8Decode('包含子目录');
-  end;
+  AddDircp:=UTF8Decode('选择一个文件夹');
   with EqualizerForm do begin
     Caption:=MainForm.MEqualizer.Caption;
     BReset.Caption:=UTF8Decode(OSD_Reset_Prompt);

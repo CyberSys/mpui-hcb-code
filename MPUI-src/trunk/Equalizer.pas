@@ -140,7 +140,7 @@ begin
     Changed:=true; gam:=gamD; TGam.Position:=gamD;
     SendCommand('set_property gamma '+IntToStr(gamD)+' 1');
   end;
-  Core.SendCommand('osd_show_text "'+OSD_Reset_Prompt+' C/B/H/S/G"');
+  SendCommand('osd_show_text "'+OSD_Reset_Prompt+' C/B/H/S/G"');
   MainForm.Unpaused;
 end;
 

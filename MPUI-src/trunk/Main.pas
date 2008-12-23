@@ -20,10 +20,11 @@ unit Main;
 interface
 
 uses
-  Windows, TntWindows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,TntForms,
-  Dialogs, ComCtrls, Buttons, ExtCtrls, Menus,TntMenus, ShellAPI, AppEvnts, StdCtrls,
-  Math, plist, ImgList, Clipbrd, ToolWin, jpeg, TntDialogs, TntStdCtrls, TntSysutils,
-  TntComCtrls, TntExtCtrls, Core, TntButtons, MultiMon, TntSystem;
+  Windows, TntWindows, SysUtils, TntSysutils, Variants, Classes, Graphics, Messages,
+  Forms, TntForms, Dialogs, TntDialogs, ComCtrls, TntComCtrls, Buttons, TntButtons,
+  ExtCtrls,TntExtCtrls, Menus,TntMenus, StdCtrls, TntStdCtrls,ShellAPI, AppEvnts,
+  Math, ImgList, TntClipBrd, ToolWin, jpeg, Controls, MultiMon, TntSystem,
+  TntFileCtrl, Core, plist;
 
 const
     ES_SYSTEM_REQUIRED  = $01;
@@ -41,11 +42,11 @@ type
   TMainForm = class(TTntForm)
     MainMenu: TTntMainMenu;
     OMFile: TTntMenuItem;
-    CPanel: TPanel;
-    BPlay: TSpeedButton;
+    CPanel: TTntPanel;
+    BPlay: TTntSpeedButton;
     BPause: TTntSpeedButton;
     UpdateTimer: TTimer;
-    SeekBarFrame: TPanel;
+    SeekBarFrame: TTntPanel;
     SeekBarSlider: TTntPanel;
     MOpenFile: TTntMenuItem;
     MClose: TTntMenuItem;
@@ -95,30 +96,30 @@ type
     MForce43: TTntMenuItem;
     MForce169: TTntMenuItem;
     MForceCinemascope: TTntMenuItem;
-    OPanel: TPanel;
-    Logo: TImage;
-    IPanel: TPanel;
+    OPanel: TTntPanel;
+    Logo: TTntImage;
+    IPanel: TTntPanel;
     LEscape: TTntLabel;
-    BPrev: TSpeedButton;
-    BNext: TSpeedButton;
+    BPrev: TTntSpeedButton;
+    BNext: TTntSpeedButton;
     MPrev: TTntMenuItem;
     MNext: TTntMenuItem;
     MShowPlaylist: TTntMenuItem;
     N6: TTntMenuItem;
-    BStop: TSpeedButton;
+    BStop: TTntSpeedButton;
     BPlaylist: TTntSpeedButton;
-    PStatus: TPanel;
-    LTime: TLabel;
-    SeekBar: TPanel;
-    VolFrame: TPanel;
-    VolSlider: TPanel;
+    PStatus: TTntPanel;
+    LTime: TTntLabel;
+    SeekBar: TTntPanel;
+    VolFrame: TTntPanel;
+    VolSlider: TTntPanel;
     BMute: TTntSpeedButton;
-    VolImage: TImage;
+    VolImage: TTntImage;
     MAudiochannels: TTntMenuItem;
     N7: TTntMenuItem;
     MMute: TTntMenuItem;
     MStreamInfo: TTntMenuItem;
-    VolBoost: TPanel;
+    VolBoost: TTntPanel;
     BCompact: TTntSpeedButton;
     MCompact: TTntMenuItem;
     MStop: TTntMenuItem;
@@ -195,13 +196,13 @@ type
     MWheelControl: TTntMenuItem;
     MVol: TTntMenuItem;
     MDVDT: TTntMenuItem;
-    SkipBar: TPanel;
+    SkipBar: TTntPanel;
     MSkip: TTntMenuItem;
     MIntro: TTntMenuItem;
     MEnd: TTntMenuItem;
     MSIE: TTntMenuItem;
     BSkip: TTntSpeedButton;
-    BackBar: TPanel;
+    BackBar: TTntPanel;
     Imagery: TImageList;
     MPWheelControl: TTntMenuItem;
     MPVol: TTntMenuItem;
@@ -457,7 +458,7 @@ var
 
 implementation
 uses Locale, Config, Log, Help, About, Options, Info,
-     UnRAR, Equalizer, SevenZip, AddDir;
+     UnRAR, Equalizer, SevenZip;
 
 {$R *.dfm}
 var IsDrLoaded:THandle = 0;
@@ -494,46 +495,6 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 //var Buf: array[0..6] of AnsiChar; i,e:integer;
-procedure initFontList;
-var key:HKEY; FontName,FontPath:array[0..MAX_PATH]of Char;
-    cbSize:DWORD; i,j:integer; s,sn,sp:string; DefaultFont:TFont;
-begin
-  DefaultFont:=TFont.Create;
-  DefaultFont.Handle:=GetStockObject(DEFAULT_GUI_FONT);
-  if Win32PlatformIsUnicode then s:='SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts'
-  else s:='SOFTWARE\Microsoft\Windows\CurrentVersion\Fonts';
-  if RegOpenKeyEx(HKEY_LOCAL_MACHINE,PChar(s),0,KEY_READ,key)=ERROR_SUCCESS then begin
-    FontNames:=TStringList.Create; FontPaths:=TStringList.Create;
-    i:=0; DefaultFontIndex:=-1; FillChar(FontName,MAX_PATH,0); cbSize:=MAX_PATH;
-    while RegEnumValue(Key,i,FontName,cbSize,nil,nil,nil,nil)<>ERROR_NO_MORE_ITEMS do begin
-      j:=pos(' (TrueType)',FontName);
-      if j>0 then begin
-        FillChar(FontPath,MAX_PATH,0); cbSize:=MAX_PATH;
-        RegQueryValueEx(key, @FontName[0], nil,nil,@FontPath[0],@cbSize);
-        sn:=FontName; sp:=FontPath;
-        sn:=copy(sn,1,j-1);
-        j:=pos(' & ',sn);
-        while(j>1) do begin
-          FontNames.Add(copy(sn,1,j-1)); FontPaths.Add(SystemDir+'Fonts\'+sp);
-          if FontNames[FontNames.Count-1]=DefaultFont.Name then DefaultFontIndex:=FontNames.Count-1;
-          sn:=copy(sn,j+3,length(sn));
-          j:=pos(' & ',sn);
-        end;
-        FontNames.Add(sn); FontPaths.Add(SystemDir+'Fonts\'+sp);
-        if sn=DefaultFont.Name then DefaultFontIndex:=FontNames.Count-1;
-      end;
-      FillChar(FontName,MAX_PATH,0); cbSize:=MAX_PATH; inc(i);
-    end;
-    RegCloseKey(key);
-  end;
-  if subfont='' then begin
-    if DefaultFontIndex=-1 then subfont:='Arial'
-    else subfont:=FontNames[DefaultFontIndex];
-  end;
-  if osdfont='' then osdfont:=subfont;
-  if not FileExists(CheckSubfont(subfont)) then subfont:=HomeDir+'mplayer\subfont.ttf';
-  if not FileExists(CheckSubfont(osdfont)) then osdfont:=HomeDir+'mplayer\subfont.ttf';
-end;
 begin
 //AllocConsole;
   randomize;
@@ -548,31 +509,31 @@ begin
   HideMouseAt:=0; UpdateSeekBarAt:=0; PlayMsgAt:=0; 
   WantFullscreen:=false; WantCompact:=false;
   Constraints.MinWidth:=Width; Constraints.MinHeight:=Height;
-  Core.Init; Config.Load(HomeDir+'autorun.inf'); Config.Load(HomeDir+DefaultFileName);
-  if not FileExists(MplayerLocation) then MplayerLocation:=HomeDir+'mplayer.exe';
+  Init; Config.Load(HomeDir+'autorun.inf'); Config.Load(HomeDir+DefaultFileName);
+  if not WideFileExists(MplayerLocation) then MplayerLocation:=HomeDir+'mplayer.exe';
   if subcode='' then subcode:='CP'+IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT)); //AnsiCodePage
   //OEM CodePage
-  {if subcode='' then begin
+  {if subcode='' then begin   
     GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_IDEFAULTCODEPAGE,Buf,6);
     Val(Buf,i,e);
     if e <> 0 then i:=GetOEMCP;
     subcode:='CP'+IntToStr(i);
   end; }
-  if Core.Volume>100 then begin
-    VolBoost.Visible:=True; VolBoost.Caption:=IntToStr(Core.Volume)+'%';
+  if Volume>100 then begin
+    VolBoost.Visible:=True; VolBoost.Caption:=IntToStr(Volume)+'%';
   end
-  else VolSlider.Left:=Core.Volume*(VolFrame.ClientWidth-VolSlider.Width) DIV 100;
+  else VolSlider.Left:=Volume*(VolFrame.ClientWidth-VolSlider.Width) DIV 100;
   Left:=(screen.Width-Width) DIV 2;
   if Wid and Win32PlatformIsUnicode then
     Top:=(screen.Height-Height) Div 2
   else Top:=screen.WorkAreaHeight-Constraints.MinHeight;
-  if Core.RFScr then begin
-    OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
+  if RFScr then begin
+      OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
   end
   else begin
-    OPanel.PopupMenu:=MPopup; IPanel.PopupMenu:=MPopup;
+      OPanel.PopupMenu:=MPopup; IPanel.PopupMenu:=MPopup;
   end;
-  Init_MOpenDrive; Init_MLanguage; initFontList;
+  Init_MOpenDrive; Init_MLanguage; 
   with Logo do ControlStyle:=ControlStyle+[csOpaque];
   with IPanel do ControlStyle:=ControlStyle+[csOpaque];
 
@@ -583,15 +544,16 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  Core.ForceStop; ClearTmpFiles(TempDir);
+  ForceStop; ClearTmpFiles(TempDir); 
 //  SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, ScreenSaverActive, nil, 0);
   Config.Save(HomeDir+DefaultFileName,1);
   UnLoadRarLibrary; UnLoadZipLibrary; UnLoad7zLibrary;
   UnLoadShell32Library; UnLoadDsLibrary; UnLoadDrLibrary;
+  FontPaths.Free; SetErrorMode(0);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
-var i,PCount:integer; FileName:String; IsFirst:boolean;
+var i,PCount:integer; FileName:WideString; IsFirst:boolean;
 begin
   UpdateDockedWindows;
   if FirstShow then begin
@@ -605,13 +567,13 @@ begin
     ActivateLocale(DefaultLocale);
     Application.ProcessMessages;
 
-    if ParamStr(1)<>'' then begin
-      PCount:=ParamCount; IsFirst:=true;
+    if WideParamStr(1)<>'' then begin
+      PCount:=WideParamCount; IsFirst:=true;
       for i:=1 to PCount do begin
-        FileName:=ParamStr(i);
+        FileName:=WideParamStr(i);
         if not CheckOption(FileName) then begin
           if IsFirst then begin PClear:=true; IsFirst:=false; end;
-          if DirectoryExists(FileName) then begin
+          if WideDirectoryExists(FileName) then begin
             Playlist.AddDirectory(FileName);
             empty:=true;
           end
@@ -637,23 +599,29 @@ begin
 end;
 
 procedure TMainForm.FormDropFiles(var msg:TMessage);
-var hDrop:THandle; j,t,Fname,Lname:string; k:boolean;
+var hDrop:THandle; fnbuf,j,t:widestring; k:boolean;
     i,h,DropCount,s:integer; Entry:TPlaylistEntry;
-    fnbuf:array[0..1024]of char;
+    tw:array[0..1024]of wideChar; ta:array[0..1024]of Char;
 begin
   hDrop:=msg.wParam;
-  DropCount:=DragQueryFile(hDrop,cardinal(-1),nil,0);
+  if Win32PlatformIsUnicode then DropCount:=DragQueryFileW(hDrop,cardinal(-1),nil,0)
+  else DropCount:=DragQueryFile(hDrop,cardinal(-1),nil,0);
   VobFileCount:=0; s:=0;
   for i:=0 to DropCount-1 do begin
-    DragQueryFile(hDrop,i,@fnbuf[0],1024);
-    if DirectoryExists(fnbuf) then begin
+    if Win32PlatformIsUnicode then begin
+      DragQueryFileW(hDrop,i,tw,1024); fnbuf:=tw;
+    end
+    else begin
+      DragQueryFile(hDrop,i,ta,1024); fnbuf:=WideString(ta);
+    end;
+    if WideDirectoryExists(fnbuf) then begin
       if i=0 then PClear:=true;
       Playlist.AddDirectory(fnbuf);
       empty:=true;
       Loadsub:=0;
     end
     else begin
-      j:=LowerCase(ExtractFileExt(fnbuf));
+      j:=Tnt_WideLowerCase(WideExtractFileExt(fnbuf));
       if FilterDrop then k:=CheckInfo(MediaType,j)>ZipTypeCount
       else k:=CheckInfo(SubType,j)=-1;
       if k then begin
@@ -663,11 +631,11 @@ begin
       end
       else begin
         if j='.idx' then begin
-          VobFileCount:=VobFileCount+1;
+          inc(VobFileCount);
           if VobFileCount=1 then begin
-            j:=ExtractFileName(fnbuf);
-            Vobfile:=ExtractFilePath(fnbuf)+copy(j,1,length(j)-4);
-            Loadsub:=1; LoadVob:=1; Core.Restart;
+            j:=WideExtractFileName(fnbuf);
+            Vobfile:=WideExtractFilePath(fnbuf)+copy(j,1,length(j)-4);
+            Loadsub:=1; LoadVob:=1; Restart;
           end;
         end
         else begin
@@ -678,9 +646,9 @@ begin
               if not HaveLyric then ExtractLyric(fnbuf,TmpPW,j,-1);
               if t<>'' then begin
                 Vobfile:=t;
-                VobFileCount:=VobFileCount+1;
+                inc(VobFileCount);
                 if VobFileCount=1 then begin
-                  LoadVob:=1; Core.Restart;
+                  LoadVob:=1; Restart;
                 end;
               end;
               h:=AddMovies(fnbuf,TmpPW,false,j);
@@ -689,7 +657,7 @@ begin
                 if i=0 then PClear:=true;
               end;
               if h>0 then AddMovies(fnbuf,TmpPW,true,j);
-              if (h<0) and ((Pos('://',fnbuf)>1) or FileExists(fnbuf)) then begin
+              if (h<0) and ((Pos('://',fnbuf)>1) or WideFileExists(fnbuf)) then begin
                 Entry.State:=psNotPlayed;
                 Entry.FullURL:=fnbuf;
                 if Pos('://',fnbuf)>1 then Entry.DisplayURL:=fnbuf
@@ -700,21 +668,23 @@ begin
           end
           else begin
             if Running and (j='.lrc') and (not HaveLyric) then begin
-              FName:=ExtractFileName(MediaURL);
-              FName:=LowerCase(Copy(FName,1,length(FName)-length(ExtractFileExt(MediaURL))));
-              LName:=ExtractFileName(fnbuf);
-              LName:=LowerCase(Copy(LName,1,length(LName)-4));
-              if FName=LName then HaveLyric:=Lyric.ParseLyric(fnbuf);
+              j:=WideExtractFileName(MediaURL);
+              j:=Tnt_WideLowerCase(Copy(j,1,length(j)-length(WideExtractFileExt(MediaURL))));
+              t:=WideExtractFileName(fnbuf);
+              t:=Tnt_WideLowerCase(Copy(t,1,length(t)-4));
+              if j=t then HaveLyric:=Lyric.ParseLyric(fnbuf);
             end
             else begin
               Loadsub:=1;
+              t:=fnbuf;
+              if not IsWideStringMappableToAnsi(t) then t:=WideExtractShortPathName(t);
               if not Win32PlatformIsUnicode then begin
                 Loadsub:=2; Loadsrt:=2;
-                AddChain(s,substring,EscapePath(EscapeParam(FName)));
+                AddChain(s,substring,EscapePath(EscapeParam(t)));
               end
               else begin
                 Unpaused;
-                Core.SendCommand('sub_load '+EscapePath(EscapeParam(fnbuf)));
+                SendCommand('sub_load '+EscapePath(EscapeParam(t)));
               end;
             end;
           end;
@@ -724,7 +694,7 @@ begin
   end;
   DragFinish(hDrop);
   Playlist.Changed;
-  if (not Win32PlatformIsUnicode) and (s>0) then Core.Restart;
+  if (not Win32PlatformIsUnicode) and (s>0) then Restart;
   if Loadsub=0 then Application.OnIdle:=OpenDroppedFile;
   msg.Result:=0;
 end;
@@ -744,14 +714,21 @@ begin
 end;
 
 procedure TMainForm.PassMsg(var msg:Tmessage);
-var OpenFileName:string;
+var OpenFileName:WideString; t:string;
 begin
-  SetLength(OpenFileName,msg.LParam);
-  GlobalGetAtomName(msg.WParam,@OpenFileName[1],msg.LParam+1);
+  if not Win32PlatformIsUnicode then begin
+    SetLength(t,msg.LParam);
+    GlobalGetAtomName(msg.WParam,@t[1],msg.LParam+1);
+    OpenFileName:=WideString(t);
+  end
+  else begin
+    SetLength(OpenFileName,msg.LParam);
+    GlobalGetAtomNameW(msg.WParam,@OpenFileName[1],msg.LParam+1);
+  end;
   GlobalDeleteAtom(msg.WParam);
   if not CheckOption(OpenFileName) then begin
     if not HaveMsg then begin PClear:=true; HaveMsg:=true; end;
-    if DirectoryExists(OpenFileName) then begin
+    if WideDirectoryExists(OpenFileName) then begin
       Playlist.AddDirectory(OpenFileName);
       empty:=true;
     end
@@ -763,66 +740,66 @@ end;
 
 procedure TMainForm.DoOpen(const URL,DisplayName:widestring);
 begin
-  Core.ForceStop;
+  ForceStop;
   Sleep(50); // wait for the processing threads to finish
   Application.ProcessMessages;  // let the VCL process the finish messages
-  if Firstrun then Core.MediaURL:=URL;  //MakeURL(URL,Core.DisplayURL);
+  if Firstrun then MediaURL:=URL;  //MakeURL(URL,DisplayURL);
   if DisplayURL<>DisplayName then begin
     LyricURL:=''; DisplayURL:=DisplayName;
   end;
   UpdateCaption;
-  Core.FirstOpen:=true;
-  Core.Start;
+  FirstOpen:=true;
+  Start;
 end;
 
 procedure TMainForm.BPlayClick(Sender: TObject);
 begin
   if BPause.Down then begin
     SendCommand('pause'); BPause.Down:=false;
-    Core.Status:=sPlaying; UpdateStatus;
+    Status:=sPlaying; UpdateStatus;
   end
   else begin
-    if not Core.Running then NextFile(0,psPlaying);
+    if not Running then NextFile(0,psPlaying);
   end;
-  BPlay.Down:=Core.Running;
+  BPlay.Down:=Running;
 end;
 
 procedure TMainForm.BPauseClick(Sender: TObject);
 begin
   BPause.Down:=True;
-  if Core.Status=sPaused then SendCommand('frame_step')
+  if Status=sPaused then SendCommand('frame_step')
   else begin
-    SendCommand('pause'); Core.Status:=sPaused;
+    SendCommand('pause'); Status:=sPaused;
     BPlay.Down:=false; UpdateStatus;
   end;
 end;
 
 procedure TMainForm.Unpaused;
 begin
-  if Core.Status=sPaused then begin
+  if Status=sPaused then begin
     BPause.Down:=false; BPlay.Down:=true;
-    Core.Status:=sPlaying; UpdateStatus;
+    Status:=sPlaying; UpdateStatus;
   end;
 end;
 
 procedure TMainForm.SetVolumeRel(Increment:integer);
 begin
   if mute then exit;
-  if (Core.Volume>100) OR ((Core.Volume=100) AND (Increment>0))
+  if (Volume>100) OR ((Volume=100) AND (Increment>0))
     then Increment:=Increment*10 DIV 3;  // bigger volume change steps if >100%
-  inc(Core.Volume, Increment);
-  if Core.Volume<0 then Core.Volume:=0;
-  if (Core.Volume>100) AND (not Core.SoftVol) then Core.Volume:=100;
-  if Core.Volume>9999 then Core.Volume:=9999;
+  inc(Volume, Increment);
+  if Volume<0 then Volume:=0;
+  if (Volume>100) AND (not SoftVol) then Volume:=100;
+  if Volume>9999 then Volume:=9999;
   Unpaused;
-  Core.SendVolumeChangeCommand(Core.Volume);
-  if Core.Volume>100 then begin
+  SendVolumeChangeCommand(Volume);
+  if Volume>100 then begin
     VolBoost.Visible:=True;
-    VolBoost.Caption:=IntToStr(Core.Volume)+'%';
+    VolBoost.Caption:=IntToStr(Volume)+'%';
   end
   else begin
     VolBoost.Visible:=False;
-    VolSlider.Left:=Core.Volume*(VolFrame.ClientWidth-VolSlider.Width) DIV 100;
+    VolSlider.Left:=Volume*(VolFrame.ClientWidth-VolSlider.Width) DIV 100;
   end;
 end;
 
@@ -832,14 +809,14 @@ procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
   procedure HandleCommand(const Command:string); begin
     if not Win32PlatformIsUnicode then exit;
     Unpaused;
-    Core.SendCommand(Command);
+    SendCommand(Command);
   end;
   procedure HandleSeekCommand(const Command:string); begin
     if not Win32PlatformIsUnicode then exit;
     Unpaused;
-    Core.SendCommand(Command);
+    SendCommand(Command);
     if HaveChapters then Sendcommand('get_property chapter');
-    Core.SendCommand('get_time_length');
+    SendCommand('get_time_length');
     if Mute then SendCommand('set_property mute 1');
   end;
 begin
@@ -917,34 +894,34 @@ if MVideos.Visible then begin
                        MKaspect.Checked:=true; FixSize;
                      end;
           Ord('1'),VK_NUMPAD1:   begin HandleCommand('contrast -3');
-                                   Core.SendCommand('osd_show_property_text "'+OSD_Contrast_Prompt+':${contrast}"');
+                                   SendCommand('osd_show_property_text "'+OSD_Contrast_Prompt+':${contrast}"');
                                  end;
           Ord('2'),VK_NUMPAD2:   begin HandleCommand('contrast +3');
-                                   Core.SendCommand('osd_show_property_text "'+OSD_Contrast_Prompt+':${contrast}"');
+                                   SendCommand('osd_show_property_text "'+OSD_Contrast_Prompt+':${contrast}"');
                                  end;
           Ord('3'),VK_NUMPAD3:   begin HandleCommand('brightness -3');
-                                   Core.SendCommand('osd_show_property_text "'+OSD_Brightness_Prompt+':${brightness}"');
+                                   SendCommand('osd_show_property_text "'+OSD_Brightness_Prompt+':${brightness}"');
                                  end;
           Ord('4'),VK_NUMPAD4:   begin HandleCommand('brightness +3');
-                                   Core.SendCommand('osd_show_property_text "'+OSD_Brightness_Prompt+':${brightness}"');
+                                   SendCommand('osd_show_property_text "'+OSD_Brightness_Prompt+':${brightness}"');
                                  end;
           Ord('5'),VK_NUMPAD5:   begin HandleCommand('hue -3');
-                                   Core.SendCommand('osd_show_property_text "'+OSD_Hue_Prompt+':${hue}"');
+                                   SendCommand('osd_show_property_text "'+OSD_Hue_Prompt+':${hue}"');
                                  end;
           Ord('6'),VK_NUMPAD6:   begin HandleCommand('hue +3');
-                                   Core.SendCommand('osd_show_property_text "'+OSD_Hue_Prompt+':${hue}"');
+                                   SendCommand('osd_show_property_text "'+OSD_Hue_Prompt+':${hue}"');
                                  end;
           Ord('7'),VK_NUMPAD7:   begin HandleCommand('saturation -3');
-                                   Core.SendCommand('osd_show_property_text "'+OSD_Saturation_Prompt+':${saturation}"');
+                                   SendCommand('osd_show_property_text "'+OSD_Saturation_Prompt+':${saturation}"');
                                  end;
           Ord('8'),VK_NUMPAD8:   begin HandleCommand('saturation +3');
-                                   Core.SendCommand('osd_show_property_text "'+OSD_Saturation_Prompt+':${saturation}"');
+                                   SendCommand('osd_show_property_text "'+OSD_Saturation_Prompt+':${saturation}"');
                                  end;
           VK_INSERT: begin HandleCommand('gamma +3');
-                       Core.SendCommand('osd_show_property_text "'+OSD_Gamma_Prompt+':${gamma}"');
+                       SendCommand('osd_show_property_text "'+OSD_Gamma_Prompt+':${gamma}"');
                      end;
           VK_DELETE: begin HandleCommand('gamma -3');
-                       Core.SendCommand('osd_show_property_text "'+OSD_Gamma_Prompt+':${gamma}"');
+                       SendCommand('osd_show_property_text "'+OSD_Gamma_Prompt+':${gamma}"');
                      end;
           Ord('D'):   HandleCommand('frame_drop');
           Ord('F'):   if Wid then begin
@@ -1091,14 +1068,14 @@ else begin
          {]} 221:   MEndClick(nil);
         {\|} 220:   MSIEClick(nil);
         {/?} 191:   BPauseClick(nil);
-        VK_SPACE,VK_MEDIA_PLAY_PAUSE:  if Core.Running then begin
+        VK_SPACE,VK_MEDIA_PLAY_PAUSE:  if Running then begin
                                          SendCommand('pause');
-                                         if Core.Status=sPlaying then begin
-                                            Core.Status:=sPaused; BPause.Down:=true;
+                                         if Status=sPlaying then begin
+                                            Status:=sPaused; BPause.Down:=true;
                                             BPlay.Down:=false;
                                          end
                                          else begin
-                                           Core.Status:=sPlaying; BPlay.Down:=true;
+                                           Status:=sPlaying; BPlay.Down:=true;
                                            BPause.Down:=false;
                                          end;
                                            UpdateStatus;
@@ -1121,11 +1098,11 @@ procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word;
 begin
    if HaveVideo then begin
     case Key of
-      Ord('1'),VK_NUMPAD1,Ord('2'),VK_NUMPAD2:   begin CBHSA:=1; Core.SendCommand('get_property contrast'); end;
-      Ord('3'),VK_NUMPAD3,Ord('4'),VK_NUMPAD4:   begin CBHSA:=1; Core.SendCommand('get_property brightness'); end;
-      Ord('5'),VK_NUMPAD5,Ord('6'),VK_NUMPAD6:   begin CBHSA:=1; Core.SendCommand('get_property hue'); end;
-      Ord('7'),VK_NUMPAD7,Ord('8'),VK_NUMPAD8:   begin CBHSA:=1; Core.SendCommand('get_property saturation'); end;
-                          VK_INSERT,VK_DELETE:   begin CBHSA:=1; Core.SendCommand('get_property gamma'); end;
+      Ord('1'),VK_NUMPAD1,Ord('2'),VK_NUMPAD2:   begin CBHSA:=1; SendCommand('get_property contrast'); end;
+      Ord('3'),VK_NUMPAD3,Ord('4'),VK_NUMPAD4:   begin CBHSA:=1; SendCommand('get_property brightness'); end;
+      Ord('5'),VK_NUMPAD5,Ord('6'),VK_NUMPAD6:   begin CBHSA:=1; SendCommand('get_property hue'); end;
+      Ord('7'),VK_NUMPAD7,Ord('8'),VK_NUMPAD8:   begin CBHSA:=1; SendCommand('get_property saturation'); end;
+                          VK_INSERT,VK_DELETE:   begin CBHSA:=1; SendCommand('get_property gamma'); end;
     end;
     if CBHSA=2 then begin
       InterW:=IPanel.Width; InterH:=IPanel.Height;
@@ -1162,8 +1139,8 @@ begin
     end;
   end;
 
-  if Core.Running then begin
-    if Core.Status=sPlaying then begin
+  if Running then begin
+    if Status=sPlaying then begin
       if TickCount>=UpdateSeekBarAt then UpdateSeekBar;
       if MVideos.Visible then begin
         CurMonitor:=Screen.MonitorFromWindow(Handle);
@@ -1188,13 +1165,13 @@ begin
     end; {//Allow OS into "Stand by" or "Hibernate" state when player in "pause" state
     else SetThreadExecutionState(ES_SYSTEM_REQUIRED); }
     
-    if (Core.TotalTime>0) and Core.UpdateSkipBar then begin
-      Core.UpdateSkipBar:=false;
-      if (Bp>0) and (Bp<Core.TotalTime) then
-        SkipBar.Left:=SeekBar.Left+SeekBar.Width*Core.Bp DIV Core.TotalTime
+    if (TotalTime>0) and UpdateSkipBar then begin
+      UpdateSkipBar:=false;
+      if (Bp>0) and (Bp<TotalTime) then
+        SkipBar.Left:=SeekBar.Left+SeekBar.Width*Bp DIV TotalTime
       else SkipBar.Left:=SeekBar.Left;
-      if (Ep>0) and (Ep<Core.TotalTime) then
-        SkipBar.Width:=(SeekBar.Width*Core.Ep DIV Core.TotalTime)-SkipBar.Left+SeekBar.Left
+      if (Ep>0) and (Ep<TotalTime) then
+        SkipBar.Width:=(SeekBar.Width*Ep DIV TotalTime)-SkipBar.Left+SeekBar.Left
       else SkipBar.Width:=SeekBar.Width-SkipBar.Left+SeekBar.Left;
     end;
     //鼠标为手形时，不隐藏鼠标
@@ -1207,7 +1184,7 @@ begin
     ///////////////////
   end
   else begin
-    if (Core.Status=sNone) OR (Core.Status=sStopped) then
+    if (Status=sNone) OR (Status=sStopped) then
       LTime.Caption:=FormatDateTime(DTFormat,Now,FormatSet);
   end;
 end;
@@ -1233,12 +1210,12 @@ procedure TMainForm.FormResize(Sender: TObject);
 var CX,CY:integer;
 begin
   if SeekBarSlider.Visible then UpdateSeekBar;
-  if (Core.TotalTime>0) and SkipBar.Visible then begin
-    if (Bp>0) and (Bp<Core.TotalTime) then
-      SkipBar.Left:=SeekBar.Left+SeekBar.Width*Core.Bp DIV Core.TotalTime
+  if (TotalTime>0) and SkipBar.Visible then begin
+    if (Bp>0) and (Bp<TotalTime) then
+      SkipBar.Left:=SeekBar.Left+SeekBar.Width*Bp DIV TotalTime
     else SkipBar.Left:=SeekBar.Left;
-    if (Ep>0) and (Ep<Core.TotalTime) then
-      SkipBar.Width:=(SeekBar.Width*Core.Ep DIV Core.TotalTime)-SkipBar.Left+SeekBar.Left
+    if (Ep>0) and (Ep<TotalTime) then
+      SkipBar.Width:=(SeekBar.Width*Ep DIV TotalTime)-SkipBar.Left+SeekBar.Left
     else SkipBar.Width:=SeekBar.Width-SkipBar.Left+SeekBar.Left;
   end;
   if (Width>=(Screen.Width-20)) OR (Height>=(Screen.WorkAreaHeight-20))
@@ -1292,7 +1269,7 @@ begin
   BPause.Enabled:=false;
   BPause.Down:=false;
   //BStreamInfo.Enabled:=false;
-  Logo.Visible:=not Core.Running;
+  Logo.Visible:=not Running;
   LEscape.Visible:=MFullscreen.Checked;
   SetMouseV(true);
   MLoadSub.Visible:=false;
@@ -1305,16 +1282,16 @@ end;
 procedure TMainForm.UpdateSeekBar;
 var MaxPos:integer;
 begin
-  if Seeking or (Core.TotalTime=0) then exit;
+  if Seeking or (TotalTime=0) then exit;
   MaxPos:=SeekBarFrame.ClientWidth-SeekBarSlider.Width;
-  SeekBarSlider.Left:=MaxPos*Core.SecondPos DIV Core.TotalTime;
+  SeekBarSlider.Left:=MaxPos*SecondPos DIV TotalTime;
   if SeekBarSlider.Left>MaxPos then SeekBarSlider.Left:=MaxPos;
 end;
 
 procedure TMainForm.SeekBarSliderMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  if (Button=mbLeft) AND (Core.TotalTime>0) then begin
+  if (Button=mbLeft) AND (TotalTime>0) then begin
     Seeking:=true; SeekBarSlider.ShowHint:=false;
     SeekBarSlider.BevelInner:=bvRaised;
     SeekMouseX:=X;
@@ -1327,37 +1304,37 @@ procedure TMainForm.SeekBarSliderMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 var NewX,MaxX:integer;
 begin
-  if not(ssLeft in Shift) OR (not Seeking) OR (Core.TotalTime=0) then exit;
+  if not(ssLeft in Shift) OR (not Seeking) OR (TotalTime=0) then exit;
   NewX:=X-SeekMouseX+SeekBarSlider.Left;
   MaxX:=SeekBarFrame.ClientWidth-SeekBarSlider.Width;
   if MaxX=0 then exit;
   if NewX<0 then NewX:=0;
   if NewX>MaxX then NewX:=MaxX;
   SeekBarSlider.Left:=NewX;
-  LastPos:=Core.TotalTime*NewX DIV MaxX;
+  LastPos:=TotalTime*NewX DIV MaxX;
   if ETime then
     LTime.Caption:='-'+SecondsToTime(TotalTime-LastPos)+'/'+Duration
   else
     LTime.Caption:=SecondsToTime(LastPos)+'/'+Duration;
-  TntApplication.Title:=Core.DisplayURL+' ['+LTime.Caption+']';
+  TntApplication.Title:=DisplayURL+' ['+LTime.Caption+']';
   if Mctrl.Checked then
-    Caption:=Core.DisplayURL+' ['+LTime.Caption+']'+' - '+LOCstr_Title;
+    Caption:=DisplayURL+' ['+LTime.Caption+']'+' - '+LOCstr_Title;
 end;
 
 procedure TMainForm.SeekBarSliderMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  if (Button<>mbLeft) or (Core.TotalTime=0) then exit;
+  if (Button<>mbLeft) or (TotalTime=0) then exit;
   SeekBarSlider.BevelInner:=bvLowered;
   Unpaused;
   {if (CID>1) and HaveChapters then SendCommand('seek '+IntToStr(LastPos-SecondPos))
   else SendCommand('seek '+IntToStr(LastPos)+' 2');}
   SendCommand('seek '+IntToStr(LastPos-SecondPos));
-  if HaveVideo then SendCommand('osd_show_text '+IntToStr(100*LastPos DIV Core.TotalTime)+'%');
+  if HaveVideo then SendCommand('osd_show_text '+IntToStr(100*LastPos DIV TotalTime)+'%');
   if Mute then SendCommand('set_property mute 1');
   Seeking:=false; SeekBarSlider.ShowHint:=true;
   UpdateSeekBarAt:=GetTickCount()+1000;
-  if not Win32PlatformIsUnicode then Core.Restart;
+  if not Win32PlatformIsUnicode then Restart;
 end;
 
 procedure TMainForm.SeekBarMouseDown(Sender: TObject; Button: TMouseButton;
@@ -1372,18 +1349,18 @@ procedure TMainForm.SeekBarFrameMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var MaxPos:integer;
 begin
-  if (not SeekBarSlider.Visible) or (Button<>mbLeft) or (Core.TotalTime=0) then exit;
+  if (not SeekBarSlider.Visible) or (Button<>mbLeft) or (TotalTime=0) then exit;
   dec(X,SeekBarSlider.Width DIV 2);
   MaxPos:=SeekBarFrame.ClientWidth-SeekBarSlider.Width;
   if MaxPos=0 then exit;
   Unpaused;
-  {if (CID>1) and HaveChapters then SendCommand('seek '+IntToStr((Core.TotalTime*X DIV MaxPos)-SecondPos))
-  else SendCommand('seek '+IntToStr(Core.TotalTime*X DIV MaxPos)+' 2'); }
-  SendCommand('seek '+IntToStr((Core.TotalTime*X DIV MaxPos)-SecondPos));
+  {if (CID>1) and HaveChapters then SendCommand('seek '+IntToStr((TotalTime*X DIV MaxPos)-SecondPos))
+  else SendCommand('seek '+IntToStr(TotalTime*X DIV MaxPos)+' 2'); }
+  SendCommand('seek '+IntToStr((TotalTime*X DIV MaxPos)-SecondPos));
   if HaveVideo then SendCommand('osd_show_text '+IntToStr(100*X DIV MaxPos)+'%');
   if Mute then SendCommand('set_property mute 1');
   SeekBarSlider.Left:=X; UpdateSeekBarAt:=GetTickCount()+1000;
-  if not Win32PlatformIsUnicode then Core.Restart;
+  if not Win32PlatformIsUnicode then Restart;
 end;
 
 procedure TMainForm.SimulateKey(Sender: TObject);
@@ -1456,7 +1433,7 @@ begin
     1: SendCommand('osd_show_text "OSD: '+OSD_Enable_Prompt+'"');
   end;
   SendCommand('osd '+IntToStr(OSDLevel));
-  if not Win32PlatformIsUnicode then Core.Restart;
+  if not Win32PlatformIsUnicode then Restart;
   MOSD.Items[OSDLevel].Checked:=true;
   OSDMenu.Items[OSDLevel].Checked:=true;
 end;
@@ -1482,7 +1459,7 @@ begin
           if HaveVideo and Wid then SendCommand('osd_show_text "'+OSD_OnTop1_Prompt+'"');
         end;
     2:  begin
-          if (Core.Status=sPlaying) and (not MFullscreen.Checked) then begin
+          if (Status=sPlaying) and (not MFullscreen.Checked) then begin
             if HaveVideo and (not Wid) then SendCommand('set_property ontop 1')
             else SetWindowPos(Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
           end;
@@ -1495,7 +1472,7 @@ end;
 procedure TMainForm.MCloseClick(Sender: TObject);
 begin
   MediaURL:=''; DisplayURL:='';
-  Core.Stop;
+  Stop;
   BPlay.Enabled:=false;
 end;
 
@@ -1504,16 +1481,16 @@ begin
   if (Sender as TMenuItem).Checked then exit;
   Unpaused;
   case (Sender as TMenuItem).Tag of
-    0: begin Speed:= 0.125; Core.SendCommand('speed_set 0.125'); end;
-    1: begin Speed:= 0.25; Core.SendCommand('speed_set 0.25'); end;
-    2: begin Speed:= 0.5; Core.SendCommand('speed_set 0.5'); end;
-    3: begin Speed:= 1; Core.SendCommand('speed_set 1'); end;
-    4: begin Speed:= 2; Core.SendCommand('speed_set 2'); end;
-    5: begin Speed:= 4; Core.SendCommand('speed_set 4'); end;
-    6: begin Speed:= 8; Core.SendCommand('speed_set 8'); end;
-    7: Core.SendCommand('speed_set '+FloatToStr(Speed));
+    0: begin Speed:= 0.125; SendCommand('speed_set 0.125'); end;
+    1: begin Speed:= 0.25; SendCommand('speed_set 0.25'); end;
+    2: begin Speed:= 0.5; SendCommand('speed_set 0.5'); end;
+    3: begin Speed:= 1; SendCommand('speed_set 1'); end;
+    4: begin Speed:= 2; SendCommand('speed_set 2'); end;
+    5: begin Speed:= 4; SendCommand('speed_set 4'); end;
+    6: begin Speed:= 8; SendCommand('speed_set 8'); end;
+    7: SendCommand('speed_set '+FloatToStr(Speed));
   end;
-  if not Win32PlatformIsUnicode then Core.Restart;
+  if not Win32PlatformIsUnicode then Restart;
   (Sender as TMenuItem).Checked:=True;
 end;
 
@@ -1522,11 +1499,11 @@ begin
   if (Sender as TMenuItem).Checked then exit;
   VideoID:=(Sender as TMenuItem).Tag;
   if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
-    Core.Restart
+    Restart
   else begin
      Unpaused;
-     Core.SendCommand('set_property switch_video '+IntToStr(VideoID));
-     Core.SendCommand('osd_show_text "'+OSD_VideoTrack_Prompt+': '+IntToStr(VideoID)+#34);
+     SendCommand('set_property switch_video '+IntToStr(VideoID));
+     SendCommand('osd_show_text "'+OSD_VideoTrack_Prompt+': '+IntToStr(VideoID)+#34);
   end;
   (Sender as TMenuItem).Checked:=True;
 end;
@@ -1536,12 +1513,12 @@ begin
   if (Sender as TMenuItem).Checked then exit;
   AudioID:=(Sender as TMenuItem).Tag;
   if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
-    Core.Restart
+    Restart
   else begin
     Unpaused;
-    Core.SendCommand('switch_audio '+IntToStr(AudioID));
+    SendCommand('switch_audio '+IntToStr(AudioID));
     if HaveVideo then
-      Core.SendCommand('osd_show_text "'+OSD_AudioTrack_Prompt+': '+IntToStr(AudioID)+#34);
+      SendCommand('osd_show_text "'+OSD_AudioTrack_Prompt+': '+IntToStr(AudioID)+#34);
   end;
   (Sender as TMenuItem).Checked:=True;
 end;
@@ -1550,7 +1527,7 @@ procedure TMainForm.MAudiochannelsClick(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
   AudiochannelsID:=(Sender as TMenuItem).Tag;
-  Core.Restart;
+  Restart;
   (Sender as TMenuItem).Checked:=True;
 end;
 
@@ -1559,7 +1536,7 @@ begin
   if (Sender as TMenuItem).Checked then exit;
   SubID:=(Sender as TMenuItem).Tag;
   Unpaused;
-  Core.SendCommand('sub_select '+IntToStr(SubID));
+  SendCommand('sub_select '+IntToStr(SubID));
   (Sender as TMenuItem).Checked:=True;
 end;
 
@@ -1571,10 +1548,10 @@ begin
   (Sender as TMenuItem).Checked:=True;
   if UseekC then begin
     Unpaused;
-    Core.SendCommand('seek_chapter '+IntToStr(CID)+' 1');
+    SendCommand('seek_chapter '+IntToStr(CID)+' 1');
   end
   else begin
-    Dreset:=true; Core.Restart;
+    Dreset:=true; Restart;
   end;
 end;
 
@@ -1587,10 +1564,10 @@ begin
   (Sender as TMenuItem).Checked:=True;
   if UseekC then begin
     Unpaused;
-    Core.SendCommand('switch_angle '+IntToStr(AID));
+    SendCommand('switch_angle '+IntToStr(AID));
   end
   else begin
-    Dreset:=true; Core.Restart;
+    Dreset:=true; Restart;
   end;
 end;
 
@@ -1598,7 +1575,7 @@ procedure TMainForm.MVCDTClick(Sender: TObject);
 begin
   CDID:=(Sender as TMenuItem).Tag;
   Dreset:=true;
-  Core.Restart;
+  Restart;
   (Sender as TMenuItem).Checked:=True;
 end;
 
@@ -1612,9 +1589,9 @@ begin
   MPlay.Enabled:=BPlay.Enabled; MPlay.Checked:=BPlay.Down;
   MPause.Enabled:=BPause.Enabled; MPause.Checked:=BPause.Down;;
   MStop.Enabled:=BStop.Enabled; MPrev.Enabled:=BPrev.Enabled;
-  MShowSub.Visible:=(MSubtitle.Count>0) and Core.Running;
-  MAudioDelay.Visible:=MVideo.Visible and Core.Running;
-  MSubDelay.Visible:=MShowSub.Visible; MLoadSub.Visible:=Core.Running;
+  MShowSub.Visible:=(MSubtitle.Count>0) and Running;
+  MAudioDelay.Visible:=MVideo.Visible and Running;
+  MSubDelay.Visible:=MShowSub.Visible; MLoadSub.Visible:=Running;
   MSubStep.Visible:=MShowSub.Visible; N15.Visible:=MShowSub.Visible;
   N17.Visible:=MShowSub.Visible; N30.Visible:=MShowSub.Visible;
 end;
@@ -1630,8 +1607,8 @@ end;
 procedure TMainForm.MDeinterlaceClick(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
-  Core.Deinterlace:=(Sender as TMenuItem).Tag;
-  Core.Restart;
+  Deinterlace:=(Sender as TMenuItem).Tag;
+  Restart;
   (Sender as TMenuItem).Checked:=true;
 end;
 
@@ -1639,24 +1616,24 @@ procedure TMainForm.MAspectClick(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
   MKaspect.Checked:=true;
-  Core.Aspect:=(Sender as TMenuItem).Tag;
-  if (Expand=2) OR (not Win32PlatformIsUnicode) then Core.Restart
+  Aspect:=(Sender as TMenuItem).Tag;
+  if (Expand=2) OR (not Win32PlatformIsUnicode) then Restart
   else begin
     CBHSA:=3; Unpaused;
-    case Core.Aspect of
-      0: begin Core.SendCommand('switch_ratio -1'); Core.SendCommand('osd_show_text "'+OSD_Auto_Prompt+'"'); end;
-      1: begin Core.SendCommand('switch_ratio 1.3333'); Core.SendCommand('osd_show_text 4:3'); end;
-      2: begin Core.SendCommand('switch_ratio 1.7777'); Core.SendCommand('osd_show_text 16:9'); end;
-      3: begin Core.SendCommand('switch_ratio 2.35'); Core.SendCommand('osd_show_text 2.35:1'); end;
-      4: begin Core.SendCommand('switch_ratio 1.5555'); Core.SendCommand('osd_show_text 14:9'); end;
-      5: begin Core.SendCommand('switch_ratio 1.25'); Core.SendCommand('osd_show_text 1.25:1'); end;
-      6: begin Core.SendCommand('switch_ratio 1.6'); Core.SendCommand('osd_show_text 16:10'); end;
-      7: begin Core.SendCommand('switch_ratio 2.21'); Core.SendCommand('osd_show_text 2.21:1'); end;
-      8: begin Core.SendCommand('switch_ratio 1'); Core.SendCommand('osd_show_text 1:1'); end;
-      9: begin Core.SendCommand('switch_ratio 1.22'); Core.SendCommand('osd_show_text 1.22:1'); end;
+    case Aspect of
+      0: begin SendCommand('switch_ratio -1'); SendCommand('osd_show_text "'+OSD_Auto_Prompt+'"'); end;
+      1: begin SendCommand('switch_ratio 1.3333'); SendCommand('osd_show_text 4:3'); end;
+      2: begin SendCommand('switch_ratio 1.7777'); SendCommand('osd_show_text 16:9'); end;
+      3: begin SendCommand('switch_ratio 2.35'); SendCommand('osd_show_text 2.35:1'); end;
+      4: begin SendCommand('switch_ratio 1.5555'); SendCommand('osd_show_text 14:9'); end;
+      5: begin SendCommand('switch_ratio 1.25'); SendCommand('osd_show_text 1.25:1'); end;
+      6: begin SendCommand('switch_ratio 1.6'); SendCommand('osd_show_text 16:10'); end;
+      7: begin SendCommand('switch_ratio 2.21'); SendCommand('osd_show_text 2.21:1'); end;
+      8: begin SendCommand('switch_ratio 1'); SendCommand('osd_show_text 1:1'); end;
+      9: begin SendCommand('switch_ratio 1.22'); SendCommand('osd_show_text 1.22:1'); end;
      10: begin if InterW>3*InterH then InterW:=3*InterH;
            NativeHeight:=InterH*NativeWidth DIV InterW; VideoSizeChanged;
-           Core.SendCommand('osd_show_text "'+OSD_Custom_Prompt+' '+IntToStr(InterW)+':'+IntToStr(InterH)+#34);
+           SendCommand('osd_show_text "'+OSD_Custom_Prompt+' '+IntToStr(InterW)+':'+IntToStr(InterH)+#34);
          end;
     end;
   end;
@@ -1669,25 +1646,32 @@ begin
 end;
 
 procedure TMainForm.MOpenDirClick(Sender: TObject);
+var s:widestring;
 begin
-  if AddDirForm.Execute(true) then begin
+  if WideSelectDirectory(AddDirCp,'',s) then begin
+    PClear:=true;
+    Playlist.AddDirectory(s);
+    empty:=true; Playlist.Changed;
+    PlaylistForm.BPlayClick(Sender);
+  end;
+  {  if AddDirForm.Execute(true) then begin
     PClear:=true;
     Playlist.AddDirectory(AddDirForm.DirView.SelectedFolder.PathName);
     empty:=true; Playlist.Changed;
     PlaylistForm.BPlayClick(Sender);
-  end;
+  end;}
 end;
 
 procedure TMainForm.MOpenURLClick(Sender: TObject);
-var s:string;
+var s:WideString;
 begin
-  s:=Trim(Clipboard.AsText);
+  s:=Trim(TntClipboard.AsWideText);
   if (Pos(^M,s)>0) OR (Pos(^J,s)>0) OR (Pos(^I,s)>0) OR
      ((Pos('//',s)=0) AND (Pos('\\',s)=0) AND (Pos(':',s)=0))
      then s:='';
-  if (InputQuery(LOCstr_OpenURL_Caption,LOCstr_OpenURL_Prompt,s)) and (s<>'') then begin
+  if (WideInputQuery(LOCstr_OpenURL_Caption,LOCstr_OpenURL_Prompt,s)) and (s<>'') then begin
     PClear:=true;
-    if DirectoryExists(s) then begin
+    if WideDirectoryExists(s) then begin
       Playlist.AddDirectory(s);
       empty:=true;
     end
@@ -1700,19 +1684,18 @@ end;
 
 procedure TMainForm.Init_MOpenDrive;
 var Mask:cardinal; Name:array[0..3]of char; Drive:char;
-    Item:TTntMenuItem; MDrive,s:String;
+    Item:TTntMenuItem; MDrive,s:WideString;
 begin
-  NoAccess:='';
-  MDrive:=HomeDir+DefaultFileName;
+  NoAccess:=false; MDrive:=HomeDir+DefaultFileName;
   repeat
-    if GetFileAttributes(PChar(MDrive))=FILE_ATTRIBUTE_READONLY then begin
-      NoAccess:=HomeDir; break;
+    if WideFileIsReadOnly(MDrive) then begin
+      NoAccess:=true; break;
     end;
-    s:=ExtractFileDir(MDrive);
+    s:=WideExtractFileDir(MDrive);
     if s<>MDrive then MDrive:=s else break;
   until False;
-  MDrive:=LowerCase(ExtractFileDrive(HomeDir));
-  if length(MDrive)<>2 then NoAccess:=HomeDir;
+  MDrive:=Tnt_WideLowerCase(WideExtractFileDrive(HomeDir));
+  if length(MDrive)<>2 then NoAccess:=true;
   Name:='@:\';
   Mask:=GetLogicalDrives;
   for Drive:='A' to 'Z' do
@@ -1725,7 +1708,7 @@ begin
           Tag:=Ord(Drive);
           RadioItem:=true;
           OnClick:=MOpenDriveClick;
-          if MDrive=LowerCase(Caption) then NoAccess:=HomeDir;
+          if MDrive=Tnt_WideLowerCase(Caption) then NoAccess:=true;
         end;
         MOpenDrive.Add(Item);
         MOpenDrive.Enabled:=true;
@@ -1839,7 +1822,7 @@ begin
     SY:=Screen.Height+FS_SY-OPanel.ClientHeight;
     ControlledResize:=true; 
     SetWindowPos(Handle,HWND_TOPMOST,PX,PY,SX,SY,0);
-    LEscape.Visible:=not Core.Running;
+    LEscape.Visible:=not Running;
   end
   else begin
     LEscape.Visible:=false;
@@ -1847,7 +1830,7 @@ begin
     case OnTop of
       0:  SetWindowPos(Handle,HWND_NOTOPMOST,FS_PX,FS_PY,FS_SX,FS_SY,0);
       1:  SetWindowPos(Handle,HWND_TOPMOST,FS_PX,FS_PY,FS_SX,FS_SY,0);
-      2:  if Core.Status=sPlaying then
+      2:  if Status=sPlaying then
             SetWindowPos(Handle,HWND_TOPMOST,FS_PX,FS_PY,FS_SX,FS_SY,0)
           else
             SetWindowPos(Handle,HWND_NOTOPMOST,FS_PX,FS_PY,FS_SX,FS_SY,0);
@@ -1964,15 +1947,15 @@ begin
   if AudioIndex<0 then exit;
   with MAudio.Items[AudioIndex] do begin
     Checked:=True;
-    Core.AudioID:=Tag;
+    AudioID:=Tag;
   end;
   if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
-    Core.Restart
+    Restart
   else begin
      Unpaused;
-     Core.SendCommand('switch_audio '+IntToStr(AudioID));
+     SendCommand('switch_audio '+IntToStr(AudioID));
      if HaveVideo then
-       Core.SendCommand('osd_show_text "'+OSD_AudioTrack_Prompt+': '+IntToStr(AudioID)+#34);
+       SendCommand('osd_show_text "'+OSD_AudioTrack_Prompt+': '+IntToStr(AudioID)+#34);
   end;
 end;
 
@@ -1989,14 +1972,14 @@ begin
   if VideoIndex<0 then exit;
   with MVideo.Items[VideoIndex] do begin
     Checked:=True;
-    Core.VideoID:=Tag;
+    VideoID:=Tag;
   end;
   if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
-    Core.Restart
+    Restart
   else begin
      Unpaused;
-     Core.SendCommand('set_property switch_video '+IntToStr(VideoID));
-     Core.SendCommand('osd_show_text "'+OSD_VideoTrack_Prompt+': '+IntToStr(VideoID)+#34);
+     SendCommand('set_property switch_video '+IntToStr(VideoID));
+     SendCommand('osd_show_text "'+OSD_VideoTrack_Prompt+': '+IntToStr(VideoID)+#34);
   end;
 end;
 
@@ -2005,23 +1988,23 @@ begin
   MKaspect.Checked:=true;
   Aspect:=(Aspect+1) MOD MAspect.Count;
   MAspect.Items[Aspect].Checked:=True;
-  if (Expand=2) OR (not Win32PlatformIsUnicode) then Core.Restart
+  if (Expand=2) OR (not Win32PlatformIsUnicode) then Restart
   else begin
     CBHSA:=3; Unpaused;
-    case Core.Aspect of
-      0: begin Core.SendCommand('switch_ratio -1'); Core.SendCommand('osd_show_text "'+OSD_Auto_Prompt+'"'); end;
-      1: begin Core.SendCommand('switch_ratio 1.3333'); Core.SendCommand('osd_show_text 4:3'); end;
-      2: begin Core.SendCommand('switch_ratio 1.7777'); Core.SendCommand('osd_show_text 16:9'); end;
-      3: begin Core.SendCommand('switch_ratio 2.35'); Core.SendCommand('osd_show_text 2.35:1'); end;
-      4: begin Core.SendCommand('switch_ratio 1.5555'); Core.SendCommand('osd_show_text 14:9'); end;
-      5: begin Core.SendCommand('switch_ratio 1.25'); Core.SendCommand('osd_show_text 1.25:1'); end;
-      6: begin Core.SendCommand('switch_ratio 1.6'); Core.SendCommand('osd_show_text 16:10'); end;
-      7: begin Core.SendCommand('switch_ratio 2.21');Core.SendCommand('osd_show_text 2.21:1'); end;
-      8: begin Core.SendCommand('switch_ratio 1'); Core.SendCommand('osd_show_text 1:1'); end;
-      9: begin Core.SendCommand('switch_ratio 1.22'); Core.SendCommand('osd_show_text 1.22:1'); end;
+    case Aspect of
+      0: begin SendCommand('switch_ratio -1'); SendCommand('osd_show_text "'+OSD_Auto_Prompt+'"'); end;
+      1: begin SendCommand('switch_ratio 1.3333'); SendCommand('osd_show_text 4:3'); end;
+      2: begin SendCommand('switch_ratio 1.7777'); SendCommand('osd_show_text 16:9'); end;
+      3: begin SendCommand('switch_ratio 2.35'); SendCommand('osd_show_text 2.35:1'); end;
+      4: begin SendCommand('switch_ratio 1.5555'); SendCommand('osd_show_text 14:9'); end;
+      5: begin SendCommand('switch_ratio 1.25'); SendCommand('osd_show_text 1.25:1'); end;
+      6: begin SendCommand('switch_ratio 1.6'); SendCommand('osd_show_text 16:10'); end;
+      7: begin SendCommand('switch_ratio 2.21');SendCommand('osd_show_text 2.21:1'); end;
+      8: begin SendCommand('switch_ratio 1'); SendCommand('osd_show_text 1:1'); end;
+      9: begin SendCommand('switch_ratio 1.22'); SendCommand('osd_show_text 1.22:1'); end;
      10: begin if InterW>3*InterH then InterW:=3*InterH;
            NativeHeight:=InterH*NativeWidth DIV InterW; VideoSizeChanged;
-           Core.SendCommand('osd_show_text "'+OSD_Custom_Prompt+' '+IntToStr(InterW)+':'+IntToStr(InterH)+#34);
+           SendCommand('osd_show_text "'+OSD_Custom_Prompt+' '+IntToStr(InterW)+':'+IntToStr(InterH)+#34);
          end;
     end;
   end;
@@ -2035,7 +2018,7 @@ begin
   AID:=AID MOD MDVDT.Items[TID+2].Items[1].Count + 1;
   MDVDT.Items[TID+2].Items[1].Items[AID-1].Checked:=True;
   Unpaused;
-  Core.SendCommand('switch_angle '+IntToStr(AID));
+  SendCommand('switch_angle '+IntToStr(AID));
 end;
 
 procedure TMainForm.NextSub;
@@ -2045,17 +2028,17 @@ begin
   SubID:=(SubID+1) MOD MSubtitle.Count;
   MSubtitle.Items[SubID].Checked:=True;
   Unpaused;
-  Core.SendCommand('sub_select '+IntToStr(SubID));
+  SendCommand('sub_select '+IntToStr(SubID));
 end;
 
 procedure TMainForm.NextFile(Direction:integer; ExitState:TPlaybackState);
 var Index:integer;
 begin
-  //Core.ForceStop;
+  //ForceStop;
   Index:=Playlist.GetNext(ExitState,Direction);
   if Index<0 then begin
     if AutoQuit then Close;
-    if not Win32PlatformIsUnicode then Core.Terminate else Core.Stop;
+    if not Win32PlatformIsUnicode then Terminate else Stop;
     exit;
   end;
   Playlist.NowPlaying(Index);
@@ -2083,7 +2066,7 @@ begin
           if HaveVideo and Wid then SendCommand('osd_show_text "'+OSD_OnTop1_Prompt+'"');
         end;
     2:  begin
-          if (Core.Status=sPlaying) and (not MFullscreen.Checked) then begin
+          if (Status=sPlaying) and (not MFullscreen.Checked) then begin
             if HaveVideo and (not Wid) then SendCommand('set_property ontop 1')
             else SetWindowPos(Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
           end;
@@ -2117,23 +2100,23 @@ end;
 procedure TMainForm.BStopClick(Sender: TObject);
 begin
   BMute.Enabled:=false; CBHSA:=0;
-  Core.SetLastPos;
-  Core.Stop;
+  SetLastPos;
+  Stop;
   //Playlist.GetNext(psSkipped,0);
 end;
 
 procedure TMainForm.UpdateStatus;
 begin
-  case Core.Status of
+  case Status of
     sPlaying: LStatus.Caption:=LOCstr_Status_Playing;
     sPaused:  LStatus.Caption:=LOCstr_Status_Paused;
     sStopped: LStatus.Caption:=LOCstr_Status_Stopped;
     sError:   LStatus.Caption:=LOCstr_Status_Error;
   end;
-  if Core.Status=sError then LStatus.Cursor:=crHandPoint
+  if Status=sError then LStatus.Cursor:=crHandPoint
   else LStatus.Cursor:=crDefault;
   if (OnTop=2) and (not MFullscreen.Checked) then begin
-    if Core.Status=sPlaying then begin
+    if Status=sPlaying then begin
       if HaveVideo and (not Wid) then SendCommand('set_property ontop 1')
       else SetWindowPos(Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     end
@@ -2150,8 +2133,9 @@ begin
   ETime:=false; CBHSA:=0; Firstrun:=true; HaveAudio:=false; HaveVideo:=false;
   DirHIdx:=0; DirHSub:=0; Vobfile:=''; substring:=''; MShowSub.Checked:=true;
   AudioID:=-1; SubID:=-1; VideoID:=-1; CID:=1; AID:=1; CDID:=1; Dreset:=false;
-  subcount:=0; Lastsubcount:=0; LastPos:=0; SecondPos:=-1; TotalTime:=0;
-  Duration:='0:00:00'; SeekBarSlider.Left:=0; UpdateSkipBar:=SkipBar.Visible;
+  subcount:=0; Lastsubcount:=0; VobsubCount:=0;
+  LastPos:=0; SecondPos:=-1; TotalTime:=0; Duration:='0:00:00';
+  SeekBarSlider.Left:=0; UpdateSkipBar:=SkipBar.Visible;
   if AudioFile<>''then begin AudioFile:=''; MUloadAudio.Visible:=false; end;
 end;
 
@@ -2160,24 +2144,24 @@ var s:string;
 begin
   if Seeking then exit;
   if ETime then
-    LTime.Caption:='-'+SecondsToTime(Core.TotalTime-Core.SecondPos)+'/'+Core.Duration
+    LTime.Caption:='-'+SecondsToTime(TotalTime-SecondPos)+'/'+Duration
   else
-    LTime.Caption:=SecondsToTime(Core.SecondPos)+'/'+Core.Duration;
+    LTime.Caption:=SecondsToTime(SecondPos)+'/'+Duration;
   s:='';
   if CID>1 then s:=Ccap+IntToStr(CID);
   if AID>1 then begin
     if s<>'' then s:=Acap+IntToStr(AID)+'@'+s else s:=Acap+IntToStr(AID);
   end;
   if s<>'' then LTime.Caption:='<'+s+'> '+LTime.Caption;
-  TntApplication.Title:=Core.DisplayURL+' ['+LTime.Caption+']';
+  TntApplication.Title:=DisplayURL+' ['+LTime.Caption+']';
   if Mctrl.Checked then
     Caption:=TntApplication.Title+' - '+LOCstr_Title;
 end;
 
 procedure TMainForm.UpdateCaption;
 begin
-  if length(Core.DisplayURL)<>0
-    then Caption:=Core.DisplayURL+' - '+LOCstr_Title
+  if length(DisplayURL)<>0
+    then Caption:=DisplayURL+' - '+LOCstr_Title
     else Caption:=LOCstr_Title;
 end;
 
@@ -2202,10 +2186,10 @@ begin
   if NewX>MaxX then NewX:=MaxX;
   VolSlider.Left:=NewX;
   NewVolume:=(NewX*100+(MaxX SHR 1)) DIV MaxX;
-  if NewVolume=Core.Volume then exit;
-  Core.Volume:=NewVolume;
+  if NewVolume=Volume then exit;
+  Volume:=NewVolume;
   Unpaused;
-  Core.SendVolumeChangeCommand(Core.Volume);
+  SendVolumeChangeCommand(Volume);
 end;
 
 procedure TMainForm.VolSliderMouseUp(Sender: TObject; Button: TMouseButton;
@@ -2219,7 +2203,7 @@ begin
   VolFrame.Enabled:=Mute; Mute:=not(Mute);
   BMute.Down:=Mute; MMute.Checked:=BMute.Down;
   Unpaused;
-  Core.SendCommand('mute');
+  SendCommand('mute');
 end;
 
 procedure TMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -2326,19 +2310,19 @@ end;
 
 procedure TMainForm.DisplayClick(Sender: TObject);
 begin
-  if Core.Running and (MouseMode>-1) then begin
+  if Running and (MouseMode>-1) then begin
     if Dnav and (SecondPos=0) then begin
       Unpaused;
-      Core.SendCommand('dvdnav mouse');
+      SendCommand('dvdnav mouse');
       exit;
     end;
     SendCommand('pause');
-    if Core.Status=sPlaying then begin
-      Core.Status:=sPaused; BPause.Down:=true;
+    if Status=sPlaying then begin
+      Status:=sPaused; BPause.Down:=true;
       BPlay.Down:=false;
     end
     else begin
-      Core.Status:=sPlaying; BPlay.Down:=true;
+      Status:=sPlaying; BPlay.Down:=true;
       BPause.Down:=false;
     end;
     UpdateStatus;
@@ -2347,14 +2331,14 @@ end;
 
 procedure TMainForm.DisplayDblClick(Sender: TObject);
 begin
-  if Core.Running and (not (Dnav and (SecondPos=0))) and (MouseMode>-1) then begin
+  if Running and (not (Dnav and (SecondPos=0))) and (MouseMode>-1) then begin
     SendCommand('pause');
-    if Core.Status=sPlaying then begin
-      Core.Status:=sPaused; LStatus.Caption:=LOCstr_Status_Paused;
+    if Status=sPlaying then begin
+      Status:=sPaused; LStatus.Caption:=LOCstr_Status_Paused;
       BPause.Down:=true; BPlay.Down:=false;
     end
     else begin
-      Core.Status:=sPlaying; LStatus.Caption:=LOCstr_Status_Playing;
+      Status:=sPlaying; LStatus.Caption:=LOCstr_Status_Playing;
       BPlay.Down:=true; BPause.Down:=false;
     end;
   end;
@@ -2390,7 +2374,7 @@ begin
     MPWheelControl.Items[MFunc].Checked:=true;
   end;
 
-  if (Button=mbright) and Core.RFScr then SimulateKey(MFullscreen);
+  if (Button=mbright) and RFScr then SimulateKey(MFullscreen);
 
 end;
 
@@ -2427,7 +2411,7 @@ begin
     end;
   end;
   if (not MPCtrl.Checked) and (MouseMode=0) then begin
-    if (MSubtitle.Count>0) and Core.Running then begin
+    if (MSubtitle.Count>0) and Running then begin
       if (not CPanel.Visible) AND (OY>=(OPanel.ClientHeight-25)) then SetCtrlV(True);
       if (not MenuBar.Visible) AND (NOY>=OPanel.ClientHeight-10) then SetMenuBarV(True);
     end
@@ -2455,14 +2439,14 @@ begin
     end;
   end;
 
-  if (not Core.Running) then exit;
+  if (not Running) then exit;
   
   if IPanel.Height<1 then IPanel.Height:=1;
   i:=(OY-IPanel.Top)*100 DIV IPanel.Height;
 
   if (MouseMode=0) and ((p.X<>OldX) or (p.Y<>OldY)) then begin
     OldX:=p.X; OldY:=p.Y;    //Hide Cursor
-    if Dnav and (Sender=IPanel) then Core.SendCommand('set_mouse_pos '+IntToStr(X*NativeWidth div IPanel.Width)+' '+IntToStr(Y*NativeHeight div IPanel.Height));
+    if Dnav and (Sender=IPanel) then SendCommand('set_mouse_pos '+IntToStr(X*NativeWidth div IPanel.Width)+' '+IntToStr(Y*NativeHeight div IPanel.Height));
     if (abs(i-SubPos)<=10) and (MSubtitle.Count>0) then begin
       IPanel.Cursor:=crHandPoint; OPanel.Cursor:=crHandPoint;
       HideMouseAt:=GetTickCount+2000;
@@ -2477,12 +2461,12 @@ begin
       FSize:=FSize+(p.X-OldX)/60;
       OldX:=p.X; OldY:=p.Y;
       if FSize>10 then FSize:=10; if FSize<0.1 then FSize:=0.1;
-      Core.SendCommand('sub_scale '+FloatToStr(FSize)+' 1');            
+      SendCommand('sub_scale '+FloatToStr(FSize)+' 1');            
     end
     else begin       //Move Subtitle
       SubPos:=i;
       if SubPos<0 then SubPos:=0; if SubPos>100 then SubPos:=100;
-      Core.SendCommand('sub_pos '+IntToStr(SubPos)+' 1');
+      SendCommand('sub_pos '+IntToStr(SubPos)+' 1');
     end;
   end;
 
@@ -2528,26 +2512,26 @@ begin
     CheckDragD;
     if ssAlt in shift then begin
       if DragD then begin
-        Core.SendCommand('brightness '+IntToStr(p.X-OldX));
-        Core.SendCommand('osd_show_property_text "'+OSD_Brightness_Prompt+':${brightness}"');
+        SendCommand('brightness '+IntToStr(p.X-OldX));
+        SendCommand('osd_show_property_text "'+OSD_Brightness_Prompt+':${brightness}"');
       end
       else begin
-        Core.SendCommand('contrast '+IntToStr(OldY-p.Y));
-        Core.SendCommand('osd_show_property_text "'+OSD_Contrast_Prompt+':${contrast}"');
+        SendCommand('contrast '+IntToStr(OldY-p.Y));
+        SendCommand('osd_show_property_text "'+OSD_Contrast_Prompt+':${contrast}"');
       end;
     end
     else if ssCtrl in shift then begin
-      Core.SendCommand('gamma '+IntToStr(p.X-OldX));
-      Core.SendCommand('osd_show_property_text "'+OSD_Gamma_Prompt+':${gamma}"');
+      SendCommand('gamma '+IntToStr(p.X-OldX));
+      SendCommand('osd_show_property_text "'+OSD_Gamma_Prompt+':${gamma}"');
     end
     else begin
       if DragD then begin
-        Core.SendCommand('saturation '+IntToStr(p.X-OldX));
-        Core.SendCommand('osd_show_property_text "'+OSD_Saturation_Prompt+':${saturation}"');
+        SendCommand('saturation '+IntToStr(p.X-OldX));
+        SendCommand('osd_show_property_text "'+OSD_Saturation_Prompt+':${saturation}"');
       end
       else begin
-        Core.SendCommand('hue '+IntToStr(OldY-p.Y));
-        Core.SendCommand('osd_show_property_text "'+OSD_Hue_Prompt+':${hue}"');
+        SendCommand('hue '+IntToStr(OldY-p.Y));
+        SendCommand('osd_show_property_text "'+OSD_Hue_Prompt+':${hue}"');
       end;
     end;
     OldX:=p.X; OldY:=p.Y;
@@ -2591,11 +2575,11 @@ begin
   end;
   if MouseMode=-5 then begin
     CBHSA:=1;
-    Core.SendCommand('get_property contrast');
-    Core.SendCommand('get_property brightness');
-    Core.SendCommand('get_property hue');
-    Core.SendCommand('get_property saturation');
-    Core.SendCommand('get_property gamma');
+    SendCommand('get_property contrast');
+    SendCommand('get_property brightness');
+    SendCommand('get_property hue');
+    SendCommand('get_property saturation');
+    SendCommand('get_property gamma');
   end;
   MouseMode:=0; 
 end;
@@ -2619,18 +2603,18 @@ end;
 
 procedure TMainForm.UpdateMenuCheck;
 begin
-  MAudiochannels.Items[Core.AudiochannelsID].Checked:=true;
-  MChannels.Items[Core.Ch].Checked:=true;
-  MRotate.Items[Core.Rot].Checked:=true;
-  MDeinterlace.Items[Core.Deinterlace].Checked:=true;
-  MAspect.Items[Core.Aspect].Checked:=true;
-  MPostproc.Items[Core.Postproc].Checked:=true;
-  MSEqualizer.Checked:=Core.Eq2;
-  MFlip.Checked:=Core.Flip;
-  MMirror.Checked:=Core.Mirror;
-  MSpdif.Checked:=Core.SPDIF;
-  MSoftVol.Checked:=Core.SoftVol;
-  MUseASS.Checked:=Core.Ass;
+  MAudiochannels.Items[AudiochannelsID].Checked:=true;
+  MChannels.Items[Ch].Checked:=true;
+  MRotate.Items[Rot].Checked:=true;
+  MDeinterlace.Items[Deinterlace].Checked:=true;
+  MAspect.Items[Aspect].Checked:=true;
+  MPostproc.Items[Postproc].Checked:=true;
+  MSEqualizer.Checked:=Eq2;
+  MFlip.Checked:=Flip;
+  MMirror.Checked:=Mirror;
+  MSpdif.Checked:=SPDIF;
+  MSoftVol.Checked:=SoftVol;
+  MUseASS.Checked:=Ass;
 end;
 
 procedure TMainForm.UpdateMenuEV(Mode:boolean);
@@ -2656,7 +2640,7 @@ end;
 
 procedure TMainForm.LStatusClick(Sender: TObject);
 begin
-  if Core.Status=sError then begin
+  if Status=sError then begin
     if not LogForm.Visible then LogForm.ShowModal;
     LogForm.TheLog.ScrollBy(0,32767);
   end;
@@ -2664,10 +2648,10 @@ end;
 
 procedure TMainForm.VolBoostClick(Sender: TObject);
 begin
-  if Core.Volume>100 then begin
+  if Volume>100 then begin
     Unpaused;
-    Core.SendVolumeChangeCommand(100);
-    Core.Volume:=100;
+    SendVolumeChangeCommand(100);
+    Volume:=100;
     VolBoost.Visible:=false;
   end;
 end;
@@ -2675,10 +2659,10 @@ end;
 procedure TMainForm.MExpandClick(Sender: TObject);
 begin
  if (Sender as TMenuItem).Checked then exit;
- Core.Expand:=(Sender as TMenuItem).Tag;
- Core.Restart;
- MExpand.Items[Core.Expand].Checked:=true;
- MPExpand.Items[Core.Expand].Checked:=true;
+ Expand:=(Sender as TMenuItem).Tag;
+ Restart;
+ MExpand.Items[Expand].Checked:=true;
+ MPExpand.Items[Expand].Checked:=true;
 end;
 
 procedure TMainForm.MctrlClick(Sender: TObject);
@@ -2699,7 +2683,7 @@ begin
 end;
 
 procedure TMainForm.MLoadsubClick(Sender: TObject);
-var i,s:integer; j:string;
+var i,s:integer; j:WideString;
 begin
   with OpenDialog do begin
     Title:=MLoadSub.Caption;
@@ -2708,12 +2692,12 @@ begin
     if Execute then begin
       VobFileCount:=0; s:=0;
       for i:=0 to Files.Count-1 do begin
-        Loadsub:=1; j:=LowerCase(ExtractFileExt(Files[i]));
+        Loadsub:=1; j:=Tnt_WideLowerCase(WideExtractFileExt(Files[i]));
         if j='.idx' then begin
-          VobFileCount:=VobFileCount+1;
+          inc(VobFileCount);
           if VobFileCount=1 then begin
             Vobfile:=copy(Files[i],1,length(Files[i])-4);
-            LoadVob:=1; Core.Restart;
+            LoadVob:=1; Restart;
           end;
         end
         else begin
@@ -2722,26 +2706,28 @@ begin
               j:=ExtractSub(Files[i],'',j);
               if j<>'' then begin
                 Vobfile:=j;
-                VobFileCount:=VobFileCount+1;
+                inc(VobFileCount);
                 if VobFileCount=1 then begin
-                  LoadVob:=1; Core.Restart;
+                  LoadVob:=1; Restart;
                 end;
               end;
             end;
           end
           else begin
+            j:=Files[i];
+            if not IsWideStringMappableToAnsi(j) then j:=WideExtractShortPathName(j);
             if not Win32PlatformIsUnicode then begin
               Loadsub:=2; Loadsrt:=2;
-              AddChain(s,substring,EscapePath(EscapeParam(Files[i])));
+              AddChain(s,substring,EscapePath(EscapeParam(j)));
             end
             else begin
               Unpaused;
-              Core.SendCommand('sub_load '+EscapePath(EscapeParam(Files[i])));
+              SendCommand('sub_load '+EscapePath(EscapeParam(j)));
             end;
           end;
         end;
       end;
-      if (not Win32PlatformIsUnicode) and (s>0) then Core.Restart;
+      if (not Win32PlatformIsUnicode) and (s>0) then Restart;
     end;
   end;
 end;
@@ -2753,11 +2739,11 @@ begin
   with OpenDialog do begin
     Title:=MSubfont.Caption;
     Options:=Options-[ofAllowMultiSelect]+[ofoldstyledialog];
-    InitialDir:=EscapeParam(Core.SystemDir+'Fonts\');
+    InitialDir:=EscapeParam(SystemDir+'Fonts\');
     filter:=FontFilter+'(*.ttf)|*.ttf|'+AnyFilter+'(*.*)|*.*';
     if Execute then begin
       subfont:=fileName;
-      Core.restart;
+      restart;
     end;
   end;
   WideSetCurrentDir(CurPath);
@@ -2770,11 +2756,11 @@ begin
   with OpenDialog do begin
     Title:=MOsdfont.Caption;
     Options:=Options-[ofAllowMultiSelect]+[ofoldstyledialog];
-    InitialDir:=EscapeParam(Core.SystemDir+'Fonts\');
+    InitialDir:=EscapeParam(SystemDir+'Fonts\');
     filter:=FontFilter+'(*.ttf)|*.ttf|'+AnyFilter+'(*.*)|*.*';
     if Execute then begin
       osdfont:=fileName;
-      Core.restart;
+      restart;
     end;
   end;
   WideSetCurrentDir(CurPath);
@@ -2790,7 +2776,7 @@ end;
 
 procedure TMainForm.LTimeClick(Sender: TObject);
 begin
-  if Core.Running then ETime:=not ETime;
+  if Running then ETime:=not ETime;
 end;
 
 procedure TMainForm.MWheelControlClick(Sender: TObject);
@@ -2810,13 +2796,13 @@ procedure TMainForm.MIntroClick(Sender: TObject);
 begin
   Bp:=SecondPos;
   if Bp>0 then begin
-    if Core.TotalTime>0 then SkipBar.Left:=SeekBar.Left+SeekBar.Width*Core.Bp DIV Core.TotalTime;
+    if TotalTime>0 then SkipBar.Left:=SeekBar.Left+SeekBar.Width*Bp DIV TotalTime;
     SkipBar.Visible:=true; BackBar.Visible:=true;
   end
   else SkipBar.Left:=SeekBar.Left;
   if Bp>=Ep then Ep:=0;
   if Ep>0 then begin
-    if Core.TotalTime>0 then SkipBar.Width:=(SeekBar.Width*Core.Ep DIV Core.TotalTime)-SkipBar.Left+SeekBar.Left
+    if TotalTime>0 then SkipBar.Width:=(SeekBar.Width*Ep DIV TotalTime)-SkipBar.Left+SeekBar.Left
   end
   else SkipBar.Width:=SeekBar.Width-SkipBar.Left+SeekBar.Left;
 end;
@@ -2828,7 +2814,7 @@ begin
     Bp:=0; SkipBar.Left:=SeekBar.Left;
   end;
   if Ep>0 then begin
-    if Core.TotalTime>0 then SkipBar.Width:=(SeekBar.Width*Core.Ep DIV Core.TotalTime)-SkipBar.Left+SeekBar.Left;
+    if TotalTime>0 then SkipBar.Width:=(SeekBar.Width*Ep DIV TotalTime)-SkipBar.Left+SeekBar.Left;
     SkipBar.Visible:=true; BackBar.Visible:=true;
   end
   else SkipBar.Width:=SeekBar.Width-SkipBar.Left+SeekBar.Left;
@@ -2839,20 +2825,20 @@ var key:word;
 begin
   MSIE.Checked:=not MSIE.Checked;
   BSkip.Down:=MSIE.Checked;
-  Core.UpdateSkipBar:=MSIE.Checked;
+  UpdateSkipBar:=MSIE.Checked;
   SkipBar.Visible:=MSIE.Checked;
   BackBar.Visible:=MSIE.Checked;
   if MSIE.Checked then begin
     SkipBar.Color:=$0051AEE6;
-    if Core.TotalTime>0 then begin
-      Core.UpdateSkipBar:=false;
-      if (Bp>0) and (Bp<Core.TotalTime) then begin
+    if TotalTime>0 then begin
+      UpdateSkipBar:=false;
+      if (Bp>0) and (Bp<TotalTime) then begin
         if Bp>SecondPos then SendCommand('seek '+IntToStr(Bp-SecondPos));
-        SkipBar.Left:=SeekBar.Left+SeekBar.Width*Core.Bp DIV Core.TotalTime;
+        SkipBar.Left:=SeekBar.Left+SeekBar.Width*Bp DIV TotalTime;
       end
       else SkipBar.Left:=SeekBar.Left;
 
-      if (Ep>0) and (Ep<Core.TotalTime) then begin
+      if (Ep>0) and (Ep<TotalTime) then begin
         if SecondPos>=Ep then begin
           if HaveChapters then begin
             key:=VK_HOME;
@@ -2862,7 +2848,7 @@ begin
             UpdateParams; NextFile(1,psPlayed);
           end
         end;
-        SkipBar.Width:=(SeekBar.Width*Core.Ep DIV Core.TotalTime)-SkipBar.Left+SeekBar.Left;
+        SkipBar.Width:=(SeekBar.Width*Ep DIV TotalTime)-SkipBar.Left+SeekBar.Left;
       end
       else SkipBar.Width:=SeekBar.Width-SkipBar.Left+SeekBar.Left;
     end;
@@ -2883,39 +2869,39 @@ end;
 procedure TMainForm.MChannelsClick(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
-  Core.Ch:=(Sender as TMenuItem).Tag;
-  Core.Restart; MChannels.Items[Core.Ch].Checked:=true;
+  Ch:=(Sender as TMenuItem).Tag;
+  Restart; MChannels.Items[Ch].Checked:=true;
 end;
 
 procedure TMainForm.MFlipClick(Sender: TObject);
 begin
-  Core.Flip:=not Core.Flip;
-  Core.Restart; MFlip.Checked:=Core.Flip;
+  Flip:=not Flip;
+  Restart; MFlip.Checked:=Flip;
 end;
 
 procedure TMainForm.MMirrorClick(Sender: TObject);
 begin
-  Core.Mirror:=not Core.Mirror;
-  Core.Restart; MMirror.Checked:=Core.Mirror;
+  Mirror:=not Mirror;
+  Restart; MMirror.Checked:=Mirror;
 end;
 
 procedure TMainForm.MRotateClick(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
-  Core.Rot:=(Sender as TMenuItem).Tag;
-  Core.Restart; MRotate.Items[Core.Rot].Checked:=true;
+  Rot:=(Sender as TMenuItem).Tag;
+  Restart; MRotate.Items[Rot].Checked:=true;
 end;
 
 procedure TMainForm.MSpdifClick(Sender: TObject);
 begin
-  Core.SPDIF:=not Core.SPDIF; MSpdif.Checked:=Core.SPDIF;
-  Core.Restart;
+  SPDIF:=not SPDIF; MSpdif.Checked:=SPDIF;
+  Restart;
 end;
 
 procedure TMainForm.MSEqualizerClick(Sender: TObject);
 begin
-  Core.Eq2:=not Core.Eq2; MSEqualizer.Checked:=Core.Eq2;
-  Core.Restart;
+  Eq2:=not Eq2; MSEqualizer.Checked:=Eq2;
+  Restart;
 end;
 
 procedure TMainForm.MLoadAudioClick(Sender: TObject);
@@ -2929,8 +2915,9 @@ begin
            +'*.s3m;*.stm;*.mtm;*.umx;*.asf;*.ram;*.mpc;*.mp+;*.tta;*.ape;*.mac;'
            +'*.mp1;*.mp3pro;*.xm;*.xmz|'+AnyFilter+'(*.*)|*.*';
     if Execute then begin
-      AudioFile:=fileName;
-      Core.restart;
+      if IsWideStringMappableToAnsi(fileName) then AudioFile:=fileName
+      else AudioFile:=WideExtractShortPathName(fileName);
+      restart;
       MUloadAudio.Visible:=true;
     end;
   end;
@@ -2938,14 +2925,14 @@ end;
 
 procedure TMainForm.MSoftVolClick(Sender: TObject);
 begin
-  Core.SoftVol:=not Core.SoftVol; MSoftVol.Checked:=Core.SoftVol;
-  Core.Restart;
+  SoftVol:=not SoftVol; MSoftVol.Checked:=SoftVol;
+  Restart;
 end;
 
 procedure TMainForm.MUloadAudioClick(Sender: TObject);
 begin
   AudioFile:='';
-  Core.restart;
+  restart;
   MUloadAudio.Visible:=false;
 end;
 
@@ -2958,9 +2945,9 @@ begin
   MaxPos:=VolImage.Width-VolSlider.Width;
   if MaxPos=0 then exit;
   if X<0 then X:=0; if X>MaxPos then X:=MaxPos;
-  Core.Volume:=100*X DIV MaxPos;
+  Volume:=100*X DIV MaxPos;
   Unpaused;
-  Core.SendVolumeChangeCommand(Core.Volume);
+  SendVolumeChangeCommand(Volume);
   VolSlider.Left:=X;
 end;
 
@@ -2968,28 +2955,28 @@ procedure TMainForm.MScale0Click(Sender: TObject);
 begin
   Unpaused;
   LastScale:=100; Scale:=100; FixSize;
-  Core.SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_Scale_Prompt+'"')
+  SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_Scale_Prompt+'"')
 end;
 
 procedure TMainForm.MPanClick(Sender: TObject);
 begin
   Unpaused;
-  Core.SendCommand('set_property balance 0');
-  if HaveVideo then Core.SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_Balance_Prompt+'"');
+  SendCommand('set_property balance 0');
+  if HaveVideo then SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_Balance_Prompt+'"');
 end;
 
 procedure TMainForm.MPostprocClick(Sender: TObject);
 begin
  if (Sender as TMenuItem).Checked then exit;
- Core.Postproc:=(Sender as TMenuItem).Tag;
- MPostproc.Items[Core.Postproc].Checked:=true;
- Core.Restart;
+ Postproc:=(Sender as TMenuItem).Tag;
+ MPostproc.Items[Postproc].Checked:=true;
+ Restart;
 end;
 
 procedure TMainForm.MUseASSClick(Sender: TObject);
 begin
-  Core.Ass:=not Core.Ass; MUseASS.Checked:=Core.Ass;
-  Core.Restart;
+  Ass:=not Ass; MUseASS.Checked:=Ass;
+  Restart;
 end;
 
 procedure TMainForm.MOneLoopClick(Sender: TObject);
@@ -3010,15 +2997,15 @@ end;
 procedure TMainForm.MAudioDelay2Click(Sender: TObject);
 begin
   Unpaused;
-  Core.SendCommand('audio_delay 0 1'); Adelay:=0;
-  Core.SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_AudioDelay_Prompt+'"');
+  SendCommand('audio_delay 0 1'); Adelay:=0;
+  SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_AudioDelay_Prompt+'"');
 end;
 
 procedure TMainForm.MSubDelay2Click(Sender: TObject);
 begin
   Unpaused;
-  Core.SendCommand('sub_delay 0 1'); Sdelay:=0;
-  Core.SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_SubDelay_Prompt+'"');
+  SendCommand('sub_delay 0 1'); Sdelay:=0;
+  SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_SubDelay_Prompt+'"');
 end;
 
 procedure TMainForm.MLoadlyricClick(Sender: TObject);
@@ -3036,9 +3023,9 @@ end;
 
 procedure TMainForm.MUUniClick(Sender: TObject);
 begin
-  MUUni.Checked:=not Core.UseUni;
-  Core.UseUni:=MUUni.Checked;
-  Core.Restart;
+  MUUni.Checked:=not UseUni;
+  UseUni:=MUUni.Checked;
+  Restart;
 end;
 
 procedure TMainForm.MSubScale2Click(Sender: TObject);

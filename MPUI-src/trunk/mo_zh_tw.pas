@@ -18,7 +18,7 @@
 unit mo_zh_tw;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info,AddDir,Core,Equalizer;
+uses Windows,Locale,Main,Log,Help,About,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -425,12 +425,7 @@ begin
     be.Caption:=UTF8Decode('বাংলা (孟加拉文)');
     dv.Caption:=UTF8Decode('संस्कृतम् (梵文)');
   end;
-  with AddDirForm do begin
-    Caption:=UTF8Decode('選擇一個文件夾');
-    BOK.Caption:=UTF8Decode('確定');
-    BCancel.Caption:=UTF8Decode('取消');
-    CInSubDir.Caption:=UTF8Decode('包含子目錄');
-  end;
+  AddDirCp:=UTF8Decode('選擇一個文件夾');
   with EqualizerForm do begin
     Caption:=MainForm.MEqualizer.Caption;
     BReset.Caption:=UTF8Decode(OSD_Reset_Prompt);

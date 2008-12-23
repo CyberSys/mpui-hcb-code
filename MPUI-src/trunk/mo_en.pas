@@ -18,7 +18,7 @@
 unit mo_en;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info,AddDir,Core,Equalizer;
+uses Windows,Locale,Main,Log,Help,About,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -430,12 +430,7 @@ begin
     be.Caption:=UTF8Decode('বাংলা (Bengali 57003)');
     dv.Caption:=UTF8Decode('संस्कृतम् (Devanagari 57002)');
   end;
-  with AddDirForm do begin
-    Caption:='Select a folder';
-    BOK.Caption:='OK';
-    BCancel.Caption:='Cancel';
-    CInSubDir.Caption:='Include subdirectory';
-  end;
+  AddDirCP:='Select a folder';
   with EqualizerForm do begin
     Caption:=MainForm.MEqualizer.Caption;
     BReset.Caption:=OSD_Reset_Prompt;

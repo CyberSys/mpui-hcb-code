@@ -167,7 +167,7 @@ begin
   OptionsForm.Localize;
   InfoForm.UpdateInfo;
   MainForm.Localize;
-  case Core.Status of
+  case Status of
     sNone:    MainForm.LStatus.Caption:='';
     sOpening: MainForm.LStatus.Caption:=LOCstr_Status_Opening;
     sClosing: MainForm.LStatus.Caption:=LOCstr_Status_Closing;
@@ -178,8 +178,8 @@ begin
   end;
   if MainForm.MDVDT.Count>3 then begin
     for i:=3 to MainForm.MDVDT.Count-1 do begin
-      MainForm.MDVDT.Items[i].Items[0].Caption:=Core.Ccap;
-      MainForm.MDVDT.Items[i].Items[1].Caption:=Core.Acap;
+      MainForm.MDVDT.Items[i].Items[0].Caption:=Ccap;
+      MainForm.MDVDT.Items[i].Items[1].Caption:=Acap;
     end;
   end;
   TntApplication.Title:=LOCstr_Title;

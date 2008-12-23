@@ -8,7 +8,7 @@ unit UnRar;
 interface
 
 uses
-  Windows,SysUtils,Classes,Dialogs,TntSysUtils,TntDialogs,ComObj;
+  Windows,SysUtils,TntSysUtils,TntWindows,Classes,TntDialogs,ComObj;
 
 const
   // Constants from UnRar.h
@@ -70,7 +70,7 @@ var
   RAROpenArchive        : function(var ArchiveData: TRAROpenArchiveData): THandle; stdcall;
   RARCloseArchive       : function(hArcData: THandle): integer; stdcall;
   RARReadHeader         : function(hArcData: THandle; var HeaderData: TRARHeaderData): Integer; stdcall;
-  RARProcessFile        : function(hArcData: THandle; Operation: Integer; DestPath, DestName: PChar): Integer; stdcall;
+  RARProcessFile        : function(hArcData: THandle; Operation: Integer; DestPath, DestName: PwideChar): Integer; stdcall;
   RARSetPassword        : procedure(hArcData: THandle; Password: PChar); stdcall;
   SHGetKnownFolderPath  : function(rfid:PGUID; dwFlags:DWord; hToken:THandle; out ppszPath:PPWideChar):HRESULT; stdcall;
   
@@ -79,13 +79,13 @@ procedure LoadRarLibrary;
 procedure UnLoadRarLibrary;
 procedure LoadShell32Library;
 procedure UnLoadShell32Library;
-procedure ClearTmpFiles(Directory:string);
+procedure ClearTmpFiles(Directory:WideString);
 function AddRarMovies(ArcName,PW:widestring; Add:boolean):integer;
 procedure ExtractRarMovie(ArcName,MovieName,PW:widestring);
 procedure ExtractRarLyric(ArcName,PW:WideString; Mode:integer);
-function ExtractRarSub(ArcName,PW:WideString):String;
+function ExtractRarSub(ArcName,PW:WideString):WideString;
 Procedure CoTaskMemFree(pv:Pointer); stdcall; external 'ole32.dll';
-function GetShellPath(rfid:TGUID):String;
+function GetShellPath(rfid:TGUID):WideString;
 
 implementation
 uses Main,Core,plist,locale,SevenZip;
@@ -127,7 +127,7 @@ procedure TUnRARThread.Execute;
 begin
   SetName;
   { Place thread code here }
-  ExtractMovie(TmpURL,ArcMovie,ArcPW,LowerCase(ExtractFileExt(TmpURL)));
+  ExtractMovie(TmpURL,ArcMovie,ArcPW,Tnt_WideLowerCase(WideExtractFileExt(TmpURL)));
   tEnd:=true;
 end;
 
@@ -141,12 +141,12 @@ begin
   // 4. Windows-Direcory
   // 5. Directories from PATH-Variable
   if IsRarLoaded <> 0 then exit;
-  IsRarLoaded := LoadLibrary('unrar.dll');
+  IsRarLoaded := Tnt_LoadLibraryW('unrar.dll');
   if IsRarLoaded <> 0 then begin
     @RAROpenArchive        := GetProcAddress(IsRarLoaded, 'RAROpenArchiveEx');
     @RARCloseArchive       := GetProcAddress(IsRarLoaded, 'RARCloseArchive');
     @RARReadHeader         := GetProcAddress(IsRarLoaded, 'RARReadHeaderEx');
-    @RARProcessFile        := GetProcAddress(IsRarLoaded, 'RARProcessFile');
+    @RARProcessFile        := GetProcAddress(IsRarLoaded, 'RARProcessFileW');
     @RARSetPassword        := GetProcAddress(IsRarLoaded, 'RARSetPassword');
   end;
 end;
@@ -168,7 +168,7 @@ end;
 procedure LoadShell32Library;
 begin
   if IsShell32Loaded <> 0 then exit;
-  IsShell32Loaded := LoadLibrary('shell32.dll');
+  IsShell32Loaded := Tnt_LoadLibraryW('shell32.dll'); 
   if IsShell32Loaded <> 0 then
     @SHGetKnownFolderPath:= GetProcAddress(IsShell32Loaded, 'SHGetKnownFolderPath');
 end;
@@ -183,7 +183,7 @@ begin
 end;
 
 
-function GetShellPath(rfid:TGUID):String;
+function GetShellPath(rfid:TGUID):WideString;
 var PathBuf:PPWideChar; APIResult:HRESULT;
 begin //http://msdn.microsoft.com/en-us/library/bb762188(VS.85).aspx
   Result:='';
@@ -191,26 +191,26 @@ begin //http://msdn.microsoft.com/en-us/library/bb762188(VS.85).aspx
   if IsShell32Loaded=0 then exit;
   APIResult:=SHGetKnownFolderPath(@rfid,0,0,PathBuf);
   OleCheck(APIResult);
-  Result:=WideCharToString(PWideChar(PathBuf));
+  Result:=PWideChar(PathBuf);
   CoTaskMemFree(PathBuf);
 end;
 
-procedure ClearTmpFiles(Directory:string);
-var SR:TSearchRec;
+procedure ClearTmpFiles(Directory:WideString);
+var SR:TSearchRecW;
 begin  
-  if not DirectoryExists(Directory) then exit;
-  Directory:=IncludeTrailingPathDelimiter(Directory);
-  if FindFirst(Directory+'*.*',faAnyFile,SR)=0 then begin
+  if not WideDirectoryExists(Directory) then exit;
+  Directory:=WideIncludeTrailingPathDelimiter(Directory);
+  if WideFindFirst(Directory+'*.*',faAnyFile,SR)=0 then begin
     repeat
       if SR.Name[1]<>'.' then begin   // exclude . or .. Directory
         if (SR.Attr AND faDirectory)<>0 then
           ClearTmpFiles(Directory+SR.Name)
-        else DeleteFile(Directory+SR.Name);
+        else WideDeleteFile(Directory+SR.Name);
       end;
-    until FindNext(SR)<>0;
-    FindClose(SR);
+    until WideFindNext(SR)<>0;
+    WideFindClose(SR);
   end;
-  RemoveDir(Directory); 
+  WideRemoveDir(Directory); 
 end;
 
 function AddRarMovies(ArcName,PW:widestring; Add:boolean):integer;
@@ -243,7 +243,7 @@ begin
         WideInputQuery(LOCstr_SetPW_Caption,k,TmpPW);
       if TmpPW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(TmpPW)));
     end;
-    if CheckInfo(MediaType,LowerCase(ExtractFileExt(HeaderData.FileName)))>ZipTypeCount then begin
+    if CheckInfo(MediaType,Tnt_WideLowerCase(WideExtractFileExt(HeaderData.FileNameW)))>ZipTypeCount then begin
       inc(Result);
       if Add then begin
         i:=HeaderData.FileNameW+' <-- '+k;
@@ -283,7 +283,7 @@ begin
     if RARReadHeader(hArcData,HeaderData) <> 0 then Break;
     if HeaderData.FileNameW=MovieName then begin
       if First and ((HeaderData.Flags and $00000004) = $00000004) then RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
-      RARProcessFile(hArcData, RAR_EXTRACT, nil, PChar(TempDir+'hcb428'+ExtractFileExt(HeaderData.FileName)));
+      RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(TempDir+'hcb428'+WideExtractFileExt(HeaderData.FileNameW)));
       Break;
     end
     else if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
@@ -293,7 +293,7 @@ end;
 
 
 procedure ExtractRarLyric(ArcName,PW:widestring; Mode:integer);
-var hArcData:THandle; First:boolean; FName:string;
+var hArcData:THandle; First:boolean; FName:widestring;
     HeaderData:TRARHeaderData; OpenArchiveData:TRAROpenArchiveData;
 begin
   FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
@@ -308,16 +308,16 @@ begin
     First:=false; RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
   end;
   FillChar(HeaderData ,sizeof(HeaderData),0);
-  if Mode>0 then FName:=LowerCase(copy(ArcMovie,1,length(ArcMovie)-length(ExtractFileExt(ArcMovie))))+'.lrc'
+  if Mode>0 then FName:=Tnt_WideLowerCase(copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie))))+'.lrc'
   else if Mode<0 then begin
-    FName:=ExtractFileName(MediaURL);
-    FName:=LowerCase(Copy(FName,1,length(FName)-length(ExtractFileExt(MediaURL))))+'.lrc';
+    FName:=WideExtractFileName(MediaURL);
+    FName:=Tnt_WideLowerCase(Copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL))))+'.lrc';
   end;
   repeat
     if RARReadHeader(hArcData,HeaderData) <> 0 then Break;
-    if FName=LowerCase(ExtractFileName(HeaderData.FileName)) then begin
+    if FName=Tnt_WideLowerCase(WideExtractFileName(HeaderData.FileNameW)) then begin
       if First and ((HeaderData.Flags and $00000004) = $00000004) then RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
-      if RARProcessFile(hArcData, RAR_EXTRACT, nil, PChar(TempDir+'hcb428.lrc'))<>0 then
+      if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(TempDir+'hcb428.lrc'))<>0 then
         Break
       else begin
         LyricURL:=TempDir+'hcb428.lrc';
@@ -330,8 +330,8 @@ begin
   RARCloseArchive(hArcData);
 end;
 
-function ExtractRarSub(ArcName,PW:widestring):string;
-var i,j,HaveIdx,HaveSub:integer; FExt,FName:string;
+function ExtractRarSub(ArcName,PW:widestring):widestring;
+var i,j,HaveIdx,HaveSub:integer; FName,FExt:widestring;
     First:boolean; hArcData:THandle; HeaderData:TRARHeaderData;
     OpenArchiveData:TRAROpenArchiveData;
 begin
@@ -356,7 +356,7 @@ begin
     FillChar(HeaderData ,sizeof(HeaderData),0);
     repeat
       if RARReadHeader(hArcData, HeaderData) <> 0 then Break;
-      FExt:=LowerCase(ExtractFileExt(HeaderData.FileName));
+      FExt:=Tnt_WideLowerCase(WideExtractFileExt(HeaderData.FileNameW));
       if FExt='.idx' then HaveIdx:=1;
       if FExt='.sub' then HaveSub:=1;
       if HaveIdx+HaveSub=2 then Break;
@@ -387,7 +387,7 @@ begin
         WideInputQuery(LOCstr_SetPW_Caption,WideExtractFileName(ArcName),TmpPW);
       if TmpPW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(TmpPW)));
     end;
-    FExt:=LowerCase(ExtractFileExt(HeaderData.FileName));
+    FExt:=Tnt_WideLowerCase(WideExtractFileExt(HeaderData.FileNameW));
     i:=CheckInfo(SubType,FExt);
     if i<=ZipTypeCount then begin
       if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
@@ -395,9 +395,10 @@ begin
     else begin
       if i<SubTypeCount-1 then begin
         FName:=TempDir+HeaderData.FileName;
-        if RARProcessFile(hArcData, RAR_EXTRACT, nil, PChar(FName))<>0 then
+        if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(FName))<>0 then
           Break
         else begin
+          if not IsWideStringMappableToAnsi(FName) then FName:=WideExtractShortPathName(FName);
           if Firstrun or (not Win32PlatformIsUnicode) then begin
             Loadsub:=2; Loadsrt:=2;
             AddChain(j,substring,EscapePath(EscapeParam(FName)));
@@ -410,9 +411,9 @@ begin
       end
       else begin
         if (DirHIdx+DirHSub=0) OR (HaveIdx+HaveSub=2) then begin
-          FName:=ExtractFileName(MediaURL);
-          FName:=TempDir+copy(FName,1,length(FName)-length(ExtractFileExt(MediaURL)));
-          if RARProcessFile(hArcData, RAR_EXTRACT, nil, PChar(FName+FExt))<>0 then
+          FName:=WideExtractFileName(MediaURL);
+          FName:=TempDir+copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL)));
+          if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(FName+FExt))<>0 then
             Break
           else
             Result:=FName;
@@ -420,8 +421,8 @@ begin
         else begin
           if ((HaveIdx+DirHSub=2) and (FExt='.idx')) OR
              ((DirHIdx+HaveSub=2) and (FExt='.sub')) then begin
-            FName:=copy(MediaURL,1,length(MediaURL)-length(ExtractFileExt(MediaURL)));
-            if RARProcessFile(hArcData, RAR_EXTRACT, nil, PChar(FName+FExt))<>0 then
+            FName:=copy(MediaURL,1,length(MediaURL)-length(WideExtractFileExt(MediaURL)));
+            if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(FName+FExt))<>0 then
               Break
             else
               Result:=FName;
@@ -432,7 +433,7 @@ begin
     end;
   until False;
   RARCloseArchive(hArcData); 
-  if (not Win32PlatformIsUnicode) and (j>0) then Core.Restart;
+  if (not Win32PlatformIsUnicode) and (j>0) then Restart;
 end;
 
 end.

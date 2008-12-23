@@ -20,13 +20,14 @@ unit Log;
 interface
 
 uses
-  Windows, Messages, SysUtils, TntSysUtils, Variants, Classes, Graphics, Controls, Forms,TntForms,
-  Dialogs, StdCtrls, Buttons, ExtCtrls, TntStdCtrls, TntExtCtrls, SevenZipVCL;
+  Windows, Messages, SysUtils, TntSysUtils, Variants, Classes, 
+  Graphics, Controls, Forms,TntForms, Buttons, ExtCtrls, TntExtCtrls,
+  Dialogs, StdCtrls, TntStdCtrls, SevenZipVCL;
 
 type
   TLogForm = class(TTntForm)
     TheLog: TTntMemo;
-    ControlPanel: TPanel;
+    ControlPanel: TTntPanel;
     BClose: TTntButton;
     Command: TTntEdit;
     procedure BCloseClick(Sender: TObject);
@@ -58,25 +59,25 @@ begin
 end;
 
 procedure TLogForm.CommandKeyPress(Sender: TObject; var Key: Char);
-var s:String;
+var s:WideString;
 begin
-  if not Core.Running then exit;
+  if not Running then exit;
   if Key=^M then begin
     TheLog.Lines.Add(WideString('> ')+Command.Text);
-    s:=Trim(LowerCase(Command.Text));
+    s:=Tnt_WideLowerCase(Command.Text);
     if (s<>'pause') and (s<>'frame_step') then begin
       MainForm.Unpaused;
-      Core.SendCommand(UTF8Decode(Command.Text));
+      SendCommand(UTF8Decode(Command.Text));
     end
     else begin
         if s='pause' then begin
-          SendCommand(s);
-          if Core.Status=sPlaying then begin
-            Core.Status:=sPaused; MainForm.BPause.Down:=true;
+          SendCommand('pause');
+          if Status=sPlaying then begin
+            Status:=sPaused; MainForm.BPause.Down:=true;
             MainForm.BPlay.Down:=false;
           end
           else begin
-            Core.Status:=sPlaying; MainForm.BPlay.Down:=true;
+            Status:=sPlaying; MainForm.BPlay.Down:=true;
             MainForm.BPause.Down:=false;
           end;
           MainForm.UpdateStatus;

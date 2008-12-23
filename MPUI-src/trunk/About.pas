@@ -20,9 +20,8 @@ unit About;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, TntForms,
-  Dialogs, ExtCtrls, StdCtrls, ShellAPI, jpeg, TntStdCtrls,Forms,
-  TntExtCtrls;
+  Windows, TntWindows, Messages, SysUtils, TntSysutils, Variants, Classes, Graphics, Controls, TntForms,
+  Dialogs, ExtCtrls, StdCtrls, ShellAPI, jpeg, TntStdCtrls,Forms,TntSystem;
 
 type
   TAboutForm = class(TTntForm)
@@ -53,7 +52,7 @@ type
 var
   AboutForm: TAboutForm;
   
-function GetProductVersion(const FileName:string):string;
+function GetProductVersion(const FileName:WideString):WideString;
 
 implementation
                 
@@ -61,29 +60,29 @@ uses Main, Core, Locale;
 
 {$R *.dfm}
 
-function GetProductVersion(const FileName:string):string;
-var BufSize,cbSize,VerLen:cardinal;
-    VerOut:PChar; Buf:array of char; 
+function GetProductVersion(const FileName:WideString):WideString;
+var BufSize,cbSize,VerLen:Cardinal;
+    VerOut:PWideChar; Buf:array of WideChar;
 begin
   Result:='?';
-  BufSize:=GetFileVersionInfoSize(PChar(FileName),cbSize);
+  BufSize:=Tnt_GetFileVersionInfoSizeW(PWideChar(FileName),cbSize);
   if BufSize=0 then exit;
   SetLength(Buf,BufSize);
-  if not GetFileVersionInfo(PChar(FileName),0,BufSize,Buf) then exit;
-  if not VerQueryValue(Buf,'\StringFileInfo\000004B0\ProductVersion',Pointer(VerOut),VerLen) then exit;
+  if not Tnt_GetFileVersionInfoW(PWideChar(FileName),0,BufSize,Buf) then exit;
+  if not Tnt_VerQueryValueW(Buf,'\StringFileInfo\000004B0\ProductVersion',Pointer(VerOut),VerLen) then exit;
   Result:=VerOut;
 end;
 
-function GetFileVersion(const FileName:string):string;
+function GetFileVersion(const FileName:WideString):WideString;
 var BufSize,cbSize,VerLen:Cardinal;
-    Info:^VS_FIXEDFILEINFO; Buf:array of char;
+    Info:^VS_FIXEDFILEINFO; Buf:array of WideChar;
 begin
   Result:='?';
-  BufSize:=GetFileVersionInfoSize(PChar(FileName),cbSize);
+  BufSize:=Tnt_GetFileVersionInfoSizeW(PWideChar(FileName),cbSize);
   if BufSize=0 then exit;
   SetLength(Buf,BufSize);
-  if not GetFileVersionInfo(PChar(FileName),0,BufSize,Buf) then exit;
-  if not VerQueryValue(Buf,'\',Pointer(Info),VerLen) then exit;
+  if not Tnt_GetFileVersionInfoW(PWideChar(FileName),0,BufSize,Buf) then exit;
+  if not Tnt_VerQueryValueW(Buf,'\',Pointer(Info),VerLen) then exit;
   Result:=IntToStr(Info.dwFileVersionMS SHR 16)+'.'+
           IntToStr(Info.dwFileVersionMS AND $FFFF)+'.'+
           IntToStr(Info.dwFileVersionLS SHR 16)+' build '+
@@ -92,12 +91,14 @@ begin
   if (Info.dwFileFlags AND VS_FF_PRERELEASE<>0) then Result:=Result+' (pre-release)';
 end;
 
+
+
 procedure TAboutForm.FormShow(Sender: TObject);
 begin
   MTitle.Text:=LOCstr_Title;
   if ML then VersionMPlayer.Caption:=GetProductVersion(MplayerLocation)
   else VersionMPlayer.Caption:=GetProductVersion(HomeDir+'mplayer.exe');
-  VersionMPUI.Caption:=GetFileVersion(ParamStr(0));
+  VersionMPUI.Caption:=GetFileVersion(WideParamStr(0));
   ActiveControl:=BClose;
   if (left+width)>=Screen.Width then left:=Screen.Width-width;
   if left<0 then left:=0; if top<0 then top:=0;

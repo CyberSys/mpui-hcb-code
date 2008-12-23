@@ -628,7 +628,7 @@ type
     inA: IInArchive;
     sp: ISetProperties;
   public
-    constructor Create( AOwner: TComponent; ArcType:string );// override;
+    constructor Create( AOwner: TComponent; ArcType:WideString );// override;
     destructor Destroy; override;
 
     { Public Properties ( run-time only ) }
@@ -1714,7 +1714,7 @@ end;
 //------------------------------------------------------------------------------------------------
 //constructor destructor
 //------------------------------------------------------------------------------------------------
-constructor TSevenZip.Create( AOwner: TComponent ; ArcType:string );
+constructor TSevenZip.Create( AOwner: TComponent ; ArcType:WideString );
 var i:integer;
 begin
   inherited Create( AOwner );

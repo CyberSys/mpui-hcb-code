@@ -22,6 +22,7 @@ uses
   Forms,
   TntForms,
   TntSysUtils,
+  TntSystem,
   Main in 'Main.pas' {MainForm},
   Log in 'Log.pas' {LogForm},
   Core in 'Core.pas',
@@ -55,7 +56,6 @@ uses
   mo_zh_tw in 'mo_zh_tw.pas',
   plist in 'Plist.pas' {PlaylistForm},
   Info in 'Info.pas' {InfoForm},
-  AddDir in 'AddDir.pas' {AddDirForm},
   UnRAR in 'UnRAR.pas',
   SevenZip in 'SevenZip.pas',
   SevenZipVCL in 'SevenZipVCL.pas',
@@ -65,21 +65,28 @@ uses
 {$R XPStyle.res}
 
 var
-  hAppMutex:Thandle; Mf:hWnd; s:String; i,PCount:integer;
+  hAppMutex:Thandle; Mf:hWnd; s:WideString; t:string; i,PCount:integer;
 begin
-  hAppMutex:=CreateMutex(nil,false,PChar('fenny8248'));
+  hAppMutex:=CreateMutex(nil,false,PAnsiChar('fenny8248'));
   if WaitForSingleObject(hAppMutex,10)=WAIT_TIMEOUT then begin
     if Win32PlatformIsUnicode then Mf:=FindWindow('fengying.UnicodeClass',nil)
     else Mf:=FindWindow('fengying',nil);
     if Mf<>0 then begin
-      PCount:=ParamCount;
-      for i:=1 to PCount do begin
-        s:=ParamStr(i);
-        if s<>'-enqueue' then begin
-          SendMessage(Mf,$0401,GlobalAddAtom(@S[1]),Length(S));
-          WaitForSingleObject(hAppMutex,10);
+      if Win32PlatformIsUnicode then begin
+        PCount:=WideParamCount;
+        for i:=1 to PCount do begin
+          s:=WideParamStr(i);
+          if s<>'-enqueue' then SendMessage(Mf,$0401,GlobalAddAtomW(@S[1]),Length(S));
+        end;
+      end
+      else begin
+        PCount:=ParamCount;
+        for i:=1 to PCount do begin
+          t:=ParamStr(i);
+          if s<>'-enqueue' then SendMessage(Mf,$0401,GlobalAddAtom(@t[1]),Length(t));
         end;
       end;
+      WaitForSingleObject(hAppMutex,10);
     end;
   end
   else begin
@@ -92,7 +99,6 @@ begin
   Application.CreateForm(TOptionsForm, OptionsForm);
   Application.CreateForm(TPlaylistForm, PlaylistForm);
   Application.CreateForm(TInfoForm, InfoForm);
-  Application.CreateForm(TAddDirForm, AddDirForm);
   Application.CreateForm(TEqualizerForm, EqualizerForm);
   Application.Run;
     ReleaseMutex(hAppMutex);

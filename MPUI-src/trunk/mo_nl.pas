@@ -93,9 +93,9 @@ begin
       MKeyHelp.Caption:=UTF8Decode('Toetsenbord help ...');
       MAbout.Caption:=UTF8Decode('Info ...');
   end;
-  LogForm.Caption:=UTF8Decode('MPlayer output');
-  LogForm.BClose.Caption:=UTF8Decode('Sluiten');
-  HelpForm.Caption:=UTF8Decode('Toetsenbord help');
+  LogForm.Caption:='MPlayer output';
+  LogForm.BClose.Caption:='Sluiten';
+  HelpForm.Caption:='Toetsenbord help';
   HelpForm.HelpText.Text:=UTF8Decode(
 'Navigatietoetsen:'^M^J+
 'Spatie'^I'Afspelen/Pause'^M^J+

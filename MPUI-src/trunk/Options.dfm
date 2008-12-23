@@ -86,7 +86,7 @@ object OptionsForm: TOptionsForm
     TabOrder = 3
     OnClick = BCloseClick
   end
-  object EParams: TEdit
+  object EParams: TTntEdit
     Left = 6
     Top = 312
     Width = 309
@@ -152,7 +152,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 1
         OnClick = SomethingChanged
       end
-      object EMplayerLocation: TEdit
+      object EMplayerLocation: TTntEdit
         Left = 104
         Top = 219
         Width = 164
@@ -161,7 +161,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 2
         OnChange = SomethingChanged
       end
-      object BMplayer: TButton
+      object BMplayer: TTntButton
         Left = 269
         Top = 219
         Width = 28
@@ -257,7 +257,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 12
         OnClick = CAsyncClick
       end
-      object EAsync: TEdit
+      object EAsync: TTntEdit
         Left = 249
         Top = 78
         Width = 34
@@ -267,7 +267,7 @@ object OptionsForm: TOptionsForm
         Text = '100'
         OnChange = SomethingChanged
       end
-      object UAsync: TUpDown
+      object UAsync: TTntUpDown
         Left = 283
         Top = 78
         Width = 17
@@ -291,7 +291,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 6
         OnClick = CCacheClick
       end
-      object ECache: TEdit
+      object ECache: TTntEdit
         Left = 249
         Top = 102
         Width = 34
@@ -301,7 +301,7 @@ object OptionsForm: TOptionsForm
         Text = '512'
         OnChange = SomethingChanged
       end
-      object UCache: TUpDown
+      object UCache: TTntUpDown
         Left = 283
         Top = 102
         Width = 17
@@ -344,7 +344,7 @@ object OptionsForm: TOptionsForm
         Caption = 'ScreenShot Folder'
         TabOrder = 20
       end
-      object BSsf: TButton
+      object BSsf: TTntButton
         Left = 269
         Top = 194
         Width = 28
@@ -354,7 +354,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 21
         OnClick = BSsfClick
       end
-      object ESsf: TEdit
+      object ESsf: TTntEdit
         Left = 104
         Top = 195
         Width = 164
@@ -772,7 +772,7 @@ object OptionsForm: TOptionsForm
         Caption = 'Software volume control'
         TabOrder = 2
       end
-      object EWadsp: TEdit
+      object EWadsp: TTntEdit
         Left = 4
         Top = 234
         Width = 264
@@ -781,7 +781,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 6
         OnChange = SomethingChanged
       end
-      object BWadsp: TButton
+      object BWadsp: TTntButton
         Left = 269
         Top = 234
         Width = 28
@@ -888,7 +888,7 @@ object OptionsForm: TOptionsForm
           TabOrder = 1
           OnClick = SetColor
         end
-        object ELyric: TEdit
+        object ELyric: TTntEdit
           Left = 67
           Top = 80
           Width = 197
@@ -897,7 +897,7 @@ object OptionsForm: TOptionsForm
           TabOrder = 2
           OnChange = SomethingChanged
         end
-        object BLyric: TButton
+        object BLyric: TTntButton
           Tag = 1
           Left = 265
           Top = 80
@@ -937,7 +937,7 @@ object OptionsForm: TOptionsForm
       DesignSize = (
         301
         259)
-      object BSubfont: TButton
+      object BSubfont: TTntButton
         Left = 268
         Top = 31
         Width = 28
@@ -1010,7 +1010,7 @@ object OptionsForm: TOptionsForm
         Caption = 'font outline thickness'
         TabOrder = 11
       end
-      object CSubfont: TComboBox
+      object CSubfont: TTntComboBox
         Left = 96
         Top = 32
         Width = 172
@@ -1020,7 +1020,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 15
         OnChange = FontChange
       end
-      object PShow: TPanel
+      object PShow: TTntPanel
         Left = 8
         Top = 78
         Width = 286
@@ -1035,7 +1035,7 @@ object OptionsForm: TOptionsForm
         ParentFont = False
         TabOrder = 16
       end
-      object COsdfont: TComboBox
+      object COsdfont: TTntComboBox
         Left = 96
         Top = 56
         Width = 172
@@ -1299,7 +1299,7 @@ object OptionsForm: TOptionsForm
         TickStyle = tsNone
         OnChange = TFolChange
       end
-      object SFsP: TStaticText
+      object SFsP: TTntStaticText
         Left = 270
         Top = 198
         Width = 31
@@ -1307,7 +1307,7 @@ object OptionsForm: TOptionsForm
         Caption = '4.5%'
         TabOrder = 12
       end
-      object SFBl: TStaticText
+      object SFBl: TTntStaticText
         Left = 270
         Top = 219
         Width = 20
@@ -1315,7 +1315,7 @@ object OptionsForm: TOptionsForm
         Caption = '2.0'
         TabOrder = 13
       end
-      object SFo: TStaticText
+      object SFo: TTntStaticText
         Left = 270
         Top = 241
         Width = 20
