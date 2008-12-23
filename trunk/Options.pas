@@ -1,0 +1,841 @@
+{   MPUI, an MPlayer frontend for Windows
+    Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+}
+unit Options;
+
+interface
+
+uses
+  Windows, TntWindows, Messages, SysUtils, TntSysUtils, Variants, Classes, Graphics, Controls,
+  Forms,TntForms, Dialogs, StdCtrls, ShellAPI, ComCtrls, Tabs, TabNotBk, ExtCtrls,
+  TntExtCtrls, TntComCtrls, TntStdCtrls, TntFileCtrl, ImgList, TntRegistry, TntClasses;
+
+type
+  TOptionsForm = class(TTntForm)
+    BOK: TTntButton;
+    BApply: TTntButton;
+    BSave: TTntButton;
+    BClose: TTntButton;
+    EParams: TTntEdit;
+    LParams: TTntLabel;
+    LHelp: TTntLabel;
+    Tab: TTntPageControl;
+    TabSheet1: TTntTabSheet;
+    TabSheet2: TTntTabSheet;
+    TabSheet3: TTntTabSheet;
+    TabSheet4: TTntTabSheet;
+    LAudioOut: TTntLabel;
+    CAudioOut: TTntComboBox;
+    LPostproc: TTntLabel;
+    CPostproc: TTntComboBox;
+    LAspect: TTntLabel;
+    CAspect: TTntComboBox;
+    LDeinterlace: TTntLabel;
+    CDeinterlace: TTntComboBox;
+    LLanguage: TTntLabel;
+    CLanguage: TTntComboBox;
+    LAudioDev: TTntLabel;
+    CAudioDev: TComboBox;
+    CSoftVol: TTntCheckBox;
+    CVolnorm: TTntCheckBox;
+    double: TTntCheckBox;
+    CDr: TTntCheckBox;
+    Defaultslang: TTntCheckBox;
+    EMplayerLocation: TTntEdit;
+    BSubfont: TTntButton;
+    BMplayer: TTntButton;
+    CSubcp: TComboBox;
+    CMAspect: TComboBox;
+    LMAspect: TTntLabel;
+    CSPDIF: TTntCheckBox;
+    CCh: TComboBox;
+    CWid: TTntCheckBox;
+    CFlip: TTntCheckBox;
+    CYuy2: TTntCheckBox;
+    CEq2: TTntCheckBox;
+    CIndex: TTntCheckBox;
+    CMir: TTntCheckBox;
+    CNi: TTntCheckBox;
+    CDnav: TTntCheckBox;
+    CUtf: TTntCheckBox;
+    CUni: TTntCheckBox;
+    TFsize: TTrackBar;
+    TFol: TTrackBar;
+    EWadsp: TTntEdit;
+    BWadsp: TTntButton;
+    CWadsp: TTntCheckBox;
+    CLavf: TTntCheckBox;
+    RCMplayer: TTntRadioButton;
+    RMplayer: TTntRadioButton;
+    TFB: TTrackBar;
+    SSubcode: TTntStaticText;
+    SSubfont: TTntStaticText;
+    SFsize: TTntStaticText;
+    SFB: TTntStaticText;
+    SFol: TTntStaticText;
+    SFsP: TTntStaticText;
+    SFBl: TTntStaticText;
+    SFo: TTntStaticText;
+    CFd: TTntCheckBox;
+    CAsync: TTntCheckBox;
+    EAsync: TTntEdit;
+    UAsync: TTntUpDown;
+    CCache: TTntCheckBox;
+    ECache: TTntEdit;
+    UCache: TTntUpDown;
+    CPriorityBoost: TTntCheckBox;
+    CRFScr: TTntCheckBox;
+    CSubfont: TTntComboBox;
+    PShow: TTntPanel;
+    COsdfont: TTntComboBox;
+    BOsdfont: TButton;
+    SFontColor: TTntStaticText;
+    SOutline: TTntStaticText;
+    PTc: TPanel;
+    POc: TPanel;
+    ColorDialog1: TColorDialog;
+    CAss: TTntCheckBox;
+    CEfont: TTntCheckBox;
+    CRot: TComboBox;
+    CISub: TTntCheckBox;
+    SSF: TTntStaticText;
+    BSsf: TTntButton;
+    ESsf: TTntEdit;
+    SOsdfont: TTntCheckBox;
+    LCh: TTntStaticText;
+    LRot: TTntStaticText;
+    CDrag: TTntCheckBox;
+    CGUI: TTntCheckBox;
+    CNobps: TTntCheckBox;
+    CFilter: TTntCheckBox;
+    ImageList1: TImageList;
+    TLyric: TTntGroupBox;
+    LTCL: TTntLabel;
+    PLTC: TPanel;
+    LHCL: TTntLabel;
+    PLBC: TPanel;
+    LBCL: TTntLabel;
+    PLHC: TPanel;
+    SLyric: TTntLabel;
+    ELyric: TTntEdit;
+    BLyric: TTntButton;
+    LScroll: TTntCheckBox;
+    CUseekC: TTntCheckBox;
+    CVSync: TTntCheckBox;
+    BFont: TButton;
+    FontDialog1: TFontDialog;
+    LVideoout: TTntLabel;
+    CVideoOut: TComboBox;
+    procedure BCloseClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure LHelpClick(Sender: TObject);
+    procedure BApplyClick(Sender: TObject);
+    procedure BOKClick(Sender: TObject);
+    procedure SomethingChanged(Sender: TObject);
+    procedure BSaveClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure CAudioOutChange(Sender: TObject);
+    procedure BSubfontClick(Sender: TObject);
+    procedure BMplayerClick(Sender: TObject);
+    procedure CDDXAClick(Sender: TObject);
+    procedure TFsizeChange(Sender: TObject);
+    procedure TFolChange(Sender: TObject);
+    procedure CWadspClick(Sender: TObject);
+    procedure BWadspClick(Sender: TObject);
+    procedure RMplayerClick(Sender: TObject);
+    procedure RCMplayerClick(Sender: TObject);
+    procedure TFBChange(Sender: TObject);
+    procedure CAsyncClick(Sender: TObject);
+    procedure CCacheClick(Sender: TObject);
+    procedure FontChange(Sender: TObject);
+    procedure BOsdfontClick(Sender: TObject);
+    procedure SetColor(Sender: TObject);
+    procedure CAssClick(Sender: TObject);
+    procedure SOsdfontClick(Sender: TObject);
+    procedure BSsfClick(Sender: TObject);
+    procedure BFontClick(Sender: TObject);
+  private
+    { Private declarations }
+    HelpFile:WideString;
+    Changed:boolean;
+    procedure ApplyNCValues;
+  public
+    { Public declarations }
+
+    procedure Localize;
+    procedure ApplyValues;
+    procedure LoadValues;
+  end;
+  
+  PDSEnumCallback = function(lpGuid:PGUID; lpcstrDescription,lpcstrModule:PChar; lpContext:pointer):LongBool; stdcall;
+
+procedure LoadDsLibrary;
+procedure UnLoadDsLibrary;
+
+var
+  OptionsForm: TOptionsForm; IsDsLoaded:THandle=0;
+
+implementation
+uses Core, Config, Main, Locale, About, plist;
+
+{$R *.dfm}
+var DirectSoundEnumerate: function (lpDSEnumCallback:PDSEnumCallback; lpContext:pointer):HRESULT; stdcall;
+
+procedure LoadDsLibrary;
+begin
+  if IsDsLoaded <> 0 then exit;   
+  IsDsLoaded := LoadLibrary('dsound.dll');
+  if IsDsLoaded <> 0 then
+    @DirectSoundEnumerate:= GetProcAddress(IsDsLoaded, 'DirectSoundEnumerateA');
+end;
+
+procedure UnLoadDsLibrary;
+begin
+  if IsDsLoaded <> 0 then begin
+    FreeLibrary(IsDsLoaded);
+    IsDsLoaded := 0;
+    DirectSoundEnumerate:= nil;
+  end;
+end;
+
+procedure TOptionsForm.BCloseClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TOptionsForm.Localize;
+var i:integer;
+begin
+  with MainForm do begin
+    LAspect.Caption:=MAspect.Caption;
+    CAspect.Items[0]:=MAutoAspect.Caption;
+    LDeinterlace.Caption:=MDeinterlace.Caption;
+    CDeinterlace.Items[0]:=MNoDeint.Caption;
+    CDeinterlace.Items[1]:=MSimpleDeint.Caption;
+    CDeinterlace.Items[2]:=MAdaptiveDeint.Caption;
+    CAudioOut.Items[2]:=LOCstr_AutoLocale;
+    LLanguage.Caption:=MLanguage.Caption;
+    PlaylistForm.PLTC.Hint:=LTCL.Caption;
+    PlaylistForm.PLHC.Hint:=LHCL.Caption;
+    PlaylistForm.PLBC.Hint:=LBCL.Caption;
+    PlaylistForm.LScroll.Caption:=LScroll.Caption;
+    CLanguage.Clear;
+    CLanguage.Items.Add(LOCstr_AutoLocale);
+    for i:=0 to High(Locales) do
+      CLanguage.Items.Add(Locales[i].Name);
+  end;
+end;
+
+procedure TOptionsForm.ApplyNCValues;
+begin
+  RFScr:=CRFScr.Checked;
+  with MainForm do begin
+    if RFScr then begin
+      OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
+    end
+    else begin
+      OPanel.PopupMenu:=MPopup; IPanel.PopupMenu:=MPopup;
+    end;
+  end;
+
+  if Running and (vsync<>CVSync.Checked) then begin
+    MainForm.Unpaused;
+    if CVSync.Checked then SendCommand('set_property vsync 1')
+    else SendCommand('set_property vsync 0');
+  end;
+  vsync:=CVSync.Checked;
+  UseekC:=CUseekC.Checked;
+  DragM:=CDrag.Checked;
+  PScroll:=LScroll.Checked;
+  LTextColor:=ColorToRGB(PLTC.Color);
+  LbgColor:=ColorToRGB(PLBC.Color);
+  LhgColor:=ColorToRGB(PLHC.Color);
+  LyricF:=Bfont.Caption;
+  LyricS:=PlaylistForm.TMLyric.Font.Size;
+  PlaylistForm.TMLyric.Color:=PLBC.Color;
+  PlaylistForm.TMLyric.Font.Color:=PLTC.Color;
+  PlaylistForm.PLTC.Color:=LTextColor;
+  PlaylistForm.PLBC.Color:=LbgColor;
+  PlaylistForm.PLHC.Color:=LhgColor;
+  PlaylistForm.LScroll.Checked:=PScroll;
+  if PlaylistForm.Visible then PlaylistForm.TMLyric.Invalidate;
+end;
+
+procedure TOptionsForm.FormShow(Sender: TObject);
+begin
+  LoadValues; Changed:=false;
+  if ML then HelpFile:=WideExtractFileDir(MplayerLocation)+'\man_page.html'
+  else HelpFile:=HomeDir+'man_page.html';
+  if not WideFileExists(HelpFile) then begin
+    HelpFile:=WideExtractFileDir(HelpFile)+'\MPlayer.html';
+    if not WideFileExists(HelpFile) then HelpFile:='';
+  end;
+  if length(HelpFile)>0 then begin
+    LHelp.Visible:=true;
+    HelpFile:=#34+HelpFile+#34;
+  end
+  else
+    LHelp.Visible:=false;
+  if (left+width)>=Screen.Width then left:=Screen.Width-width;
+  if left<0 then left:=0; if top<0 then top:=0;
+  if (top+height)>=Screen.WorkAreaHeight then top:=Screen.WorkAreaHeight-height;
+end;
+
+procedure TOptionsForm.LHelpClick(Sender: TObject);
+begin
+  if length(HelpFile)>0 then begin
+    if Win32PlatformIsUnicode then
+      ShellExecuteW(Handle,'open',PWideChar(HelpFile),nil,nil,SW_SHOW)
+    else ShellExecute(Handle,'open',PAnsiChar(AnsiString(HelpFile)),nil,nil,SW_SHOW);
+  end;
+end;
+
+procedure TOptionsForm.LoadValues;
+var i:integer; s,h,j,k:Widestring;
+begin
+  CAudioOut.ItemIndex:=AudioOut;
+  CAudioDev.ItemIndex:=AudioDev;
+  LScroll.Checked:=PScroll;
+  CIndex.Checked:=ReIndex;
+  CSoftVol.Checked:=SoftVol;
+  CRFScr.Checked:=RFScr;
+  CDr.Checked:=Dr;
+  Double.Checked:=dbbuf;
+  CVolnorm.Checked:=Volnorm;
+  Defaultslang.Checked:=Dlang;
+  CSubcp.Text:=subcode;
+
+  RMplayer.Checked:=ML;
+  RCMplayer.Checked:=not ML;
+  EMplayerLocation.Enabled:=ML;
+  BMplayer.Enabled:=ML;
+  CWid.Checked:=Wid;
+
+  EMplayerLocation.Text:=MplayerLocation;
+  CMAspect.Text:=MAspect;
+  CVideoOut.Text:=VideoOut;
+  CCh.ItemIndex:=Ch;
+  CRot.ItemIndex:=Rot;
+  CSPDIF.Checked:=SPDIF;
+  CFlip.Checked:=Flip;
+  CMir.Checked:=Mirror;
+  CEq2.Checked:=Eq2;
+  CYuy2.Checked:=Yuy2;
+  CUseekC.Checked:=UseekC;
+  CVSync.Checked:=vsync;
+  CEq2.Enabled:=not Dda;
+    CYuy2.Enabled:=CEq2.Enabled;
+    LDeinterlace.Enabled:=CEq2.Enabled;
+    CDeinterlace.Enabled:=CEq2.Enabled;
+  CNi.Checked:=ni;
+  CNobps.Checked:=nobps;
+  CFilter.Checked:=FilterDrop;
+  CDnav.Checked:=Dnav;
+  CUni.Checked:=Uni;
+  CUtf.Checked:=Utf;
+
+  CWadsp.Checked:=Wadsp;
+    EWadsp.Enabled:=Wadsp;
+    BWadsp.Enabled:=Wadsp;
+  EWadsp.Text:=WadspL;
+  Clavf.Checked:=lavf;
+  CFd.Checked:=Fd;
+  CAsync.Checked:=Async;
+    EAsync.Enabled:=Async;
+    UAsync.Enabled:=Async;
+  EAsync.Text:=AsyncV;
+  CCache.Checked:=Cache;
+    ECache.Enabled:=Cache;
+    UCache.Enabled:=Cache;
+  ECache.Text:=CacheV;
+  CPriorityBoost.Checked:=Pri;
+  EParams.Text:=Params;
+  CAudioOutChange(nil);
+
+  TFsize.Position:=round(FSize*10);
+  TFol.Position:=round(Fol*10);
+  TFB.Position:=round(FB*10);
+  CAspect.Items[10]:=MainForm.MCustomAspect.Caption;
+  CAspect.ItemIndex:=Aspect;
+  CDeinterlace.ItemIndex:=Deinterlace;
+  CLanguage.ItemIndex:=DefaultLocale+1;
+  CPostproc.ItemIndex:=Postproc;
+  COsdfont.Text:=osdfont;
+  CSubfont.Text:=subfont;
+  PLTC.Color:=LTextColor;
+  PLBC.Color:=LbgColor;
+  PLHC.Color:=LhgColor;
+  BFont.Caption:=PlayListForm.TMLyric.Font.Name;
+  PTc.color:=TextColor;
+  PTc.Enabled:=Ass;
+  POc.color:=OutColor;
+  POc.Enabled:=Ass;
+  CAss.Checked:=Ass;
+  CEfont.Checked:=Efont;
+  CEfont.Enabled:=Ass;
+  SfontColor.Enabled:=Ass;
+  SOutline.Enabled:=Ass;
+  CISub.Checked:=ISub;
+  ESsf.Text:=ShotDir;
+  ELyric.Text:=LyricDir;
+  SOsdfont.Checked:=uof;
+  COsdfont.Enabled:=uof;
+  BOsdfont.Enabled:=uof;
+  CDrag.Checked:=DragM;
+  CGUI.Checked:=GUI;
+
+  if (CSubfont.ItemIndex<0) and (COsdfont.ItemIndex<0) then begin
+    PShow.Caption:='';
+    s:= Trim(Tnt_WideLowerCase(CSubfont.Text)); j:= Trim(Tnt_WideLowerCase(COsdfont.Text));
+    for i:=0 to FontPaths.Count-1 do begin
+      k:=Tnt_WideLowerCase(CSubfont.Items[i]); h:= Tnt_WideLowerCase(FontPaths[i]);
+      if (s=k) or (s=h) then begin
+        PShow.Font.Name:=CSubfont.Items[i];
+        PShow.Caption:=CSubfont.Items[i];
+        CSubfont.ItemIndex:=i;
+        break;
+      end;
+      if (j=k) or (j=h) then begin
+        PShow.Font.Name:=COsdfont.Items[i];
+        PShow.Caption:=COsdfont.Items[i];
+        COsdfont.ItemIndex:=i;
+        break;
+      end;
+    end;
+  end
+  else if CSubfont.ItemIndex>-1 then PShow.Caption:=CSubfont.Text
+  else if COsdfont.ItemIndex>-1 then PShow.Caption:=COsdfont.Text;
+  
+end;
+
+procedure TOptionsForm.ApplyValues;
+begin
+  AudioOut:=CAudioOut.ItemIndex;
+  AudioDev:=CAudioDev.ItemIndex;
+  Postproc:=CPostproc.ItemIndex;
+  Aspect:=CAspect.ItemIndex;
+  Deinterlace:=CDeinterlace.ItemIndex;
+  ReIndex:=CIndex.Checked;
+  SoftVol:=CSoftVol.Checked;
+  if (Volume>100) AND (not SoftVol) then begin
+    Volume:=100; MainForm.VolBoost.Visible:=False;
+    MainForm.VolSlider.Left:=Volume*(MainForm.VolFrame.ClientWidth-MainForm.VolSlider.Width) DIV 100;
+  end;
+  Dr:=CDr.Checked;
+  dbbuf:=double.Checked;
+  Volnorm:=CVolnorm.Checked;
+  Dlang:=Defaultslang.Checked;
+  subcode:=CSubcp.Text;
+  osdfont:=COsdfont.Text;
+  subfont:=CSubfont.Text;
+  MplayerLocation:=EMplayerLocation.Text;
+  MAspect:=Trim(CMAspect.Text);
+  VideoOut:=Trim(CVideoOut.Text);
+  Dda:=Trim(LowerCase(VideoOut))='directx:noaccel';
+  Ch:=CCh.ItemIndex;
+  Rot:=CRot.ItemIndex;
+  SPDIF:=CSPDIF.Checked;
+  Wid:=CWid.Checked;
+  Flip:=CFlip.Checked;
+  Mirror:=CMir.Checked;
+  Eq2:=CEq2.Checked;
+  Yuy2:=CYuy2.Checked;
+  ni:=CNi.Checked;
+  nobps:=CNobps.Checked;
+  FilterDrop:=CFilter.Checked;
+  Dnav:=CDnav.Checked;
+  Uni:=CUni.Checked;
+  Utf:=CUtf.Checked;
+  FSize:=TFsize.Position/10;
+  Fol:=TFol.Position/10;
+  FB:=TFB.Position/10;
+  Wadsp:=CWadsp.Checked;
+  WadspL:=EWadsp.Text;
+  lavf:=Clavf.Checked;
+  Fd:=CFd.Checked;
+  Async:=CAsync.Checked;
+  AsyncV:=EAsync.Text;
+  Cache:=CCache.Checked;
+  CacheV:=ECache.Text;
+  Pri:=CPriorityBoost.Checked;
+  Params:=Trim(EParams.Text);
+  TextColor:=ColorToRGB(PTc.color);
+  OutColor:=ColorToRGB(POc.color);
+  Ass:=CAss.Checked;
+  Efont:=CEfont.Checked;
+  ISub:=CISub.Checked;
+  uof:=SOsdfont.Checked;
+  GUI:=CGUI.Checked;
+  if WideDirectoryExists(ELyric.Text) then LyricDir:=ELyric.Text;
+  if WideDirectoryExists(ESsf.Text) then ShotDir:=ESsf.Text
+  else if WideCreateDir(ESsf.Text) then ShotDir:=ESsf.Text;
+
+  if DefaultLocale<>(CLanguage.ItemIndex-1) then begin
+    DefaultLocale:=CLanguage.ItemIndex-1;
+    ActivateLocale(DefaultLocale);
+  end;
+  MainForm.UpdateMenuCheck;
+end;
+
+procedure TOptionsForm.BApplyClick(Sender: TObject);
+begin
+  ApplyNCValues;
+  if Changed then begin
+    ApplyValues; Changed:=false;
+    Restart;
+    CLanguage.ItemIndex:=DefaultLocale+1;
+    CAspect.Items[10]:=MainForm.MCustomAspect.Caption;
+    CAspect.ItemIndex:=Aspect;
+    CDeinterlace.ItemIndex:=Deinterlace;
+    CPostproc.ItemIndex:=Postproc;
+    CAudioOut.ItemIndex:=AudioOut;
+    CAudioDev.ItemIndex:=AudioDev;
+    CSubcp.Text:=subcode;
+    COsdfont.Text:=osdfont;
+    CSubfont.Text:=subfont;
+    EMplayerLocation.Text:=MplayerLocation;
+    CMAspect.Text:=MAspect;
+    CCh.ItemIndex:=Ch;
+    CRot.ItemIndex:=Rot;
+    ESsf.Text:=ShotDir;
+  end;
+end;
+
+procedure TOptionsForm.BOKClick(Sender: TObject);
+begin
+  Close;
+  ApplyNCValues;
+  if Changed then begin
+    ApplyValues;
+    Restart;
+  end;
+end;
+
+procedure TOptionsForm.SomethingChanged(Sender: TObject);
+begin
+  Changed:=true; 
+end;
+
+procedure TOptionsForm.BSaveClick(Sender: TObject);
+begin
+  ApplyNCValues;
+  if Changed then begin
+    ApplyValues;
+    CLanguage.ItemIndex:=DefaultLocale+1;
+    CAspect.Items[10]:=MainForm.MCustomAspect.Caption;
+    CAspect.ItemIndex:=Aspect;
+    CDeinterlace.ItemIndex:=Deinterlace;
+    CPostproc.ItemIndex:=Postproc;
+    CAudioOut.ItemIndex:=AudioOut;
+    CAudioDev.ItemIndex:=AudioDev;
+    CSubcp.Text:=subcode;
+    COsdfont.Text:=osdfont;
+    CSubfont.Text:=subfont;
+    EMplayerLocation.Text:=MplayerLocation;
+    CMAspect.Text:=MAspect;
+    CCh.ItemIndex:=Ch;
+    CRot.ItemIndex:=Rot;
+    ESsf.Text:=ShotDir;
+  end;
+  Config.Save(HomeDir+Config.DefaultFileName,0);
+end;
+
+function EnumFunc(lpGuid:PGUID; lpcstrDescription,lpcstrModule:PChar; lpContext:pointer):LongBool; stdcall;
+begin
+  TComboBox(lpContext^).Items.Add(lpcstrDescription);
+  Result:=True;
+end;
+
+procedure TOptionsForm.FormCreate(Sender: TObject);
+procedure initFontList;
+var i,j:integer; s:string; sn,sp:widestring; DefaultFont:TFont;
+    reg: TTntRegistry; a:TTntStringList;
+begin
+  DefaultFont:=TFont.Create; DefaultFont.Handle:=GetStockObject(DEFAULT_GUI_FONT);
+  FontPaths:=TTntStringList.Create; a:=TTntStringList.Create;
+  reg:=TTntRegistry.Create;  DefaultFontIndex:=-1;
+  if Win32PlatformIsUnicode then s:='SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts'
+  else s:='SOFTWARE\Microsoft\Windows\CurrentVersion\Fonts';
+  with reg do begin
+    try
+      RootKey := HKEY_LOCAL_MACHINE;
+      if OpenKeyReadOnly(s) then begin
+        GetValueNames(a); a.Sort;
+        for i:=0 to a.Count-1 do begin
+          j:=pos(' (TrueType)',a.Strings[i]);
+          if j>0 then begin
+            sn:=a.Strings[i]; sp:=ReadString(sn);
+            sn:=copy(sn,1,j-1);
+            j:=pos(' & ',sn);
+            while(j>1) do begin
+              CSubfont.Items.Add(copy(sn,1,j-1)); FontPaths.Add(SystemDir+'Fonts\'+sp);
+              if CSubfont.Items[CSubfont.Items.Count-1]=DefaultFont.Name then DefaultFontIndex:=CSubfont.Items.Count-1;
+              sn:=copy(sn,j+3,length(sn));
+              j:=pos(' & ',sn);
+            end;
+            CSubfont.Items.Add(sn); FontPaths.Add(SystemDir+'Fonts\'+sp);
+            if sn=DefaultFont.Name then DefaultFontIndex:=CSubfont.Items.Count-1;
+          end;
+        end;
+        CloseKey;
+      end;
+    finally
+      Free; a.free;
+    end;
+  end;
+  COsdfont.Items:=CSubfont.Items;
+  if subfont='' then begin
+    if DefaultFontIndex=-1 then subfont:='Arial'
+    else subfont:=CSubfont.Items[DefaultFontIndex];
+  end;
+  if osdfont='' then osdfont:=subfont;
+  if not FileExists(CheckSubfont(subfont)) then subfont:=HomeDir+'mplayer\subfont.ttf';
+  if not FileExists(CheckSubfont(osdfont)) then osdfont:=HomeDir+'mplayer\subfont.ttf'; 
+end;
+begin
+  initFontList;
+  Tab.TabIndex:=0;
+  if IsDsLoaded=0 then LoadDsLibrary;
+  if IsDsLoaded<>0 then DirectSoundEnumerate(EnumFunc,@CAudioDev);
+  {$IFDEF VER150}
+  // some fixes for Delphi>=7 VCLs
+    PTc.ParentBackground:=False; POc.ParentBackground:=False;
+  {$ENDIF}
+end;
+
+procedure TOptionsForm.CAudioOutChange(Sender: TObject);
+var e:boolean;
+begin
+  e:=(CAudioOut.ItemIndex=4);
+  LAudioDev.Enabled:=e;
+  CAudioDev.Enabled:=e;
+  if Assigned(Sender) then SomethingChanged(Sender);
+end;
+
+procedure TOptionsForm.BSubfontClick(Sender: TObject);
+var CurPath:WideString;
+begin
+  CurPath:=WideGetCurrentDir;
+  with MainForm.OpenDialog do begin
+    Title:=MainForm.MSubfont.Caption;
+    Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
+    filter:=FontFilter+'(*.ttf)|*.ttf|'+AnyFilter+'(*.*)|*.*';
+    if Execute then begin
+      if CSubfont.Text<>fileName then begin
+        CSubfont.Text:=fileName; FontChange(CSubfont);
+      end;
+    end;
+  end;
+  WideSetCurrentDir(CurPath);
+end;
+
+procedure TOptionsForm.BOsdfontClick(Sender: TObject);
+var CurPath:WideString;
+begin
+  CurPath:=WideGetCurrentDir;
+  with MainForm.OpenDialog do begin
+    Title:=MainForm.MOsdfont.Caption;
+    Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
+    filter:=FontFilter+'(*.ttf)|*.ttf|'+AnyFilter+'(*.*)|*.*';
+    if Execute then begin
+      if COsdfont.Text<>fileName then begin
+        COsdfont.Text:=fileName; FontChange(COsdfont);
+      end;
+    end;
+  end;
+  WideSetCurrentDir(CurPath);
+end;
+
+procedure TOptionsForm.BMplayerClick(Sender: TObject);
+begin
+  with MainForm.OpenDialog do begin
+    Title:=RMplayer.Caption;
+    Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
+    filter:='*.exe|*.exe|'+AnyFilter+'(*.*)|*.*';
+    if Execute then begin
+      if EMplayerLocation.Text<>fileName then begin
+        changed:=true; EMplayerLocation.Text:=fileName;
+      end;
+    end;
+  end;
+end;
+
+procedure TOptionsForm.CDDXAClick(Sender: TObject);
+begin
+  Changed:=true;
+  CEq2.Enabled:=Trim(LowerCase(CVideoOut.Text))<>'directx:noaccel';
+  LDeinterlace.Enabled:=CEq2.Enabled;
+  CDeinterlace.Enabled:=CEq2.Enabled;
+  CYuy2.Enabled:=CEq2.Enabled;
+end;
+
+procedure TOptionsForm.TFsizeChange(Sender: TObject);
+begin
+  Changed:=true;
+  SFsP.Caption:=Tnt_WideFormat('%.1f%%',[TFsize.Position/10]);
+end;
+
+procedure TOptionsForm.TFolChange(Sender: TObject);
+begin
+  Changed:=true;
+  SFo.Caption:=Tnt_WideFormat('%.1f',[TFol.Position/10]);
+end;
+
+procedure TOptionsForm.TFBChange(Sender: TObject);
+begin
+  Changed:=true;
+  SFBl.Caption:=Tnt_WideFormat('%.1f',[TFB.Position/10]);
+end;
+
+procedure TOptionsForm.CWadspClick(Sender: TObject);
+begin
+  Changed:=true;
+  EWadsp.Enabled:=CWadsp.Checked;
+  BWadsp.Enabled:=CWadsp.Checked;
+end;
+
+procedure TOptionsForm.BWadspClick(Sender: TObject);
+begin
+  with MainForm.OpenDialog do begin
+    Title:=CWadsp.Caption;
+    Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
+    filter:='*.dll|*.Dll|'+AnyFilter+'(*.*)|*.*';
+    if Execute then begin
+      if EWadsp.Text<>fileName then changed:=true;
+      EWadsp.Text:=fileName;
+    end;
+  end;
+end;
+
+procedure TOptionsForm.RMplayerClick(Sender: TObject);
+begin
+  if ML<>RMplayer.Checked then begin
+    Changed:=true;
+    ML:=RMplayer.Checked;
+    EMplayerLocation.Enabled:=ML;
+    BMplayer.Enabled:=ML;
+  end;
+end;
+
+procedure TOptionsForm.RCMplayerClick(Sender: TObject);
+begin
+  if ML=RCMplayer.Checked then begin
+    Changed:=true;
+    ML:=not RCMplayer.Checked;
+    EMplayerLocation.Enabled:=ML;
+    BMplayer.Enabled:=ML;
+  end;
+end;
+
+procedure TOptionsForm.CAsyncClick(Sender: TObject);
+begin
+  Changed:=true;
+  EAsync.Enabled:=CAsync.Checked;
+  UAsync.Enabled:=CAsync.Checked;
+end;
+
+procedure TOptionsForm.CCacheClick(Sender: TObject);
+begin
+  Changed:=true;
+  ECache.Enabled:=CCache.Checked;
+  UCache.Enabled:=CCache.Checked;
+end;
+
+procedure TOptionsForm.FontChange(Sender: TObject);
+var i:integer; s,k,h:WideString;
+begin
+  changed:=true; PShow.Caption:='';
+  s:=Trim(Tnt_WideLowerCase((Sender as TTntComboBox).Text));
+  for i:=0 to FontPaths.Count-1 do begin
+    k:=Tnt_WideLowerCase((Sender as TTntComboBox).Items[i]); h:= Tnt_WideLowerCase(FontPaths[i]);
+    if (s=k) or (s=h) then begin
+      PShow.Font.Name:=(Sender as TTntComboBox).Items[i];
+      PShow.Caption:=(Sender as TTntComboBox).Items[i];
+      (Sender as TTntComboBox).ItemIndex:=i;
+      break;
+    end;
+  end;
+end;
+
+procedure TOptionsForm.SetColor(Sender: TObject);
+begin
+  ColorDialog1.Color:=(Sender as TPanel).Color;
+  if ColorDialog1.Execute then begin
+    changed:=true;
+    (Sender as TPanel).Color := ColorDialog1.Color;
+  end;
+end;
+
+procedure TOptionsForm.CAssClick(Sender: TObject);
+begin
+  changed:=true;
+  PTc.Enabled:=CAss.Checked; POc.Enabled:=CAss.Checked;
+  CEfont.Enabled:=CAss.Checked; SfontColor.Enabled:=CAss.Checked;
+  SOutline.Enabled:=CAss.Checked; 
+end;
+
+procedure TOptionsForm.SOsdfontClick(Sender: TObject);
+begin
+  changed:=true;
+  COsdfont.Enabled:=SOsdfont.Checked;
+  BOsdfont.Enabled:=SOsdfont.Checked;
+end;
+
+procedure TOptionsForm.BSsfClick(Sender: TObject);
+var s:widestring;
+begin
+  if WideSelectDirectory(AddDirCp,'',s) then begin
+    case (Sender as TComponent).Tag of
+      0: if ESsf.Text<>s then begin
+	       changed:=true;
+		   ESsf.Text:=s;
+	     end;
+      1: if ELyric.Text<>s then begin
+	       changed:=true;
+		   ELyric.Text:=s;
+	     end;
+    end;
+  end;
+  {  if AddDirForm.Execute(false) then begin
+    case (Sender as TComponent).Tag of
+      0: if ESsf.Text<>AddDirForm.DirView.SelectedFolder.PathName then begin
+           Changed:=true; ESsf.Text:=AddDirForm.DirView.SelectedFolder.PathName;
+         end;
+      1: if ELyric.Text<>AddDirForm.DirView.SelectedFolder.PathName then begin
+           Changed:=true; ELyric.Text:=AddDirForm.DirView.SelectedFolder.PathName;
+         end;
+    end;
+  end;}
+end;
+
+procedure TOptionsForm.BFontClick(Sender: TObject);
+begin
+  with PlaylistForm do begin
+    FontDialog1.Font.Name:=BFont.Caption;
+    FontDialog1.Font.Size:=TMLyric.Font.Size;
+    if FontDialog1.Execute then begin
+      BFont.Caption:=FontDialog1.Font.Name;
+      TMLyric.Font.Name:=FontDialog1.Font.Name;
+      TMLyric.Font.Size:=FontDialog1.Font.Size;
+      TMLyric.ItemHeight:=FontDialog1.Font.Size*2;
+      TMLyric.Count:=round(TMLyric.Height/TMLyric.ItemHeight)-1;
+      UpdatePW:=True;
+    end;
+  end;
+end;
+
+end.
