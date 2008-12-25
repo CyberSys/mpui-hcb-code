@@ -391,7 +391,6 @@ begin
     TntTabSheet1.Caption:='PlayList';
     TntTabSheet2.Caption:='Lyric';
     CP0.Caption:='System Default';
-    CP1.Caption:='Unicode(UTF-8)';
     CPO.Caption:='Other';
     SC.Caption:=UTF8Decode('简体中文 (Simplified Chinese)');
     TC.Caption:=UTF8Decode('繁體中文 (Traditional Chinese)');

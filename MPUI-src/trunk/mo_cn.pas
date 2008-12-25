@@ -388,7 +388,6 @@ begin
     TntTabSheet1.Caption:=UTF8Decode('播放列表');
     TntTabSheet2.Caption:=UTF8Decode('歌词');
     CP0.Caption:=UTF8Decode('系统默认');
-    CP1.Caption:='Unicode(UTF-8)';
     CPO.Caption:=UTF8Decode('其他');
     SC.Caption:=UTF8Decode('简体中文');
     TC.Caption:=UTF8Decode('繁體中文');

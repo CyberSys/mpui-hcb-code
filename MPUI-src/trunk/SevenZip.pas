@@ -377,8 +377,8 @@ begin
             Break
           else begin
             LyricURL:=TempDir+UTF8Decode(fileInfo.szFilename);
-            HaveLyric:=Lyric.ParseLyric(LyricURL);
-            if HaveLyric then Break; 
+            Lyric.ParseLyric(LyricURL);
+            if HaveLyric<>0 then Break; 
           end;
         end;
       until ZipFindNext(hArc,fileInfo)<>0;
@@ -410,8 +410,8 @@ begin
       if sz.Extract<>0 then Break
       else begin
         LyricURL:=TempDir+'hcb428.lrc';
-        HaveLyric:=Lyric.ParseLyric(LyricURL);
-        if HaveLyric then break;
+        Lyric.ParseLyric(LyricURL);
+        if HaveLyric<>0 then break;
       end;
     end;
   end;

@@ -66,14 +66,24 @@ type TPlaylist=class
 
 type TLyric=class
             private
+              IsParsed:boolean;
               LyricTime:array of TLyricTimeCodeEntry;
-              LyricStrings:TStringList;
+              LyricStringsA:TStringList; LyricStringsW:TTntStringList;
+              procedure ParseLyricA(const FileName:WideString);
+              procedure ParseLyricW(const FileName:WideString; mode:TTntStreamCharSet);
               procedure SortLyric;
             public
-              function ParseLyric(const FileName:WideString):boolean;
+              procedure ParseLyric(const FileName:WideString);
               procedure GetCurrentLyric;
               procedure ClearLyric;
             end;
+
+type TWStringList=class(TTntStringList)
+            private
+            public
+              procedure LoadFromFile(const FileName:WideString; CharSet:TTntStreamCharSet);
+            end;
+
 type
   TPlaylistForm = class(TTntForm)
     PlaylistBox: TTntListBox;
@@ -95,7 +105,6 @@ type
     TMLyric: TTntListBox;
     TntCP: TTntPopupMenu;
     CP0: TTntMenuItem;
-    CP1: TTntMenuItem;
     CPO: TTntMenuItem;
     SC: TTntMenuItem;
     TC: TTntMenuItem;
@@ -280,6 +289,36 @@ uses Main, Core, UnRAR, Locale,About, Options, SevenZip;
 {$R *.dfm}
 {$R plist_img.res}
 
+procedure TWStringList.LoadFromFile(const FileName:WideString; CharSet:TTntStreamCharSet);
+var Stream:TStream; DataLeft:Integer; SW:WideString; SA:AnsiString;
+begin
+  Stream := TTntFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
+  try
+    Stream.Position := 0;
+    BeginUpdate;
+    try
+      DataLeft:=Stream.Size-Stream.Position;
+      if CharSet=csUtf8 then begin
+        SetLength(SA, DataLeft div SizeOf(AnsiChar));
+        Stream.Read(PAnsiChar(SA)^, DataLeft);
+        SetTextStr(UTF8ToWideString(SA));
+      end
+      else if DataLeft<SizeOf(WideChar) then SW:=''
+      else begin
+        SetLength(SW,DataLeft div SizeOf(WideChar));
+        Stream.Read(PWideChar(SW)^,DataLeft);
+        if CharSet=csUnicodeSwapped then
+          StrSwapByteOrder(PWideChar(SW));
+        SetTextStr(SW);
+      end;
+    finally
+      EndUpdate;
+    end;
+  finally
+    Stream.Free;
+  end;
+end;
+
 function LoadBitmapResource(const ResName:string; Transparent:boolean):TBitmap;
 begin
   Result:=TBitmap.Create;
@@ -298,10 +337,14 @@ end;
 procedure TLyric.ClearLyric;
 begin
   if length(LyricTime)>0 then begin
-    SetLength(LyricTime,0); LyricStrings.Free;
-    MaxLenLyric:=''; PlaylistForm.TMLyric.Refresh;
+    SetLength(LyricTime,0);
+    case HaveLyric of
+      1: begin LyricStringsW.Free; MaxLenLyricW:=''; end;
+      2: begin LyricStringsA.Free; MaxLenLyricA:=''; end;
+    end;
+    PlaylistForm.TMLyric.Refresh;
   end;
-  HaveLyric:=false;
+  HaveLyric:=0;
 end;
 
 procedure TPlaylist.Add(const Entry:TPlaylistEntry);
@@ -505,42 +548,11 @@ begin
 end;
 
 procedure TPlaylist.SaveToFile(FileName:WideString);
-var t:TextFile{System.Text}; i:integer; d:WideString; h:integer;
+var FileNameList:TTntStringList; i:integer;
 begin
-  h:=WideFileCreate(FileName);
-  case GetLastError of
-    ERROR_ALREADY_EXISTS,0: if not IsWideStringMappableToAnsi(FileName) then
-                               FileName:=WideExtractShortPathName(FileName);
-  end;
-  if h<0 then begin
-    d:=WideExtractFilePath(FileName);
-    if not IsWideStringMappableToAnsi(FileName) then
-      FileName:=WideExtractShortPathName(d)+WideExtractFileName(FileName);
-  end
-  else CloseHandle(h);
-  Assign(t,FileName);
-  {$I-} Rewrite(t); {$I+}
-  if IOresult<>0 then exit;
-  for i:=Low(Data) to High(Data) do begin
-    if (Pos('://',Data[i].FullURL)<1) and (not IsWideStringMappableToAnsi(Data[i].FullURL)) then
-      writeln(t,WideExtractShortPathName(Data[i].FullURL))
-    else writeln(t,Data[i].FullURL);
-  end;
-  CloseFile(t);
-end;
-
-
-
-function TryOpen(FileName:WideString; var t:System.Text):boolean;
-var OFM:byte;
-begin
-  Result:=False;
-  OFM:=FileMode; FileMode:=0;
-  if not IsWideStringMappableToAnsi(FileName) then FileName:=WideExtractShortPathName(FileName);
-  {$I-} AssignFile(t,FileName); Reset(t); {$I+}
-  if IOResult<>0 then exit;
-  FileMode:=OFM;
-  Result:=True;
+  FileNameList:=TTntStringList.Create;
+  for i:=Low(Data) to High(Data) do FileNameList.Add(Data[i].FullURL);
+  FileNameList.SaveToFile(FileName);
 end;
 
 function ExpandName(const BasePath, FileName:WideString):WideString;
@@ -552,15 +564,15 @@ begin
 end;
 
 function TPlaylist.AddM3U(const FileName:WideString; FileExtIndex:integer):boolean;
-var t:System.Text; BasePath:WideString; s:string; i:integer;
+var FileNameList:TStringList; BasePath,f:WideString; s:String; i:integer;
 procedure AddToPls(str:string; Mode:boolean);
 begin
-   if Mode then str:=UTF8Decode(str);
-   if DirectoryExists(str) then begin
-      AddDirectory(str);
+   if Mode then f:=UTF8Decode(str) else f:=WideString(str);
+   if WideDirectoryExists(f) then begin
+      AddDirectory(f);
       empty:=true;
    end
-   else AddFiles(ExpandName(BasePath,str));
+   else AddFiles(ExpandName(BasePath,f));
 end;
 procedure HandleStr(const b,e:string; Mode:boolean);
 begin
@@ -576,11 +588,15 @@ begin
   end;
 end;
 begin
-  Result:=TryOpen(FileName, t);
-  if not Result then exit;
+  Result:=false;
+  FileNameList:=TStringList.Create;
+  if IsWideStringMappableToAnsi(FileName) then 
+    FileNameList.LoadFromFile(FileName)
+  else FileNameList.LoadFromFile(WideExtractShortPathName(FileName));
+  if FileNameList.Count<1 then exit;
   BasePath:=WideIncludeTrailingPathDelimiter(WideExtractFilePath(FileName));
-  while not EOF(t) do begin
-    Readln(t,s);
+  for i:=0 to FileNameList.Count-1 do begin
+    s:=Trim(FileNameList[i]);
     if length(s)<1 then continue;
     case FileExtIndex of
     {m3u} 0: if s[1]<>'#' then AddToPls(s,false);
@@ -595,38 +611,42 @@ begin
   {mpcpl} 9: HandleStr('filename,','',false);
     end;
   end;
-  CloseFile(t);
   Result:=True;
 end;
 
-function TLyric.ParseLyric(const FileName:WideString):boolean;
-var t:System.Text; s,timeTab:string; TimeEntry:TLyricTimeCodeEntry;
-    lc,rc,offset,mins,secs,ms,len,Lyricindex,sMaxLen,i:integer;
-    First:boolean;
+procedure TLyric.ParseLyric(const FileName:WideString);
 begin
-  Result:=HaveLyric;
-  if not TryOpen(FileName,t) then exit;
+  Isparsed:=false;
+  ParseLyricW(FileName,csUtf8);
+  ParseLyricW(FileName,csUnicode);
+  ParseLyricW(FileName,csUnicodeSwapped);
+  ParseLyricA(FileName);
+end;
+
+procedure TLyric.ParseLyricA(const FileName:WideString);
+var s,timeTab:string; TimeEntry:TLyricTimeCodeEntry;
+    lc,rc,offset,mins,secs,ms,len,Lyricindex,sMaxLen,i,j:integer;
+    First:boolean; a:TStringList;
+begin
+  if IsParsed then exit;
+  a:=TStringList.Create;
+  if IsWideStringMappableToAnsi(FileName) then
+    a.LoadFromFile(FileName)
+  else a.LoadFromFile(WideExtractShortPathName(FileName));
+  if a.Count<1 then begin a.Free; exit; end;
   Lyricindex:=0; offset:=0; len:=-1; sMaxLen:=0; First:=true;
-  while not EOF(t) do begin
-    Readln(t,s); s:=Trim(s);
+  for j:=0 to a.Count-1 do begin
+    s:=Trim(a[j]);
     if length(s)>7 then begin
-      case s[2] of
-        '0'..'9':;
-        else begin
-          if pos('offset',s)>0 then begin
-            lc:=pos(':',s); rc:=pos(']',s);
-            if (lc>0) and (rc>lc) then offset:=StrToIntDef(copy(s,lc+1,rc-lc-1),0);
-          end;
-          continue;
+      if not (s[2] in ['0'..'9']) then begin
+        if pos('offset',s)>0 then begin
+          lc:=pos(':',s); rc:=pos(']',s);
+          if (lc>0) and (rc>lc) then offset:=StrToIntDef(copy(s,lc+1,rc-lc-1),0);
         end;
+        continue;
       end;
     end
     else continue;
-
-    if First then begin
-      First:=false; ClearLyric;
-      LyricStrings:=TStringList.Create;
-    end;
 
     lc:=pos('[',s); rc:=pos(']',s);
     while (lc>0) and (rc>lc) do begin
@@ -638,6 +658,10 @@ begin
         if pos('.',timeTab)>0 then ms:=ms+StrToIntDef(copy(timeTab,7,2),0)*10;
         TimeEntry.timecode:=ms DIV 100;
         TimeEntry.LyricEntry:=Lyricindex;
+        if First then begin
+          First:=false; ClearLyric;
+          LyricStringsA:=TStringList.Create;
+        end;
         len:=length(LyricTime);
         SetLength(LyricTime,len+1);
         LyricTime[len]:=TimeEntry;
@@ -646,13 +670,13 @@ begin
       lc:=pos('[',s); rc:=pos(']',s);
     end;
     inc(Lyricindex);
-    LyricStrings.Add(s);
+    LyricStringsA.Add(s);
     i:=length(s);
     if i>sMaxLen then begin
-      sMaxLen:=i; MaxLenLyric:=s;
+      sMaxLen:=i; MaxLenLyricA:=s;
     end;
   end;
-  CloseFile(t);
+  a.Free;
   if len=-1 then exit;
   LyricCount:=len;
   SortLyric; dy:=0; CurLyric:=0;
@@ -665,7 +689,76 @@ begin
       Show;
     end;
   end;
-  Result:=true; LyricURL:=FileName;
+  HaveLyric:=2; LyricURL:=FileName; IsParsed:=true;
+end;
+
+procedure TLyric.ParseLyricW(const FileName:WideString; mode:TTntStreamCharSet);
+var s,timeTab:WideString; TimeEntry:TLyricTimeCodeEntry;
+    lc,rc,offset,mins,secs,ms,len,Lyricindex,sMaxLen,i,j:integer;
+    First:boolean; a:TWStringList;
+begin
+  if IsParsed then exit;
+  a:=TWStringList.Create;
+  a.LoadFromFile(FileName,mode);
+  if a.Count<1 then begin a.Free; exit; end;
+
+  Lyricindex:=0; offset:=0; len:=-1; sMaxLen:=0; First:=true;
+
+  for j:=0 to a.Count-1 do begin
+    s:=Trim(a[j]);
+    if length(s)>7 then begin
+      if not (s[2] in [Wchar('0')..Wchar('9')]) then begin
+        if pos('offset',s)>0 then begin
+          lc:=pos(':',s); rc:=pos(']',s);
+          if (lc>0) and (rc>lc) then offset:=StrToIntDef(copy(s,lc+1,rc-lc-1),0);
+        end;
+        continue;
+      end;
+    end
+    else continue;
+
+    lc:=pos('[',s); rc:=pos(']',s);
+    while (lc>0) and (rc>lc) do begin
+      timeTab:=copy(s,lc+1,rc-lc-1);
+      mins:=StrToIntDef(copy(timeTab,1,2),-1);
+      secs:=StrToIntDef(copy(timeTab,4,2),-1);
+      if (mins>-1) and (secs>-1) then begin
+        ms:=(mins*60 + secs)*1000+offset;
+        if pos('.',timeTab)>0 then ms:=ms+StrToIntDef(copy(timeTab,7,2),0)*10;
+        TimeEntry.timecode:=ms DIV 100;
+        TimeEntry.LyricEntry:=Lyricindex;
+        if First then begin
+          First:=false; ClearLyric;
+          LyricStringsW:=TTntStringList.Create;
+        end;
+        len:=length(LyricTime);
+        SetLength(LyricTime,len+1);
+        LyricTime[len]:=TimeEntry;
+      end;
+      s:=copy(s,rc+1,length(s));
+      lc:=pos('[',s); rc:=pos(']',s);
+    end;
+    inc(Lyricindex);
+    LyricStringsW.Add(s);
+    i:=length(s);
+    if i>sMaxLen then begin
+      sMaxLen:=i; MaxLenLyricW:=s;
+    end;
+  end;
+  a.Free;
+  if len=-1 then exit;
+  LyricCount:=len;
+  SortLyric; dy:=0; CurLyric:=0;
+  NextLyric:=0; LyricV:=0;
+  with PlaylistForm do begin
+    UpdatePW:=True;
+    if Visible then TMLyric.Invalidate
+    else begin
+      TntPageControl1.TabIndex:=1;
+      Show;
+    end;
+  end;
+  HaveLyric:=1; LyricURL:=FileName; IsParsed:=true;
 end;
 
 procedure TLyric.SortLyric;
@@ -925,19 +1018,19 @@ begin
       else j:=CheckInfo(SubType,k)=-1;
       if j then Playlist.AddFiles(fnbuf)
       else begin
-        if Running and (k='.lrc') and (not HaveLyric) then begin
+        if Running and (k='.lrc') and (HaveLyric=0) then begin
           FName:=WideExtractFileName(MediaURL);
           FName:=Tnt_WideLowerCase(Copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL))));
           LName:=WideExtractFileName(fnbuf);
           LName:=Tnt_WideLowerCase(Copy(LName,1,length(LName)-4));
-          if FName=LName then HaveLyric:=Lyric.ParseLyric(fnbuf);
+          if FName=LName then Lyric.ParseLyric(fnbuf);
         end
         else begin
           if CheckInfo(ZipType,k)>-1 then begin
             if IsLoaded(k) then begin
               TmpPW:='';
               h:=AddMovies(fnbuf,playlist.FindPW(fnbuf),true,k);
-              if not HaveLyric then ExtractLyric(fnbuf,TmpPW,k,-1);
+              if HaveLyric=0 then ExtractLyric(fnbuf,TmpPW,k,-1);
               if (h<0) and ((Pos('://',fnbuf)>1) or WideFileExists(fnbuf)) then begin
                 Entry.State:=psNotPlayed;
                 Entry.FullURL:=fnbuf;
@@ -1035,9 +1128,15 @@ begin
 end;
 
 procedure TPlaylistForm.BSaveClick(Sender: TObject);
+var FileNameList:TStringList; i:integer;
 begin
-  if SaveDialog.Execute then
-    Playlist.SaveToFile(SaveDialog.FileName);
+  if SaveDialog.Execute then begin
+    FileNameList:=TStringList.Create;
+    for i:=0 to Playlist.Count-1 do FileNameList.Add(UTF8Encode(Playlist[i].FullURL));
+    if IsWideStringMappableToAnsi(SaveDialog.FileName) then
+      FileNameList.SaveToFile(SaveDialog.FileName)
+    else FileNameList.SaveToFile(WideExtractShortPathName(SaveDialog.FileName));
+  end;
 end;
 
 procedure TPlaylistForm.BAddDirClick(Sender: TObject);
@@ -1080,7 +1179,7 @@ end;
 
 procedure TPlaylistForm.TMLyricDrawItem(Control: TWinControl;
   Index: Integer; Rect: TRect; State: TOwnerDrawState);
-var s:WideString; L,j,i,d:integer; k,h:string;
+var s,f:WideString; L,T,j,i,d:integer; k:string;
 
 function Gb2Big5(str:string):string;
 begin
@@ -1096,6 +1195,7 @@ begin
   LCMapString(GetUserDefaultLCID,LCMAP_SIMPLIFIED_CHINESE,PChar(str),length(str),PChar(result),length(result));
 end;
 begin
+  if HaveLyric=0 then exit;
   with TMLyric.Canvas do begin
     FillRect(Rect);
     with Lyric do begin
@@ -1104,19 +1204,42 @@ begin
       j:=Index+CurLyric-(TMLyric.Count div 2);
       if (j>=0) and (j<=LyricCount) then begin
         if j=CurLyric then Font.Color:=LhgColor;
-        k:=LyricStrings[LyricTime[j].LyricEntry];
-        if MG2B.Checked then k:=Gb2Big5(k);
-        if MB2G.Checked then k:=Big52Gb(k);
-        s:=StringToWideStringEx(k,CP);
+        if HaveLyric=1 then begin
+          s:=LyricStringsW[LyricTime[j].LyricEntry];
+          if MG2B.Checked then begin
+            f:=s;
+            LCMapStringW(GetUserDefaultLCID,LCMAP_TRADITIONAL_CHINESE,PWChar(f),length(f),PWChar(s),length(s));
+          end;
+          if MB2G.Checked then begin
+            f:=s;
+            LCMapStringW(GetUserDefaultLCID,LCMAP_SIMPLIFIED_CHINESE,PWChar(f),length(f),PWChar(s),length(s));
+          end;
+        end
+        else begin
+          k:=LyricStringsA[LyricTime[j].LyricEntry];
+          if MG2B.Checked then k:=Gb2Big5(k);
+          if MB2G.Checked then k:=Big52Gb(k);
+          s:=StringToWideStringEx(k,CP);
+        end;
         L:=(Rect.Left+Rect.Right-WideCanvasTextWidth(TMLyric.Canvas,s)) div 2;
-       // T:=(Rect.Top+Rect.Bottom-WideCanvasTextHeight(TMLyric.Canvas,s)) div 2;
-        WideCanvasTextOut(TMLyric.Canvas,L,Rect.Top,s);
+        T:=(Rect.Top+Rect.Bottom-WideCanvasTextHeight(TMLyric.Canvas,s)) div 2;
+        WideCanvasTextOut(TMLyric.Canvas,L,T,s);
         if UpdatePW then begin
           UpdatePW:=false;
-          h:=MaxLenLyric;
-          if MG2B.Checked then h:=Gb2Big5(h);
-          if MB2G.Checked then h:=Big52Gb(h);
-          i:=10+WideCanvasTextWidth(TMLyric.Canvas,StringToWideStringEx(h,CP))+width+rect.Left-rect.Right;
+          if HaveLyric=1 then begin
+            f:=MaxLenLyricW;
+            if MG2B.Checked then
+              LCMapStringW(GetUserDefaultLCID,LCMAP_TRADITIONAL_CHINESE,PWChar(MaxLenLyricW),length(MaxLenLyricW),PWChar(f),length(f));
+            if MB2G.Checked then
+              LCMapStringW(GetUserDefaultLCID,LCMAP_SIMPLIFIED_CHINESE,PWChar(MaxLenLyricW),length(MaxLenLyricW),PWChar(f),length(f));
+            i:=10+WideCanvasTextWidth(TMLyric.Canvas,f)+width+rect.Left-rect.Right;
+          end
+          else begin
+            k:=MaxLenLyricA;
+            if MG2B.Checked then k:=Gb2Big5(k);
+            if MB2G.Checked then k:=Big52Gb(k);
+            i:=10+WideCanvasTextWidth(TMLyric.Canvas,StringToWideStringEx(k,CP))+width+rect.Left-rect.Right;
+          end;
           if i>Screen.Width then i:=Screen.Width;
           if i<Constraints.MinWidth then i:=Constraints.MinWidth;
           d:=(i-Width) div 2;
@@ -1125,12 +1248,6 @@ begin
           else if (Left-d)<(MainForm.Left+MainForm.Width) then Left:=Left-d;
           Width:=i;
         end;
-       { if CP=0 then s:=k else s:=StringToWideStringEx(k,CP);
-        L:=(Rect.Left+Rect.Right-WideCanvasTextWidth(TMLyric.Canvas,s))SHR 1;
-        //TextOutW(Handle,l,Rect.Top,PWideChar(s),length(s));
-        WideCanvasTextOut(TMLyric.Canvas,L,Rect.Top,s); }
-        {s:=k delphi会使用系统的默认codepage调用MultiByteToWideChar函数将
-        string转换为widestring,编译下来这种稍大一些，所以备用}
       end;
     end;
   end;

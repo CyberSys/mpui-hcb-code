@@ -386,7 +386,6 @@ begin
     TntTabSheet2.Caption:=UTF8Decode('歌詞');
     CP0.Caption:=UTF8Decode('系統默認');
     MGB.Caption:=UTF8Decode('简体<-->繁體');
-    CP1.Caption:='Unicode(UTF-8)';
     CPO.Caption:=UTF8Decode('其他');
     SC.Caption:=UTF8Decode('簡體中文');
     TC.Caption:=UTF8Decode('繁體中文');

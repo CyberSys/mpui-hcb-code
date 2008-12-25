@@ -643,7 +643,7 @@ begin
             if IsLoaded(j) then begin
               Loadsub:=1; TmpPW:='';
               t:=ExtractSub(fnbuf,playlist.FindPW(fnbuf),j);
-              if not HaveLyric then ExtractLyric(fnbuf,TmpPW,j,-1);
+              if HaveLyric=0 then ExtractLyric(fnbuf,TmpPW,j,-1);
               if t<>'' then begin
                 Vobfile:=t;
                 inc(VobFileCount);
@@ -667,12 +667,12 @@ begin
             end;
           end
           else begin
-            if Running and (j='.lrc') and (not HaveLyric) then begin
+            if Running and (j='.lrc') and (HaveLyric=0) then begin
               j:=WideExtractFileName(MediaURL);
               j:=Tnt_WideLowerCase(Copy(j,1,length(j)-length(WideExtractFileExt(MediaURL))));
               t:=WideExtractFileName(fnbuf);
               t:=Tnt_WideLowerCase(Copy(t,1,length(t)-4));
-              if j=t then HaveLyric:=Lyric.ParseLyric(fnbuf);
+              if j=t then Lyric.ParseLyric(fnbuf);
             end
             else begin
               Loadsub:=1;
@@ -1160,7 +1160,7 @@ begin
           Restart;
         end;
       end;
-      if HaveVideo OR HaveLyric then SetThreadExecutionState(ES_DISPLAY_REQUIRED)
+      if HaveVideo OR (HaveLyric<>0) then SetThreadExecutionState(ES_DISPLAY_REQUIRED)
       else SetThreadExecutionState(ES_SYSTEM_REQUIRED);
     end; {//Allow OS into "Stand by" or "Hibernate" state when player in "pause" state
     else SetThreadExecutionState(ES_SYSTEM_REQUIRED); }
@@ -3016,7 +3016,7 @@ begin
     filter:=LyricFilter+'|*.lrc|'+AnyFilter+'(*.*)|*.*';
     if Execute then begin
       LyricURL:=fileName;
-      HaveLyric:=Lyric.ParseLyric(LyricURL);
+      Lyric.ParseLyric(LyricURL);
     end;
   end;
 end;

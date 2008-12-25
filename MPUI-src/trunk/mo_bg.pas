@@ -370,7 +370,6 @@ begin
     TntTabSheet1.Caption:=UTF8Decode('Плейлист');
     TntTabSheet2.Caption:=UTF8Decode('Говор');
     CP0.Caption:=UTF8Decode('По подразбиране за системата');
-    CP1.Caption:='Unicode(UTF-8)';
     CPO.Caption:=UTF8Decode('Други');
     SC.Caption:=UTF8Decode('简体中文 (Simplified Chinese)');
     TC.Caption:=UTF8Decode('繁體中文 (Traditional Chinese)');

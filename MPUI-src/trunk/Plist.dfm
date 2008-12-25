@@ -1,8 +1,8 @@
 object PlaylistForm: TPlaylistForm
-  Left = 180
-  Top = 264
+  Left = 181
+  Top = 265
   Width = 365
-  Height = 260
+  Height = 251
   BorderIcons = [biSystemMenu]
   Caption = 'PlaylistForm'
   Color = clBtnFace
@@ -24,14 +24,14 @@ object PlaylistForm: TPlaylistForm
   OnShow = FormShow
   DesignSize = (
     357
-    233)
+    224)
   PixelsPerInch = 96
   TextHeight = 13
   object TntPageControl1: TTntPageControl
     Left = -5
     Top = 0
     Width = 370
-    Height = 263
+    Height = 261
     ActivePage = TntTabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
@@ -40,7 +40,7 @@ object PlaylistForm: TPlaylistForm
       ImageIndex = 16
       DesignSize = (
         362
-        235)
+        233)
       object CShuffle: TTntSpeedButton
         Left = 200
         Top = 2
@@ -208,7 +208,7 @@ object PlaylistForm: TPlaylistForm
         Left = 0
         Top = 28
         Width = 358
-        Height = 180
+        Height = 173
         Style = lbVirtualOwnerDraw
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 16
@@ -238,12 +238,12 @@ object PlaylistForm: TPlaylistForm
       ImageIndex = 24
       DesignSize = (
         362
-        235)
+        233)
       object TMLyric: TTntListBox
         Left = 0
         Top = 24
         Width = 358
-        Height = 187
+        Height = 185
         Style = lbVirtualOwnerDraw
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 16
@@ -350,8 +350,8 @@ object PlaylistForm: TPlaylistForm
     end
   end
   object SaveDialog: TTntSaveDialog
-    DefaultExt = 'm3u'
-    Filter = 'M3U Playlist (*.m3u)|*.m3u|All Files (*.*)|*.*'
+    DefaultExt = 'm3u8'
+    Filter = 'M3U Playlist (*.m3u8)|*.m3u8|All Files (*.*)|*.*'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Title = 'Save Playlist ...'
     Left = 256
@@ -361,12 +361,6 @@ object PlaylistForm: TPlaylistForm
     object CP0: TTntMenuItem
       Caption = 'System default'
       Checked = True
-      RadioItem = True
-      OnClick = TntCPClick
-    end
-    object CP1: TTntMenuItem
-      Tag = 65001
-      Caption = 'Unicode(UTF8)'
       RadioItem = True
       OnClick = TntCPClick
     end

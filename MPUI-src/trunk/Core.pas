@@ -87,20 +87,20 @@ var Win9xWarnLevel:TWin9xWarnLevel;
 
 var HomeDir,SystemDir,TempDir,AppdataDir:WideString;
 var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
-    ArcPW,TmpPW,DisplayURL,AudioFile:WideString;
+    ArcPW,TmpPW,DisplayURL,AudioFile,MaxLenLyricW:WideString;
     Duration,LyricF:String;
     substring,afChain,Vobfile,ShotDir,LyricDir,LyricURL:wideString;
     subfont,osdfont,Ccap,Acap,DemuxerName:WideString;
     MplayerLocation,WadspL,AsyncV,CacheV:widestring;
-    MAspect,subcode,MaxLenLyric,VideoOut:string;
+    MAspect,subcode,MaxLenLyricA,VideoOut:string;
     FirstOpen,PClear,Fd,Async,Cache,uof,DragM,FilterDrop:boolean;
-    Wid,Dreset,UpdateSkipBar,Pri,HaveLyric,HaveChapters,HaveMsg:boolean;
+    Wid,Dreset,UpdateSkipBar,Pri,HaveChapters,HaveMsg:boolean;
     AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
     ControlledResize,ni,nobps,Dnav,lavf,UseekC,vsync:boolean;
     Flip,Mirror,Yuy2,Eq2,LastEq2,Dda,LastDda,Wadsp:boolean;
     WantFullscreen,WantCompact,AutoQuit,NoAccess:boolean;
-var VideoID,Ch,CurPlay,LyricS:integer;
+var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
     AudioID,MouseMode,SubPos:integer;
     SubID,TID,CID,AID,VCDST,VCDET,CDID:integer;
     subcount,Bp,Ep,CurrentLocale,afCount:integer;
@@ -495,6 +495,7 @@ begin
   if ShotDir='' then ShotDir:=HomeDir else ShotDir:=IncludeTrailingPathDelimiter(ShotDir);
   if WideDirectoryExists(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap'
   else if WideCreateDir(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap';
+  LyricDir:=ShotDir;
   // check for Win9x
   if Win32PlatformIsUnicode then Win9xWarnLevel:=wlAccept
   else Win9xWarnLevel:=wlWarn;
@@ -658,7 +659,7 @@ begin
       TmpURL:=Tnt_WideLowerCase(Copy(TmpURL,1,length(TmpURL)-length(WideExtractFileExt(MediaURL))));
       s:=WideExtractFileName(LyricURL);
       s:=Tnt_WideLowerCase(Copy(s,1,length(s)-4));
-      if TmpURL=s then HaveLyric:=Lyric.ParseLyric(LyricURL);
+      if TmpURL=s then Lyric.ParseLyric(LyricURL);
     end;
 
     s:=Tnt_WideLowerCase(WideExtractFileExt(MediaURL));
@@ -669,26 +670,26 @@ begin
       i:=Pos(' <-- ',DisplayURL);
       if i>0 then ArcMovie:=copy(DisplayURL,1,i-1)
       else ArcMovie:=DisplayURL;
-      if not HaveLyric then begin  //播放的Arc文件所在的目录下有包内当前播放文件同名的歌词
+      if HaveLyric=0 then begin  //播放的Arc文件所在的目录下有包内当前播放文件同名的歌词
         TmpURL:=copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie)))+'.lrc';
         LyricURL:=WideExtractFilePath(MediaURL)+TmpURL;
         if not WideFileExists(LyricURL) then
           LyricURL:=WideIncludeTrailingPathDelimiter(LyricDir)+TmpURL;
-        if WideFileExists(LyricURL) then HaveLyric:=Lyric.ParseLyric(LyricURL);
+        if WideFileExists(LyricURL) then Lyric.ParseLyric(LyricURL);
       end;
     end
     else i:=-1;
 
     Vobfile:=copy(MediaURL,1,length(MediaURL)-length(WideExtractFileExt(MediaURL)));
-    if not HaveLyric then begin //当前播放文件所在的目录下有同名的歌词
-      LyricURL:=j+'.lrc';
+    if HaveLyric=0 then begin //当前播放文件所在的目录下有同名的歌词
+      LyricURL:=Vobfile+'.lrc';
       if WideFileExists(LyricURL) then
-        HaveLyric:=Lyric.ParseLyric(LyricURL)
+        Lyric.ParseLyric(LyricURL)
       else begin
         LyricURL:=WideExtractFileName(MediaURL);
         LyricURL:=WideIncludeTrailingPathDelimiter(LyricDir)
                +copy(LyricURL,1,length(LyricURL)-length(WideExtractFileExt(MediaURL)))+'.lrc';
-        if WideFileExists(LyricURL) then HaveLyric:=Lyric.ParseLyric(LyricURL);
+        if WideFileExists(LyricURL) then Lyric.ParseLyric(LyricURL);
       end;
     end;
 
@@ -699,7 +700,7 @@ begin
     for t:=Low(ZipType) to High(ZipType) do begin
       if WideFileExists(j+ZipType[t]) then begin
         if IsLoaded(ZipType[t]) then begin   //当前播放文件所在的目录下有同名Arc文件中的同名歌词
-          if (not HaveLyric) and (i<>0) then ExtractLyric(j+ZipType[t],ArcPW,ZipType[t],i);
+          if (HaveLyric=0) and (i<>0) then ExtractLyric(j+ZipType[t],ArcPW,ZipType[t],i);
           if LoadVob<>1 then begin
             TmpURL:=ExtractSub(j+ZipType[t],ArcPW,ZipType[t]);
             if TmpURL<>'' then begin Vobfile:=TmpURL; LoadVob:=1; end;
@@ -1848,7 +1849,7 @@ begin
       if (r<>0) or (p<0) then exit;
       CheckNOAudio; CheckNOVideo; CheckStartPlayback;
 
-      if HaveLyric then begin
+      if HaveLyric<>0 then begin
         i:=p*10+ord(Line[i+1])-48;
         if MSecPos<>i then begin
           MSecPos:=i;
@@ -2217,7 +2218,8 @@ begin
   nobps:=false; Ccap:='Chapter'; Acap:='Angle'; CurPlay:=-1; Status:=sNone;
   LTextColor:=clWindowText; LBGColor:=clWindow; LHGColor:=$93; ClientProcess:=0;
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; UseekC:=true; CP:=0;
-  LyricF:='Tahoma'; LyricS:=8; MaxLenLyric:=''; UpdatePW:=false; VideoOut:='Auto';
+  LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:='';
+  UpdatePW:=false; VideoOut:='Auto'; HaveLyric:=0;
   ResetStreamInfo;
 end.
 

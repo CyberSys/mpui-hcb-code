@@ -321,8 +321,8 @@ begin
         Break
       else begin
         LyricURL:=TempDir+'hcb428.lrc';
-        HaveLyric:=Lyric.ParseLyric(LyricURL);
-        if HaveLyric then Break;
+        Lyric.ParseLyric(LyricURL);
+        if HaveLyric<>0 then Break;
       end;
     end
     else if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
