@@ -59,7 +59,6 @@ type TPlaylist=class
                  procedure Changed;
                  procedure MoveSelectedUp;
                  procedure MoveSelectedDown;
-                 procedure SaveToFile(FileName:WideString);
                  function FindItem(CheckStr,MovieName:widestring):boolean;
                  function FindPW(FileURL:widestring):String;
                end;
@@ -545,14 +544,6 @@ begin
       Data[i+1]:=temp;
     end;
   Changed;
-end;
-
-procedure TPlaylist.SaveToFile(FileName:WideString);
-var FileNameList:TTntStringList; i:integer;
-begin
-  FileNameList:=TTntStringList.Create;
-  for i:=Low(Data) to High(Data) do FileNameList.Add(Data[i].FullURL);
-  FileNameList.SaveToFile(FileName);
 end;
 
 function ExpandName(const BasePath, FileName:WideString):WideString;
