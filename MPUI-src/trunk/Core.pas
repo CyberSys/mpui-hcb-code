@@ -99,9 +99,9 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
     ControlledResize,ni,nobps,Dnav,lavf,UseekC,vsync:boolean;
     Flip,Mirror,Yuy2,Eq2,LastEq2,Dda,LastDda,Wadsp:boolean;
-    WantFullscreen,WantCompact,AutoQuit,NoAccess:boolean;
+    WantFullscreen,WantCompact,AutoQuit:boolean;
 var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
-    AudioID,MouseMode,SubPos:integer;
+    AudioID,MouseMode,SubPos,NoAccess:integer;
     SubID,TID,CID,AID,VCDST,VCDET,CDID:integer;
     subcount,Bp,Ep,CurrentLocale,afCount:integer;
     Lastsubcount,DirHIdx,DirHSub:integer;
@@ -143,6 +143,11 @@ var StreamInfo:record
       end;
     end;
 
+function GetLongPath(const ShortName:WideString):WideString;
+function GetLongPathNameA(lpszShortPath,lpszLongPath:PChar; cchBuffer:DWORD):DWORD;
+  stdcall; external kernel32 name 'GetLongPathNameA';
+function GetLongPathNameW(lpszShortPath,lpszLongPath:PWideChar; cchBuffer:DWORD):DWORD;
+  stdcall; external kernel32 name 'GetLongPathNameW';
 procedure AddChain(var Count:integer; var rs:WideString; const s:WideString);
 function WideGetEnvironmentVariable(const Name:WideString):WideString;
 function WideExpandUNCFileName(const FileName:WideString):WideString;
@@ -199,6 +204,20 @@ var ClientWaitThread:TClientWaitThread;
 
 procedure HandleInputLine(Line:String); forward;
 procedure HandleIDLine(ID:string; Content:WideString); forward;
+
+function GetLongPath(const ShortName:WideString):WideString;
+var SA:AnsiString;
+begin
+  if Win32PlatformIsUnicode then begin
+    SetLength(Result,MAX_PATH+1);
+    SetLength(Result,GetLongPathNameW(PWideChar(ShortName),PWideChar(Result),MAX_PATH));
+  end
+  else begin
+    SetLength(SA,MAX_PATH+1);
+    SetLength(SA,GetLongPathNameA(PChar(AnsiString(ShortName)),PChar(SA),MAX_PATH));
+    Result:=WideString(SA);
+  end;
+end;
 
 function IsLoaded(ArcType:WideString):boolean;
 begin

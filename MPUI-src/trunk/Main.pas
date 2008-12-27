@@ -1686,16 +1686,16 @@ procedure TMainForm.Init_MOpenDrive;
 var Mask:cardinal; Name:array[0..3]of char; Drive:char;
     Item:TTntMenuItem; MDrive,s:WideString;
 begin
-  NoAccess:=false; MDrive:=HomeDir+DefaultFileName;
+  NoAccess:=0; MDrive:=HomeDir+DefaultFileName;
   repeat
     if WideFileIsReadOnly(MDrive) then begin
-      NoAccess:=true; break;
+      NoAccess:=1; break;
     end;
     s:=WideExtractFileDir(MDrive);
     if s<>MDrive then MDrive:=s else break;
   until False;
   MDrive:=Tnt_WideLowerCase(WideExtractFileDrive(HomeDir));
-  if length(MDrive)<>2 then NoAccess:=true;
+  if length(MDrive)<>2 then NoAccess:=2;
   Name:='@:\';
   Mask:=GetLogicalDrives;
   for Drive:='A' to 'Z' do
@@ -1708,7 +1708,7 @@ begin
           Tag:=Ord(Drive);
           RadioItem:=true;
           OnClick:=MOpenDriveClick;
-          if MDrive=Tnt_WideLowerCase(Caption) then NoAccess:=true;
+          if MDrive=Tnt_WideLowerCase(Caption) then NoAccess:=3;
         end;
         MOpenDrive.Add(Item);
         MOpenDrive.Enabled:=true;
