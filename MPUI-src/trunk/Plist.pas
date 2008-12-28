@@ -615,9 +615,9 @@ begin
 end;
 
 procedure TLyric.ParseLyricA(const FileName:WideString);
-var s,timeTag:string; TimeEntry:TLyricTimeCodeEntry;
+var s:string; TimeEntry:TLyricTimeCodeEntry;
     lc,rc,lo,ro,offset,mins,secs,ms,len,Lyricindex,sMaxLen,i,j:integer;
-    First:boolean; a:TStringList; NoTag:boolean;
+    First:boolean; a:TStringList; NoTag:boolean; 
 begin
   if IsParsed then exit;
   a:=TStringList.Create;
@@ -628,34 +628,30 @@ begin
   Lyricindex:=0; offset:=0; len:=-1; sMaxLen:=0; First:=true;
   for j:=0 to a.Count-1 do begin
     s:=Trim(a[j]);
-    lc:=pos('[',s); rc:=pos(']',s);
-    if (length(s)>7) and (lc>0) and (rc>lc) then begin
-      timeTag:=copy(s,lc+1,rc-lc-1);
-      if timeTag='' then continue;  
-      lo:=pos(':',timeTag);
-      if (lo<2) or (lo=length(timeTag)) then continue;
-      if offset=0 then begin
-        ro:=pos('offset',LowerCase(timeTag));
-        if (ro>0) and (lo>ro) then begin
-          offset:=StrToIntDef(StringReplace(copy(timeTag,lo+1,length(timeTag)),#32,'',[rfReplaceAll]),0);
-          continue;
+    if length(s)<6 then continue;
+    NoTag:=true;
+    repeat
+      lc:=pos('[',s); rc:=pos(']',s);
+      if (lc<1) or (rc<lc+3) then break;
+      lo:=pos(':',s);
+      if (lo<lc+2) or (lo>rc-2) then break;
+      if Lyricindex=0 then begin
+        ro:=pos('offset',LowerCase(s));
+        if (ro>lc) and (lo>ro) then begin
+          offset:=StrToIntDef(StringReplace(copy(s,lo+1,rc-lo-1),#32,'',[rfReplaceAll]),0);
+          break;
         end;
       end;
-    end
-    else continue;
-
-   repeat
-      NoTag:=true;
-      ro:=pos('.',timeTag);
-      if (ro>0) and ((ro<lo) or (ro=length(timeTag))) then break;
-      mins:=StrToIntDef(StringReplace(copy(timeTag,1,lo-1),#32,'',[rfReplaceAll]),-1);
+      ro:=pos('.',s);
+      if (ro>0) and ((ro<lo+2) or (ro>rc-3)) then break;
+      mins:=StrToIntDef(StringReplace(copy(s,lc+1,lo-lc-1),#32,'',[rfReplaceAll]),-1);
       if (mins<0) or (mins>59) then break;
       ms:=offset;
       if ro>0 then begin
-        secs:=StrToIntDef(StringReplace(copy(timeTag,lo+1,ro-lo-1),#32,'',[rfReplaceAll]),-1);
-        ms:=ms+StrToIntDef(StringReplace(copy(timeTag,ro+1,2),#32,'',[rfReplaceAll]),0)*10;
+        secs:=StrToIntDef(StringReplace(copy(s,lo+1,ro-lo-1),#32,'',[rfReplaceAll]),-1);
+        ms:=ms+StrToIntDef(StringReplace(copy(s,ro+1,2),#32,'',[rfReplaceAll]),0)*10;
       end
-      else secs:=StrToIntDef(StringReplace(copy(timeTag,lo+1,length(timeTag)),#32,'',[rfReplaceAll]),-1);
+      else secs:=StrToIntDef(StringReplace(copy(s,lo+1,rc-lo-1),#32,'',[rfReplaceAll]),-1);
       if (secs<0) or (secs>59) then break;
       ms:=ms+(mins*60 + secs)*1000;
       if ms<0 then break;
@@ -670,12 +666,7 @@ begin
       SetLength(LyricTime,len+1);
       LyricTime[len]:=TimeEntry;
       s:=copy(s,rc+1,length(s));
-      lc:=pos('[',s); rc:=pos(']',s);
-      timeTag:=copy(s,lc+1,rc-lc-1);
-      if timeTag='' then break;
-      lo:=pos(':',timeTag);
-      if (lo<2) or (lo=length(timeTag)) then break;
-    until (lc<1) or (rc<lc);
+    until false;
     if NoTag or (LyricStringsA=nil) then continue;
     inc(Lyricindex); s:=Trim(s);
     LyricStringsA.Add(s);
@@ -701,7 +692,7 @@ begin
 end;
 
 procedure TLyric.ParseLyricW(const FileName:WideString; mode:TTntStreamCharSet);
-var s,timeTag:WideString; TimeEntry:TLyricTimeCodeEntry;
+var s:WideString; TimeEntry:TLyricTimeCodeEntry;
     lc,rc,lo,ro,offset,mins,secs,ms,len,Lyricindex,sMaxLen,i,j:integer;
     First:boolean; a:TWStringList; NoTag:boolean;
 begin
@@ -712,34 +703,30 @@ begin
   Lyricindex:=0; offset:=0; len:=-1; sMaxLen:=0; First:=true;
   for j:=0 to a.Count-1 do begin
     s:=Trim(a[j]);
-    lc:=pos('[',s); rc:=pos(']',s);
-    if (length(s)>7) and (lc>0) and (rc>lc) then begin
-      timeTag:=copy(s,lc+1,rc-lc-1);
-      if timeTag='' then continue;  
-      lo:=pos(':',timeTag);
-      if (lo<2) or (lo=length(timeTag)) then continue;
-      if offset=0 then begin
-        ro:=pos('offset',Tnt_WideLowerCase(timeTag));
-        if (ro>0) and (lo>ro) then begin
-          offset:=StrToIntDef(Tnt_WideStringReplace(copy(timeTag,lo+1,length(timeTag)),#32,'',[rfReplaceAll]),0);
-          continue;
+    if length(s)<6 then continue;
+    NoTag:=true;
+    repeat
+      lc:=pos('[',s); rc:=pos(']',s);
+      if (lc<1) or (rc<lc+3) then break;
+      lo:=pos(':',s);
+      if (lo<lc+2) or (lo>rc-2) then break;
+      if Lyricindex=0 then begin
+        ro:=pos('offset',Tnt_WideLowerCase(s));
+        if (ro>lc) and (lo>ro) then begin
+          offset:=StrToIntDef(Tnt_WideStringReplace(copy(s,lo+1,rc-lo-1),#32,'',[rfReplaceAll]),0);
+          break;
         end;
       end;
-    end
-    else continue;
-
-   repeat
-      NoTag:=true;
-      ro:=pos('.',timeTag);
-      if (ro>0) and ((ro<lo) or (ro=length(timeTag))) then break;
-      mins:=StrToIntDef(Tnt_WideStringReplace(copy(timeTag,1,lo-1),#32,'',[rfReplaceAll]),-1);
+      ro:=pos('.',s);
+      if (ro>0) and ((ro<lo+2) or (ro>rc-3)) then break;
+      mins:=StrToIntDef(Tnt_WideStringReplace(copy(s,lc+1,lo-lc-1),#32,'',[rfReplaceAll]),-1);
       if (mins<0) or (mins>59) then break;
       ms:=offset;
       if ro>0 then begin
-        secs:=StrToIntDef(Tnt_WideStringReplace(copy(timeTag,lo+1,ro-lo-1),#32,'',[rfReplaceAll]),-1);
-        ms:=ms+StrToIntDef(Tnt_WideStringReplace(copy(timeTag,ro+1,2),#32,'',[rfReplaceAll]),0)*10;
+        secs:=StrToIntDef(Tnt_WideStringReplace(copy(s,lo+1,ro-lo-1),#32,'',[rfReplaceAll]),-1);
+        ms:=ms+StrToIntDef(Tnt_WideStringReplace(copy(s,ro+1,2),#32,'',[rfReplaceAll]),0)*10;
       end
-      else secs:=StrToIntDef(Tnt_WideStringReplace(copy(timeTag,lo+1,length(timeTag)),#32,'',[rfReplaceAll]),-1);
+      else secs:=StrToIntDef(Tnt_WideStringReplace(copy(s,lo+1,rc-lo-1),#32,'',[rfReplaceAll]),-1);
       if (secs<0) or (secs>59) then break;
       ms:=ms+(mins*60 + secs)*1000;
       if ms<0 then break;
@@ -754,12 +741,7 @@ begin
       SetLength(LyricTime,len+1);
       LyricTime[len]:=TimeEntry;
       s:=copy(s,rc+1,length(s));
-      lc:=pos('[',s); rc:=pos(']',s);
-      timeTag:=copy(s,lc+1,rc-lc-1);
-      if timeTag='' then break;
-      lo:=pos(':',timeTag);
-      if (lo<2) or (lo=length(timeTag)) then break;
-    until (lc<1) or (rc<lc);
+    until false;
     if NoTag or (LyricStringsW=nil) then continue;
     inc(Lyricindex); s:=Trim(s);
     LyricStringsW.Add(s);
