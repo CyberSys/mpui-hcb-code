@@ -1589,11 +1589,12 @@ begin
   MPlay.Enabled:=BPlay.Enabled; MPlay.Checked:=BPlay.Down;
   MPause.Enabled:=BPause.Enabled; MPause.Checked:=BPause.Down;;
   MStop.Enabled:=BStop.Enabled; MPrev.Enabled:=BPrev.Enabled;
-  MShowSub.Visible:=(MSubtitle.Count>0) and Running;
   MAudioDelay.Visible:=MVideo.Visible and Running;
+  MShowSub.Visible:=(MSubtitle.Count>0) and Running;
+  MSubScale.Visible:=MShowSub.Visible; N30.Visible:=MShowSub.Visible;
   MSubDelay.Visible:=MShowSub.Visible; MLoadSub.Visible:=Running;
   MSubStep.Visible:=MShowSub.Visible; N15.Visible:=MShowSub.Visible;
-  N17.Visible:=MShowSub.Visible; N30.Visible:=MShowSub.Visible;
+  N17.Visible:=MShowSub.Visible;
 end;
 
 procedure TMainForm.MPopupPopup(Sender: TObject);
