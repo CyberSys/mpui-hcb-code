@@ -879,7 +879,7 @@ begin
     Top:=MainForm.Top+MainForm.Height-Height;
   end;
   MGB.Visible:=Win32PlatformIsUnicode; N1.Visible:=MGB.Visible;
-  TntPageControl1.TabIndex:=0;
+  TntPageControl1.TabIndex:=0; CLyricF.Items:=Screen.Fonts;
   TMLyric.Color:=LbgColor; TMLyric.Font.Color:=LTextColor;
   TMLyric.Font.Name:=LyricF; TMLyric.Font.Size:=LyricS;
   TMLyric.ItemHeight:=2*LyricS;
@@ -888,7 +888,7 @@ end;
 
 procedure TPlaylistForm.FormShow(Sender: TObject);
 begin
-  CLyricF.Items:=Screen.Fonts; CLyricF.Text:=TMLyric.Font.Name; 
+  CLyricF.Text:=TMLyric.Font.Name;
   CLyricS.Text:=intToStr(TMLyric.Font.Size);
   PLTC.Color:=LTextColor; PLBC.Color:=LbgColor;
   PLHC.Color:=LhgColor; LScroll.Checked:=PScroll;

@@ -507,11 +507,11 @@ begin
 
   if Win32PlatformIsVista then AppdataDir:=GetShellPath(RFID_APPDATA)
   else AppdataDir:=GetFolderPath(CSIDL_APPDATA);
-  if AppdataDir='' then AppdataDir:=HomeDir else AppdataDir:=IncludeTrailingPathDelimiter(AppdataDir);
+  if AppdataDir='' then AppdataDir:=HomeDir else AppdataDir:=WideIncludeTrailingPathDelimiter(AppdataDir);
 
   if Win32PlatformIsVista then ShotDir:=GetShellPath(RFID_PERSONAL)
   else ShotDir:=GetFolderPath(CSIDL_PERSONAL);
-  if ShotDir='' then ShotDir:=HomeDir else ShotDir:=IncludeTrailingPathDelimiter(ShotDir);
+  if ShotDir='' then ShotDir:=TempDir else ShotDir:=WideIncludeTrailingPathDelimiter(ShotDir);
   if WideDirectoryExists(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap'
   else if WideCreateDir(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap';
   LyricDir:=ShotDir;
@@ -584,10 +584,10 @@ begin
   else SetPriorityClass(GetCurrentProcess,ABOVE_NORMAL_PRIORITY_CLASS);
   s:=CheckSubfont(subfont);
   if uof then begin
-    if FileExists(s) then CmdLine:=CmdLine+' -subfont '+EscapeParam(s);
+    if WideFileExists(s) then CmdLine:=CmdLine+' -subfont '+EscapeParam(s);
     s:=CheckSubfont(osdfont);
   end;
-  if FileExists(s) then CmdLine:=CmdLine+' -font '+EscapeParam(s);
+  if WideFileExists(s) then CmdLine:=CmdLine+' -font '+EscapeParam(s);
 
   if (not CurMonitor.Primary) and (MonitorID>0) then CmdLine:=CmdLine+' -adapter '+IntToStr(MonitorID);
   if UseUni then CmdLine:=CmdLine+' -msgcharset noconv';
@@ -891,10 +891,9 @@ begin
     TheLog.Clear;
     AddLine(LOCstr_CmdLine_Prompt);
     s:=CmdLine;
-    while length(s)>0 do
-      AddLine(SplitLine(s));
-      if Win32PlatformIsXP and (Byte(GetUserDefaultLangID)=LANG_CHINESE) then
-        AddLine(
+    while length(s)>0 do AddLine(SplitLine(s));
+    if Win32PlatformIsXP and (Byte(GetUserDefaultLangID)=LANG_CHINESE) then
+      AddLine(
 '                   ®q= = = = = = = = = = = = = = = = ®r'^M^J+
 '                    ®U  °Ë®q°–®r ®q°–®rª∂”≠ π”√        ®U'^M^J+
 '                    ®U  ®u®ê®Ä®Ä®Ä®Ä®é ®q°–®r  MPUI       ®U'^M^J+
@@ -912,8 +911,8 @@ begin
 '=========================================================================='^M^J+
 '°Ó÷Ì°Ô÷Ì°Ó÷Ì°Ô÷Ì°Ó÷Ì°Ô÷Ì°Ó÷Ì°Ô÷Ì°Ó÷Ì°Ô÷Ì°Ó÷Ì°Ô÷Ì°Ó÷Ì°Ô÷Ì°Ó÷Ì°Ô÷Ì°Ó÷Ì°Ô÷Ì°Ó'^M^J+
 '=========================================================================='^M^J)
-     else
-       AddLine('');
+    else
+      AddLine('');
   end;
 
   if Loadsub<>2 then Loadsub:=-1;
@@ -968,7 +967,7 @@ begin
       LogForm.AddLine(ErrorMessageW);
     end
     else begin
-      FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM,nil,Error,0,@ErrorMessage[0],1023,nil);
+      FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,nil,Error,0,@ErrorMessage[0],1023,nil);
       LogForm.AddLine(ErrorMessage);
     end;
     if Error=2 then LogForm.AddLine(LOCstr_Check_Mplayer_Prompt);
@@ -2218,17 +2217,17 @@ end;
 
 begin
   DecimalSeparator:='.'; Wadsp:=false; GUI:=false; HaveMsg:=false; Uni:=false;
-  MFunc:=0; ETime:=false; InSubDir:=true; ML:=false; InterW:=4; InterH:=3;
+  MFunc:=0; ETime:=false; InSubDir:=true; ML:=false; Pri:=true; VideoOut:='Auto';
   AudiochannelsID:=0; OSDLevel:=1; Ch:=0; Wid:=true; Fd:=false; DragM:=false;
-  Deinterlace:=0; Aspect:=0; Postproc:=0;  IntersubCount:=0;
+  Deinterlace:=0; Aspect:=0; Postproc:=0; IntersubCount:=0; UpdatePW:=false;
   AudioOut:=2; AudioDev:=0; Expand:=0; SPDIF:=false; DirHIdx:=0; DirHSub:=0;
   ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=false; Fol:=2;
-  dbbuf:=true; Dr:=false; Volnorm:=false; Dlang:=false; Pri:=true;
-  Params:=''; OnTop:=0; MAspect:='Default'; empty:=true; lavf:=false; vsync:=false;
+  dbbuf:=true; Dr:=false; Volnorm:=false; Dlang:=false; InterW:=4; InterH:=3;
+  Params:=''; OnTop:=0; UpdateSkipBar:=false; Async:=false; AsyncV:='100';
   Status:=sNone; Shuffle:=false; Loop:=false; OneLoop:=false; PClear:=false;
   Volume:=100; Mute:=False; Duration:=''; MouseMode:=0; SubPos:=96; FSize:=4.5;
   Flip:=false; Mirror:=false; Yuy2:=false; Eq2:=false; LastEq2:=false; Rot:=0;
-  Bp:=0; Ep:=0; FB:=2; UpdateSkipBar:=false; Async:=false; AsyncV:='100';
+  Bp:=0; Ep:=0; FB:=2; MAspect:='Default'; empty:=true; lavf:=false; vsync:=false;
   Cache:=false; CacheV:='2048'; bri:=101; contr:=101; hu:=101; sat:=101;
   gam:=101; briD:=101; contrD:=101; huD:=101; satD:=101; gamD:=101; uof:=false;
   Dda:=false; LastDda:=false; Utf:=false; TextColor:=$00ffff; OutColor:=0;
@@ -2237,8 +2236,7 @@ begin
   nobps:=false; Ccap:='Chapter'; Acap:='Angle'; CurPlay:=-1; Status:=sNone;
   LTextColor:=clWindowText; LBGColor:=clWindow; LHGColor:=$93; ClientProcess:=0;
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; UseekC:=true; CP:=0;
-  LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:='';
-  UpdatePW:=false; VideoOut:='Auto'; HaveLyric:=0;
+  LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; HaveLyric:=0;
   ResetStreamInfo;
 end.
 
