@@ -562,6 +562,10 @@ begin
     if Win32PlatformIsUnicode then begin
       if IsDrLoaded=0 then LoadDrLibrary;
       if IsDrLoaded<>0 then DirectDrawEnumerateEx(DDrawEnumCallbackEx,nil,1);
+    end
+    else begin
+      MPause.Visible:=false; MPPause.Visible:=false;
+      BPause.Enabled:=false;
     end;
     MonitorW:=CurMonitor.Width; MonitorH:=CurMonitor.Height;
     ActivateLocale(DefaultLocale);
@@ -954,12 +958,12 @@ if MVideos.Visible then begin
           Ord('X'):   if MSubtitle.Count>0 then begin
                         Sdelay:=Sdelay+0.1; HandleCommand('sub_delay +0.1');
                       end;
-          Ord('G'):   if Dnav then HandleCommand('dvdnav menu');
-          Ord('H'):   if Dnav then HandleCommand('dvdnav select');
-          Ord('I'):   if Dnav then HandleCommand('dvdnav up');
-          Ord('K'):   if Dnav then HandleCommand('dvdnav down');
-          Ord('J'):   if Dnav then HandleCommand('dvdnav left');
-          Ord('L'):   if Dnav then HandleCommand('dvdnav right');
+          Ord('G'):   if Dnav then HandleCommand('dvdnav 5'); {menu}
+          Ord('H'):   if Dnav then HandleCommand('dvdnav 6'); {selset}
+          Ord('I'):   if Dnav then HandleCommand('dvdnav 1'); {up}
+          Ord('K'):   if Dnav then HandleCommand('dvdnav 2'); {down}
+          Ord('J'):   if Dnav then HandleCommand('dvdnav 3'); {left}
+          Ord('L'):   if Dnav then HandleCommand('dvdnav 4'); {right}
           {;:} 186:   if Dnav then HandleCommand('dvdnav prev');
           Ord('N'):   NextAspect;
           Ord('B'):   NextSub;
