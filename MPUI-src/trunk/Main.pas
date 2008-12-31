@@ -587,6 +587,7 @@ begin
     end
     else begin
       if AutoPlay then begin
+        PClear:=true;
         Playlist.AddDirectory('.');
         empty:=true;
       end;
@@ -661,7 +662,7 @@ begin
                 if i=0 then PClear:=true;
               end;
               if h>0 then AddMovies(fnbuf,TmpPW,true,j);
-              if (h<0) and ((Pos('://',fnbuf)>1) or WideFileExists(fnbuf)) then begin
+              if h<0 then begin
                 Entry.State:=psNotPlayed;
                 Entry.FullURL:=fnbuf;
                 if Pos('://',fnbuf)>1 then Entry.DisplayURL:=fnbuf

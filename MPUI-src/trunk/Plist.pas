@@ -508,7 +508,6 @@ end;
 
 procedure TPlaylist.Changed;
 begin
-  PClear:=false;
   if PlaylistForm.Visible then begin
     if PlaylistForm.PlaylistBox.Count<>Count then
       PlaylistForm.PlaylistBox.Count:=Count;
@@ -990,7 +989,7 @@ begin
            +AnyFilter+'(*.*)|*.*';
 
     if Execute then begin
-      if Sender<>BAdd then PClear:=true;
+      PClear:=(Sender<>BAdd);
       for i:=0 to Files.Count-1 do
         Playlist.AddFiles(Files[i]);
       Playlist.Changed;
@@ -1015,6 +1014,7 @@ begin
       DragQueryFile(hDrop,i,ta,1024); fnbuf:=WideString(ta);
     end;
     if WideDirectoryExists(fnbuf) then begin
+      if i=0 then PClear:=true;
       Playlist.AddDirectory(fnbuf);
       empty:=true; 
     end
@@ -1022,7 +1022,10 @@ begin
       k:=Tnt_WideLowerCase(WideExtractFileExt(fnbuf));
       if FilterDrop then j:=CheckInfo(MediaType,k)>ZipTypeCount
       else j:=CheckInfo(SubType,k)=-1;
-      if j then Playlist.AddFiles(fnbuf)
+      if j then begin
+        if i=0 then PClear:=true;
+        Playlist.AddFiles(fnbuf);
+      end
       else begin
         if Running and (k='.lrc') and (HaveLyric=0) then begin
           FName:=WideExtractFileName(MediaURL);
@@ -1035,9 +1038,11 @@ begin
           if CheckInfo(ZipType,k)>-1 then begin
             if IsLoaded(k) then begin
               TmpPW:='';
-              h:=AddMovies(fnbuf,playlist.FindPW(fnbuf),true,k);
+              h:=AddMovies(fnbuf,playlist.FindPW(fnbuf),false,k);
               if HaveLyric=0 then ExtractLyric(fnbuf,TmpPW,k,-1);
-              if (h<0) and ((Pos('://',fnbuf)>1) or WideFileExists(fnbuf)) then begin
+              if (h<>0) and (i=0) then PClear:=true;
+              if h>0 then AddMovies(fnbuf,playlist.FindPW(fnbuf),true,k);
+              if h<0 then begin
                 Entry.State:=psNotPlayed;
                 Entry.FullURL:=fnbuf;
                 if Pos('://',fnbuf)>1 then Entry.DisplayURL:=fnbuf
@@ -1149,10 +1154,12 @@ procedure TPlaylistForm.BAddDirClick(Sender: TObject);
 var s:widestring;
 begin
   if WideSelectDirectory(AddDirCp,'',s) then begin
+    PClear:=false;
     Playlist.AddDirectory(s);
     empty:=true; Playlist.Changed;
   end;
   {if AddDirForm.Execute(true) then begin
+    PClear:=false;
     Playlist.AddDirectory(AddDirForm.DirView.SelectedFolder.PathName);
     empty:=true; Playlist.Changed;
   end;}
