@@ -77,10 +77,10 @@ object AboutForm: TAboutForm
   object LURL: TLabel
     Left = 8
     Top = 131
-    Width = 136
+    Width = 108
     Height = 13
     Cursor = crHandPoint
-    Caption = 'http://mpui.sourceforge.net'
+    Caption = 'http://mpui-hcb.sf.net'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlue
     Font.Height = -11
@@ -2549,7 +2549,7 @@ object AboutForm: TAboutForm
       'GNU General Public License, Version 2.'
       ''
       '(C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>'
-      ''
+      'HomePage: http://mpui.sourceforge.net'
       'Code contributions and hints:'
       'Joackim Pennerup <joackim@pennerup.net>'
       'Vasily Khoruzhick <fenix-fen@mail.ru>'

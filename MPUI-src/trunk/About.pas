@@ -112,7 +112,7 @@ end;
 
 procedure TAboutForm.URLClick(Sender: TObject);
 begin
-  ShellExecute(Handle,'open',PChar((Sender as TLabel).Caption),nil,nil,SW_SHOW);
+  ShellExecute(Handle,'open','http://sourceforge.net/projects/mpui-hcb/',nil,nil,SW_SHOW);
 end;
 
 procedure TAboutForm.ReadOnlyItemEnter(Sender: TObject);
