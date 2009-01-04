@@ -1463,13 +1463,14 @@ begin
           end;
           if HaveVideo and Wid then SendCommand('osd_show_text "'+OSD_OnTop1_Prompt+'"');
         end;
-    2:  begin
+    2:  if Running then begin
           if (Status=sPlaying) and (not MFullscreen.Checked) then begin
             if HaveVideo and (not Wid) then SendCommand('set_property ontop 1')
             else SetWindowPos(Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
           end;
           if HaveVideo then SendCommand('osd_show_text "'+OSD_OnTop2_Prompt+'"');
-        end;
+        end
+        else SetWindowPos(Handle,HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
   end;
   (Sender as TMenuItem).Checked:=true;
 end;

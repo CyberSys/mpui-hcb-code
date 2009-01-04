@@ -2228,15 +2228,15 @@ begin
   Volume:=100; Mute:=False; Duration:=''; MouseMode:=0; SubPos:=96; FSize:=4.5;
   Flip:=false; Mirror:=false; Yuy2:=false; Eq2:=false; LastEq2:=false; Rot:=0;
   Bp:=0; Ep:=0; FB:=2; MAspect:='Default'; empty:=true; lavf:=false; vsync:=false;
-  Cache:=false; CacheV:='2048'; bri:=101; contr:=101; hu:=101; sat:=101;
+  Cache:=false; CacheV:='2048'; bri:=101; contr:=101; hu:=101; sat:=101; CP:=0;
   gam:=101; briD:=101; contrD:=101; huD:=101; satD:=101; gamD:=101; uof:=false;
   Dda:=false; LastDda:=false; Utf:=false; TextColor:=$00ffff; OutColor:=0;
   Ass:=false; Efont:=true; ISub:=false; speed:=1; LastScale:=100; Scale:=100;
   LastHaveVideo:=false; AutoNext:=true; FilterDrop:=false; PScroll:=true;
   nobps:=false; Ccap:='Chapter'; Acap:='Angle'; CurPlay:=-1; Status:=sNone;
   LTextColor:=clWindowText; LBGColor:=clWindow; LHGColor:=$93; ClientProcess:=0;
-  ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; UseekC:=true; CP:=0;
-  LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; 
+  ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
+  LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   ResetStreamInfo;
 end.
 
