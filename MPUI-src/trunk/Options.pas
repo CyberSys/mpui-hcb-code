@@ -145,7 +145,6 @@ type
     procedure LHelpClick(Sender: TObject);
     procedure BApplyClick(Sender: TObject);
     procedure BOKClick(Sender: TObject);
-    procedure SomethingChanged(Sender: TObject);
     procedure BSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure CAudioOutChange(Sender: TObject);
@@ -257,6 +256,12 @@ begin
     if CVSync.Checked then SendCommand('set_property vsync 1')
     else SendCommand('set_property vsync 0');
   end;
+  if DefaultLocale<>(CLanguage.ItemIndex-1) then begin
+    DefaultLocale:=CLanguage.ItemIndex-1;
+    ActivateLocale(DefaultLocale);
+  end;
+  CLanguage.ItemIndex:=DefaultLocale+1;
+  if WideDirectoryExists(ELyric.Text) then LyricDir:=ELyric.Text;
   vsync:=CVSync.Checked;
   UseekC:=CUseekC.Checked;
   DragM:=CDrag.Checked;
@@ -424,70 +429,225 @@ end;
 
 procedure TOptionsForm.ApplyValues;
 begin
-  AudioOut:=CAudioOut.ItemIndex;
-  AudioDev:=CAudioDev.ItemIndex;
-  Postproc:=CPostproc.ItemIndex;
-  Aspect:=CAspect.ItemIndex;
-  Deinterlace:=CDeinterlace.ItemIndex;
-  ReIndex:=CIndex.Checked;
-  SoftVol:=CSoftVol.Checked;
+  if AudioOut<>CAudioOut.ItemIndex then begin
+    AudioOut:=CAudioOut.ItemIndex; changed:=true;
+  end;
+  if AudioDev<>CAudioDev.ItemIndex then begin
+    AudioDev:=CAudioDev.ItemIndex; changed:=true;
+  end;
+  if Postproc<>CPostproc.ItemIndex then begin
+    Postproc:=CPostproc.ItemIndex; changed:=true;
+  end;
+  if Aspect<>CAspect.ItemIndex then begin
+    Aspect:=CAspect.ItemIndex; changed:=true;
+  end;
+  if Deinterlace<>CDeinterlace.ItemIndex then begin
+    Deinterlace:=CDeinterlace.ItemIndex; changed:=true;
+  end;
+
+  if ReIndex<>CIndex.Checked then begin
+    ReIndex:=CIndex.Checked; changed:=true;
+  end;
+
+  if SoftVol<>CSoftVol.Checked then begin
+    SoftVol:=CSoftVol.Checked; changed:=true;
+  end;
   if (Volume>100) AND (not SoftVol) then begin
     Volume:=100; MainForm.VolBoost.Visible:=False;
     MainForm.VolSlider.Left:=Volume*(MainForm.VolFrame.ClientWidth-MainForm.VolSlider.Width) DIV 100;
   end;
-  Dr:=CDr.Checked;
-  dbbuf:=double.Checked;
-  Volnorm:=CVolnorm.Checked;
-  Dlang:=Defaultslang.Checked;
-  subcode:=CSubcp.Text;
-  osdfont:=COsdfont.Text;
-  subfont:=CSubfont.Text;
-  MplayerLocation:=EMplayerLocation.Text;
-  MAspect:=Trim(CMAspect.Text);
-  VideoOut:=Trim(CVideoOut.Text);
-  Dda:=Trim(LowerCase(VideoOut))='directx:noaccel';
-  Ch:=CCh.ItemIndex;
-  Rot:=CRot.ItemIndex;
-  SPDIF:=CSPDIF.Checked;
-  Wid:=CWid.Checked;
-  Flip:=CFlip.Checked;
-  Mirror:=CMir.Checked;
-  Eq2:=CEq2.Checked;
-  Yuy2:=CYuy2.Checked;
-  ni:=CNi.Checked;
-  nobps:=CNobps.Checked;
-  FilterDrop:=CFilter.Checked;
-  Dnav:=CDnav.Checked;
-  Uni:=CUni.Checked;
-  Utf:=CUtf.Checked;
-  FSize:=TFsize.Position/10;
-  Fol:=TFol.Position/10;
-  FB:=TFB.Position/10;
-  Wadsp:=CWadsp.Checked;
-  WadspL:=EWadsp.Text;
-  lavf:=Clavf.Checked;
-  Fd:=CFd.Checked;
-  Async:=CAsync.Checked;
-  AsyncV:=EAsync.Text;
-  Cache:=CCache.Checked;
-  CacheV:=ECache.Text;
-  Pri:=CPriorityBoost.Checked;
-  Params:=Trim(EParams.Text);
-  TextColor:=ColorToRGB(PTc.color);
-  OutColor:=ColorToRGB(POc.color);
-  Ass:=CAss.Checked;
-  Efont:=CEfont.Checked;
-  ISub:=CISub.Checked;
-  uof:=SOsdfont.Checked;
-  GUI:=CGUI.Checked;
-  if WideDirectoryExists(ELyric.Text) then LyricDir:=ELyric.Text;
-  if WideDirectoryExists(ESsf.Text) then ShotDir:=ESsf.Text
-  else if WideCreateDir(ESsf.Text) then ShotDir:=ESsf.Text;
 
-  if DefaultLocale<>(CLanguage.ItemIndex-1) then begin
-    DefaultLocale:=CLanguage.ItemIndex-1;
-    ActivateLocale(DefaultLocale);
+  if Dr<>CDr.Checked then begin
+    Dr:=CDr.Checked; changed:=true;
   end;
+
+  if dbbuf<>double.Checked then begin
+    dbbuf:=double.Checked; changed:=true;
+  end;
+
+  if Volnorm<>CVolnorm.Checked then begin
+    Volnorm:=CVolnorm.Checked; changed:=true;
+  end;
+
+  if Dlang<>Defaultslang.Checked then begin
+    Dlang:=Defaultslang.Checked; changed:=true;
+  end;
+
+  if subcode<>CSubcp.Text then begin
+    subcode:=CSubcp.Text; changed:=true;
+  end;
+
+  if osdfont<>COsdfont.Text then begin
+    osdfont:=COsdfont.Text; changed:=true;
+  end;
+
+  if subfont<>CSubfont.Text then begin
+    subfont:=CSubfont.Text; changed:=true;
+  end;
+
+  if MplayerLocation<>EMplayerLocation.Text then begin
+    MplayerLocation:=EMplayerLocation.Text; changed:=true;
+  end;
+
+  if MAspect<>Trim(CMAspect.Text) then begin
+    MAspect:=Trim(CMAspect.Text); changed:=true;
+  end;
+
+  if VideoOut<>Trim(CVideoOut.Text) then begin
+    VideoOut:=Trim(CVideoOut.Text); changed:=true;
+  end;
+
+  if Dda<>(Trim(LowerCase(VideoOut))='directx:noaccel') then begin
+    Dda:=Trim(LowerCase(VideoOut))='directx:noaccel'; changed:=true;
+  end;
+
+  if Ch<>CCh.ItemIndex then begin
+    Ch:=CCh.ItemIndex; changed:=true;
+  end;
+
+  if Rot<>CRot.ItemIndex then begin
+    Rot:=CRot.ItemIndex; changed:=true;
+  end;
+
+  if SPDIF<>CSPDIF.Checked then begin
+    SPDIF:=CSPDIF.Checked; changed:=true;
+  end;
+  
+  if Wid<>CWid.Checked then begin
+    Wid:=CWid.Checked; changed:=true;
+  end;
+
+  if Flip<>CFlip.Checked then begin
+    Flip:=CFlip.Checked; changed:=true;
+  end;
+
+  if Mirror<>CMir.Checked then begin
+    Mirror:=CMir.Checked; changed:=true;
+  end;
+
+  if Eq2<>CEq2.Checked then begin
+    Eq2:=CEq2.Checked; changed:=true;
+  end;
+
+  if Yuy2<>CYuy2.Checked then begin
+    Yuy2:=CYuy2.Checked; changed:=true;
+  end;
+
+  if ni<>CNi.Checked then begin
+    ni:=CNi.Checked; changed:=true;
+  end;
+  
+  if nobps<>CNobps.Checked then begin
+    nobps:=CNobps.Checked; changed:=true;
+  end;
+
+  if FilterDrop<>CFilter.Checked then begin
+    FilterDrop:=CFilter.Checked; changed:=true;
+  end;
+
+  if Dnav<>CDnav.Checked then begin
+    Dnav:=CDnav.Checked; changed:=true;
+  end;
+
+  if Uni<>CUni.Checked then begin
+    Uni:=CUni.Checked; changed:=true;
+  end;
+  
+  if Utf<>CUtf.Checked then begin
+    Utf:=CUtf.Checked; changed:=true;
+  end;
+
+  if FSize<>TFsize.Position/10 then begin
+    FSize:=TFsize.Position/10; changed:=true;
+  end;
+
+  if Fol<>TFol.Position/10 then begin
+    Fol:=TFol.Position/10; changed:=true;
+  end;
+
+  if FB<>TFB.Position/10 then begin
+    FB:=TFB.Position/10; changed:=true;
+  end;
+  
+  if Wadsp<>CWadsp.Checked then begin
+    Wadsp:=CWadsp.Checked; changed:=true;
+  end;
+
+  if WadspL<>EWadsp.Text then begin
+    WadspL:=EWadsp.Text; changed:=true;
+  end;
+
+  if lavf<>Clavf.Checked then begin
+    lavf:=Clavf.Checked; changed:=true;
+  end;
+  
+  if Fd<>CFd.Checked then begin
+    Fd:=CFd.Checked; changed:=true;
+  end;
+
+  if Async<>CAsync.Checked then begin
+    Async:=CAsync.Checked; changed:=true;
+  end;
+
+  if AsyncV<>EAsync.Text then begin
+    AsyncV:=EAsync.Text; changed:=true;
+  end;
+
+  if Cache<>CCache.Checked then begin
+    Cache:=CCache.Checked; changed:=true;
+  end;
+
+  if CacheV<>ECache.Text then begin
+    CacheV:=ECache.Text; changed:=true;
+  end;
+
+  if Pri<>CPriorityBoost.Checked then begin
+    Pri:=CPriorityBoost.Checked; changed:=true;
+  end;
+
+  if Params<>Trim(EParams.Text) then begin
+    Params:=Trim(EParams.Text); changed:=true;
+  end;
+  
+  if TextColor<>ColorToRGB(PTc.color) then begin
+    TextColor:=ColorToRGB(PTc.color); changed:=true;
+  end;
+
+  if OutColor<>ColorToRGB(POc.color) then begin
+    OutColor:=ColorToRGB(POc.color); changed:=true;
+  end;
+
+  if Ass<>CAss.Checked then begin
+    Ass:=CAss.Checked; changed:=true;
+  end;
+  
+  if Efont<>CEfont.Checked then begin
+    Efont:=CEfont.Checked; changed:=true;
+  end;
+
+  if ISub<>CISub.Checked then begin
+    ISub:=CISub.Checked; changed:=true;
+  end;
+
+  if uof<>SOsdfont.Checked then begin
+    uof:=SOsdfont.Checked; changed:=true;
+  end;
+
+  if GUI<>CGUI.Checked then begin
+    GUI:=CGUI.Checked; changed:=true;
+  end;
+
+  if WideDirectoryExists(ESsf.Text) then begin
+    if ShotDir<>ESsf.Text then begin
+      ShotDir:=ESsf.Text; changed:=true;
+    end;
+  end
+  else if WideCreateDir(ESsf.Text) then begin
+    if ShotDir<>ESsf.Text then begin
+      ShotDir:=ESsf.Text; changed:=true;
+    end;
+  end;
+
   MainForm.UpdateMenuCheck;
 end;
 
@@ -497,7 +657,6 @@ begin
   if Changed then begin
     ApplyValues; Changed:=false;
     Restart;
-    CLanguage.ItemIndex:=DefaultLocale+1;
     CAspect.Items[10]:=MainForm.MCustomAspect.Caption;
     CAspect.ItemIndex:=Aspect;
     CDeinterlace.ItemIndex:=Deinterlace;
@@ -523,11 +682,6 @@ begin
     ApplyValues;
     Restart;
   end;
-end;
-
-procedure TOptionsForm.SomethingChanged(Sender: TObject);
-begin
-  Changed:=true; 
 end;
 
 procedure TOptionsForm.BSaveClick(Sender: TObject);
@@ -623,7 +777,6 @@ begin
   e:=(CAudioOut.ItemIndex=4);
   LAudioDev.Enabled:=e;
   CAudioDev.Enabled:=e;
-  if Assigned(Sender) then SomethingChanged(Sender);
 end;
 
 procedure TOptionsForm.BSubfontClick(Sender: TObject);

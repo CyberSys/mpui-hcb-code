@@ -93,7 +93,6 @@ object OptionsForm: TOptionsForm
     Height = 21
     Anchors = [akLeft, akRight, akBottom]
     TabOrder = 4
-    OnChange = SomethingChanged
   end
   object Tab: TTntPageControl
     Left = 5
@@ -125,7 +124,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
         TabOrder = 0
-        OnChange = SomethingChanged
         Items.Strings = (
           ''
           ''
@@ -150,7 +148,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 1
-        OnClick = SomethingChanged
       end
       object EMplayerLocation: TTntEdit
         Left = 104
@@ -159,7 +156,6 @@ object OptionsForm: TOptionsForm
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 2
-        OnChange = SomethingChanged
       end
       object BMplayer: TTntButton
         Left = 269
@@ -179,7 +175,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akLeft, akTop, akRight]
         Caption = 'Use WID'
         TabOrder = 5
-        OnClick = SomethingChanged
       end
       object CNi: TTntCheckBox
         Left = 12
@@ -190,7 +185,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 15
-        OnClick = SomethingChanged
       end
       object CDnav: TTntCheckBox
         Left = 182
@@ -202,7 +196,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 16
-        OnClick = SomethingChanged
       end
       object CLavf: TTntCheckBox
         Left = 12
@@ -213,7 +206,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 17
-        OnClick = SomethingChanged
       end
       object RCMplayer: TTntRadioButton
         Left = 4
@@ -243,7 +235,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 11
-        OnClick = SomethingChanged
       end
       object CAsync: TTntCheckBox
         Left = 182
@@ -265,7 +256,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akTop, akRight]
         TabOrder = 13
         Text = '100'
-        OnChange = SomethingChanged
       end
       object UAsync: TTntUpDown
         Left = 283
@@ -299,7 +289,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akTop, akRight]
         TabOrder = 7
         Text = '512'
-        OnChange = SomethingChanged
       end
       object UCache: TTntUpDown
         Left = 283
@@ -323,7 +312,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 18
-        OnClick = SomethingChanged
       end
       object CISub: TTntCheckBox
         Left = 12
@@ -334,7 +322,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = False
         TabOrder = 19
-        OnClick = SomethingChanged
       end
       object SSF: TTntStaticText
         Left = 8
@@ -361,7 +348,6 @@ object OptionsForm: TOptionsForm
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 22
-        OnChange = SomethingChanged
       end
       object CDrag: TTntCheckBox
         Left = 12
@@ -383,7 +369,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 24
-        OnClick = SomethingChanged
       end
       object CNobps: TTntCheckBox
         Left = 12
@@ -394,7 +379,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 25
-        OnClick = SomethingChanged
       end
       object CFilter: TTntCheckBox
         Left = 182
@@ -458,7 +442,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 9
-        OnClick = SomethingChanged
       end
       object CYuy2: TTntCheckBox
         Left = 170
@@ -470,7 +453,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 7
-        OnClick = SomethingChanged
       end
       object CPostproc: TTntComboBox
         Left = 154
@@ -481,7 +463,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
         TabOrder = 8
-        OnChange = SomethingChanged
         Items.Strings = (
           'off'
           'auto'
@@ -496,7 +477,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
         TabOrder = 1
-        OnChange = SomethingChanged
         Items.Strings = (
           'auto'
           '4:3'
@@ -519,7 +499,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
         TabOrder = 2
-        OnChange = SomethingChanged
         Items.Strings = (
           'off'
           'simple'
@@ -535,7 +514,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 6
-        OnClick = SomethingChanged
       end
       object CMAspect: TComboBox
         Tag = -1
@@ -546,7 +524,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
         TabOrder = 4
-        OnChange = SomethingChanged
         Items.Strings = (
           'Default'
           '4:3'
@@ -566,7 +543,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
-        OnClick = SomethingChanged
       end
       object CFlip: TTntCheckBox
         Left = 8
@@ -575,7 +551,6 @@ object OptionsForm: TOptionsForm
         Height = 17
         Caption = 'Flip Video'
         TabOrder = 3
-        OnClick = SomethingChanged
       end
       object CEq2: TTntCheckBox
         Left = 8
@@ -586,7 +561,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 5
-        OnClick = SomethingChanged
       end
       object CMir: TTntCheckBox
         Left = 170
@@ -596,7 +570,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akTop, akRight]
         Caption = 'Mirror Video'
         TabOrder = 10
-        OnClick = SomethingChanged
       end
       object LRot: TTntStaticText
         Left = 170
@@ -639,7 +612,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akTop, akRight]
         ItemHeight = 13
         TabOrder = 11
-        OnChange = SomethingChanged
         Items.Strings = (
           '0'
           '90'
@@ -727,7 +699,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
-        OnClick = SomethingChanged
       end
       object CAudioDev: TComboBox
         Left = 154
@@ -736,9 +707,8 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 1
-        OnChange = SomethingChanged
       end
       object CSPDIF: TTntCheckBox
         Left = 12
@@ -747,7 +717,6 @@ object OptionsForm: TOptionsForm
         Height = 17
         Caption = 'Passthrough S/PDIF'
         TabOrder = 3
-        OnClick = SomethingChanged
       end
       object CCh: TComboBox
         Left = 247
@@ -758,7 +727,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akTop, akRight]
         ItemHeight = 13
         TabOrder = 5
-        OnChange = SomethingChanged
         Items.Strings = (
           '2'
           '4'
@@ -779,7 +747,6 @@ object OptionsForm: TOptionsForm
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 6
-        OnChange = SomethingChanged
       end
       object BWadsp: TTntButton
         Left = 269
@@ -807,13 +774,13 @@ object OptionsForm: TOptionsForm
         Left = 1
         Top = 102
         Width = 298
-        Height = 110
+        Height = 108
         Anchors = [akLeft, akTop, akRight, akBottom]
         Caption = 'Lyric'
         TabOrder = 10
         DesignSize = (
           298
-          110)
+          108)
         object LTCL: TTntLabel
           Left = 14
           Top = 51
@@ -895,7 +862,6 @@ object OptionsForm: TOptionsForm
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 2
-          OnChange = SomethingChanged
         end
         object BLyric: TTntButton
           Tag = 1
@@ -957,7 +923,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = False
         TabOrder = 2
-        OnClick = SomethingChanged
       end
       object CUtf: TTntCheckBox
         Left = 8
@@ -968,7 +933,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = False
         TabOrder = 3
-        OnClick = SomethingChanged
       end
       object SSubcode: TTntStaticText
         Left = 4
@@ -1016,7 +980,7 @@ object OptionsForm: TOptionsForm
         Width = 172
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 15
         OnChange = FontChange
       end
@@ -1024,7 +988,7 @@ object OptionsForm: TOptionsForm
         Left = 8
         Top = 78
         Width = 286
-        Height = 47
+        Height = 45
         Anchors = [akLeft, akTop, akRight, akBottom]
         BevelOuter = bvNone
         Font.Charset = DEFAULT_CHARSET
@@ -1041,7 +1005,7 @@ object OptionsForm: TOptionsForm
         Width = 172
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 17
         OnChange = FontChange
       end
@@ -1120,7 +1084,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 24
-        OnClick = SomethingChanged
       end
       object SOsdfont: TTntCheckBox
         Left = 4
@@ -1142,7 +1105,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
         TabOrder = 1
-        OnChange = SomethingChanged
         Items.Strings = (
           'GBK'
           'CP936 (SimChinese)'
