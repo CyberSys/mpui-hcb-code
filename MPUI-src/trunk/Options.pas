@@ -654,8 +654,9 @@ end;
 procedure TOptionsForm.BApplyClick(Sender: TObject);
 begin
   ApplyNCValues;
+  ApplyValues;
   if Changed then begin
-    ApplyValues; Changed:=false;
+    Changed:=false;
     Restart;
     CAspect.Items[10]:=MainForm.MCustomAspect.Caption;
     CAspect.ItemIndex:=Aspect;
@@ -678,10 +679,8 @@ procedure TOptionsForm.BOKClick(Sender: TObject);
 begin
   Close;
   ApplyNCValues;
-  if Changed then begin
-    ApplyValues;
-    Restart;
-  end;
+  ApplyValues;
+  if Changed then Restart;
 end;
 
 procedure TOptionsForm.BSaveClick(Sender: TObject);
