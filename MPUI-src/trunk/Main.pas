@@ -1409,8 +1409,11 @@ begin
   if (PY+SY)>Screen.WorkAreaHeight then PY:=Screen.WorkAreaHeight-SY;
   SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_MAXIMIZE));
   ControlledResize:=true; LastScale:=100; SetBounds(PX,PY,SX,SY);
+  if WantCompact then begin
+    SimulateKey(MCompact); WantCompact:=false;
+  end;
   if WantFullscreen then begin
-    SetFullscreen(True); WantFullscreen:=False;
+    SimulateKey(MFullscreen); WantFullscreen:=False;
   end;
   ControlledResize:=false;
 end;

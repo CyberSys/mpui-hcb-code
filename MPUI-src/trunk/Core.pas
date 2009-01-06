@@ -1810,9 +1810,6 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           i:=Top-((p-Constraints.MinHeight) DIV 2);
           SetBounds(r,i,j,p); MSize100.Checked:=true;
           SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
-          if WantCompact then begin
-            SetCompact(True); WantCompact:=false;
-          end;
         end;
         LastHaveVideo:=true;
       end
