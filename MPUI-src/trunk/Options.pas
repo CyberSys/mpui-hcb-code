@@ -171,10 +171,8 @@ type
     { Private declarations }
     HelpFile:WideString;
     Changed:boolean;
-    procedure ApplyNCValues;
   public
     { Public declarations }
-
     procedure Localize;
     procedure ApplyValues;
     procedure LoadValues;
@@ -237,47 +235,6 @@ begin
     for i:=0 to High(Locales) do
       CLanguage.Items.Add(Locales[i].Name);
   end;
-end;
-
-procedure TOptionsForm.ApplyNCValues;
-begin
-  RFScr:=CRFScr.Checked;
-  with MainForm do begin
-    if RFScr then begin
-      OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
-    end
-    else begin
-      OPanel.PopupMenu:=MPopup; IPanel.PopupMenu:=MPopup;
-    end;
-  end;
-
-  if Running and (vsync<>CVSync.Checked) then begin
-    MainForm.Unpaused;
-    if CVSync.Checked then SendCommand('set_property vsync 1')
-    else SendCommand('set_property vsync 0');
-  end;
-  if DefaultLocale<>(CLanguage.ItemIndex-1) then begin
-    DefaultLocale:=CLanguage.ItemIndex-1;
-    ActivateLocale(DefaultLocale);
-  end;
-  CLanguage.ItemIndex:=DefaultLocale+1;
-  if WideDirectoryExists(ELyric.Text) then LyricDir:=ELyric.Text;
-  vsync:=CVSync.Checked;
-  UseekC:=CUseekC.Checked;
-  DragM:=CDrag.Checked;
-  PScroll:=LScroll.Checked;
-  LTextColor:=ColorToRGB(PLTC.Color);
-  LbgColor:=ColorToRGB(PLBC.Color);
-  LhgColor:=ColorToRGB(PLHC.Color);
-  LyricF:=Bfont.Caption;
-  LyricS:=PlaylistForm.TMLyric.Font.Size;
-  PlaylistForm.TMLyric.Color:=PLBC.Color;
-  PlaylistForm.TMLyric.Font.Color:=PLTC.Color;
-  PlaylistForm.PLTC.Color:=LTextColor;
-  PlaylistForm.PLBC.Color:=LbgColor;
-  PlaylistForm.PLHC.Color:=LhgColor;
-  PlaylistForm.LScroll.Checked:=PScroll;
-  if PlaylistForm.Visible then PlaylistForm.TMLyric.Invalidate;
 end;
 
 procedure TOptionsForm.FormShow(Sender: TObject);
@@ -428,6 +385,7 @@ begin
 end;
 
 procedure TOptionsForm.ApplyValues;
+var s:string; ws:WideString; i:integer; f:real; b:boolean;
 begin
   if AudioOut<>CAudioOut.ItemIndex then begin
     AudioOut:=CAudioOut.ItemIndex; changed:=true;
@@ -489,16 +447,19 @@ begin
     MplayerLocation:=EMplayerLocation.Text; changed:=true;
   end;
 
-  if MAspect<>Trim(CMAspect.Text) then begin
-    MAspect:=Trim(CMAspect.Text); changed:=true;
+  s:=Trim(CMAspect.Text);
+  if MAspect<>s then begin
+    MAspect:=s; changed:=true;
   end;
 
-  if VideoOut<>Trim(CVideoOut.Text) then begin
-    VideoOut:=Trim(CVideoOut.Text); changed:=true;
+  s:=Trim(CVideoOut.Text);
+  if VideoOut<>s then begin
+    VideoOut:=s; changed:=true;
   end;
 
-  if Dda<>(Trim(LowerCase(VideoOut))='directx:noaccel') then begin
-    Dda:=Trim(LowerCase(VideoOut))='directx:noaccel'; changed:=true;
+  b:=Trim(LowerCase(VideoOut))='directx:noaccel';
+  if Dda<>b then begin
+    Dda:=b; changed:=true;
   end;
 
   if Ch<>CCh.ItemIndex then begin
@@ -557,16 +518,19 @@ begin
     Utf:=CUtf.Checked; changed:=true;
   end;
 
-  if FSize<>TFsize.Position/10 then begin
-    FSize:=TFsize.Position/10; changed:=true;
+  f:=TFsize.Position/10;
+  if FSize<>f then begin
+    FSize:=f; changed:=true;
   end;
 
-  if Fol<>TFol.Position/10 then begin
-    Fol:=TFol.Position/10; changed:=true;
+  f:=TFol.Position/10;
+  if Fol<>f then begin
+    Fol:=f; changed:=true;
   end;
 
-  if FB<>TFB.Position/10 then begin
-    FB:=TFB.Position/10; changed:=true;
+  f:=TFB.Position/10;
+  if FB<>f then begin
+    FB:=f; changed:=true;
   end;
   
   if Wadsp<>CWadsp.Checked then begin
@@ -605,16 +569,19 @@ begin
     Pri:=CPriorityBoost.Checked; changed:=true;
   end;
 
-  if Params<>Trim(EParams.Text) then begin
-    Params:=Trim(EParams.Text); changed:=true;
-  end;
-  
-  if TextColor<>ColorToRGB(PTc.color) then begin
-    TextColor:=ColorToRGB(PTc.color); changed:=true;
+  ws:=Trim(EParams.Text);
+  if Params<>ws then begin
+    Params:=ws; changed:=true;
   end;
 
-  if OutColor<>ColorToRGB(POc.color) then begin
-    OutColor:=ColorToRGB(POc.color); changed:=true;
+  i:=ColorToRGB(PTc.color);
+  if TextColor<>i then begin
+    TextColor:=i; changed:=true;
+  end;
+
+  i:=ColorToRGB(POc.color);
+  if OutColor<>i then begin
+    OutColor:=i; changed:=true;
   end;
 
   if Ass<>CAss.Checked then begin
@@ -647,63 +614,95 @@ begin
       ShotDir:=ESsf.Text; changed:=true;
     end;
   end;
+  
+  RFScr:=CRFScr.Checked;
+  with MainForm do begin
+    if RFScr then begin
+      OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
+    end
+    else begin
+      OPanel.PopupMenu:=MPopup; IPanel.PopupMenu:=MPopup;
+    end;
+  end;
 
+  if Running and (vsync<>CVSync.Checked) then begin
+    MainForm.Unpaused;
+    if CVSync.Checked then SendCommand('set_property vsync 1')
+    else SendCommand('set_property vsync 0');
+  end;
+  if DefaultLocale<>(CLanguage.ItemIndex-1) then begin
+    DefaultLocale:=CLanguage.ItemIndex-1;
+    ActivateLocale(DefaultLocale);
+  end;
+  if WideDirectoryExists(ELyric.Text) then LyricDir:=ELyric.Text;
+  vsync:=CVSync.Checked;
+  UseekC:=CUseekC.Checked;
+  DragM:=CDrag.Checked;
+  PScroll:=LScroll.Checked;
+  LTextColor:=ColorToRGB(PLTC.Color);
+  LbgColor:=ColorToRGB(PLBC.Color);
+  LhgColor:=ColorToRGB(PLHC.Color);
+  LyricF:=Bfont.Caption;
+  LyricS:=PlaylistForm.TMLyric.Font.Size;
+  PlaylistForm.TMLyric.Color:=PLBC.Color;
+  PlaylistForm.TMLyric.Font.Color:=PLTC.Color;
+  PlaylistForm.PLTC.Color:=LTextColor;
+  PlaylistForm.PLBC.Color:=LbgColor;
+  PlaylistForm.PLHC.Color:=LhgColor;
+  PlaylistForm.LScroll.Checked:=PScroll;
+  if PlaylistForm.Visible then PlaylistForm.TMLyric.Invalidate;
   MainForm.UpdateMenuCheck;
 end;
 
 procedure TOptionsForm.BApplyClick(Sender: TObject);
 begin
-  ApplyNCValues;
   ApplyValues;
   if Changed then begin
     Changed:=false;
     Restart;
-    CAspect.Items[10]:=MainForm.MCustomAspect.Caption;
-    CAspect.ItemIndex:=Aspect;
-    CDeinterlace.ItemIndex:=Deinterlace;
-    CPostproc.ItemIndex:=Postproc;
-    CAudioOut.ItemIndex:=AudioOut;
-    CAudioDev.ItemIndex:=AudioDev;
-    CSubcp.Text:=subcode;
-    COsdfont.Text:=osdfont;
-    CSubfont.Text:=subfont;
-    EMplayerLocation.Text:=MplayerLocation;
-    CMAspect.Text:=MAspect;
-    CCh.ItemIndex:=Ch;
-    CRot.ItemIndex:=Rot;
-    ESsf.Text:=ShotDir;
   end;
+  CLanguage.ItemIndex:=DefaultLocale+1;
+  CAspect.Items[10]:=MainForm.MCustomAspect.Caption;
+  CAspect.ItemIndex:=Aspect;
+  CDeinterlace.ItemIndex:=Deinterlace;
+  CPostproc.ItemIndex:=Postproc;
+  CAudioOut.ItemIndex:=AudioOut;
+  CAudioDev.ItemIndex:=AudioDev;
+  CSubcp.Text:=subcode;
+  COsdfont.Text:=osdfont;
+  CSubfont.Text:=subfont;
+  EMplayerLocation.Text:=MplayerLocation;
+  CMAspect.Text:=MAspect;
+  CCh.ItemIndex:=Ch;
+  CRot.ItemIndex:=Rot;
+  ESsf.Text:=ShotDir;
 end;
 
 procedure TOptionsForm.BOKClick(Sender: TObject);
 begin
   Close;
-  ApplyNCValues;
   ApplyValues;
   if Changed then Restart;
 end;
 
 procedure TOptionsForm.BSaveClick(Sender: TObject);
 begin
-  ApplyNCValues;
-  if Changed then begin
-    ApplyValues;
-    CLanguage.ItemIndex:=DefaultLocale+1;
-    CAspect.Items[10]:=MainForm.MCustomAspect.Caption;
-    CAspect.ItemIndex:=Aspect;
-    CDeinterlace.ItemIndex:=Deinterlace;
-    CPostproc.ItemIndex:=Postproc;
-    CAudioOut.ItemIndex:=AudioOut;
-    CAudioDev.ItemIndex:=AudioDev;
-    CSubcp.Text:=subcode;
-    COsdfont.Text:=osdfont;
-    CSubfont.Text:=subfont;
-    EMplayerLocation.Text:=MplayerLocation;
-    CMAspect.Text:=MAspect;
-    CCh.ItemIndex:=Ch;
-    CRot.ItemIndex:=Rot;
-    ESsf.Text:=ShotDir;
-  end;
+  ApplyValues;
+  CLanguage.ItemIndex:=DefaultLocale+1;
+  CAspect.Items[10]:=MainForm.MCustomAspect.Caption;
+  CAspect.ItemIndex:=Aspect;
+  CDeinterlace.ItemIndex:=Deinterlace;
+  CPostproc.ItemIndex:=Postproc;
+  CAudioOut.ItemIndex:=AudioOut;
+  CAudioDev.ItemIndex:=AudioDev;
+  CSubcp.Text:=subcode;
+  COsdfont.Text:=osdfont;
+  CSubfont.Text:=subfont;
+  EMplayerLocation.Text:=MplayerLocation;
+  CMAspect.Text:=MAspect;
+  CCh.ItemIndex:=Ch;
+  CRot.ItemIndex:=Rot;
+  ESsf.Text:=ShotDir;
   Config.Save(HomeDir+Config.DefaultFileName,0);
 end;
 
@@ -818,17 +817,12 @@ begin
     Title:=RMplayer.Caption;
     Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
     filter:='*.exe|*.exe|'+AnyFilter+'(*.*)|*.*';
-    if Execute then begin
-      if EMplayerLocation.Text<>fileName then begin
-        changed:=true; EMplayerLocation.Text:=fileName;
-      end;
-    end;
+    if Execute then EMplayerLocation.Text:=fileName;
   end;
 end;
 
 procedure TOptionsForm.CDDXAClick(Sender: TObject);
 begin
-  Changed:=true;
   CEq2.Enabled:=Trim(LowerCase(CVideoOut.Text))<>'directx:noaccel';
   LDeinterlace.Enabled:=CEq2.Enabled;
   CDeinterlace.Enabled:=CEq2.Enabled;
@@ -837,25 +831,21 @@ end;
 
 procedure TOptionsForm.TFsizeChange(Sender: TObject);
 begin
-  Changed:=true;
   SFsP.Caption:=Tnt_WideFormat('%.1f%%',[TFsize.Position/10]);
 end;
 
 procedure TOptionsForm.TFolChange(Sender: TObject);
 begin
-  Changed:=true;
   SFo.Caption:=Tnt_WideFormat('%.1f',[TFol.Position/10]);
 end;
 
 procedure TOptionsForm.TFBChange(Sender: TObject);
 begin
-  Changed:=true;
   SFBl.Caption:=Tnt_WideFormat('%.1f',[TFB.Position/10]);
 end;
 
 procedure TOptionsForm.CWadspClick(Sender: TObject);
 begin
-  Changed:=true;
   EWadsp.Enabled:=CWadsp.Checked;
   BWadsp.Enabled:=CWadsp.Checked;
 end;
@@ -866,17 +856,13 @@ begin
     Title:=CWadsp.Caption;
     Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
     filter:='*.dll|*.Dll|'+AnyFilter+'(*.*)|*.*';
-    if Execute then begin
-      if EWadsp.Text<>fileName then changed:=true;
-      EWadsp.Text:=fileName;
-    end;
+    if Execute then EWadsp.Text:=fileName;
   end;
 end;
 
 procedure TOptionsForm.RMplayerClick(Sender: TObject);
 begin
   if ML<>RMplayer.Checked then begin
-    Changed:=true;
     ML:=RMplayer.Checked;
     EMplayerLocation.Enabled:=ML;
     BMplayer.Enabled:=ML;
@@ -886,7 +872,6 @@ end;
 procedure TOptionsForm.RCMplayerClick(Sender: TObject);
 begin
   if ML=RCMplayer.Checked then begin
-    Changed:=true;
     ML:=not RCMplayer.Checked;
     EMplayerLocation.Enabled:=ML;
     BMplayer.Enabled:=ML;
@@ -895,14 +880,12 @@ end;
 
 procedure TOptionsForm.CAsyncClick(Sender: TObject);
 begin
-  Changed:=true;
   EAsync.Enabled:=CAsync.Checked;
   UAsync.Enabled:=CAsync.Checked;
 end;
 
 procedure TOptionsForm.CCacheClick(Sender: TObject);
 begin
-  Changed:=true;
   ECache.Enabled:=CCache.Checked;
   UCache.Enabled:=CCache.Checked;
 end;
@@ -910,7 +893,7 @@ end;
 procedure TOptionsForm.FontChange(Sender: TObject);
 var i:integer; s,k,h:WideString;
 begin
-  changed:=true; PShow.Caption:='';
+  PShow.Caption:='';
   s:=Trim(Tnt_WideLowerCase((Sender as TTntComboBox).Text));
   for i:=0 to FontPaths.Count-1 do begin
     k:=Tnt_WideLowerCase((Sender as TTntComboBox).Items[i]); h:= Tnt_WideLowerCase(FontPaths[i]);
@@ -926,15 +909,11 @@ end;
 procedure TOptionsForm.SetColor(Sender: TObject);
 begin
   ColorDialog1.Color:=(Sender as TPanel).Color;
-  if ColorDialog1.Execute then begin
-    changed:=true;
-    (Sender as TPanel).Color := ColorDialog1.Color;
-  end;
+  if ColorDialog1.Execute then (Sender as TPanel).Color:=ColorDialog1.Color;
 end;
 
 procedure TOptionsForm.CAssClick(Sender: TObject);
 begin
-  changed:=true;
   PTc.Enabled:=CAss.Checked; POc.Enabled:=CAss.Checked;
   CEfont.Enabled:=CAss.Checked; SfontColor.Enabled:=CAss.Checked;
   SOutline.Enabled:=CAss.Checked; 
@@ -942,7 +921,6 @@ end;
 
 procedure TOptionsForm.SOsdfontClick(Sender: TObject);
 begin
-  changed:=true;
   COsdfont.Enabled:=SOsdfont.Checked;
   BOsdfont.Enabled:=SOsdfont.Checked;
 end;
@@ -952,24 +930,14 @@ var s:widestring;
 begin
   if WideSelectDirectory(AddDirCp,'',s) then begin
     case (Sender as TComponent).Tag of
-      0: if ESsf.Text<>s then begin
-	       changed:=true;
-		   ESsf.Text:=s;
-	     end;
-      1: if ELyric.Text<>s then begin
-	       changed:=true;
-		   ELyric.Text:=s;
-	     end;
+      0: ESsf.Text:=s;
+      1: ELyric.Text:=s;
     end;
   end;
   {  if AddDirForm.Execute(false) then begin
     case (Sender as TComponent).Tag of
-      0: if ESsf.Text<>AddDirForm.DirView.SelectedFolder.PathName then begin
-           Changed:=true; ESsf.Text:=AddDirForm.DirView.SelectedFolder.PathName;
-         end;
-      1: if ELyric.Text<>AddDirForm.DirView.SelectedFolder.PathName then begin
-           Changed:=true; ELyric.Text:=AddDirForm.DirView.SelectedFolder.PathName;
-         end;
+      0: ESsf.Text:=AddDirForm.DirView.SelectedFolder.PathName;
+      1: ELyric.Text:=AddDirForm.DirView.SelectedFolder.PathName;
     end;
   end;}
 end;
