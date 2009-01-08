@@ -303,7 +303,8 @@ begin
     CUseekC.Hint:='For some DVD, it need to reboot '^M^J+
                   'Mplayer when switch chapter';
     CGUI.Caption:='Use GUI of Mplayer';
-    CGUI.Hint:='Avoid GMplayer to use GUI of itself.';
+    CGUI.Hint:='Avoid GMplayer to use GUI of itself. For mplayer without ''-nogui'','^M^J+
+               'you can cancel this checkbox to ensure mplayer can be runed';
     SSF.Caption:='ScreenShot Folder';
     CSoftVol.Caption:='Software volume boost';
     CDr.Caption:='Direct rendering';
@@ -314,9 +315,9 @@ begin
                  'storing two frames in memory';
     CVolnorm.Caption:='Normalize volume';
     CVolnorm.Hint:='Maximizes the volume without distorting the sound';
-    Defaultslang.Caption:='Chinese as default a/slang';
-    Defaultslang.Hint:='Mainly to play DVD. As result, Mplayer sometimes may'^M^J+
-                       'not find other languages audio track.';
+    nFconf.Caption:='Use nofontconfig option';
+    nFconf.Hint:='For mplayer without ''-nofontconfig'' option, you can'^M^J+
+                 'uncheck this box to ensure mplayer can be runed';
     CRFScr.Caption:='Click MBR to FullScreen';
     CRFScr.Hint:='Click Right button of Mouse to FullScreen.';
     CSPDIF.Caption:='Passthrough S/PDIF';

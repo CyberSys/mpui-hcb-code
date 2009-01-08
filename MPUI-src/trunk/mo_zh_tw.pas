@@ -297,8 +297,9 @@ begin
                             '沖方式兩倍的內存. 所以不能用于顯存很少的顯卡.');
     CVolnorm.Caption:=UTF8Decode('標準化音量');
     CVolnorm.Hint:=UTF8Decode('最大化文件的音量而不失真');
-    Defaultslang.Caption:=UTF8Decode('優先選擇中文字幕\音頻軌');
-    Defaultslang.Hint:=UTF8Decode('主要用于DVD的播放,有時候可能造成Mplayer找不到其他語言的音軌');
+    nFconf.Caption:=UTF8Decode('使用nofontconfig選項');
+    nFconf.Hint:=UTF8Decode('對于那些不支持-nofontconfig選項的Mplayer，可以'^M^J+
+                            '取消勾選此項以避免錯誤');
     CSPDIF.Caption:=UTF8Decode('通過S/PDIF輸出AC3/DTS');
     LCh.Caption:=UTF8Decode('立體聲模式');
     LRot.Caption:=UTF8Decode('旋轉視頻');

@@ -301,8 +301,9 @@ begin
                             '内存. 所以不能用于显存很少的显卡.');
     CVolnorm.Caption:=UTF8Decode('标准化音量');
     CVolnorm.Hint:=UTF8Decode('最大化文件的音量而不失真');
-    Defaultslang.Caption:=UTF8Decode('优先选择中文字幕/音频轨');
-    Defaultslang.Hint:=UTF8Decode('主要用于DVD的播放,有时候可能造成Mplayer找不到其他语言的音轨');
+    nFconf.Caption:=UTF8Decode('使用nofontconfig选项');
+    nFconf.Hint:=UTF8Decode('对于那些不支持-nofontconfig选项的Mplayer，可以'^M^J+
+                            '取消勾选此项以避免错误');
     CSPDIF.Caption:=UTF8Decode('通过S/PDIF输出AC3/DTS');
     LCh.Caption:=UTF8Decode('立体声输出模式');
     LRot.Caption:=UTF8Decode('旋转视频');

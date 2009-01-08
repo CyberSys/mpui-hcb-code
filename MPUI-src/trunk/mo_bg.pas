@@ -303,7 +303,6 @@ begin
     double.Hint:=UTF8Decode('Двойното буфериране поправя OSD трепванията като запаметява два кадъра в памета');
     CVolnorm.Caption:=UTF8Decode('Нормализиране на усилването');
     CVolnorm.Hint:=UTF8Decode('Максимизира усилването без да изкривява звука');
-    Defaultslang.Caption:=UTF8Decode('Китайски по подразбиране като жаргон');
     CRFScr.Caption:=UTF8Decode('Натисни MBR за размер на цял екран');
     CSPDIF.Caption:=UTF8Decode('Passthrough S/PDIF');
     LCh.Caption:=UTF8Decode('Стерео режим');

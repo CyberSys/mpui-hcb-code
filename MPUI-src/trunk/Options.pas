@@ -54,7 +54,7 @@ type
     CVolnorm: TTntCheckBox;
     double: TTntCheckBox;
     CDr: TTntCheckBox;
-    Defaultslang: TTntCheckBox;
+    nfconf: TTntCheckBox;
     EMplayerLocation: TTntEdit;
     BSubfont: TTntButton;
     BMplayer: TTntButton;
@@ -278,7 +278,7 @@ begin
   CDr.Checked:=Dr;
   Double.Checked:=dbbuf;
   CVolnorm.Checked:=Volnorm;
-  Defaultslang.Checked:=Dlang;
+  nfconf.Checked:=nfc;
   CSubcp.Text:=subcode;
 
   RMplayer.Checked:=ML;
@@ -427,8 +427,8 @@ begin
     Volnorm:=CVolnorm.Checked; changed:=true;
   end;
 
-  if Dlang<>Defaultslang.Checked then begin
-    Dlang:=Defaultslang.Checked; changed:=true;
+  if nfc<>nfconf.Checked then begin
+    nfc:=nfconf.Checked; changed:=true;
   end;
 
   if subcode<>CSubcp.Text then begin

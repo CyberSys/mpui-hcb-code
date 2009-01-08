@@ -64,7 +64,7 @@ begin
     Core.Dr:=ReadBool(SectionName,'Dr',Core.Dr);
     Core.dbbuf:=ReadBool(SectionName,'Double',Core.dbbuf);
     Core.Volnorm:=ReadBool(SectionName,'Volnorm',Core.Volnorm);
-    Core.Dlang:=ReadBool(SectionName,'Defaultslang',Core.Dlang);
+    Core.nfc:=ReadBool(SectionName,'nofontconfig',Core.nfc);
     Core.subfont:=GetLongPath(ReadString(SectionName,'Subfont',Core.subfont));
     Core.osdfont:=GetLongPath(ReadString(SectionName,'OSDfont',Core.osdfont));
     Core.ShotDir:=GetLongPath(ReadString(SectionName,'ShotDir',Core.ShotDir));
@@ -174,7 +174,7 @@ begin
            WriteBool  (SectionName,'Dr',Core.Dr);
            WriteBool  (SectionName,'Double',Core.dbbuf);
            WriteBool  (SectionName,'Volnorm',Core.Volnorm);
-           WriteBool  (SectionName,'Defaultslang',Core.Dlang);
+           WriteBool  (SectionName,'nofontconfig',Core.nfc);
            WriteString  (SectionName,'Subcode',Core.subcode);
            if IsWideStringMappableToAnsi(subfont) then
            WriteString  (SectionName,'Subfont',Core.subfont)

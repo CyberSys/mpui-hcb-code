@@ -111,7 +111,7 @@ var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
     InterW,InterH,OldX,OldY,Scale,LastScale:integer;
     MFunc,CBHSA,bri,briD,contr,contrD,hu,huD,sat,satD,gam,gamD:integer;
 var AudioOut,AudioDev,Postproc,Deinterlace,Aspect:integer;
-    ReIndex,SoftVol,RFScr,dbbuf,Dlang,Firstrun,Volnorm,Dr:boolean;
+    ReIndex,SoftVol,RFScr,dbbuf,nfc,Firstrun,Volnorm,Dr:boolean;
     Loadsrt,LoadVob,Loadsub,Expand,TotalTime,TTime:integer;
 var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
@@ -582,12 +582,6 @@ begin
     SetPriorityClass(GetCurrentProcess,HIGH_PRIORITY_CLASS);
   end
   else SetPriorityClass(GetCurrentProcess,ABOVE_NORMAL_PRIORITY_CLASS);
-  s:=CheckSubfont(subfont);
-  if uof then begin
-    if WideFileExists(s) then CmdLine:=CmdLine+' -subfont '+EscapeParam(s);
-    s:=CheckSubfont(osdfont);
-  end;
-  if WideFileExists(s) then CmdLine:=CmdLine+' -font '+EscapeParam(s);
 
   if (not CurMonitor.Primary) and (MonitorID>0) then CmdLine:=CmdLine+' -adapter '+IntToStr(MonitorID);
   if UseUni then CmdLine:=CmdLine+' -msgcharset noconv';
@@ -606,6 +600,7 @@ begin
   if OSDLevel<>1 then CmdLine:=CmdLine+' -osdlevel '+IntToStr(OSDLevel);
   if Dr then CmdLine:=CmdLine+' -dr';
   if dbbuf then CmdLine:=CmdLine+' -double';
+  if nfc then CmdLine:=CmdLine+' -nofontconfig';
   if Ass then begin
     CmdLine:=CmdLine+' -ass';
     if Efont then CmdLine:=CmdLine+' -embeddedfonts';
@@ -615,7 +610,12 @@ begin
     else CmdLine:=CmdLine+' -ass-font-scale '+FloatToStr(FSize-3.3);
     if ISub then CmdLine:=CmdLine+' -vf-pre ass';
   end;
-
+  s:=CheckSubfont(subfont);
+  if uof then begin
+    if s<>'' then CmdLine:=CmdLine+' -subfont '+EscapeParam(s);
+    s:=CheckSubfont(osdfont);
+  end;
+  if s<>'' then CmdLine:=CmdLine+' -font '+EscapeParam(s);
   case Expand of
     0: if ISub and (not Ass) then CmdLine:=CmdLine+' -vf-pre expand=osd=1 -noslices';
     1: if ISub and (not Ass) then CmdLine:=CmdLine+' -vf-pre expand=:-80::40:1 -noslices'
@@ -671,7 +671,6 @@ begin
 
   if Firstrun then begin
     ClearTmpFiles(TempDir); Lyric.ClearLyric;
-    if Dlang then CmdLine:=CmdLine+' -alang zh,ch,tw,en -slang zh,ch,tw,en';
 
     if WideFileExists(LyricURL) then begin //拖放的歌词或用户指定的歌词
       TmpURL:=WideExtractFileName(MediaURL);
@@ -2219,7 +2218,7 @@ begin
   Deinterlace:=0; Aspect:=0; Postproc:=0; IntersubCount:=0; UpdatePW:=false;
   AudioOut:=2; AudioDev:=0; Expand:=0; SPDIF:=false; DirHIdx:=0; DirHSub:=0;
   ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=false; Fol:=2;
-  dbbuf:=true; Dr:=false; Volnorm:=false; Dlang:=false; InterW:=4; InterH:=3;
+  dbbuf:=true; Dr:=false; Volnorm:=false; nfc:=true; InterW:=4; InterH:=3;
   Params:=''; OnTop:=0; UpdateSkipBar:=false; Async:=false; AsyncV:='100';
   Status:=sNone; Shuffle:=false; Loop:=false; OneLoop:=false; VideoOut:='Auto';
   Volume:=100; Mute:=False; Duration:=''; MouseMode:=0; SubPos:=96; FSize:=4.5;
