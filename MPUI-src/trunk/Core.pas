@@ -605,9 +605,8 @@ begin
     CmdLine:=CmdLine+' -ass';
     if Efont then CmdLine:=CmdLine+' -embeddedfonts';
     CmdLine:=CmdLine+' -ass-color '+ColorToStr(TextColor)
-            +' -ass-border-color '+ColorToStr(OutColor);
-    if FSize<3.4 then CmdLine:=CmdLine+' -ass-font-scale 0.1'
-    else CmdLine:=CmdLine+' -ass-font-scale '+FloatToStr(FSize-3.3);
+            +' -ass-border-color '+ColorToStr(OutColor)
+            +' -ass-font-scale '+FloatToStr(FSize/3.2);
     if ISub then CmdLine:=CmdLine+' -vf-pre ass';
   end;
   s:=CheckSubfont(subfont);

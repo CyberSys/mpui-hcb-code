@@ -2471,7 +2471,8 @@ begin
       FSize:=FSize+(p.X-OldX)/60;
       OldX:=p.X; OldY:=p.Y;
       if FSize>10 then FSize:=10; if FSize<0.1 then FSize:=0.1;
-      SendCommand('sub_scale '+FloatToStr(FSize)+' 1');            
+      if ass then SendCommand('sub_scale '+FloatToStr(FSize/3.2)+' 1')
+      else SendCommand('sub_scale '+FloatToStr(FSize)+' 1');
     end
     else begin       //Move Subtitle
       SubPos:=i;
