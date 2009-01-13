@@ -1555,7 +1555,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     s:=MainForm.MDVDT.Items[TID+2].Items[0].Items[CID-1].Caption;
     i:=pos('(',s);
     if CID=MainForm.MDVDT.Items[TID+2].Items[0].Count then begin
-      if TTime>0 then Result:=TTime-TimeToSeconds(copy(s,i+1,8));
+      if (TTime>0) and (CID>1) then Result:=TTime-TimeToSeconds(copy(s,i+1,8))
     end
     else begin
       k:=MainForm.MDVDT.Items[TID+2].Items[0].Items[CID].Caption;
