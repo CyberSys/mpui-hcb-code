@@ -862,8 +862,10 @@ begin
   if Copy(MediaURL,1,12)=' -dvd-device' then begin
     if TotalTime>0 then begin
       i:=0;
-      if HaveChapters then begin
-        s:=MainForm.MDVDT.Items[TID+2].Items[0].Items[CID-1].Caption;
+      if HaveChapters and (CID>1) then begin
+        t:=CheckMenu(MainForm.MDVDT,TID);
+        i:=CheckMenu(MainForm.MDVDT.Items[t].Items[0],CID-1);
+        s:=MainForm.MDVDT.Items[t].Items[0].Items[i].Caption;
         s:=Copy(s,pos('(',s)+1,8);
         i:=TimeToSeconds(s);
       end;
@@ -1899,10 +1901,13 @@ begin
           SendCommand('get_time_length');
         end;
         SecondPos:=p; MainForm.UpdateTime;
-        if HaveChapters and (SecondPos=TotalTime-1) and
-          (CID<MainForm.MDVDT.Items[TID+2].Items[0].Count) then begin
-          MainForm.MDVDT.Items[TID+2].Items[0].Items[CID].Checked:=true;
-          inc(CID); TotalTime:=UpdateLen;
+        if HaveChapters and (SecondPos=TotalTime-1) then begin
+          i:=CheckMenu(MainForm.MDVDT,TID);
+          r:=CheckMenu(MainForm.MDVDT.Items[i].Items[0],CID);
+          if r<MainForm.MDVDT.Items[i].Items[0].Count-1 then begin
+            MainForm.MDVDT.Items[i].Items[0].Items[r+1].Checked:=true;
+            inc(CID); TotalTime:=UpdateLen;
+          end;
         end;
         if mute and LastMute then begin
           SendCommand('set_property mute 1');
