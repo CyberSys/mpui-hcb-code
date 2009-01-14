@@ -290,7 +290,7 @@ begin
 
           if Add then begin
             i:=UTF8Decode(fileInfo.szFilename)+' <-- '+k;
-            if not playlist.FindItem('',i) then begin
+            if playlist.FindItem('',i)<0 then begin
               with Entry do begin
                 State:=psNotPlayed;
                 FullURL:=ArcName;
@@ -321,7 +321,7 @@ begin
       inc(Result);
       if Add then begin
         i:=sz.Files.wstrings[z]+' <-- '+k;
-        if not playlist.FindItem('',i) then begin
+        if playlist.FindItem('',i)<0 then begin
           with Entry do begin
             State:=psNotPlayed;
             FullURL:=ArcName;

@@ -143,6 +143,7 @@ var StreamInfo:record
       end;
     end;
 
+function CheckMenu(Menu:TMenuItem; ID:integer):integer;
 function GetLongPath(const ShortName:WideString):WideString;
 function GetLongPathNameA(lpszShortPath,lpszLongPath:PChar; cchBuffer:DWORD):DWORD;
   stdcall; external kernel32 name 'GetLongPathNameA';
@@ -204,6 +205,17 @@ var ClientWaitThread:TClientWaitThread;
 
 procedure HandleInputLine(Line:String); forward;
 procedure HandleIDLine(ID:string; Content:WideString); forward;
+
+function CheckMenu(Menu:TMenuItem; ID:integer):integer;
+var a:integer;
+begin
+  for a:=Menu.Count-1 downto 0 do begin
+    if Menu.Items[a].Tag=ID then begin
+      Result:=a; exit;
+    end;
+  end;
+  Result:=-1;
+end;
 
 function GetLongPath(const ShortName:WideString):WideString;
 var SA:AnsiString;
@@ -1111,7 +1123,7 @@ end;
 
 procedure Restart;
 begin
-  if not Running then exit;
+//  if not Running then exit;
   SetLastPos;
   ForceStop;
   Sleep(50); // wait for the processing threads to finish
@@ -1128,43 +1140,28 @@ end;
 procedure HandleInputLine(Line:string);
 var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
 
-  function MenuItemIsExist(Menu:TMenuItem; ID:integer):boolean;
-  var a:integer;
-  begin
-    for a:=Menu.Count-1 downto 0 do begin
-      if Menu.Items[a].Tag=ID then begin
-        Result:=true; exit;
-      end;
-    end;
-    Result:=false;
-  end;
-
-  procedure SubMenu_Add(Menu:TMenuItem; ID,SelectedID:integer; Handler:TNotifyEvent);
+  function SubMenu_Add(Menu:TMenuItem; ID,SelectedID:integer; Handler:TNotifyEvent):integer;
   begin
     t:=TTntMenuItem.Create(Menu);
-    with t do begin
-      Caption:=IntToStr(ID);
-      Tag:=ID;
-      GroupIndex:=$0A;
-      RadioItem:=true;
-      if ID=SelectedID then Checked:=true
-      else begin
-        if SelectedID<0 then begin
-          if (Menu=MainForm.MDVDT) AND (Menu.Count=3) then Checked:=true
-          else if Menu.Count=0 then Checked:=true;
-        end;
+    t.Caption:=IntToStr(ID); t.Tag:=ID; t.GroupIndex:=$0A;
+    t.RadioItem:=true; t.OnClick:=Handler;
+    if ID=SelectedID then t.Checked:=true
+    else begin
+      if SelectedID<0 then begin
+        if (Menu=MainForm.MDVDT) AND (Menu.Count=3) then t.Checked:=true
+        else if Menu.Count=0 then t.Checked:=true;
       end;
-      OnClick:=Handler;
     end;
     Menu.Add(t);
     Menu.Visible:=true;
+    Result:=Menu.Count-1;
   end;
 
   procedure SubMenu_SetNameLang(Menu:TTntMenuItem; ID:integer; NameLang:string);
-  var j:integer;
+  var a:integer;
   begin
-    for j:=Menu.Count-1 downto 0 do begin
-      with Menu.Items[j] do begin
+    for a:=Menu.Count-1 downto 0 do begin
+      with Menu.Items[a] do begin
         if Tag=ID then begin
           Caption:=Caption+' ('+NameLang+')';
           exit;
@@ -1184,7 +1181,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
            SendCommand('set_property sub 0');
            MainForm.MShowSub.Checked:=true;
         end;
-        if not MenuItemIsExist(MainForm.MSubtitle,i) then begin
+        if CheckMenu(MainForm.MSubtitle,i)<0 then begin
           SubMenu_Add(MainForm.MSubtitle,i,SubID,MainForm.MSubtitleClick);
           VobsubCount:=i+1;
         end;
@@ -1202,7 +1199,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if p<=0 then exit;
       Val(Copy(s,1,p-1),i,r);
       if (r=0) AND (i>=0) AND (i<256) then begin
-        if not MenuItemIsExist(MainForm.MSubtitle,i) then begin
+        if CheckMenu(MainForm.MSubtitle,i)<0 then begin
           SubMenu_Add(MainForm.MSubtitle,i,SubID,MainForm.MSubtitleClick);
           VobsubCount:=i+1;
         end;
@@ -1213,43 +1210,35 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   end;
 
   function CheckDVDT:boolean;
-  var j:integer; Entry:TPlaylistEntry;
+  var a:integer; Entry:TPlaylistEntry;
   begin
     Result:=false;
     if (len>14) and (Copy(Line,1,14)='ID_DVD_TITLES=') then begin
       Val(Copy(Line,15,9),i,r);
       if (r=0) AND (i>0) AND (i<8191) then begin
-        for j:=1 to i do begin
+        for a:=1 to i do begin
           if FirstOpen then begin
-            s:='DVD-'+IntToStr(j)+Copy(DisplayURL,Pos(' <-- ',DisplayURL),length(DisplayURL));
-            if not playlist.FindItem('',s) then begin
+            s:='DVD-'+IntToStr(a)+Copy(DisplayURL,Pos(' <-- ',DisplayURL),length(DisplayURL));
+            if playlist.FindItem('',s)<0 then begin
               with Entry do begin
                 State:=psNotPlayed;
                 FullURL:=MediaURL;
                 DisplayURL:=s;
               end;
               playlist.Add(Entry);
-              if j=i then Playlist.Changed;
+              if a=i then Playlist.Changed;
             end;
           end;
-          if not MenuItemIsExist(MainForm.MDVDT,j) then begin
-            SubMenu_Add(MainForm.MDVDT,j,TID,nil);
+          if CheckMenu(MainForm.MDVDT,j)<0 then begin
+            r:=SubMenu_Add(MainForm.MDVDT,a,TID,nil);
 
-            t:=TTntMenuItem.Create(MainForm.MDVDT.Items[j+2]);
-            with t do begin
-              Caption:=Ccap;
-              Tag:=0;
-              GroupIndex:=$0A;
-            end;
-            MainForm.MDVDT.Items[j+2].Add(t);
+            t:=TTntMenuItem.Create(MainForm.MDVDT.Items[r]);
+            t.Caption:=Ccap; t.Tag:=0; t.GroupIndex:=$0A;
+            MainForm.MDVDT.Items[r].Add(t);
 
-            t:=TTntMenuItem.Create(MainForm.MDVDT.Items[j+2]);
-            with t do begin
-              Caption:=Acap;
-              Tag:=1;
-              GroupIndex:=$0A;
-            end;
-            MainForm.MDVDT.Items[j+2].Add(t);
+            t:=TTntMenuItem.Create(MainForm.MDVDT.Items[r]);
+            t.Caption:=Acap; t.Tag:=1; t.GroupIndex:=$0A;
+            MainForm.MDVDT.Items[r].Add(t);
           end;
         end;
         Result:=true;
@@ -1270,21 +1259,18 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
         Val(Copy(s,p+10,8),j,r);
         if (r=0) AND (j>0) AND (j<8191) then begin
           for k:=1 to j do begin
-            if not MenuItemIsExist(MainForm.MDVDT,i) then SubMenu_Add(MainForm.MDVDT,i,TID,nil);
-            if not MenuItemIsExist(MainForm.MDVDT.Items[i+2],0) then begin
-              t:=TTntMenuItem.Create(MainForm.MDVDT.Items[i+2]);
-              with t do begin
-                Caption:=Ccap;
-                Tag:=0;
-                GroupIndex:=$0A;
-              end;
-              MainForm.MDVDT.Items[i+2].Add(t);
+            r:=CheckMenu(MainForm.MDVDT,i);
+            if r<0 then r:=SubMenu_Add(MainForm.MDVDT,i,TID,nil);
+            if CheckMenu(MainForm.MDVDT.Items[r],0)<0 then begin
+              t:=TTntMenuItem.Create(MainForm.MDVDT.Items[r]);
+              t.Caption:=Ccap; t.Tag:=0; t.GroupIndex:=$0A;
+              MainForm.MDVDT.Items[r].Add(t);
             end;
-            if not MenuItemIsExist(MainForm.MDVDT.Items[i+2].Items[0],k) then begin
+            if CheckMenu(MainForm.MDVDT.Items[r].Items[0],k)<0 then begin
               if i=TID then
-                SubMenu_Add(MainForm.MDVDT.Items[i+2].Items[0],k,CID,MainForm.MDVDCClick)
+                SubMenu_Add(MainForm.MDVDT.Items[r].Items[0],k,CID,MainForm.MDVDCClick)
               else
-                SubMenu_Add(MainForm.MDVDT.Items[i+2].Items[0],k,1,MainForm.MDVDCClick);
+                SubMenu_Add(MainForm.MDVDT.Items[r].Items[0],k,1,MainForm.MDVDCClick);
             end;
           end;
           Result:=true;
@@ -1306,21 +1292,18 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
         Val(Copy(s,p+8,8),j,r);
         if (r=0) AND (j>0) AND (j<8191) then begin
           for k:=1 to j do begin
-            if not MenuItemIsExist(MainForm.MDVDT,i) then SubMenu_Add(MainForm.MDVDT,i,TID,nil);
-            if not MenuItemIsExist(MainForm.MDVDT.Items[i+2],1) then begin
-              t:=TTntMenuItem.Create(MainForm.MDVDT.Items[i+2]);
-              with t do begin
-                Caption:=Ccap;
-                Tag:=1;
-                GroupIndex:=$0A;
-              end;
-              MainForm.MDVDT.Items[i+2].Add(t);
+            r:=CheckMenu(MainForm.MDVDT,i);
+            if r<0 then r:=SubMenu_Add(MainForm.MDVDT,i,TID,nil);
+            if CheckMenu(MainForm.MDVDT.Items[r],1)<0 then begin
+              t:=TTntMenuItem.Create(MainForm.MDVDT.Items[r]);
+              t.Caption:=Ccap; t.Tag:=1; t.GroupIndex:=$0A;
+              MainForm.MDVDT.Items[r].Add(t);
             end;
-            if not MenuItemIsExist(MainForm.MDVDT.Items[i+2].Items[1],k) then begin
+            if CheckMenu(MainForm.MDVDT.Items[r].Items[1],k)<0 then begin
               if i=TID then
-                SubMenu_Add(MainForm.MDVDT.Items[i+2].Items[1],k,AID,MainForm.MDVDAClick)
+                SubMenu_Add(MainForm.MDVDT.Items[r].Items[1],k,AID,MainForm.MDVDAClick)
               else
-                SubMenu_Add(MainForm.MDVDT.Items[i+2].Items[1],k,1,MainForm.MDVDAClick);
+                SubMenu_Add(MainForm.MDVDT.Items[r].Items[1],k,1,MainForm.MDVDAClick);
             end;
           end;
           Result:=true;
@@ -1340,8 +1323,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if (r=0) AND (i>0) AND (i<8191) then begin
         Val(Copy(s,p+8,10),f,r);
         if (r=0) AND (f>0) then begin
-          if not MenuItemIsExist(MainForm.MDVDT,i) then SubMenu_Add(MainForm.MDVDT,i,TID,nil);
-          MainForm.MDVDT.Items[i+2].Caption:=MainForm.MDVDT.Items[i+2].Caption+' ('+SecondsToTime(round(f))+')';
+          r:=CheckMenu(MainForm.MDVDT,i);
+          if r<0 then r:=SubMenu_Add(MainForm.MDVDT,i,TID,nil);
+          MainForm.MDVDT.Items[r].Caption:=MainForm.MDVDT.Items[r].Caption+' ('+SecondsToTime(round(f))+')';
           Result:=true;
         end;
       end;
@@ -1365,19 +1349,16 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       i:=pos(',',s);
       while(i>0) do begin
         inc(j);
-        if not MenuItemIsExist(MainForm.MDVDT,TID) then SubMenu_Add(MainForm.MDVDT,TID,TID,nil);
-        if not MenuItemIsExist(MainForm.MDVDT.Items[TID+2],0) then begin
-          t:=TTntMenuItem.Create(MainForm.MDVDT.Items[TID+2]);
-          with t do begin
-            Caption:=Ccap;
-            Tag:=0;
-            GroupIndex:=$0A;
-          end;
-          MainForm.MDVDT.Items[TID+2].Add(t);
+        r:=CheckMenu(MainForm.MDVDT,TID);
+        if r<0 then r:=SubMenu_Add(MainForm.MDVDT,TID,TID,nil);
+        if CheckMenu(MainForm.MDVDT.Items[r],0)<0 then begin
+          t:=TTntMenuItem.Create(MainForm.MDVDT.Items[r]);
+          t.Caption:=Ccap; t.Tag:=0; t.GroupIndex:=$0A;
+          MainForm.MDVDT.Items[r].Add(t);
         end;
-        if not MenuItemIsExist(MainForm.MDVDT.Items[TID+2].Items[0],j+1) then
-          SubMenu_Add(MainForm.MDVDT.Items[TID+2].Items[0],j+1,CID,MainForm.MDVDCClick);
-        MainForm.MDVDT.Items[TID+2].Items[0].Items[j].Caption:=IntToStr(MainForm.MDVDT.Items[TID+2].Items[0].Items[j].Tag)+' ('+copy(s,1,i-1)+')';
+        if CheckMenu(MainForm.MDVDT.Items[r].Items[0],j+1)<0 then
+          SubMenu_Add(MainForm.MDVDT.Items[r].Items[0],j+1,CID,MainForm.MDVDCClick);
+        MainForm.MDVDT.Items[r].Items[0].Items[j].Caption:=IntToStr(MainForm.MDVDT.Items[r].Items[0].Items[j].Tag)+' ('+copy(s,1,i-1)+')';
         s:=copy(s,i+1,length(s)); i:=pos(',',s);
       end;
       Result:=true; HaveChapters:=true;
@@ -1385,10 +1366,34 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   end;
 
   function CheckDVDNavTL:boolean;
+  var Entry:TPlaylistEntry;
   begin
     if Dnav and (len>27) and (Copy(Line,1,27)='DVDNAV, switched to title: ') then begin
-      Sendcommand('get_property chapter');
-      SendCommand('get_time_length');
+      Val(Copy(Line,28,length(Line)),i,r);
+      if (r=0) and (i<>TID) then begin
+        s:='DVD-'+IntToStr(i)+Copy(DisplayURL,Pos(' <-- ',DisplayURL),length(DisplayURL));
+        i:=playlist.FindItem('',s);
+        if SecondPos=0 then begin
+          if i<0 then begin
+            Entry.State:=psNotPlayed; Entry.FullURL:=MediaURL;
+            Entry.DisplayURL:=s;
+            playlist.Add(Entry);
+            Playlist.Changed;
+            MainForm.UpdateParams;
+            MainForm.NextFile(1,psPlayed);
+          end
+          else begin
+            Playlist.SetState(CurPlay,psPlayed);
+            CurPlay:=i;
+            Playlist.NowPlaying(i);
+            MainForm.DoOpen(Playlist[i].FullURL,Playlist[i].DisplayURL);
+          end;
+        end;
+      end
+      else begin
+        Sendcommand('get_property chapter');
+        SendCommand('get_time_length');
+      end;
       Result:=true;
     end
     else Result:=false;
@@ -1422,7 +1427,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     if (len>12) and (Copy(Line,1,12)='ID_VIDEO_ID=') then begin
       Val(Copy(Line,13,9),i,r);
       if (r=0) AND (i>=0) AND (i<8191) then begin
-        if not MenuItemIsExist(MainForm.MVideo,i) then
+        if CheckMenu(MainForm.MVideo,i)<0 then
           SubMenu_Add(MainForm.MVideo,i,VideoID,MainForm.MVideoClick);
         Result:=true;
       end;
@@ -1438,7 +1443,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if p<=0 then exit;
       Val(Copy(s,1,p-1),i,r);
       if (r=0) AND (i>=0) AND (i<8191) then begin
-        if not MenuItemIsExist(MainForm.MVideo,i) then
+        if CheckMenu(MainForm.MVideo,i)<0 then
           SubMenu_Add(MainForm.MVideo,i,VideoID,MainForm.MVideoClick);
         SubMenu_SetNameLang(MainForm.MVideo,i,copy(s,p+6,length(s)));
         Result:=true;
@@ -1452,7 +1457,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     if (len>12) and (Copy(Line,1,12)='ID_AUDIO_ID=') then begin
       Val(Copy(Line,13,9),i,r);
       if (r=0) AND (i>=0) AND (i<8191) then begin
-        if not MenuItemIsExist(MainForm.MAudio,i) then
+        if CheckMenu(MainForm.MAudio,i)<0 then
           SubMenu_Add(MainForm.MAudio,i,AudioID,MainForm.MAudioClick);
         Result:=true;
       end;
@@ -1469,7 +1474,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if p<=0 then exit;
       Val(Copy(s,1,p-1),i,r);
       if (r=0) AND (i>=0) AND (i<8191) then begin
-        if not MenuItemIsExist(MainForm.MAudio,i) then
+        if CheckMenu(MainForm.MAudio,i)<0 then
           SubMenu_Add(MainForm.MAudio,i,AudioID,MainForm.MAudioClick);
         SubMenu_SetNameLang(MainForm.MAudio,i,copy(s,p+6,length(s)));
         Result:=true;
@@ -1483,7 +1488,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     if (len>15) and (Copy(Line,1,15)='ID_SUBTITLE_ID=') then begin
       Val(Copy(Line,16,9),i,r);
       if (r=0) AND (i>=0) AND (i<8191) then begin
-        if not MenuItemIsExist(MainForm.MSubtitle,VobsubCount+i) then begin
+        if CheckMenu(MainForm.MSubtitle,VobsubCount+i)<0 then begin
           SubMenu_Add(MainForm.MSubtitle,VobsubCount+i,SubID,MainForm.MSubtitleClick);
           IntersubCount:=i+1;
         end;
@@ -1502,7 +1507,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if p<=0 then exit;
       Val(Copy(s,1,p-1),i,r);
       if (r=0) AND (i>=0) AND (i<8191) then begin
-        if not MenuItemIsExist(MainForm.MSubtitle,VobsubCount+i) then begin
+        if CheckMenu(MainForm.MSubtitle,VobsubCount+i)<0 then begin
           SubMenu_Add(MainForm.MSubtitle,VobsubCount+i,SubID,MainForm.MSubtitleClick);
           IntersubCount:=i+1;
         end;
@@ -1549,19 +1554,37 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   end;
 
   function UpdateLen:integer;
-  var k:string;
+  var k:string; a:integer;
   begin
     Result:=TotalTime;
-    s:=MainForm.MDVDT.Items[TID+2].Items[0].Items[CID-1].Caption;
+    r:=CheckMenu(MainForm.MDVDT,TID);
+    if r<0 then r:=SubMenu_Add(MainForm.MDVDT,TID,TID,nil);
+    if CheckMenu(MainForm.MDVDT.Items[r],0)<0 then begin
+      t:=TTntMenuItem.Create(MainForm.MDVDT.Items[r]);
+      t.Caption:=Ccap; t.Tag:=0; t.GroupIndex:=$0A;
+      MainForm.MDVDT.Items[r].Add(t);
+    end;
+    a:=CheckMenu(MainForm.MDVDT.Items[r].Items[0],CID);
+    if a<0 then
+      a:=SubMenu_Add(MainForm.MDVDT.Items[r].Items[0],CID,CID,MainForm.MDVDCClick);
+
+    s:=MainForm.MDVDT.Items[r].Items[0].Items[a].Caption;
     i:=pos('(',s);
-    if CID=MainForm.MDVDT.Items[TID+2].Items[0].Count then begin
-      if (TTime>0) and (CID>1) then Result:=TTime-TimeToSeconds(copy(s,i+1,8))
+    //caption=endTime
+    if a=0 then r:=TimeToSeconds(copy(s,i+1,8))
+    else begin
+      k:=MainForm.MDVDT.Items[r].Items[0].Items[a-1].Caption;
+      j:=pos('(',k); r:=TimeToSeconds(copy(s,i+1,8))-TimeToSeconds(copy(k,j+1,8));
+    end;
+    //caption=startTime
+    {if a=MainForm.MDVDT.Items[r].Items[0].Count-1 then begin
+      if (TTime>0) and (CID>1) then r:=TTime-TimeToSeconds(copy(s,i+1,8));
     end
     else begin
-      k:=MainForm.MDVDT.Items[TID+2].Items[0].Items[CID].Caption;
-      j:=pos('(',k);
-      Result:=TimeToSeconds(copy(k,j+1,8))-TimeToSeconds(copy(s,i+1,8));
-    end;
+      k:=MainForm.MDVDT.Items[r].Items[0].Items[a+1].Caption;
+      j:=pos('(',k); r:=TimeToSeconds(copy(k,j+1,8))-TimeToSeconds(copy(s,i+1,8));
+    end;}
+    if r>0 then Result:=r;
     Duration:=SecondsToTime(Result);
   end;
 
@@ -2069,10 +2092,17 @@ begin
     Val(Copy(Line,13,length(Line)),i,r);
     if (r=0) and (i>=0) then begin
       CID:=i+1;
-      if MenuItemIsExist(MainForm.MDVDT,TID) then
-      if MenuItemIsExist(MainForm.MDVDT.Items[TID+2],0) then
-      if MenuItemIsExist(MainForm.MDVDT.Items[TID+2].Items[0],CID) then
-        MainForm.MDVDT.Items[TID+2].Items[0].Items[i].Checked:=true;
+      r:=CheckMenu(MainForm.MDVDT,TID);
+      if r<0 then r:=SubMenu_Add(MainForm.MDVDT,TID,TID,nil);
+      if CheckMenu(MainForm.MDVDT.Items[r],0)<0 then begin
+        t:=TTntMenuItem.Create(MainForm.MDVDT.Items[r]);
+        t.Caption:=Ccap; t.Tag:=0; t.GroupIndex:=$0A;
+        MainForm.MDVDT.Items[r].Add(t);
+      end;
+      i:=CheckMenu(MainForm.MDVDT.Items[r].Items[0],CID);
+      if i<0 then
+        SubMenu_Add(MainForm.MDVDT.Items[r].Items[0],CID,CID,MainForm.MDVDCClick)
+      else MainForm.MDVDT.Items[r].Items[0].Items[i].Checked:=true;
     end;
     exit;
   end;
@@ -2120,10 +2150,7 @@ begin
   if not CheckDecoder then
   if not CheckCodec then
   if not CheckICYInfo then
-  //if not CheckNOAudio then
   if not CheckAudio then
-  //if not CheckNoVideo then
-  //if not CheckStartPlayback then
   if not CheckNativeResolutionLine then    // modifies Line, should be last
   if not CheckDVDNavTL then
   ;

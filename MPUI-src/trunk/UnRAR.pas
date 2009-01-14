@@ -247,7 +247,7 @@ begin
       inc(Result);
       if Add then begin
         i:=HeaderData.FileNameW+' <-- '+k;
-        if not playlist.FindItem('.part',i) then begin
+        if playlist.FindItem('.part',i)<0 then begin
           with Entry do begin
               State:=psNotPlayed;
               FullURL:=ArcName;

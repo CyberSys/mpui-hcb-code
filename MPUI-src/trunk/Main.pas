@@ -809,8 +809,8 @@ begin
 end;
 
 
-procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+var i,j:integer;
   procedure HandleCommand(const Command:string); begin
     if not Win32PlatformIsUnicode then exit;
     Unpaused;
@@ -1039,14 +1039,23 @@ else begin
         VK_PRIOR:   HandleSeekCommand('seek +600');
         VK_NEXT:    HandleSeekCommand('seek -600');
         VK_HOME:    if UseekC then begin HandleSeekCommand('seek_chapter +1');
-                      if HaveChapters and (CID<MDVDT.Items[TID+2].Items[0].Count-1) then begin
-                        MDVDT.Items[TID+2].Items[0].Items[CID].Checked:=true; inc(CID);
+                      i:=CheckMenu(MDVDT,TID);
+                      if (i>2) and HaveChapters then begin
+                        j:=CheckMenu(MDVDT.Items[i].Items[0],CID);
+                        if j<MDVDT.Items[i].Items[0].Count-1 then begin
+                          MDVDT.Items[i].Items[0].Items[j+1].Checked:=true;
+                          inc(CID);
+                        end;
                       end;
                     end;
         VK_END:     if UseekC then begin HandleSeekCommand('seek_chapter -1');
-                      if HaveChapters and (CID>1) then begin
-                        dec(CID);
-                        MDVDT.Items[TID+2].Items[0].Items[CID].Checked:=true;
+                      i:=CheckMenu(MDVDT,TID);
+                      if (i>2) and HaveChapters then begin
+                        j:=CheckMenu(MDVDT.Items[i].Items[0],CID);
+                        if j>0 then begin
+                          MDVDT.Items[i].Items[0].Items[j-1].Checked:=true;
+                          dec(CID);
+                        end;
                       end;
                     end;
         VK_BACK:    MSpeedClick(M1X);
@@ -1550,24 +1559,29 @@ begin
 end;
 
 procedure TMainForm.MDVDCClick(Sender: TObject);
+var index:integer;
 begin
-  MDVDT.Items[2+TID].Items[0].Items[CID-1].Checked:=false;
+  index:=CheckMenu((Sender as TMenuItem).Parent,CID);
+  (Sender as TMenuItem).Parent.Items[index].Checked:=false;
   CID:=(Sender as TMenuItem).Tag;
-  TID:=(Sender as TMenuItem).Parent.Parent.Tag;
+  index:=(Sender as TMenuItem).Parent.Parent.Tag;
   (Sender as TMenuItem).Checked:=True;
-  if UseekC then begin
+  if UseekC and (TID=index) then begin
     Unpaused;
     SendCommand('seek_chapter '+IntToStr(CID)+' 1');
   end
   else begin
-    Dreset:=true; Restart;
+    TID:=index; Dreset:=true;
+    Restart;
   end;
 end;
 
 procedure TMainForm.MDVDAClick(Sender: TObject);
+var index:integer;
 begin
   if (Sender as TMenuItem).Checked then exit;
-  MDVDT.Items[2+TID].Items[1].Items[AID-1].Checked:=false;
+  index:=CheckMenu((Sender as TMenuItem).Parent,AID);
+  (Sender as TMenuItem).Parent.Items[index].Checked:=false;
   AID:=(Sender as TMenuItem).Tag;
   TID:=(Sender as TMenuItem).Parent.Parent.Tag;
   (Sender as TMenuItem).Checked:=True;
@@ -1734,7 +1748,6 @@ begin
   Playlist.Changed;
   UpdateParams; 
   NextFile(0,psPlaying);
-  (Sender as TMenuItem).Checked:=true;
 end;
 
 procedure TMainForm.MKeyHelpClick(Sender: TObject);

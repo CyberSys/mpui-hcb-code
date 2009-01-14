@@ -59,8 +59,9 @@ type TPlaylist=class
                  procedure Changed;
                  procedure MoveSelectedUp;
                  procedure MoveSelectedDown;
-                 function FindItem(CheckStr,MovieName:widestring):boolean;
+                 function FindItem(CheckStr,MovieName:widestring):integer;
                  function FindPW(FileURL:widestring):String;
+                 procedure SetState(Index:integer; Value:TPlaybackState);
                end;
 
 type TLyric=class
@@ -394,6 +395,13 @@ begin
     else Result:=Data[Index];
 end;
 
+procedure TPlaylist.SetState(Index:integer; Value:TPlaybackState);
+begin
+  if (Index<Low(Data)) OR (Index>High(Data))
+    then exit
+    else Data[Index].State:=Value;
+end;
+
 function TPlaylist.GetSelected(Index:integer):boolean;
 begin
   if (Index<Low(Data)) OR (Index>High(Data))
@@ -408,10 +416,10 @@ begin
     else Data[Index].Selected:=Value;
 end;
 
-function TPlaylist.FindItem(CheckStr,MovieName:widestring):boolean;
+function TPlaylist.FindItem(CheckStr,MovieName:widestring):integer;
 var i,j:integer; k:widestring;
 begin
-  Result:=false;
+  Result:=-1;
   if Count<1 then exit;
   i:=Pos(CheckStr,MovieName);
   if i>0 then MovieName:=copy(MovieName,1,i-1);
@@ -420,7 +428,7 @@ begin
     if i>0 then k:=copy(Data[j].DisplayURL,1,i-1)
     else k:=Data[j].DisplayURL;
     if MovieName=k then begin
-      Result:=true;
+      Result:=j;
       exit;
     end;
   end;
@@ -821,13 +829,13 @@ begin
   Directory:=WideIncludeTrailingPathDelimiter(WideExpandUNCFileName(Directory));
 
   // check for DVD directory
-  if (WideDirectoryExists(Directory+'VIDEO_TS')) then begin
+  if WideDirectoryExists(Directory+'VIDEO_TS') then begin
     with Entry do begin
       State:=psNotPlayed;
       if IsWideStringMappableToAnsi(Directory) then
-        FullURL:=' -dvd-device '+EscapeParam(Directory)+' dvd'
+        FullURL:=' -dvd-device '+EscapeParam(Directory+'VIDEO_TS')+' dvd'
       else
-        FullURL:=' -dvd-device '+EscapeParam(WideExtractShortPathName(Directory))+' dvd';
+        FullURL:=' -dvd-device '+EscapeParam(WideExtractShortPathName(Directory+'VIDEO_TS'))+' dvd';
       DisplayURL:='DVD-1 <-- '+Directory;
     end;
     Add(Entry);
@@ -835,7 +843,7 @@ begin
   end;
 
   // no DVD ->is it a (S)VCD directory?
-  if (WideDirectoryExists(Directory+'MPEGAV'))then begin
+  if WideDirectoryExists(Directory+'MPEGAV') then begin
     Directory:=Directory+'MPEGAV';
     if WideDirectoryExists(Directory+'MPEG2') then Directory:=Directory+'\MPEG2';
   end;
