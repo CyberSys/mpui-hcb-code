@@ -1125,7 +1125,7 @@ end;
 
 procedure Restart;
 begin
-//  if not Running then exit;
+  if not Running then exit;
   SetLastPos;
   ForceStop;
   Sleep(50); // wait for the processing threads to finish
