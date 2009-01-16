@@ -1237,8 +1237,8 @@ begin
   FixSize;
   CX:=OPanel.ClientWidth;
   CY:=OPanel.ClientHeight;
-  Logo.Left:=(CX-116) DIV 2;
-  Logo.Top:=(CY-116) DIV 2;
+  Logo.Left:=(CX-Logo.Width) DIV 2;
+  Logo.Top:=(CY-Logo.Height) DIV 2;
   LEscape.Left:=(CX-LEscape.Width) DIV 2;
   LEscape.Top:=Max(Logo.Top+Logo.Height,CY*3 DIV 4);
   UpdateDockedWindows;
