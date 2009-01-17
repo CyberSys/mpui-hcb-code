@@ -128,7 +128,6 @@ begin
     Caption:=UTF8Decode('Opţiuni');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Aplică');
-    BSave.Caption:=UTF8Decode('Salvează');
     BClose.Caption:=UTF8Decode('Închide');
     LAudioOut.Caption:=UTF8Decode('Driver-ul pentru sunet');
       CAudioOut.Items[0]:=UTF8Decode('(nu decodifica sunetul)');

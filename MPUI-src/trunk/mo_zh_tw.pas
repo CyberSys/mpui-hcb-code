@@ -264,7 +264,6 @@ begin
     Caption:=UTF8Decode('選項');
     BOK.Caption:=UTF8Decode('確認');
     BApply.Caption:=UTF8Decode('套用');
-    BSave.Caption:=UTF8Decode('儲存');
     BClose.Caption:=UTF8Decode('關閉');
     TabSheet1.Caption:=UTF8Decode('系統');
     TabSheet2.Caption:=UTF8Decode('視頻');
@@ -382,8 +381,8 @@ begin
     BDelete.Hint:=UTF8Decode('移除');
     CShuffle.Hint:=UTF8Decode('隨機播放');
     CLoop.Hint:=UTF8Decode('重複播放');
-    BSave.Hint:=UTF8Decode('儲存為 ...');
-    TntTabSheet1.Caption:=UTF8Decode('播放列表');
+    BSave.Hint:=UTF8Decode('儲存播放清單為 ...');
+    TntTabSheet1.Caption:=Caption;
     TntTabSheet2.Caption:=UTF8Decode('歌詞');
     CP0.Caption:=UTF8Decode('系統默認');
     MGB.Caption:=UTF8Decode('简体<-->繁體');

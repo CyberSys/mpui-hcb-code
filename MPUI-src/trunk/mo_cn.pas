@@ -268,7 +268,6 @@ begin
     Caption:=UTF8Decode('选项');
     BOK.Caption:=UTF8Decode('确定');
     BApply.Caption:=UTF8Decode('应用');
-    BSave.Caption:=UTF8Decode('保存');
     BClose.Caption:=UTF8Decode('关闭');
     TabSheet1.Caption:=UTF8Decode('系统');
     TabSheet2.Caption:=UTF8Decode('视频');
@@ -385,8 +384,8 @@ begin
     CShuffle.Hint:=UTF8Decode('随机播放');
     CLoop.Hint:=UTF8Decode('循环播放全部');
     COneLoop.Hint:=UTF8Decode('循环播放当前');
-    BSave.Hint:=UTF8Decode('保存列表');
-    TntTabSheet1.Caption:=UTF8Decode('播放列表');
+    BSave.Hint:=UTF8Decode('保存播放列表...');
+    TntTabSheet1.Caption:=Caption;
     TntTabSheet2.Caption:=UTF8Decode('歌词');
     CP0.Caption:=UTF8Decode('系统默认');
     CPO.Caption:=UTF8Decode('其他');

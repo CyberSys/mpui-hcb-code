@@ -28,7 +28,6 @@ type
   TOptionsForm = class(TTntForm)
     BOK: TTntButton;
     BApply: TTntButton;
-    BSave: TTntButton;
     BClose: TTntButton;
     EParams: TTntEdit;
     LParams: TTntLabel;
@@ -145,7 +144,6 @@ type
     procedure LHelpClick(Sender: TObject);
     procedure BApplyClick(Sender: TObject);
     procedure BOKClick(Sender: TObject);
-    procedure BSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure CAudioOutChange(Sender: TObject);
     procedure BSubfontClick(Sender: TObject);
@@ -684,28 +682,8 @@ procedure TOptionsForm.BOKClick(Sender: TObject);
 begin
   Close;
   ApplyValues;
-  if Changed then Restart;
-end;
-
-procedure TOptionsForm.BSaveClick(Sender: TObject);
-begin
-  ApplyValues;
-  CLanguage.ItemIndex:=DefaultLocale+1;
-  CAspect.Items[10]:=MainForm.MCustomAspect.Caption;
-  CAspect.ItemIndex:=Aspect;
-  CDeinterlace.ItemIndex:=Deinterlace;
-  CPostproc.ItemIndex:=Postproc;
-  CAudioOut.ItemIndex:=AudioOut;
-  CAudioDev.ItemIndex:=AudioDev;
-  CSubcp.Text:=subcode;
-  COsdfont.Text:=osdfont;
-  CSubfont.Text:=subfont;
-  EMplayerLocation.Text:=MplayerLocation;
-  CMAspect.Text:=MAspect;
-  CCh.ItemIndex:=Ch;
-  CRot.ItemIndex:=Rot;
-  ESsf.Text:=ShotDir;
   Save(HomeDir+Config.DefaultFileName,0);
+  if Changed then Restart;
 end;
 
 function EnumFunc(lpGuid:PGUID; lpcstrDescription,lpcstrModule:PChar; lpContext:pointer):LongBool; stdcall;

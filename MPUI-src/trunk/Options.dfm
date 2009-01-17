@@ -47,7 +47,7 @@ object OptionsForm: TOptionsForm
     OnClick = LHelpClick
   end
   object BOK: TTntButton
-    Left = 3
+    Left = 6
     Top = 340
     Width = 75
     Height = 25
@@ -57,7 +57,7 @@ object OptionsForm: TOptionsForm
     OnClick = BOKClick
   end
   object BApply: TTntButton
-    Left = 83
+    Left = 123
     Top = 340
     Width = 75
     Height = 25
@@ -66,24 +66,14 @@ object OptionsForm: TOptionsForm
     TabOrder = 1
     OnClick = BApplyClick
   end
-  object BSave: TTntButton
-    Left = 163
-    Top = 340
-    Width = 75
-    Height = 25
-    Anchors = [akLeft, akBottom]
-    Caption = 'Save'
-    TabOrder = 2
-    OnClick = BSaveClick
-  end
   object BClose: TTntButton
-    Left = 243
+    Left = 240
     Top = 340
     Width = 75
     Height = 25
     Anchors = [akLeft, akBottom]
     Caption = 'Close'
-    TabOrder = 3
+    TabOrder = 2
     OnClick = BCloseClick
   end
   object EParams: TTntEdit
@@ -92,7 +82,7 @@ object OptionsForm: TOptionsForm
     Width = 309
     Height = 21
     Anchors = [akLeft, akRight, akBottom]
-    TabOrder = 4
+    TabOrder = 3
   end
   object Tab: TTntPageControl
     Left = 5
@@ -102,7 +92,7 @@ object OptionsForm: TOptionsForm
     ActivePage = TabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     Images = ImageList1
-    TabOrder = 5
+    TabOrder = 4
     object TabSheet1: TTntTabSheet
       Caption = 'System'
       DesignSize = (

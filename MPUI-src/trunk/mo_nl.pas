@@ -128,7 +128,6 @@ begin
     Caption:=UTF8Decode('Opties');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Toepassen');
-    BSave.Caption:=UTF8Decode('Opslaan');
     BClose.Caption:=UTF8Decode('Sluiten');
     LAudioOut.Caption:=UTF8Decode('Stuurprogramma voor geluid');
       CAudioOut.Items[0]:=UTF8Decode('(geluidsspoor niet decoderen)');

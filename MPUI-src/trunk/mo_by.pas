@@ -126,7 +126,6 @@ UTF8Decode(
     Caption:=UTF8Decode('Опцыі');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Прымяніць');
-    BSave.Caption:=UTF8Decode('Захаваць');
     BClose.Caption:=UTF8Decode('Зачыніць');
     LAudioOut.Caption:=UTF8Decode('Драйвер вывада гука');
       CAudioOut.Items[0]:=UTF8Decode('(Не дэкадаваць гук)');

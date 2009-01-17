@@ -1150,6 +1150,7 @@ end;
 procedure TPlaylistForm.BSaveClick(Sender: TObject);
 var FileNameList:TStringList; i:integer;
 begin
+  SaveDialog.Title:=BSave.Hint;
   if SaveDialog.Execute then begin
     FileNameList:=TStringList.Create;
     for i:=0 to Playlist.Count-1 do FileNameList.Add(UTF8Encode(Playlist[i].FullURL));

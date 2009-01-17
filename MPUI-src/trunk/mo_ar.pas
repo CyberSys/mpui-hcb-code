@@ -127,7 +127,6 @@ begin
     Caption:=UTF8Decode('خيارات');
     BOK.Caption:=UTF8Decode('نعم');
     BApply.Caption:=UTF8Decode('تنفيذ');
-    BSave.Caption:=UTF8Decode('حفظ');
     BClose.Caption:=UTF8Decode('غلق');
     LAudioOut.Caption:=UTF8Decode('مشغل مخرج الصوت');
       CAudioOut.Items[0]:=UTF8Decode('(لا تفك شفرة الصوت)');

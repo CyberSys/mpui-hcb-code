@@ -267,7 +267,6 @@ begin
     Caption:='Options';
     BOK.Caption:='OK';
     BApply.Caption:='Apply';
-    BSave.Caption:='Save';
     BClose.Caption:='Close';
     TabSheet1.Caption:='System';
     TabSheet2.Caption:='Video';
@@ -388,8 +387,8 @@ begin
     CShuffle.Hint:='Shuffle';
     CLoop.Hint:='Repeat All';
     COneLoop.Hint:='Repeat Current';
-    BSave.Hint:='Save ...';
-    TntTabSheet1.Caption:='PlayList';
+    BSave.Hint:='Save Playlist...';
+    TntTabSheet1.Caption:=Caption;
     TntTabSheet2.Caption:='Lyric';
     CP0.Caption:='System Default';
     CPO.Caption:='Other';

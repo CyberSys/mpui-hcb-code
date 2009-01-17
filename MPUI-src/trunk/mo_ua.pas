@@ -140,7 +140,6 @@ begin
     Caption := UTF8Decode('Налаштування');
     BOK.Caption := UTF8Decode('OK');
     BApply.Caption := UTF8Decode('Застосувати');
-    BSave.Caption := UTF8Decode('Зберегти');
     BClose.Caption := UTF8Decode('Закрити');
     LAudioOut.Caption := UTF8Decode('Виведення звуку через');
     LAudioDev.Caption := UTF8Decode('Пристрій виведення звуку');

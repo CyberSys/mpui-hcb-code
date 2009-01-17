@@ -265,7 +265,6 @@ begin
     Caption:=UTF8Decode('Настройки');
     BOK.Caption:=UTF8Decode('ДА');
     BApply.Caption:=UTF8Decode('Приеми');
-    BSave.Caption:=UTF8Decode('Запамети');
     BClose.Caption:=UTF8Decode('Затвори');
     TabSheet1.Caption:=UTF8Decode('Система');
     TabSheet2.Caption:=UTF8Decode('Видео');
@@ -365,7 +364,7 @@ begin
     CLoop.Hint:=UTF8Decode('Повтори всички');
     COneLoop.Hint:=UTF8Decode('Повтори само текущия');
     BSave.Hint:=UTF8Decode('Запамети ...');
-    TntTabSheet1.Caption:=UTF8Decode('Плейлист');
+    TntTabSheet1.Caption:=Caption;
     TntTabSheet2.Caption:=UTF8Decode('Говор');
     CP0.Caption:=UTF8Decode('По подразбиране за системата');
     CPO.Caption:=UTF8Decode('Други');
