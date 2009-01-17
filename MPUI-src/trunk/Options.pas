@@ -269,6 +269,7 @@ end;
 procedure TOptionsForm.LoadValues;
 var i:integer; s,h,j,k:Widestring;
 begin
+  Load(HomeDir+DefaultFileName,1);
   CAudioOut.ItemIndex:=AudioOut;
   CAudioDev.ItemIndex:=AudioDev;
   LScroll.Checked:=PScroll;
