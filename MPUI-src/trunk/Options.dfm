@@ -47,7 +47,7 @@ object OptionsForm: TOptionsForm
     OnClick = LHelpClick
   end
   object BOK: TTntButton
-    Left = 6
+    Left = 3
     Top = 340
     Width = 75
     Height = 25
@@ -57,7 +57,7 @@ object OptionsForm: TOptionsForm
     OnClick = BOKClick
   end
   object BApply: TTntButton
-    Left = 95
+    Left = 90
     Top = 340
     Width = 75
     Height = 25
@@ -764,13 +764,13 @@ object OptionsForm: TOptionsForm
         Left = 1
         Top = 102
         Width = 298
-        Height = 109
+        Height = 108
         Anchors = [akLeft, akTop, akRight, akBottom]
         Caption = 'Lyric'
         TabOrder = 10
         DesignSize = (
           298
-          109)
+          108)
         object LTCL: TTntLabel
           Left = 14
           Top = 51
@@ -978,7 +978,7 @@ object OptionsForm: TOptionsForm
         Left = 8
         Top = 78
         Width = 286
-        Height = 46
+        Height = 45
         Anchors = [akLeft, akTop, akRight, akBottom]
         BevelOuter = bvNone
         Font.Charset = DEFAULT_CHARSET
