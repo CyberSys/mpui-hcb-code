@@ -64,10 +64,9 @@ uses
 {$R *.res}
 {$R XPStyle.res}
 var hAppMutex:Thandle; Mf:hWnd; s:WideString; t:string; i,PCount:integer;
-    IsOne:boolean;
 begin
-  Init; IsOne:=oneM;
-  if IsOne then hAppMutex:=CreateMutex(nil,false,PAnsiChar('fenny8248'));
+  Init;
+  hAppMutex:=CreateMutex(nil,false,PAnsiChar('fenny8248'));
   if oneM and (WaitForSingleObject(hAppMutex,10)=WAIT_TIMEOUT) then begin
     if Win32PlatformIsUnicode then Mf:=FindWindow('fengying.UnicodeClass',nil)
     else Mf:=FindWindow('fengying',nil);
@@ -101,9 +100,9 @@ begin
     Application.CreateForm(TInfoForm, InfoForm);
     Application.CreateForm(TEqualizerForm, EqualizerForm);
     Application.Run;
-    if IsOne then ReleaseMutex(hAppMutex);
+    ReleaseMutex(hAppMutex);
   end;
-  if IsOne then CloseHandle(hAppMutex);
+  CloseHandle(hAppMutex);
 end.
 
 {var
