@@ -863,7 +863,8 @@ begin
       i:=0;
       if HaveChapters and (CID>1) then begin
         t:=CheckMenu(MainForm.MDVDT,TID);
-        i:=CheckMenu(MainForm.MDVDT.Items[t].Items[0],CID-1);
+        if Dnav then i:=CheckMenu(MainForm.MDVDT.Items[t].Items[0],CID-1)
+        else i:=CheckMenu(MainForm.MDVDT.Items[t].Items[0],CID);
         s:=MainForm.MDVDT.Items[t].Items[0].Items[i].Caption;
         s:=Copy(s,pos('(',s)+1,8);
         i:=TimeToSeconds(s);
@@ -1571,20 +1572,22 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
 
     s:=MainForm.MDVDT.Items[r].Items[0].Items[a].Caption;
     i:=pos('(',s);
-    //caption=endTime
-    if a=0 then r:=TimeToSeconds(copy(s,i+1,8))
-    else begin
-      k:=MainForm.MDVDT.Items[r].Items[0].Items[a-1].Caption;
-      j:=pos('(',k); r:=TimeToSeconds(copy(s,i+1,8))-TimeToSeconds(copy(k,j+1,8));
-    end;
-    //caption=startTime
-    {if a=MainForm.MDVDT.Items[r].Items[0].Count-1 then begin
-      if (TTime>0) and (CID>1) then r:=TTime-TimeToSeconds(copy(s,i+1,8));
+    if Dnav then begin //caption=endTime
+      if a=0 then r:=TimeToSeconds(copy(s,i+1,8))
+      else begin
+        k:=MainForm.MDVDT.Items[r].Items[0].Items[a-1].Caption;
+        j:=pos('(',k); r:=TimeToSeconds(copy(s,i+1,8))-TimeToSeconds(copy(k,j+1,8));
+      end;
     end
-    else begin
-      k:=MainForm.MDVDT.Items[r].Items[0].Items[a+1].Caption;
-      j:=pos('(',k); r:=TimeToSeconds(copy(k,j+1,8))-TimeToSeconds(copy(s,i+1,8));
-    end;}
+    else begin //caption=startTime
+      if a=MainForm.MDVDT.Items[r].Items[0].Count-1 then begin
+        if (TTime>0) and (CID>1) then r:=TTime-TimeToSeconds(copy(s,i+1,8));
+      end
+      else begin
+        k:=MainForm.MDVDT.Items[r].Items[0].Items[a+1].Caption;
+        j:=pos('(',k); r:=TimeToSeconds(copy(k,j+1,8))-TimeToSeconds(copy(s,i+1,8));
+      end;
+    end;
     if r>0 then Result:=r;
     Duration:=SecondsToTime(Result);
   end;
@@ -1905,7 +1908,7 @@ begin
           r:=CheckMenu(MainForm.MDVDT.Items[i].Items[0],CID);
           if r<MainForm.MDVDT.Items[i].Items[0].Count-1 then begin
             MainForm.MDVDT.Items[i].Items[0].Items[r+1].Checked:=true;
-            inc(CID); TotalTime:=UpdateLen;
+            inc(CID); TotalTime:=UpdateLen; //针对不带chapter属性的mplayer
           end;
         end;
         if mute and LastMute then begin

@@ -830,12 +830,13 @@ begin
 
   // check for DVD directory
   if WideDirectoryExists(Directory+'VIDEO_TS') then begin
+    Directory:=WideExcludeTrailingPathDelimiter(Directory);
     with Entry do begin
       State:=psNotPlayed;
       if IsWideStringMappableToAnsi(Directory) then
-        FullURL:=' -dvd-device '+EscapeParam(Directory+'VIDEO_TS')+' dvd'
+        FullURL:=' -dvd-device '+EscapeParam(Directory)+' dvd'
       else
-        FullURL:=' -dvd-device '+EscapeParam(WideExtractShortPathName(Directory+'VIDEO_TS'))+' dvd';
+        FullURL:=' -dvd-device '+EscapeParam(WideExtractShortPathName(Directory))+' dvd';
       DisplayURL:='DVD-1 <-- '+Directory;
     end;
     Add(Entry);
