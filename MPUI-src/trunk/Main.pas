@@ -506,10 +506,11 @@ begin
   VolSlider.ParentBackground:=False; SeekBarSlider.ParentBackground:=False;
 {$ENDIF}
   FirstShow:=true; AutoQuit:=false; ViewMode:=0;
-  HideMouseAt:=0; UpdateSeekBarAt:=0; PlayMsgAt:=0; 
+  HideMouseAt:=0; UpdateSeekBarAt:=0; PlayMsgAt:=0;
   WantFullscreen:=false; WantCompact:=false;
   Constraints.MinWidth:=Width; Constraints.MinHeight:=Height;
-  Init; Config.Load(HomeDir+'autorun.inf'); Config.Load(HomeDir+DefaultFileName);
+  if Win32PlatformIsXP then MainForm.Imagery.Clear;
+  Load(HomeDir+'autorun.inf',0); Load(HomeDir+DefaultFileName,0);
   if not WideFileExists(MplayerLocation) then MplayerLocation:=HomeDir+'mplayer.exe';
   if subcode='' then subcode:='CP'+IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT)); //AnsiCodePage
   //OEM CodePage
@@ -2448,18 +2449,14 @@ begin
 
   if abs(MouseMode)=1 then begin
     SetCursor(Screen.Cursors[crSizeAll]);
-    if DragM then begin
-      ReleaseCapture;
-      SendMessage(Handle, WM_SYSCOMMAND, SC_MOVE+2, 0);
-      //Perform(WM_SYSCOMMAND,$F012,0);
-      //SC_MOVE = 61456; $F012 = 61458 =SC_MOVE+2
-      MouseMode:=0;
-    end
-    else begin
-      MouseMode:=-1; //在拖动时不进行单击、双击事件
-      left:=left+p.X-OldX; Top:=Top+p.Y-OldY;
-      OldX:=p.X; OldY:=p.Y;
-    end;
+    {ReleaseCapture;
+    SendMessage(Handle, WM_SYSCOMMAND, SC_MOVE+2, 0);
+    //Perform(WM_SYSCOMMAND,$F012,0);
+    //SC_MOVE = 61456; $F012 = 61458 =SC_MOVE+2
+    MouseMode:=0;}
+    MouseMode:=-1; //在拖动时不进行单击、双击事件
+    left:=left+p.X-OldX; Top:=Top+p.Y-OldY;
+    OldX:=p.X; OldY:=p.Y;
   end;
 
   if (not Running) then exit;

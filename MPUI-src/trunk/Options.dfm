@@ -349,12 +349,12 @@ object OptionsForm: TOptionsForm
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 22
       end
-      object CDrag: TTntCheckBox
+      object Cone: TTntCheckBox
         Left = 12
         Top = 152
         Width = 168
         Height = 17
-        Caption = 'Use DragMode of System'
+        Caption = 'Use only one instance of MPUI'
         ParentShowHint = False
         ShowHint = False
         TabOrder = 23
@@ -707,7 +707,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 1
       end
       object CSPDIF: TTntCheckBox
@@ -774,13 +774,13 @@ object OptionsForm: TOptionsForm
         Left = 1
         Top = 102
         Width = 298
-        Height = 109
+        Height = 108
         Anchors = [akLeft, akTop, akRight, akBottom]
         Caption = 'Lyric'
         TabOrder = 10
         DesignSize = (
           298
-          109)
+          108)
         object LTCL: TTntLabel
           Left = 14
           Top = 51
@@ -980,7 +980,7 @@ object OptionsForm: TOptionsForm
         Width = 172
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 15
         OnChange = FontChange
       end
@@ -988,7 +988,7 @@ object OptionsForm: TOptionsForm
         Left = 8
         Top = 78
         Width = 286
-        Height = 47
+        Height = 46
         Anchors = [akLeft, akTop, akRight, akBottom]
         BevelOuter = bvNone
         Font.Charset = DEFAULT_CHARSET
@@ -1005,7 +1005,7 @@ object OptionsForm: TOptionsForm
         Width = 172
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 17
         OnChange = FontChange
       end

@@ -283,7 +283,7 @@ begin
       CPostproc.Items[1]:=UTF8Decode('自动');
       CPostproc.Items[2]:=UTF8Decode('最佳画质');
     LOCstr_AutoLocale:=UTF8Decode('(自动-选择)');
-    CDrag.Caption:=UTF8Decode('使用系统的窗体拖动方式');
+    Cone.Caption:=UTF8Decode('仅运行一个MPUI实例');
     CIndex.Caption:=UTF8Decode('重建 文件索引');
     CIndex.Hint:=UTF8Decode('在没有找到索引的情况下重建AVI文件的索引, 从而允许搜索.'^M^J+
                             '对于损坏的/不完整的下载, 或制作低劣的AVI.');

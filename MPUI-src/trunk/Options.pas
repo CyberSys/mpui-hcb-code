@@ -118,7 +118,7 @@ type
     SOsdfont: TTntCheckBox;
     LCh: TTntStaticText;
     LRot: TTntStaticText;
-    CDrag: TTntCheckBox;
+    Cone: TTntCheckBox;
     CGUI: TTntCheckBox;
     CNobps: TTntCheckBox;
     CFilter: TTntCheckBox;
@@ -357,7 +357,7 @@ begin
   SOsdfont.Checked:=uof;
   COsdfont.Enabled:=uof;
   BOsdfont.Enabled:=uof;
-  CDrag.Checked:=DragM;
+  Cone.Checked:=oneM;
   CGUI.Checked:=GUI;
 
   if (CSubfont.ItemIndex<0) and (COsdfont.ItemIndex<0) then begin
@@ -637,7 +637,7 @@ begin
   if WideDirectoryExists(ELyric.Text) then LyricDir:=ELyric.Text;
   vsync:=CVSync.Checked;
   UseekC:=CUseekC.Checked;
-  DragM:=CDrag.Checked;
+  oneM:=Cone.Checked;
   PScroll:=LScroll.Checked;
   LTextColor:=ColorToRGB(PLTC.Color);
   LbgColor:=ColorToRGB(PLBC.Color);
@@ -652,6 +652,7 @@ begin
   PlaylistForm.LScroll.Checked:=PScroll;
   if PlaylistForm.Visible then PlaylistForm.TMLyric.Invalidate;
   MainForm.UpdateMenuCheck;
+  Save(HomeDir+DefaultFileName,2);
 end;
 
 procedure TOptionsForm.BApplyClick(Sender: TObject);
@@ -703,7 +704,7 @@ begin
   CCh.ItemIndex:=Ch;
   CRot.ItemIndex:=Rot;
   ESsf.Text:=ShotDir;
-  Config.Save(HomeDir+Config.DefaultFileName,0);
+  Save(HomeDir+Config.DefaultFileName,0);
 end;
 
 function EnumFunc(lpGuid:PGUID; lpcstrDescription,lpcstrModule:PChar; lpContext:pointer):LongBool; stdcall;

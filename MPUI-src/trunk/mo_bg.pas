@@ -284,7 +284,6 @@ begin
     CIndex.Hint:=UTF8Decode('Полезно при некоректни/непълни downloads или при лошо създадени файлове');
     CNi.Caption:=UTF8Decode('Използвай non-interleaved AVI парсер');
     CNi.Hint:=UTF8Decode('Поправя възпроизвеждането на някои лоши AVI файлове');
-    CDrag.Caption:=UTF8Decode('Използвай DragMode на системата');
     CDnav.Caption:=UTF8Decode('Използвай DVDNav');
     CNobps.Caption:=UTF8Decode('Не използвай avg b/s за A-V sync');
     CNobps.Hint:=UTF8Decode('Не използвай средна байт/секунда стойност за A-V sync. Това помага при възпроизвеждането на някой AVI файлове със счупена начална част');

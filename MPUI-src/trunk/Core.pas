@@ -93,7 +93,7 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     subfont,osdfont,Ccap,Acap,DemuxerName:WideString;
     MplayerLocation,WadspL,AsyncV,CacheV:widestring;
     MAspect,subcode,MaxLenLyricA,VideoOut:string;
-    FirstOpen,PClear,Fd,Async,Cache,uof,DragM,FilterDrop:boolean;
+    FirstOpen,PClear,Fd,Async,Cache,uof,oneM,FilterDrop:boolean;
     Wid,Dreset,UpdateSkipBar,Pri,HaveChapters,HaveMsg:boolean;
     AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
@@ -180,7 +180,7 @@ procedure SendVolumeChangeCommand(Vol:integer);
 procedure ResetStreamInfo;
 
 implementation
-uses Main,Log,plist,Info,UnRAR,Equalizer,Locale,Options,About,Help,SevenZip;
+uses Main,config,Log,plist,Info,UnRAR,Equalizer,Locale,Options,About,Help,SevenZip;
 
 type TClientWaitThread=class(TThread)
                          private procedure ClientDone;
@@ -531,8 +531,6 @@ begin
   if Win32PlatformIsUnicode then Win9xWarnLevel:=wlAccept
   else Win9xWarnLevel:=wlWarn;
 
-  if Win32PlatformIsXP then MainForm.Imagery.Clear;
-
   MWC:=GetSystemMetrics(SM_CYCAPTION);
   GetLocaleFormatSettings(GetUserDefaultLCID,FormatSet);
   if Pos('ddd',FormatSet.ShortDateFormat)=0 then FormatSet.ShortDateFormat:='ddd '+FormatSet.ShortDateFormat;
@@ -541,6 +539,7 @@ begin
   //SetThreadLocale(LOCALE_SYSTEM_DEFAULT);
   {//在user_def和sys_def不同时，为了使mpui能够正常播放sys_def的文件添加了这句，但菜单可能显示不正常。
   原因就是string和widestring在ansi环境下默认转化造成的。}
+  Load(HomeDir+DefaultFileName,1);
 end;
 
 procedure Start;
@@ -2245,7 +2244,7 @@ end;
 begin
   DecimalSeparator:='.'; Wadsp:=false; GUI:=false; HaveMsg:=false; Uni:=false;
   MFunc:=0; ETime:=false; InSubDir:=true; ML:=false; Pri:=true; HaveLyric:=0;
-  AudiochannelsID:=0; OSDLevel:=1; Ch:=0; Wid:=true; Fd:=false; DragM:=false;
+  AudiochannelsID:=0; OSDLevel:=1; Ch:=0; Wid:=true; Fd:=false; oneM:=true;
   Deinterlace:=0; Aspect:=0; Postproc:=0; IntersubCount:=0; UpdatePW:=false;
   AudioOut:=2; AudioDev:=0; Expand:=0; SPDIF:=false; DirHIdx:=0; DirHSub:=0;
   ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=false; Fol:=2;

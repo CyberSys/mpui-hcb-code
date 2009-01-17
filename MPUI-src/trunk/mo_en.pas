@@ -287,7 +287,7 @@ begin
                  'or badly created files';
     CNi.Caption:='Use non-interleaved AVI parser';
     CNi.Hint:='Fixes playback of some bad AVI files';
-    CDrag.Caption:='Use DragMode of System';
+    Cone.Caption:='Use only one instance of MPUI';
     CDnav.Caption:='Use DVDNav';
     CDnav.Hint:='if Mplayer is compiled with DVDnav lib, you can use'^M^J+
                 'mouse to handle DVD menu on screen';
