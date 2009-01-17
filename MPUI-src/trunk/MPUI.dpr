@@ -63,11 +63,11 @@ uses
 
 {$R *.res}
 {$R XPStyle.res}
-const RFID_APPDATA:TGUID='{3EB685DB-65F9-4CF6-A03A-E3EF65729F3D}';
 var hAppMutex:Thandle; Mf:hWnd; s:WideString; t:string; i,PCount:integer;
+    IsOne:boolean;
 begin
-  Init;
-  hAppMutex:=CreateMutex(nil,false,PAnsiChar('fenny8248'));
+  Init; IsOne:=oneM;
+  if IsOne then hAppMutex:=CreateMutex(nil,false,PAnsiChar('fenny8248'));
   if oneM and (WaitForSingleObject(hAppMutex,10)=WAIT_TIMEOUT) then begin
     if Win32PlatformIsUnicode then Mf:=FindWindow('fengying.UnicodeClass',nil)
     else Mf:=FindWindow('fengying',nil);
@@ -101,9 +101,9 @@ begin
     Application.CreateForm(TInfoForm, InfoForm);
     Application.CreateForm(TEqualizerForm, EqualizerForm);
     Application.Run;
-    ReleaseMutex(hAppMutex);
+    if IsOne then ReleaseMutex(hAppMutex);
   end;
-  CloseHandle(hAppMutex);
+  if IsOne then CloseHandle(hAppMutex);
 end.
 
 {var
