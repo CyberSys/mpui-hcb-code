@@ -23,21 +23,21 @@ object AboutForm: TAboutForm
   TextHeight = 13
   object VersionMPUI: TTntLabel
     Left = 173
-    Top = 36
+    Top = 38
     Width = 60
     Height = 13
     Caption = 'VersionMPUI'
   end
   object VersionMPlayer: TTntLabel
     Left = 173
-    Top = 68
+    Top = 70
     Width = 73
     Height = 13
     Caption = 'VersionMPlayer'
   end
   object LVersionMPlayer: TTntLabel
     Left = 163
-    Top = 54
+    Top = 56
     Width = 88
     Height = 13
     Caption = 'VersionMPlayer'
@@ -50,7 +50,7 @@ object AboutForm: TAboutForm
   end
   object LVersionMPUI: TTntLabel
     Left = 163
-    Top = 22
+    Top = 24
     Width = 72
     Height = 13
     Caption = 'VersionMPUI'
@@ -91,7 +91,7 @@ object AboutForm: TAboutForm
   end
   object FYI: TImage
     Left = 220
-    Top = 81
+    Top = 83
     Width = 86
     Height = 52
     Picture.Data = {
@@ -2380,6 +2380,19 @@ object AboutForm: TAboutForm
       03221F0AF876DE78E78340D2E29A360E92259C6ACAC0E41040E0835AF451401F
       FFD9}
   end
+  object MTitle: TTntLabel
+    Left = 143
+    Top = 4
+    Width = 38
+    Height = 16
+    Caption = 'MTitle'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
   object MCredits: TMemo
     Left = 8
     Top = 134
@@ -2651,27 +2664,5 @@ object AboutForm: TAboutForm
     Default = True
     TabOrder = 1
     OnClick = BCloseClick
-  end
-  object MTitle: TTntMemo
-    Left = 143
-    Top = 4
-    Width = 272
-    Height = 21
-    Cursor = crArrow
-    Anchors = [akLeft, akTop, akRight]
-    BorderStyle = bsNone
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -13
-    Font.Name = 'Verdana'
-    Font.Style = [fsBold]
-    Lines.Strings = (
-      'MTitle')
-    ParentColor = True
-    ParentFont = False
-    ReadOnly = True
-    TabOrder = 3
-    WantReturns = False
-    OnEnter = ReadOnlyItemEnter
   end
 end

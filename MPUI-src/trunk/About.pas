@@ -33,11 +33,11 @@ type
     MCredits: TMemo;
     LVersionMPlayer: TTntLabel;
     LVersionMPUI: TTntLabel;
-    MTitle: TTntMemo;
     LURL: TLabel;
     FY: TTntLabel;
     FYI: TImage;
     HCB: TImage;
+    MTitle: TTntLabel;
     procedure FormShow(Sender: TObject);
     procedure BCloseClick(Sender: TObject);
     procedure URLClick(Sender: TObject);
@@ -95,7 +95,7 @@ end;
 
 procedure TAboutForm.FormShow(Sender: TObject);
 begin
-  MTitle.Text:=LOCstr_Title;
+  MTitle.Caption:=LOCstr_Title;
   if ML then VersionMPlayer.Caption:=GetProductVersion(MplayerLocation)
   else VersionMPlayer.Caption:=GetProductVersion(HomeDir+'mplayer.exe');
   VersionMPUI.Caption:=GetFileVersion(WideParamStr(0));
