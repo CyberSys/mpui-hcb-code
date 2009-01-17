@@ -88,7 +88,6 @@ begin
       end;
       WaitForSingleObject(hAppMutex,10);
     end;
-    CloseHandle(hAppMutex);
   end
   else begin
     Application.Initialize;
@@ -103,8 +102,8 @@ begin
     Application.CreateForm(TEqualizerForm, EqualizerForm);
     Application.Run;
     ReleaseMutex(hAppMutex);
-    CloseHandle(hAppMutex);
   end;
+  CloseHandle(hAppMutex);
 end.
 
 {var
