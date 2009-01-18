@@ -20,7 +20,7 @@ type
     procedure FormHide(Sender: TObject);
   private
     { Private declarations }
-    TabOffset:integer;
+    TabOffset,MW:integer;
     procedure FormMove(var msg:TMessage); message WM_MOVE;
   public
     { Public declarations }
@@ -37,7 +37,7 @@ uses Core, Locale, Main;
 
 {$R *.dfm}
 
-function FormatAspectRatio(const Aspect:real):string;
+function FormatAspectRatio(const Aspect:real):wideString;
 var Numerator,Denominator:integer;
 begin
   for Denominator:=1 to 50 do begin
@@ -65,68 +65,83 @@ end;
 
 procedure TInfoForm.UpdateInfo;
 var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
-    W,i:integer; s:string;
-  procedure AddHeader(var Flag:boolean; const Caption:WideString); begin
+    W,i:integer; s:WideString;
+  procedure AddHeader(var Flag:boolean; const Caption:WideString);
+  begin
     if Flag then exit;
     InfoBox.Items.Add(WideString('!')+Caption);
     Flag:=true;
   end;
-  procedure AddItem(const Key:WideString; const Value:string);
+
+  procedure AddItem(const Key,Value:WideString);
   begin
     W:=WideCanvasTextWidth(InfoBox.Canvas,Key);
     if W>TabOffset then TabOffset:=W;
-    InfoBox.Items.Add(Key+WideString(^I+Value));
+    InfoBox.Items.Add(Key+^I+Value);
   end;
-  procedure T(const Key:WideString; const Value:WideString);
-    begin AddHeader(HaveTagHeader,LOCstr_InfoTags); AddItem(Key,Value); end;
-  procedure V(const Key:WideString; const Value:WideString);
-    begin AddHeader(HaveVideoHeader,LOCstr_InfoVideo); AddItem(Key,Value); end;
-  procedure A(const Key:WideString; const Value:WideString);
-    begin AddHeader(HaveAudioHeader,LOCstr_InfoAudio); AddItem(Key,Value); end;
+
+  procedure T(const Key,Value:WideString);
+  begin
+    AddHeader(HaveTagHeader,LOCstr_InfoTags);
+    AddItem(Key,Value);
+  end;
+
+  procedure V(const Key,Value:WideString);
+  begin
+    AddHeader(HaveVideoHeader,LOCstr_InfoVideo);
+    AddItem(Key,Value);
+  end;
+
+  procedure A(const Key,Value:WideString);
+  begin
+    AddHeader(HaveAudioHeader,LOCstr_InfoAudio);
+    AddItem(Key,Value);
+  end;
+  
 begin
   with StreamInfo do begin
     if not Visible then exit;
-  InfoBox.Items.Clear;
-  TabOffset:=0;
-  if length(FileName)=0 then begin
-    InfoBox.Items.Add(LOCstr_NoInfo);
-    exit;                               
+    InfoBox.Items.Clear;
+    TabOffset:=0; MW:=0;
+    if length(FileName)=0 then begin
+      InfoBox.Items.Add(LOCstr_NoInfo);
+      exit;
+    end;
+    HaveTagHeader:=false; HaveVideoHeader:=false; HaveAudioHeader:=false;
+    InfoBox.Items.Add(FileName);
+    if length(FileFormat)>0 then
+      InfoBox.Items.Add(LOCstr_InfoFileFormat+^I+FileFormat);
+    if length(PlaybackTime)>0 then
+      InfoBox.Items.Add(LOCstr_InfoPlaybackTime+^I+PlaybackTime);
+    for i:=0 to 9 do
+      with ClipInfo[i] do
+        if (length(Key)>0) AND (length(Value)>0) then T(Key, Value);
+    if length(Video.Decoder)>0 then
+      V(LOCstr_InfoDecoder, Video.Decoder);
+    if length(Video.Codec)>0 then
+      V(LOCstr_InfoCodec, Video.Codec);
+    if Video.Bitrate<>0 then
+      V(LOCstr_InfoBitrate, IntToStr(Video.Bitrate DIV 1000)+' kbps');
+    if (Video.Width<>0) AND (Video.Height<>0) then
+      V(LOCstr_InfoVideoSize, IntToStr(Video.Width)+' x '+IntToStr(Video.Height));
+    if (Video.FPS>0.01) then begin
+      str(Video.FPS:0:3,s); V(LOCstr_InfoVideoFPS, s+' fps');
+    end;
+    if (Video.Aspect>0.01) then begin
+      V(LOCstr_InfoVideoAspect, FormatAspectRatio(Video.Aspect));
+    end;
+    if length(Audio.Decoder)>0 then
+      A(LOCstr_InfoDecoder, Audio.Decoder);
+    if length(Audio.Codec)>0 then
+      A(LOCstr_InfoCodec, Audio.Codec);
+    if Audio.Bitrate<>0 then
+      A(LOCstr_InfoBitrate, IntToStr(Audio.Bitrate DIV 1000)+' kbps');
+    if Audio.Rate<>0 then  
+      A(LOCstr_InfoAudioRate, IntToStr(Audio.Rate)+' Hz');
+    if Audio.Channels<>0 then
+      A(LOCstr_InfoAudioChannels, IntToStr(Audio.Channels));
   end;
-  HaveTagHeader:=false;
-  HaveVideoHeader:=false;
-  HaveAudioHeader:=false;
-  InfoBox.Items.Add(FileName);
-  if length(FileFormat)>0 then
-    InfoBox.Items.Add(LOCstr_InfoFileFormat+^I+FileFormat);
-  if length(PlaybackTime)>0 then
-    InfoBox.Items.Add(LOCstr_InfoPlaybackTime+^I+PlaybackTime);
-  for i:=0 to 9 do
-    with ClipInfo[i] do
-      if (length(Key)>0) AND (length(Value)>0) then
-        T(Key, Value);
-  if length(Video.Decoder)>0 then
-    V(LOCstr_InfoDecoder, Video.Decoder);
-  if length(Video.Codec)>0 then
-    V(LOCstr_InfoCodec, Video.Codec);
-  if Video.Bitrate<>0 then
-    V(LOCstr_InfoBitrate, IntToStr(Video.Bitrate DIV 1000)+' kbps');
-  if (Video.Width<>0) AND (Video.Height<>0) then
-    V(LOCstr_InfoVideoSize, IntToStr(Video.Width)+' x '+IntToStr(Video.Height));
-  if (Video.FPS>0.01) then begin
-    str(Video.FPS:0:3,s); V(LOCstr_InfoVideoFPS, s+' fps'); end;
-  if (Video.Aspect>0.01) then begin
-    V(LOCstr_InfoVideoAspect, FormatAspectRatio(Video.Aspect)); end;
-  if length(Audio.Decoder)>0 then
-    A(LOCstr_InfoDecoder, Audio.Decoder);
-  if length(Audio.Codec)>0 then
-    A(LOCstr_InfoCodec, Audio.Codec);
-  if Audio.Bitrate<>0 then
-    A(LOCstr_InfoBitrate, IntToStr(Audio.Bitrate DIV 1000)+' kbps');
-  if Audio.Rate<>0 then
-    A(LOCstr_InfoAudioRate, IntToStr(Audio.Rate)+' Hz');
-  if Audio.Channels<>0 then
-    A(LOCstr_InfoAudioChannels, IntToStr(Audio.Channels));
-end; end;
+end;
 
 procedure TInfoForm.FormShow(Sender: TObject);
 begin
@@ -170,8 +185,11 @@ begin
       TextOutW(Handle, Rect.Left+2, Rect.Top+1, PWideChar(s), p-1);
       TextOutW(Handle, Rect.Left+TabOffset+10, Rect.Top+1, @s[p+1], length(s)-p);
     end
-    else
-      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,s);
+    else WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,s);
+    p:=InfoBox.Count*InfoBox.ItemHeight;
+    if p>InfoBox.Height then Height:=Height-InfoBox.Height+p;
+    p:=WideCanvasTextWidth(InfoBox.Canvas,s+'@@')+Rect.Left+16;
+    if p>MW then begin MW:=p; Width:=Width-InfoBox.Width+MW; end;
   end;
 end;
 
