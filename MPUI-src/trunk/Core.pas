@@ -842,7 +842,7 @@ begin
   end;
   if Wadsp then begin
     s:=Trim(WadspL);
-    if WideFileExists(WadspL) and (not IsWideStringMappableToAnsi(WadspL)) then
+    if WideFileExists(WadspL) and ((not IsWideStringMappableToAnsi(WadspL) or (pos(',',WasspL)>0)) then
       s:=WideExtractShortPathName(WadspL);
     if s<>'' then AddChain(afCount,afChain,'wadsp='+EscapeParam(s));
   end;
