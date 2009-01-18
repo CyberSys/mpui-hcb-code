@@ -186,9 +186,9 @@ begin
       TextOutW(Handle, Rect.Left+TabOffset+10, Rect.Top+1, @s[p+1], length(s)-p);
     end
     else WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,s);
-    p:=InfoBox.Count*InfoBox.ItemHeight;
+    p:=InfoBox.Count*InfoBox.ItemHeight+10;
     if p>InfoBox.Height then Height:=Height-InfoBox.Height+p;
-    p:=WideCanvasTextWidth(InfoBox.Canvas,s+'@@')+Rect.Left+16;
+    p:=WideCanvasTextWidth(InfoBox.Canvas,s+'@')+Rect.Left+16;
     if p>MW then begin MW:=p; Width:=Width-InfoBox.Width+MW; end;
   end;
 end;
