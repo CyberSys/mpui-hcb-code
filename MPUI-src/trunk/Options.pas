@@ -168,7 +168,7 @@ type
   private
     { Private declarations }
     HelpFile:WideString;
-    Changed:boolean;
+    Changed,oML:boolean;
   public
     { Public declarations }
     procedure Localize;
@@ -279,7 +279,7 @@ begin
   CVolnorm.Checked:=Volnorm;
   nfconf.Checked:=nfc;
   CSubcp.Text:=subcode;
-
+  oML:=ML;
   RMplayer.Checked:=ML;
   RCMplayer.Checked:=not ML;
   EMplayerLocation.Enabled:=ML;
@@ -389,15 +389,19 @@ begin
   if AudioOut<>CAudioOut.ItemIndex then begin
     AudioOut:=CAudioOut.ItemIndex; changed:=true;
   end;
+
   if AudioDev<>CAudioDev.ItemIndex then begin
     AudioDev:=CAudioDev.ItemIndex; changed:=true;
   end;
+
   if Postproc<>CPostproc.ItemIndex then begin
     Postproc:=CPostproc.ItemIndex; changed:=true;
   end;
+
   if Aspect<>CAspect.ItemIndex then begin
     Aspect:=CAspect.ItemIndex; changed:=true;
   end;
+
   if Deinterlace<>CDeinterlace.ItemIndex then begin
     Deinterlace:=CDeinterlace.ItemIndex; changed:=true;
   end;
@@ -409,6 +413,7 @@ begin
   if SoftVol<>CSoftVol.Checked then begin
     SoftVol:=CSoftVol.Checked; changed:=true;
   end;
+  
   if (Volume>100) AND (not SoftVol) then begin
     Volume:=100; MainForm.VolBoost.Visible:=False;
     MainForm.VolSlider.Left:=Volume*(MainForm.VolFrame.ClientWidth-MainForm.VolSlider.Width) DIV 100;
@@ -433,17 +438,27 @@ begin
   if subcode<>CSubcp.Text then begin
     subcode:=CSubcp.Text; changed:=true;
   end;
+  
+  if uof<>SOsdfont.Checked then begin
+    uof:=SOsdfont.Checked; changed:=true;
+  end;
 
   if osdfont<>COsdfont.Text then begin
-    osdfont:=COsdfont.Text; changed:=true;
+    osdfont:=COsdfont.Text;
+    if COsdfont.Enabled then changed:=true;
   end;
 
   if subfont<>CSubfont.Text then begin
     subfont:=CSubfont.Text; changed:=true;
   end;
 
+  if oML<>ML then begin
+    ML:=oML; changed:=true;
+  end;
+
   if MplayerLocation<>EMplayerLocation.Text then begin
-    MplayerLocation:=EMplayerLocation.Text; changed:=true;
+    MplayerLocation:=EMplayerLocation.Text;
+    if EMplayerLocation.Enabled then changed:=true;
   end;
 
   s:=Trim(CMAspect.Text);
@@ -537,7 +552,8 @@ begin
   end;
 
   if WadspL<>EWadsp.Text then begin
-    WadspL:=EWadsp.Text; changed:=true;
+    WadspL:=EWadsp.Text;
+    if EWadsp.Enabled then changed:=true;
   end;
 
   if lavf<>Clavf.Checked then begin
@@ -553,7 +569,8 @@ begin
   end;
 
   if AsyncV<>EAsync.Text then begin
-    AsyncV:=EAsync.Text; changed:=true;
+    AsyncV:=EAsync.Text;
+    if EAsync.Enabled then changed:=true;
   end;
 
   if Cache<>CCache.Checked then begin
@@ -561,7 +578,8 @@ begin
   end;
 
   if CacheV<>ECache.Text then begin
-    CacheV:=ECache.Text; changed:=true;
+    CacheV:=ECache.Text;
+    if ECache.Enabled then changed:=true;
   end;
 
   if Pri<>CPriorityBoost.Checked then begin
@@ -588,15 +606,12 @@ begin
   end;
   
   if Efont<>CEfont.Checked then begin
-    Efont:=CEfont.Checked; changed:=true;
+    Efont:=CEfont.Checked;
+    if CEfont.Enabled then changed:=true;
   end;
 
   if ISub<>CISub.Checked then begin
     ISub:=CISub.Checked; changed:=true;
-  end;
-
-  if uof<>SOsdfont.Checked then begin
-    uof:=SOsdfont.Checked; changed:=true;
   end;
 
   if GUI<>CGUI.Checked then begin
@@ -842,19 +857,19 @@ end;
 
 procedure TOptionsForm.RMplayerClick(Sender: TObject);
 begin
-  if ML<>RMplayer.Checked then begin
-    ML:=RMplayer.Checked;
-    EMplayerLocation.Enabled:=ML;
-    BMplayer.Enabled:=ML;
+  if oML<>RMplayer.Checked then begin
+    oML:=RMplayer.Checked;
+    EMplayerLocation.Enabled:=oML;
+    BMplayer.Enabled:=oML;
   end;
 end;
 
 procedure TOptionsForm.RCMplayerClick(Sender: TObject);
 begin
-  if ML=RCMplayer.Checked then begin
-    ML:=not RCMplayer.Checked;
-    EMplayerLocation.Enabled:=ML;
-    BMplayer.Enabled:=ML;
+  if oML=RCMplayer.Checked then begin
+    oML:=not RCMplayer.Checked;
+    EMplayerLocation.Enabled:=oML;
+    BMplayer.Enabled:=oML;
   end;
 end;
 
