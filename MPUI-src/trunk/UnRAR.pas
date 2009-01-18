@@ -398,7 +398,7 @@ begin
         if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(FName))<>0 then
           Break
         else begin
-          if not IsWideStringMappableToAnsi(FName) then FName:=WideExtractShortPathName(FName);
+          if (not IsWideStringMappableToAnsi(FName)) or (pos(',',FName)>0) then FName:=WideExtractShortPathName(FName);
           if Firstrun or (not Win32PlatformIsUnicode) then begin
             Loadsub:=2; Loadsrt:=2;
             AddChain(j,substring,EscapePath(EscapeParam(FName)));

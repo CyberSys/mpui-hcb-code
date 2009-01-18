@@ -468,7 +468,7 @@ begin
             if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,nil)<>0 then
               Break
             else begin
-              if not IsWideStringMappableToAnsi(FName) then FName:=WideExtractShortPathName(FName);
+              if (not IsWideStringMappableToAnsi(FName)) or (pos(',',FName)>0) then FName:=WideExtractShortPathName(FName);
               if Firstrun or (not Win32PlatformIsUnicode) then begin
                 Loadsub:=2; Loadsrt:=2;
                 AddChain(j,substring,EscapePath(EscapeParam(FName)));
@@ -553,7 +553,7 @@ begin
         FName:=TempDir+Flist.wstrings[z];
         if sz.Extract<>0 then Break
         else begin
-          if not IsWideStringMappableToAnsi(FName) then FName:=WideExtractShortPathName(FName);
+          if (not IsWideStringMappableToAnsi(FName)) or (pos(',',FName)>0) then FName:=WideExtractShortPathName(FName);
           if Firstrun or (not Win32PlatformIsUnicode) then begin
             Loadsub:=2; Loadsrt:=2;
             AddChain(j,substring,EscapePath(EscapeParam(FName)));

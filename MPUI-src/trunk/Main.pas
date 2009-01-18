@@ -683,7 +683,7 @@ begin
             else begin
               Loadsub:=1;
               t:=fnbuf;
-              if not IsWideStringMappableToAnsi(t) then t:=WideExtractShortPathName(t);
+              if (not IsWideStringMappableToAnsi(t)) or (pos(',',t)>0) then t:=WideExtractShortPathName(t);
               if not Win32PlatformIsUnicode then begin
                 Loadsub:=2; Loadsrt:=2;
                 AddChain(s,substring,EscapePath(EscapeParam(t)));
@@ -2736,7 +2736,7 @@ begin
           end
           else begin
             j:=Files[i];
-            if not IsWideStringMappableToAnsi(j) then j:=WideExtractShortPathName(j);
+            if (not IsWideStringMappableToAnsi(j)) or (pos(',',j)>0) then j:=WideExtractShortPathName(j);
             if not Win32PlatformIsUnicode then begin
               Loadsub:=2; Loadsrt:=2;
               AddChain(s,substring,EscapePath(EscapeParam(j)));
