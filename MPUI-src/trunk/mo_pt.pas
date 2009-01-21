@@ -125,6 +125,7 @@ begin
     Caption:=UTF8Decode('Preferências');
     BOK.Caption:=UTF8Decode('Aceitar');
     BApply.Caption:=UTF8Decode('Aplicar');
+    BSave.Caption:=UTF8Decode('Guardar');
     BClose.Caption:=UTF8Decode('Fechar');
     LAudioOut.Caption:=UTF8Decode('Controlador de saída de áudio:');
       CAudioOut.Items[0]:=UTF8Decode('(não descodificar som)');

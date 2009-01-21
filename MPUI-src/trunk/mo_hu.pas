@@ -120,6 +120,7 @@ begin
     Caption:=UTF8Decode('Beállítások');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Alkalmaz');
+    BSave.Caption:=UTF8Decode('Mentés');
     BClose.Caption:=UTF8Decode('Bezárás');
     LAudioOut.Caption:=UTF8Decode('Hang kimeneti driver');
       CAudioOut.Items[0]:=UTF8Decode('(nincs hangdekódolás)');

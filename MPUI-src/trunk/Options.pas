@@ -28,6 +28,7 @@ type
   TOptionsForm = class(TTntForm)
     BOK: TTntButton;
     BApply: TTntButton;
+    BSave: TTntButton;
     BClose: TTntButton;
     EParams: TTntEdit;
     LParams: TTntLabel;
@@ -144,6 +145,7 @@ type
     procedure LHelpClick(Sender: TObject);
     procedure BApplyClick(Sender: TObject);
     procedure BOKClick(Sender: TObject);
+    procedure BSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure CAudioOutChange(Sender: TObject);
     procedure BSubfontClick(Sender: TObject);
@@ -693,11 +695,16 @@ begin
   ESsf.Text:=ShotDir;
 end;
 
+procedure TOptionsForm.BSaveClick(Sender: TObject);
+begin
+  BApplyClick(nil);
+  Config.Save(HomeDir+Config.DefaultFileName,0);
+end;
+
 procedure TOptionsForm.BOKClick(Sender: TObject);
 begin
   Close;
   ApplyValues;
-  Save(HomeDir+Config.DefaultFileName,0);
   if Changed then Restart;
 end;
 

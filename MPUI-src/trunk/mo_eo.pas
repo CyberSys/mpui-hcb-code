@@ -128,6 +128,7 @@ begin
     Caption:=UTF8Decode('kalibrigoj');
     BOK.Caption:=UTF8Decode('okej');
     BApply.Caption:=UTF8Decode('akcepti');
+    BSave.Caption:=UTF8Decode('konservi');
     BClose.Caption:=UTF8Decode('fermi');
     LAudioOut.Caption:=UTF8Decode('sonoeligilo');
       CAudioOut.Items[0]:=UTF8Decode('(ne malkodadi sonon)');

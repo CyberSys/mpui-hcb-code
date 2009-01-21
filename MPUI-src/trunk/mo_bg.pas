@@ -265,6 +265,7 @@ begin
     Caption:=UTF8Decode('Настройки');
     BOK.Caption:=UTF8Decode('ДА');
     BApply.Caption:=UTF8Decode('Приеми');
+    BSave.Caption:=UTF8Decode('Запамети');
     BClose.Caption:=UTF8Decode('Затвори');
     TabSheet1.Caption:=UTF8Decode('Система');
     TabSheet2.Caption:=UTF8Decode('Видео');

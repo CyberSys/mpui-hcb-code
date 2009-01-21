@@ -128,6 +128,7 @@ begin
     Caption:=UTF8Decode('Ustawienia');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Zatwierdź');
+    BSave.Caption:=UTF8Decode('Zapisz');
     BClose.Caption:=UTF8Decode('Zamknij');
     LAudioOut.Caption:=UTF8Decode('Sterownik dźwięku');
       CAudioOut.Items[0]:=UTF8Decode('(nie dekoduj dźwięku)');

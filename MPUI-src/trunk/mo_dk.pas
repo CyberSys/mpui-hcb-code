@@ -129,6 +129,7 @@ begin
     Caption:=UTF8Decode('Funktioner');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Tilføj');
+    BSave.Caption:=UTF8Decode('Gem');
     BClose.Caption:=UTF8Decode('Luk');
     LAudioOut.Caption:=UTF8Decode('Lydudlæsnings driver');
       CAudioOut.Items[0]:=UTF8Decode('(Lad være med at afkode lyd)');

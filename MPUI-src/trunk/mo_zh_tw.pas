@@ -264,6 +264,7 @@ begin
     Caption:=UTF8Decode('選項');
     BOK.Caption:=UTF8Decode('確認');
     BApply.Caption:=UTF8Decode('套用');
+    BSave.Caption:=UTF8Decode('儲存');
     BClose.Caption:=UTF8Decode('關閉');
     TabSheet1.Caption:=UTF8Decode('系統');
     TabSheet2.Caption:=UTF8Decode('視頻');

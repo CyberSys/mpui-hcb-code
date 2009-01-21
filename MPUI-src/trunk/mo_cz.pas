@@ -108,6 +108,7 @@ begin
     Caption:=UTF8Decode('Nastavení');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Použít');
+    BSave.Caption:=UTF8Decode('Uložit');
     BClose.Caption:=UTF8Decode('Zavřít');
     LAudioOut.Caption:=UTF8Decode('Výstupní ovladač zvuku');
       CAudioOut.Items[0]:=UTF8Decode('(nedekódovat zvuk)');

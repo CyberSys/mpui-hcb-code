@@ -267,6 +267,7 @@ begin
     Caption:='Options';
     BOK.Caption:='OK';
     BApply.Caption:='Apply';
+    BSave.Caption:='Save';
     BClose.Caption:='Close';
     TabSheet1.Caption:='System';
     TabSheet2.Caption:='Video';

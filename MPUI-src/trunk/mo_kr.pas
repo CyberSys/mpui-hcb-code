@@ -128,6 +128,7 @@ begin
     Caption:=UTF8Decode('환경설정');
     BOK.Caption:=UTF8Decode('확인');
     BApply.Caption:=UTF8Decode('적용');
+    BSave.Caption:=UTF8Decode('저장');
     BClose.Caption:=UTF8Decode('닫기');
     LAudioOut.Caption:=UTF8Decode('사운드 출력 드라이버');
       CAudioOut.Items[0]:=UTF8Decode('(디코딩 않음)');

@@ -268,6 +268,7 @@ begin
     Caption:=UTF8Decode('选项');
     BOK.Caption:=UTF8Decode('确定');
     BApply.Caption:=UTF8Decode('应用');
+    BSave.Caption:=UTF8Decode('保存');
     BClose.Caption:=UTF8Decode('关闭');
     TabSheet1.Caption:=UTF8Decode('系统');
     TabSheet2.Caption:=UTF8Decode('视频');

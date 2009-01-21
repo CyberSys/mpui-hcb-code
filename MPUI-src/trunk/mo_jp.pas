@@ -128,6 +128,7 @@ begin
     Caption:=UTF8Decode('オプション');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('適用');
+    BSave.Caption:=UTF8Decode('保存');
     BClose.Caption:=UTF8Decode('閉じる');
     LAudioOut.Caption:=UTF8Decode('サウンド出力ドライバ');
       CAudioOut.Items[0]:=UTF8Decode('(サウンドをデコードしない)');
