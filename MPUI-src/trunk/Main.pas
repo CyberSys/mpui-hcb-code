@@ -688,10 +688,8 @@ begin
                 Loadsub:=2; Loadsrt:=2;
                 AddChain(s,substring,EscapePath(EscapeParam(t)));
               end
-              else begin
-                Unpaused;
+              else
                 SendCommand('sub_load '+EscapePath(EscapeParam(t)));
-              end;
             end;
           end;
         end;
@@ -797,7 +795,6 @@ begin
   if Volume<0 then Volume:=0;
   if (Volume>100) AND (not SoftVol) then Volume:=100;
   if Volume>9999 then Volume:=9999;
-  Unpaused;
   SendVolumeChangeCommand(Volume);
   if Volume>100 then begin
     VolBoost.Visible:=True;
@@ -814,12 +811,10 @@ procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftSta
 var i,j:integer;
   procedure HandleCommand(const Command:string); begin
     if not Win32PlatformIsUnicode then exit;
-    Unpaused;
     SendCommand(Command);
   end;
   procedure HandleSeekCommand(const Command:string); begin
     if not Win32PlatformIsUnicode then exit;
-    Unpaused;
     SendCommand(Command);
     if HaveChapters then Sendcommand('get_property chapter');
     SendCommand('get_time_length');
@@ -862,10 +857,10 @@ if MVideos.Visible then begin
   else begin
     if Wid and (ssAlt in Shift) then begin
       case Key of
-        Ord('3'):   begin Unpaused; MSizeAny.Checked:=True; end;
-        {`~} 192:   begin Unpaused; MSizeClick(MSize50); end;
-        Ord('1'):   begin Unpaused; MSizeClick(MSize100); end;
-        Ord('2'):   begin Unpaused; MSizeClick(MSize200); end;
+        Ord('3'):   MSizeAny.Checked:=True;
+        {`~} 192:   MSizeClick(MSize50);
+        Ord('1'):   MSizeClick(MSize100);
+        Ord('2'):   MSizeClick(MSize200);
       end;
     end
     else begin
@@ -1341,7 +1336,6 @@ procedure TMainForm.SeekBarSliderMouseUp(Sender: TObject;
 begin
   if (Button<>mbLeft) or (TotalTime=0) then exit;
   SeekBarSlider.BevelInner:=bvLowered;
-  Unpaused;
   {if (CID>1) and HaveChapters then SendCommand('seek '+IntToStr(LastPos-SecondPos))
   else SendCommand('seek '+IntToStr(LastPos)+' 2');}
   SendCommand('seek '+IntToStr(LastPos-SecondPos));
@@ -1368,7 +1362,6 @@ begin
   dec(X,SeekBarSlider.Width DIV 2);
   MaxPos:=SeekBarFrame.ClientWidth-SeekBarSlider.Width;
   if MaxPos=0 then exit;
-  Unpaused;
   {if (CID>1) and HaveChapters then SendCommand('seek '+IntToStr((TotalTime*X DIV MaxPos)-SecondPos))
   else SendCommand('seek '+IntToStr(TotalTime*X DIV MaxPos)+' 2'); }
   SendCommand('seek '+IntToStr((TotalTime*X DIV MaxPos)-SecondPos));
@@ -1445,7 +1438,6 @@ procedure TMainForm.MOSDClick(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
   OSDLevel:=(Sender as TMenuItem).Tag;
-  Unpaused;
   case OSDLevel of
     0: SendCommand('osd_show_text "OSD: '+OSD_Disable_Prompt+'"');
     1: SendCommand('osd_show_text "OSD: '+OSD_Enable_Prompt+'"');
@@ -1460,7 +1452,6 @@ procedure TMainForm.ToggleAlwaysOnTop(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
   OnTop:=(Sender as TMenuItem).Tag;
-  Unpaused;
   case OnTop of
     0:  begin
           if not MFullscreen.Checked then begin
@@ -1498,7 +1489,6 @@ end;
 procedure TMainForm.MSpeedClick(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
-  Unpaused;
   case (Sender as TMenuItem).Tag of
     0: begin Speed:= 0.125; SendCommand('speed_set 0.125'); end;
     1: begin Speed:= 0.25; SendCommand('speed_set 0.25'); end;
@@ -1520,9 +1510,8 @@ begin
   if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Restart
   else begin
-     Unpaused;
-     SendCommand('set_property switch_video '+IntToStr(VideoID));
-     SendCommand('osd_show_text "'+OSD_VideoTrack_Prompt+': '+IntToStr(VideoID)+#34);
+    SendCommand('set_property switch_video '+IntToStr(VideoID));
+    SendCommand('osd_show_text "'+OSD_VideoTrack_Prompt+': '+IntToStr(VideoID)+#34);
   end;
   (Sender as TMenuItem).Checked:=True;
 end;
@@ -1534,7 +1523,6 @@ begin
   if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Restart
   else begin
-    Unpaused;
     SendCommand('switch_audio '+IntToStr(AudioID));
     if HaveVideo then
       SendCommand('osd_show_text "'+OSD_AudioTrack_Prompt+': '+IntToStr(AudioID)+#34);
@@ -1554,7 +1542,6 @@ procedure TMainForm.MSubtitleClick(Sender: TObject);
 begin
   if (Sender as TMenuItem).Checked then exit;
   SubID:=(Sender as TMenuItem).Tag;
-  Unpaused;
   SendCommand('sub_select '+IntToStr(SubID));
   (Sender as TMenuItem).Checked:=True;
 end;
@@ -1567,10 +1554,8 @@ begin
   CID:=(Sender as TMenuItem).Tag;
   index:=(Sender as TMenuItem).Parent.Parent.Tag;
   (Sender as TMenuItem).Checked:=True;
-  if UseekC and (TID=index) then begin
-    Unpaused;
-    SendCommand('seek_chapter '+IntToStr(CID)+' 1');
-  end
+  if UseekC and (TID=index) then
+    SendCommand('seek_chapter '+IntToStr(CID)+' 1')
   else begin
     TID:=index; Dreset:=true;
     Restart;
@@ -1586,10 +1571,8 @@ begin
   AID:=(Sender as TMenuItem).Tag;
   TID:=(Sender as TMenuItem).Parent.Parent.Tag;
   (Sender as TMenuItem).Checked:=True;
-  if UseekC then begin
-    Unpaused;
-    SendCommand('switch_angle '+IntToStr(AID));
-  end
+  if UseekC then
+    SendCommand('switch_angle '+IntToStr(AID))
   else begin
     Dreset:=true; Restart;
   end;
@@ -1644,7 +1627,7 @@ begin
   Aspect:=(Sender as TMenuItem).Tag;
   if (Expand=2) OR (not Win32PlatformIsUnicode) then Restart
   else begin
-    CBHSA:=3; Unpaused;
+    CBHSA:=3;
     case Aspect of
       0: begin SendCommand('switch_ratio -1'); SendCommand('osd_show_text "'+OSD_Auto_Prompt+'"'); end;
       1: begin SendCommand('switch_ratio 1.3333'); SendCommand('osd_show_text 4:3'); end;
@@ -1976,7 +1959,6 @@ begin
   if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Restart
   else begin
-     Unpaused;
      SendCommand('switch_audio '+IntToStr(AudioID));
      if HaveVideo then
        SendCommand('osd_show_text "'+OSD_AudioTrack_Prompt+': '+IntToStr(AudioID)+#34);
@@ -2001,7 +1983,6 @@ begin
   if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Restart
   else begin
-     Unpaused;
      SendCommand('set_property switch_video '+IntToStr(VideoID));
      SendCommand('osd_show_text "'+OSD_VideoTrack_Prompt+': '+IntToStr(VideoID)+#34);
   end;
@@ -2014,7 +1995,7 @@ begin
   MAspect.Items[Aspect].Checked:=True;
   if (Expand=2) OR (not Win32PlatformIsUnicode) then Restart
   else begin
-    CBHSA:=3; Unpaused;
+    CBHSA:=3;
     case Aspect of
       0: begin SendCommand('switch_ratio -1'); SendCommand('osd_show_text "'+OSD_Auto_Prompt+'"'); end;
       1: begin SendCommand('switch_ratio 1.3333'); SendCommand('osd_show_text 4:3'); end;
@@ -2041,7 +2022,6 @@ begin
   if AID<1 then AID:=1;
   AID:=AID MOD MDVDT.Items[TID+2].Items[1].Count + 1;
   MDVDT.Items[TID+2].Items[1].Items[AID-1].Checked:=True;
-  Unpaused;
   SendCommand('switch_angle '+IntToStr(AID));
 end;
 
@@ -2051,7 +2031,6 @@ begin
   if SubID<0 then SubID:=0;
   SubID:=(SubID+1) MOD MSubtitle.Count;
   MSubtitle.Items[SubID].Checked:=True;
-  Unpaused;
   SendCommand('sub_select '+IntToStr(SubID));
 end;
 
@@ -2073,7 +2052,6 @@ procedure TMainForm.NextOnTop;
 begin
   OnTop:=(OnTop+1) MOD MOnTop.Count;
   MOnTop.Items[OnTop].Checked:=True;
-  Unpaused;
   case OnTop of
     0:  begin
           if not MFullscreen.Checked then begin
@@ -2212,7 +2190,6 @@ begin
   NewVolume:=(NewX*100+(MaxX SHR 1)) DIV MaxX;
   if NewVolume=Volume then exit;
   Volume:=NewVolume;
-  Unpaused;
   SendVolumeChangeCommand(Volume);
 end;
 
@@ -2226,7 +2203,6 @@ procedure TMainForm.BMuteClick(Sender: TObject);
 begin
   VolFrame.Enabled:=Mute; Mute:=not(Mute);
   BMute.Down:=Mute; MMute.Checked:=BMute.Down;
-  Unpaused;
   SendCommand('mute');
 end;
 
@@ -2336,7 +2312,6 @@ procedure TMainForm.DisplayClick(Sender: TObject);
 begin
   if Running and (MouseMode>-1) then begin
     if Dnav and (SecondPos=0) then begin
-      Unpaused;
       SendCommand('dvdnav mouse');
       exit;
     end;
@@ -2389,7 +2364,6 @@ begin
 
   if Button=mbmiddle then begin
     MFunc:=(MFunc+1) MOD 2;
-    Unpaused;
     case MFunc of
       0:SendCommand('osd_show_text "0:'+OSD_Volume_Prompt+'"');
       1:SendCommand('osd_show_text "1:'+OSD_Size_Prompt+'"');
@@ -2476,7 +2450,6 @@ begin
 
   if abs(MouseMode)=2 then begin
     MouseMode:=-2; //在拖动时不进行单击、双击事件
-    Unpaused;
     if ssCtrl in shift then begin   //Scale Subtitle
       FSize:=FSize+(p.X-OldX)/60;
       OldX:=p.X; OldY:=p.Y;
@@ -2495,7 +2468,6 @@ begin
     MouseMode:=-3; //在拖动时不进行单击、双击事件
     CheckDragD;
     if DragD then begin   //Change Volumn
-      Unpaused;
       if MFunc=0 then FormMouseWheel(nil,Shift,20*(p.X-OldX),p,DragD)
       else FormMouseWheel(nil,Shift,4*(p.X-OldX),p,DragD);
     end
@@ -2529,7 +2501,6 @@ begin
 
   if abs(MouseMode)=5 then begin  //Ajust C/B/S/H/G
     MouseMode:=-5; //在拖动时不进行单击、双击事件
-    Unpaused;
     CheckDragD;
     if ssAlt in shift then begin
       if DragD then begin
@@ -2670,7 +2641,6 @@ end;
 procedure TMainForm.VolBoostClick(Sender: TObject);
 begin
   if Volume>100 then begin
-    Unpaused;
     SendVolumeChangeCommand(100);
     Volume:=100;
     VolBoost.Visible:=false;
@@ -2741,10 +2711,8 @@ begin
               Loadsub:=2; Loadsrt:=2;
               AddChain(s,substring,EscapePath(EscapeParam(j)));
             end
-            else begin
-              Unpaused;
+            else
               SendCommand('sub_load '+EscapePath(EscapeParam(j)));
-            end;
           end;
         end;
       end;
@@ -2806,7 +2774,6 @@ begin
   MFunc:=(Sender as TMenuItem).Tag;
   MWheelControl.Items[MFunc].Checked:=true;
   MPWheelControl.Items[MFunc].Checked:=true;
-  Unpaused;
   case MFunc of
     0:SendCommand('osd_show_text "0:'+OSD_Volume_Prompt+'"');
     1:SendCommand('osd_show_text "1:'+OSD_Size_Prompt+'"');
@@ -2967,21 +2934,18 @@ begin
   if MaxPos=0 then exit;
   if X<0 then X:=0; if X>MaxPos then X:=MaxPos;
   Volume:=100*X DIV MaxPos;
-  Unpaused;
   SendVolumeChangeCommand(Volume);
   VolSlider.Left:=X;
 end;
 
 procedure TMainForm.MScale0Click(Sender: TObject);
 begin
-  Unpaused;
   LastScale:=100; Scale:=100; FixSize;
   SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_Scale_Prompt+'"')
 end;
 
 procedure TMainForm.MPanClick(Sender: TObject);
 begin
-  Unpaused;
   SendCommand('set_property balance 0');
   if HaveVideo then SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_Balance_Prompt+'"');
 end;
@@ -3017,14 +2981,12 @@ end;
 
 procedure TMainForm.MAudioDelay2Click(Sender: TObject);
 begin
-  Unpaused;
   SendCommand('audio_delay 0 1'); Adelay:=0;
   SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_AudioDelay_Prompt+'"');
 end;
 
 procedure TMainForm.MSubDelay2Click(Sender: TObject);
 begin
-  Unpaused;
   SendCommand('sub_delay 0 1'); Sdelay:=0;
   SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_SubDelay_Prompt+'"');
 end;
@@ -3051,8 +3013,9 @@ end;
 
 procedure TMainForm.MSubScale2Click(Sender: TObject);
 begin
-  Unpaused;
-  SendCommand('set_property sub_scale 4.5'); FSize:=4.5;
+  if ass then SendCommand('set_property sub_scale 1.4')
+  else SendCommand('set_property sub_scale 4.5');
+  FSize:=4.5;
   SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_Scale_Prompt+'"');
 end;
 

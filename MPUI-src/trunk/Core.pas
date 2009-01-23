@@ -99,7 +99,7 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
     ControlledResize,ni,nobps,Dnav,lavf,UseekC,vsync:boolean;
     Flip,Mirror,Yuy2,Eq2,LastEq2,Dda,LastDda,Wadsp:boolean;
-    WantFullscreen,WantCompact,AutoQuit:boolean;
+    WantFullscreen,WantCompact,AutoQuit,IsPause:boolean;
 var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
     AudioID,MouseMode,SubPos,NoAccess:integer;
     SubID,TID,CID,AID,VCDST,VCDET,CDID:integer;
@@ -554,7 +554,7 @@ var DummyPipe1,DummyPipe2:THandle;
     i,t:integer; UnRART:TUnRARThread;
 begin
   if (ClientProcess<>0) or (length(MediaURL)=0) then exit;
-  Status:=sOpening;
+  Status:=sOpening; IsPause:=false;
   if FirstOpen then begin
     MainForm.LTime.Caption:='';
     MainForm.LStatus.Caption:=LOCstr_Status_Opening;
@@ -1888,7 +1888,8 @@ begin
       Val(Copy(Line,j,i-j),p,r);
       if (r<>0) or (p<0) then exit;
       CheckNOAudio; CheckNOVideo; CheckStartPlayback;
-
+      if IsPause then IsPause:=false else MainForm.Unpaused;
+      
       if HaveLyric<>0 then begin
         i:=p*10+ord(Line[i+1])-48;
         if MSecPos<>i then begin
@@ -1934,6 +1935,17 @@ begin
       exit;
     end;
   end;
+
+  //check for "PAUSED"
+  if Line='ID_PAUSED' then begin
+    IsPause:=true;
+    if Status=sPlaying then begin
+      Status:=sPaused; MainForm.BPause.Down:=true;
+      MainForm.BPlay.Down:=false; MainForm.UpdateStatus;
+    end;
+    exit;
+  end;
+
   // normal line handling: check for "cache fill"
   if (len>=18) AND (Line[18]='%') AND (Copy(Line,1,11)='Cache fill:') then begin
     if Copy(Line,12,6)=LastCacheFill then exit;
@@ -2089,6 +2101,7 @@ begin
     end;
     exit;
   end;
+
   //check ScreenshotName
   if (len>15) and (Copy(Line,1,15)='*** screenshot ') then begin
     if not Isub then SendCommand('osd_show_text "'+OSD_ScreenShot_Prompt+Copy(Line,17,length(Line)-25)+'"');

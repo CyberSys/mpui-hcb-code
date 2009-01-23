@@ -642,7 +642,6 @@ begin
   end;
 
   if Running and (vsync<>CVSync.Checked) then begin
-    MainForm.Unpaused;
     if CVSync.Checked then SendCommand('set_property vsync 1')
     else SendCommand('set_property vsync 0');
   end;

@@ -54,7 +54,7 @@ procedure TEqualizerForm.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
   if Changed then begin
-    CBHSA:=1; MainForm.Unpaused;
+    CBHSA:=1;
     SendCommand('get_property contrast');
     SendCommand('get_property brightness');
     SendCommand('get_property hue');
@@ -141,7 +141,6 @@ begin
     SendCommand('set_property gamma '+IntToStr(gamD)+' 1');
   end;
   SendCommand('osd_show_text "'+OSD_Reset_Prompt+' C/B/H/S/G"');
-  MainForm.Unpaused;
 end;
 
 end.

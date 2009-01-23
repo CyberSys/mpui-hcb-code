@@ -473,10 +473,8 @@ begin
                 Loadsub:=2; Loadsrt:=2;
                 AddChain(j,substring,EscapePath(EscapeParam(FName)));
               end
-              else begin
-                MainForm.Unpaused;
+              else
                 SendCommand('sub_load '+EscapePath(EscapeParam(FName)));
-              end
             end;
           end
           else begin
@@ -558,10 +556,8 @@ begin
             Loadsub:=2; Loadsrt:=2;
             AddChain(j,substring,EscapePath(EscapeParam(FName)));
           end
-          else begin
-            MainForm.Unpaused;
+          else
             SendCommand('sub_load '+EscapePath(EscapeParam(FName)));
-          end;
         end;
       end
       else begin

@@ -59,31 +59,11 @@ begin
 end;
 
 procedure TLogForm.CommandKeyPress(Sender: TObject; var Key: Char);
-var s:WideString;
 begin
   if not Running then exit;
   if Key=^M then begin
     TheLog.Lines.Add(WideString('> ')+Command.Text);
-    s:=Tnt_WideLowerCase(Command.Text);
-    if s='pause' then begin
-      if Status=sPlaying then begin
-        Status:=sPaused; MainForm.BPause.Down:=true;
-        MainForm.BPlay.Down:=false;
-      end
-      else begin
-        Status:=sPlaying; MainForm.BPlay.Down:=true;
-        MainForm.BPause.Down:=false;
-      end;
-      MainForm.UpdateStatus;
-    end
-    else if s='frame_step' then begin
-      if Status=sPlaying then begin
-        Status:=sPaused; MainForm.BPause.Down:=true;
-        MainForm.BPlay.Down:=false;
-      end;
-    end
-    else MainForm.Unpaused;
-    SendCommand(UTF8Decode(Command.Text));
+    SendCommand(UTF8Encode(Command.Text));
     History.AddString(Command.Text);
     HistoryPos:=History.Count;
     Command.Text:='';
