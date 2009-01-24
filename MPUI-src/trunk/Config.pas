@@ -67,12 +67,17 @@ begin
            Core.dbbuf:=ReadBool(SectionName,'Double',Core.dbbuf);
            Core.Volnorm:=ReadBool(SectionName,'Volnorm',Core.Volnorm);
            Core.nfc:=ReadBool(SectionName,'nofontconfig',Core.nfc);
-           Core.subfont:=GetLongPath(ReadString(SectionName,'Subfont',Core.subfont));
-           Core.osdfont:=GetLongPath(ReadString(SectionName,'OSDfont',Core.osdfont));
-           Core.ShotDir:=GetLongPath(ReadString(SectionName,'ShotDir',Core.ShotDir));
-           Core.LyricDir:=GetLongPath(ReadString(SectionName,'LyricDir',Core.LyricDir));
+           Core.subfont:=ReadString(SectionName,'Subfont',Core.subfont);
+           if WideFileExists(subfont) then subfont:=GetLongPath(subfont);
+           Core.osdfont:=ReadString(SectionName,'OSDfont',Core.osdfont);
+           if WideFileExists(osdfont) then subfont:=GetLongPath(osdfont);
+           Core.ShotDir:=ReadString(SectionName,'ShotDir',Core.ShotDir);
+           if WideDirectoryExists(ShotDir) then ShotDir:=GetLongPath(ShotDir);
+           Core.LyricDir:=ReadString(SectionName,'LyricDir',Core.LyricDir);
+           if WideDirectoryExists(LyricDir) then LyricDir:=GetLongPath(LyricDir);
            Core.ML:=ReadBool(SectionName,'ML',Core.ML);
-           Core.MplayerLocation:=GetLongPath(ReadString(SectionName,'MplayerLocation',Core.MplayerLocation));
+           Core.MplayerLocation:=ReadString(SectionName,'MplayerLocation',Core.MplayerLocation);
+           if WideFileExists(MplayerLocation) then MplayerLocation:=GetLongPath(MplayerLocation);
            Core.Wid:=ReadBool(SectionName,'Wid',Core.Wid);
            Core.Flip:=ReadBool(SectionName,'Flip',Core.Flip);
            Core.Mirror:=ReadBool(SectionName,'Mirror',Core.Mirror);
@@ -91,7 +96,8 @@ begin
            Core.Fol:=ReadFloat(SectionName,'Outline',Core.Fol);
            Core.FB:=ReadFloat(SectionName,'FontBlur',Core.FB);
            Core.Wadsp:=ReadBool(SectionName,'Wadsp',Core.Wadsp);
-           Core.WadspL:=GetLongPath(ReadString(SectionName,'WadspL',Core.WadspL));
+           Core.WadspL:=ReadString(SectionName,'WadspL',Core.WadspL);
+           if WideFileExists(WadspL) then WadspL:=GetLongPath(WadspL);
            Core.lavf:=ReadBool(SectionName,'Lavf',Core.lavf);
            Core.Fd:=ReadBool(SectionName,'Framedrop',Core.Fd);
            Core.Async:=ReadBool(SectionName,'Autosync',Core.Async);
@@ -180,22 +186,22 @@ begin
            WriteBool  (SectionName,'Volnorm',Core.Volnorm);
            WriteBool  (SectionName,'nofontconfig',Core.nfc);
            WriteString  (SectionName,'Subcode',Core.subcode);
-           if IsWideStringMappableToAnsi(subfont) then
-           WriteString  (SectionName,'Subfont',Core.subfont)
-           else WriteString(SectionName,'Subfont',WideExtractShortPathName(subfont));
-           if IsWideStringMappableToAnsi(osdfont) then
-           WriteString  (SectionName,'OSDfont',Core.osdfont)
-           else WriteString(SectionName,'OSDfont',WideExtractShortPathName(osdfont));
-           if IsWideStringMappableToAnsi(ShotDir) then
-           WriteString  (SectionName,'ShotDir',Core.ShotDir)
-           else WriteString(SectionName,'ShotDir',WideExtractShortPathName(ShotDir));
-           if IsWideStringMappableToAnsi(LyricDir) then
-           WriteString  (SectionName,'LyricDir',Core.LyricDir)
-           else WriteString(SectionName,'LyricDir',WideExtractShortPathName(LyricDir));
+           if WideFileExists(subfont) then
+             WriteString  (SectionName,'Subfont',WideExtractShortPathName(subfont))
+           else WriteString(SectionName,'Subfont',subfont);
+           if WideFileExists(osdfont) then
+             WriteString  (SectionName,'OSDfont',WideExtractShortPathName(osdfont))
+           else WriteString(SectionName,'OSDfont',osdfont);
+           if WideDirectoryExists(ShotDir) then
+             WriteString  (SectionName,'ShotDir',WideExtractShortPathName(ShotDir))
+           else WriteString(SectionName,'ShotDir',ShotDir);
+           if WideDirectoryExists(LyricDir) then
+             WriteString  (SectionName,'LyricDir',WideExtractShortPathName(LyricDir))
+           else WriteString(SectionName,'LyricDir',LyricDir);
            WriteBool  (SectionName,'ML',Core.ML);
-           if IsWideStringMappableToAnsi(MplayerLocation) then
-           WriteString  (SectionName,'MplayerLocation',Core.MplayerLocation)
-           else WriteString(SectionName,'MplayerLocation',WideExtractShortPathName(MplayerLocation));
+           if WideFileExists(MplayerLocation) then
+             WriteString  (SectionName,'MplayerLocation',WideExtractShortPathName(MplayerLocation))
+           else WriteString(SectionName,'MplayerLocation',MplayerLocation);
            WriteBool  (SectionName,'Wid',Core.Wid);
            WriteBool  (SectionName,'Flip',Core.Flip);
            WriteBool  (SectionName,'Mirror',Core.Mirror);
@@ -213,9 +219,9 @@ begin
            WriteFloat(SectionName,'Outline',Core.Fol);
            WriteFloat(SectionName,'FontBlur',Core.FB);
            WriteBool  (SectionName,'Wadsp',Core.Wadsp);
-           if IsWideStringMappableToAnsi(WadspL) then
-           WriteString(SectionName,'WadspL',Core.WadspL)
-           else WriteString(SectionName,'WadspL',WideExtractShortPathName(WadspL));
+           if WideFileExists(WadspL) then
+             WriteString(SectionName,'WadspL',WideExtractShortPathName(WadspL))
+           else WriteString(SectionName,'WadspL',WadspL);
            WriteBool  (SectionName,'Lavf',Core.lavf);
            WriteBool  (SectionName,'Framedrop',Core.Fd);
            WriteBool  (SectionName,'Autosync',Core.Async);

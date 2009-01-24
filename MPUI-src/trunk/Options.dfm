@@ -631,6 +631,7 @@ object OptionsForm: TOptionsForm
           'novideo'
           'null'
           'Auto'
+          'directx'
           'directx:noaccel'
           'direct3d'
           'gl'
