@@ -99,7 +99,7 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
     ControlledResize,ni,nobps,Dnav,lavf,UseekC,vsync:boolean;
     Flip,Mirror,Yuy2,Eq2,LastEq2,Dda,LastDda,Wadsp:boolean;
-    WantFullscreen,WantCompact,AutoQuit,IsPause:boolean;
+    WantFullscreen,WantCompact,AutoQuit,IsPause,IsDx:boolean;
 var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
     AudioID,MouseMode,SubPos,NoAccess:integer;
     SubID,TID,CID,AID,VCDST,VCDET,CDID:integer;
@@ -554,7 +554,7 @@ var DummyPipe1,DummyPipe2:THandle;
     i,t:integer; UnRART:TUnRARThread;
 begin
   if (ClientProcess<>0) or (length(MediaURL)=0) then exit;
-  Status:=sOpening; IsPause:=false;
+  Status:=sOpening; IsPause:=false; IsDx:=false;
   if FirstOpen then begin
     MainForm.LTime.Caption:='';
     MainForm.LStatus.Caption:=LOCstr_Status_Opening;
@@ -1773,7 +1773,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     p:=Pos('x',Line);    if p=0 then exit;
     Val(Copy(Line,1,p-1),i,r); if (r<>0) OR (i<16) OR (i>=4096) then exit;
     Val(Copy(Line,p+1,5),j,r); if (r<>0) OR (j<16) OR (j>=4096) then exit;
-    ChkVideo:=false;
+    ChkVideo:=false; if copy(line,6,7)='directx' then IsDx:=true;
     with MainForm do begin
       if not Win32PlatformIsUnicode then begin
         HaveVideo:=false; LastHaveVideo:=false;

@@ -1159,7 +1159,7 @@ begin
             if HMonitorList[i]=CurMonitor.Handle then begin
               if MonitorID<>i then begin
                 MonitorID:=i; MonitorW:=CurMonitor.Width; MonitorH:=CurMonitor.Height;
-                Restart;
+                if IsDx then Restart;
               end;
               break;
             end;
@@ -1167,7 +1167,7 @@ begin
         end;
         if (CurMonitor.Width<>MonitorW) or (CurMonitor.Height<>MonitorH) then begin
           MonitorW:=CurMonitor.Width; MonitorH:=CurMonitor.Height;
-          Restart;
+          if IsDx then Restart;
         end;
       end;
       if HaveVideo OR (HaveLyric<>0) then SetThreadExecutionState(ES_DISPLAY_REQUIRED)
