@@ -844,8 +844,8 @@ begin
   end;
 
   // no DVD ->is it a (S)VCD directory?
-  if WideDirectoryExists(Directory+'MPEGAV') then Directory:=Directory+'MPEGAV'
-  else if WideDirectoryExists(Directory+'MPEG2') then Directory:=Directory+'MPEG2';
+  if WideDirectoryExists(Directory+'MPEGAV') then Directory:=Directory+'MPEGAV\'
+  else if WideDirectoryExists(Directory+'MPEG2') then Directory:=Directory+'MPEG2\';
 
   // no (S)VCD -> search the directory recursively
   if WideFindFirst(Directory+'*.*',faAnyFile,SR)=0 then begin
