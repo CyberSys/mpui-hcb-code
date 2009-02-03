@@ -1021,7 +1021,6 @@ begin
       DragQueryFile(hDrop,i,ta,1024); fnbuf:=WideString(ta);
     end;
     if WideDirectoryExists(fnbuf) then begin
-      if i=0 then PClear:=true;
       Playlist.AddDirectory(fnbuf);
       empty:=true; 
     end
@@ -1029,10 +1028,7 @@ begin
       k:=Tnt_WideLowerCase(WideExtractFileExt(fnbuf));
       if FilterDrop then j:=CheckInfo(MediaType,k)>ZipTypeCount
       else j:=CheckInfo(SubType,k)=-1;
-      if j then begin
-        if i=0 then PClear:=true;
-        Playlist.AddFiles(fnbuf);
-      end
+      if j then Playlist.AddFiles(fnbuf)
       else begin
         if Running and (k='.lrc') and (HaveLyric=0) then begin
           FName:=WideExtractFileName(MediaURL);
@@ -1047,7 +1043,6 @@ begin
               TmpPW:='';
               h:=AddMovies(fnbuf,playlist.FindPW(fnbuf),false,k);
               if HaveLyric=0 then ExtractLyric(fnbuf,TmpPW,k,-1);
-              if (h<>0) and (i=0) then PClear:=true;
               if h>0 then AddMovies(fnbuf,playlist.FindPW(fnbuf),true,k);
               if h<0 then begin
                 Entry.State:=psNotPlayed;
