@@ -2429,7 +2429,7 @@ object AboutForm: TAboutForm
       'Esperanto by Kristjan Schmidt <Kristjan@yandex.ru>'
       'Romanian by Florin Valcu <florin.valcu@gmail.com>'
       'Hungarian by MrG <mrguba@gmail.com>'
-      'Polish by Pawel Wieczorek <platon@radio.ujscie.com>'
+      'Polish by Wojciech Ga?ecki <kamikazeepl@gmail.com>'
       'Czech by Antonin Fujera <fujera@seznam.cz>'
       'Belarusian and Russian by Vasily Khoruzhick <fenix-fen@mail.ru>'
       'Ukrainian by <vadim-l@foxtrot.kiev.ua>'

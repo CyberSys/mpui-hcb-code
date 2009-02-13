@@ -853,10 +853,10 @@ begin
   CmdLine:=CmdLine+' -subpos '+IntToStr(SubPos)+' -vf-add screenshot';
   if FirstOpen and Mainform.MSIE.Checked and (Bp>0) then begin
     if Bp>15 then
-      Bp:=Bp-15
+      i:=Bp-15
     else
-      Bp:=Bp-5;
-    if Bp>LastPos then LastPos:=Bp;
+      i:=Bp-5;
+    if i>LastPos then LastPos:=i;
   end;
   if Copy(MediaURL,1,12)=' -dvd-device' then begin
     if TotalTime>0 then begin
