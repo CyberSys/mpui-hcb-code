@@ -326,7 +326,7 @@ object OptionsForm: TOptionsForm
       object SSF: TTntStaticText
         Left = 8
         Top = 199
-        Width = 177
+        Width = 92
         Height = 17
         Caption = 'ScreenShot Folder'
         TabOrder = 20
@@ -401,35 +401,35 @@ object OptionsForm: TOptionsForm
       object LPostproc: TTntLabel
         Left = 10
         Top = 104
-        Width = 239
+        Width = 72
         Height = 13
         Caption = 'Postprocessing'
       end
       object LAspect: TTntLabel
         Left = 10
         Top = 32
-        Width = 239
+        Width = 58
         Height = 13
         Caption = 'Aspect ratio'
       end
       object LDeinterlace: TTntLabel
         Left = 10
         Top = 80
-        Width = 239
+        Width = 54
         Height = 13
         Caption = 'Deinterlace'
       end
       object LMAspect: TTntLabel
         Left = 10
         Top = 56
-        Width = 239
+        Width = 97
         Height = 13
         Caption = 'Monitor Aspect ratio'
       end
       object LVideoout: TTntLabel
         Left = 10
         Top = 8
-        Width = 239
+        Width = 61
         Height = 13
         Caption = 'Video output'
       end
@@ -574,7 +574,7 @@ object OptionsForm: TOptionsForm
       object LRot: TTntStaticText
         Left = 338
         Top = 220
-        Width = 129
+        Width = 37
         Height = 17
         Alignment = taCenter
         Anchors = [akTop, akRight]
@@ -653,21 +653,21 @@ object OptionsForm: TOptionsForm
       object LAudioOut: TTntLabel
         Left = 10
         Top = 8
-        Width = 239
+        Width = 62
         Height = 13
         Caption = 'Audio output'
       end
       object LAudioDev: TTntLabel
         Left = 10
         Top = 32
-        Width = 239
+        Width = 61
         Height = 13
         Caption = 'Audio device'
       end
       object LCh: TTntStaticText
         Left = 336
         Top = 84
-        Width = 134
+        Width = 65
         Height = 17
         Alignment = taRightJustify
         Anchors = [akTop, akRight]
@@ -710,7 +710,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 1
       end
       object CSPDIF: TTntCheckBox
@@ -777,25 +777,25 @@ object OptionsForm: TOptionsForm
         Left = 1
         Top = 102
         Width = 526
-        Height = 109
+        Height = 108
         Anchors = [akLeft, akTop, akRight, akBottom]
         Caption = 'Lyric'
         TabOrder = 10
         DesignSize = (
           526
-          109)
+          108)
         object LTCL: TTntLabel
-          Left = 8
+          Left = 46
           Top = 51
-          Width = 86
+          Width = 48
           Height = 13
           Alignment = taRightJustify
           Caption = 'Text color'
         end
         object LHCL: TTntLabel
-          Left = 141
+          Left = 202
           Top = 51
-          Width = 100
+          Width = 39
           Height = 13
           Alignment = taRightJustify
           Caption = 'Hg color'
@@ -811,7 +811,7 @@ object OptionsForm: TOptionsForm
         object SLyric: TTntLabel
           Left = 8
           Top = 84
-          Width = 161
+          Width = 55
           Height = 13
           Caption = 'Lyric Folder'
         end
@@ -940,7 +940,7 @@ object OptionsForm: TOptionsForm
       object SSubcode: TTntStaticText
         Left = 4
         Top = 10
-        Width = 229
+        Width = 86
         Height = 17
         Caption = 'Subtitle encoding'
         TabOrder = 7
@@ -948,7 +948,7 @@ object OptionsForm: TOptionsForm
       object SSubfont: TTntStaticText
         Left = 4
         Top = 36
-        Width = 229
+        Width = 65
         Height = 17
         Caption = 'Subtitle Font'
         TabOrder = 8
@@ -956,7 +956,7 @@ object OptionsForm: TOptionsForm
       object SFsize: TTntStaticText
         Left = 4
         Top = 198
-        Width = 181
+        Width = 57
         Height = 17
         Caption = 'Sufont size'
         TabOrder = 9
@@ -964,7 +964,7 @@ object OptionsForm: TOptionsForm
       object SFB: TTntStaticText
         Left = 4
         Top = 220
-        Width = 181
+        Width = 77
         Height = 17
         Caption = 'font blur radius'
         TabOrder = 10
@@ -972,7 +972,7 @@ object OptionsForm: TOptionsForm
       object SFol: TTntStaticText
         Left = 4
         Top = 242
-        Width = 173
+        Width = 106
         Height = 17
         Caption = 'font outline thickness'
         TabOrder = 11
@@ -991,7 +991,7 @@ object OptionsForm: TOptionsForm
         Left = 8
         Top = 78
         Width = 514
-        Height = 46
+        Height = 45
         Anchors = [akLeft, akTop, akRight, akBottom]
         BevelOuter = bvNone
         Font.Charset = DEFAULT_CHARSET
@@ -1025,7 +1025,7 @@ object OptionsForm: TOptionsForm
       object SFontColor: TTntStaticText
         Left = 4
         Top = 173
-        Width = 125
+        Width = 52
         Height = 17
         Caption = 'Text color'
         TabOrder = 19
@@ -1033,7 +1033,7 @@ object OptionsForm: TOptionsForm
       object SOutline: TTntStaticText
         Left = 264
         Top = 173
-        Width = 137
+        Width = 64
         Height = 17
         Alignment = taRightJustify
         Caption = 'Outline color'
@@ -1239,7 +1239,7 @@ object OptionsForm: TOptionsForm
       object TFB: TTrackBar
         Left = 232
         Top = 218
-        Width = 233
+        Width = 263
         Height = 20
         Max = 80
         Min = 1
@@ -1266,7 +1266,7 @@ object OptionsForm: TOptionsForm
         OnChange = TFolChange
       end
       object SFsP: TTntStaticText
-        Left = 462
+        Left = 494
         Top = 198
         Width = 31
         Height = 17
@@ -1274,7 +1274,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 12
       end
       object SFBl: TTntStaticText
-        Left = 462
+        Left = 494
         Top = 219
         Width = 20
         Height = 17
@@ -1282,7 +1282,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 13
       end
       object SFo: TTntStaticText
-        Left = 462
+        Left = 494
         Top = 241
         Width = 20
         Height = 17
