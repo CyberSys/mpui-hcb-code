@@ -32,7 +32,7 @@ object PlaylistForm: TPlaylistForm
     Top = 0
     Width = 370
     Height = 263
-    ActivePage = TntTabSheet1
+    ActivePage = TntTabSheet2
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
     object TntTabSheet1: TTntTabSheet
@@ -253,16 +253,16 @@ object PlaylistForm: TPlaylistForm
         OnEnter = TMLyricEnter
       end
       object CLyricF: TComboBox
-        Left = 4
+        Left = 2
         Top = 0
-        Width = 108
+        Width = 102
         Height = 21
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 1
         OnChange = CLyricFChange
       end
       object CLyricS: TComboBox
-        Left = 115
+        Left = 106
         Top = 0
         Width = 34
         Height = 21
@@ -288,7 +288,7 @@ object PlaylistForm: TPlaylistForm
           '72')
       end
       object PLTC: TTntPanel
-        Left = 154
+        Left = 144
         Top = 0
         Width = 30
         Height = 21
@@ -304,7 +304,7 @@ object PlaylistForm: TPlaylistForm
         OnClick = PLTCClick
       end
       object PLHC: TTntPanel
-        Left = 186
+        Left = 176
         Top = 0
         Width = 30
         Height = 21
@@ -320,7 +320,7 @@ object PlaylistForm: TPlaylistForm
         OnClick = PLHCClick
       end
       object PLBC: TTntPanel
-        Left = 218
+        Left = 208
         Top = 0
         Width = 30
         Height = 21
@@ -336,7 +336,7 @@ object PlaylistForm: TPlaylistForm
         OnClick = PLBCClick
       end
       object LScroll: TTntCheckBox
-        Left = 252
+        Left = 242
         Top = 2
         Width = 124
         Height = 17
