@@ -580,7 +580,7 @@ begin
   if ML then CmdLine:=EscapeParam(MplayerLocation)
   else CmdLine:=EscapeParam(HomeDir+'mplayer.exe');
   if not GUI then CmdLine:=CmdLine+' -nogui -noconsolecontrols';
-  CmdLine:=CmdLine+' -slave -identify -noquiet -nofs -term-osd-esc "[Fenny8248] "'
+  CmdLine:=CmdLine+' -slave -identify -noquiet -nofs -nomsgmodule -term-osd-esc "[Fenny8248] "'
           +' -hr-mp3-seek -subalign 1 -spualign 1 -sub-fuzziness 1 -subfont-autoscale 2'
           +' -subfont-osd-scale 4.8 -subfont-text-scale '+FloatToStr(FSize)
           +' -subfont-outline '+FloatToStr(Fol)+' -subfont-blur '+FloatToStr(FB);
