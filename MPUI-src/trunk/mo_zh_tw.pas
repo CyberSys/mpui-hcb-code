@@ -382,6 +382,7 @@ begin
     BDelete.Hint:=UTF8Decode('移除');
     CShuffle.Hint:=UTF8Decode('隨機播放');
     CLoop.Hint:=UTF8Decode('重複播放');
+    COneLoop.Hint:=UTF8Decode('循環播放當前');
     BSave.Hint:=UTF8Decode('儲存播放清單為 ...');
     TntTabSheet1.Caption:=Caption;
     TntTabSheet2.Caption:=UTF8Decode('歌詞');

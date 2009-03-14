@@ -758,13 +758,8 @@ end;
 
 procedure TMainForm.BPlayClick(Sender: TObject);
 begin
-  if BPause.Down then begin
-    SendCommand('pause'); BPause.Down:=false;
-    Status:=sPlaying; UpdateStatus;
-  end
-  else begin
-    if not Running then NextFile(0,psPlaying);
-  end;
+  if BPause.Down then SendCommand('pause')
+  else if not Running then NextFile(0,psPlaying);
   BPlay.Down:=Running;
 end;
 
@@ -772,10 +767,7 @@ procedure TMainForm.BPauseClick(Sender: TObject);
 begin
   BPause.Down:=True;
   if Status=sPaused then SendCommand('frame_step')
-  else begin
-    SendCommand('pause'); Status:=sPaused;
-    BPlay.Down:=false; UpdateStatus;
-  end;
+  else SendCommand('pause');
 end;
 
 procedure TMainForm.Unpaused;
@@ -1078,21 +1070,8 @@ else begin
          {]} 221:   MEndClick(nil);
         {\|} 220:   MSIEClick(nil);
         {/?} 191:   BPauseClick(nil);
-        VK_SPACE,VK_MEDIA_PLAY_PAUSE:  if Running then begin
-                                         SendCommand('pause');
-                                         if Status=sPlaying then begin
-                                            Status:=sPaused; BPause.Down:=true;
-                                            BPlay.Down:=false;
-                                         end
-                                         else begin
-                                           Status:=sPlaying; BPlay.Down:=true;
-                                           BPause.Down:=false;
-                                         end;
-                                           UpdateStatus;
-                                       end
-                                       else begin
-                                         if BPlay.Enabled then NextFile(0,psPlaying);
-                                       end;
+        VK_SPACE,VK_MEDIA_PLAY_PAUSE:  if Running then SendCommand('pause')
+                                       else if BPlay.Enabled then NextFile(0,psPlaying);
         VK_MEDIA_STOP:  if BStop.Enabled then BStopClick(nil);
         VK_MEDIA_PREV_TRACK,VK_F7: if BPrev.Enabled then BPrevNextClick(BPrev);
         VK_MEDIA_NEXT_TRACK,VK_F8: if BNext.Enabled then BPrevNextClick(BNext);
@@ -2316,31 +2295,12 @@ begin
       exit;
     end;
     SendCommand('pause');
-    if Status=sPlaying then begin
-      Status:=sPaused; BPause.Down:=true;
-      BPlay.Down:=false;
-    end
-    else begin
-      Status:=sPlaying; BPlay.Down:=true;
-      BPause.Down:=false;
-    end;
-    UpdateStatus;
   end;
 end;
 
 procedure TMainForm.DisplayDblClick(Sender: TObject);
 begin
-  if Running and (not (Dnav and (SecondPos=0))) and (MouseMode>-1) then begin
-    SendCommand('pause');
-    if Status=sPlaying then begin
-      Status:=sPaused; LStatus.Caption:=LOCstr_Status_Paused;
-      BPause.Down:=true; BPlay.Down:=false;
-    end
-    else begin
-      Status:=sPlaying; LStatus.Caption:=LOCstr_Status_Playing;
-      BPlay.Down:=true; BPause.Down:=false;
-    end;
-  end;
+  if Running and (not (Dnav and (SecondPos=0))) and (MouseMode>-1) then SendCommand('pause');
   SimulateKey(MFullscreen);
 end;
 
