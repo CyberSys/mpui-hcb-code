@@ -2105,6 +2105,8 @@ begin
       if HaveVideo and (not Wid) then SendCommand('pausing_keep set_property ontop 0')
       else SetWindowPos(Handle,HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     end;
+    if LogForm.Visible then SetWindowPos(LogForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
+    if OptionsForm.Visible then SetWindowPos(OptionsForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
   end;
 end;
 
