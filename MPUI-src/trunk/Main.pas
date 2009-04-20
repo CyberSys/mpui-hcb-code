@@ -2105,8 +2105,13 @@ begin
       if HaveVideo and (not Wid) then SendCommand('pausing_keep set_property ontop 0')
       else SetWindowPos(Handle,HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     end;
+    if Plist.PlaylistForm.Visible then SetWindowPos(Plist.PlaylistForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
+    if InfoForm.Visible then SetWindowPos(InfoForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
+    if AboutForm.Visible then SetWindowPos(AboutForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     if LogForm.Visible then SetWindowPos(LogForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     if OptionsForm.Visible then SetWindowPos(OptionsForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
+    if EqualizerForm.Visible then SetWindowPos(EqualizerForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
+    if HelpForm.Visible then SetWindowPos(HelpForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
   end;
 end;
 
