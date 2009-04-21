@@ -1598,7 +1598,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     if Result then begin
       Val(Copy(Line,11,10),f,r);
       if r=0 then begin
-        TotalTime:=round(f); TTime:=TotalTime;
+        TotalTime:=abs(round(f)); TTime:=TotalTime;
         Duration:=SecondsToTime(TotalTime);
       end;
       if HaveChapters then TotalTime:=UpdateLen;
@@ -2130,7 +2130,7 @@ begin
   if (len>11) and (Copy(Line,1,11)='ANS_LENGTH=') then begin
     Val(Copy(Line,12,length(Line)),f,r);
     if r=0 then begin
-      TotalTime:=round(f); TTime:=TotalTime;
+      TotalTime:=abs(round(f)); TTime:=TotalTime;
       Duration:=SecondsToTime(TotalTime);
     end;
     if CID+AID>2 then begin MainForm.LTime.Font.Size:=12; MainForm.LTime.Top:=0; end;
