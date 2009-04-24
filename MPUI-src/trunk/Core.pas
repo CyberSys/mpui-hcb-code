@@ -1786,7 +1786,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       NativeWidth:=i; NativeHeight:=j;
       if NativeWidth<(Constraints.MinWidth-6) then begin
         NativeWidth:=Constraints.MinWidth-6;
-        NativeHeight:=NativeWidth*j DIV i;
+        if i<>0 then NativeHeight:=NativeWidth*j DIV i;
       end;
       case CBHSA of
         3: begin VideoSizeChanged;

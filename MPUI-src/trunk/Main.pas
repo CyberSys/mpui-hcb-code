@@ -1097,7 +1097,7 @@ begin
       InterW:=IPanel.Width; InterH:=IPanel.Height;
       MKaspect.Checked:=true; CBHSA:=0;
       Aspect:=MCustomAspect.Tag; MCustomAspect.Checked:=true;
-      NativeHeight:=InterH*NativeWidth DIV InterW;
+      if InterW<>0 then NativeHeight:=InterH*NativeWidth DIV InterW;
       FixSize;
     end;
   end;
@@ -1376,7 +1376,7 @@ begin
     SX:=SX DIV 2; SY:=SY DIV 2;
     if SX<Constraints.MinWidth then begin
       SX:=Constraints.MinWidth;
-      SY:=SX*NativeHeight DIV NativeWidth;
+      if NativeWidth<>0 then SY:=SX*NativeHeight DIV NativeWidth;
     end;
   end;
   if MSize200.Checked then begin SX:=SX*2; SY:=SY*2; end;
@@ -1618,7 +1618,7 @@ begin
       7: begin SendCommand('switch_ratio 2.21'); SendCommand('osd_show_text 2.21:1'); end;
       8: begin SendCommand('switch_ratio 1'); SendCommand('osd_show_text 1:1'); end;
       9: begin SendCommand('switch_ratio 1.22'); SendCommand('osd_show_text 1.22:1'); end;
-     10: begin if InterW>3*InterH then InterW:=3*InterH;
+     10: begin if (InterW<>0) and (InterW>3*InterH) then InterW:=3*InterH;
            NativeHeight:=InterH*NativeWidth DIV InterW; VideoSizeChanged;
            SendCommand('osd_show_text "'+OSD_Custom_Prompt+' '+IntToStr(InterW)+':'+IntToStr(InterH)+#34);
          end;
@@ -1986,7 +1986,7 @@ begin
       7: begin SendCommand('switch_ratio 2.21');SendCommand('osd_show_text 2.21:1'); end;
       8: begin SendCommand('switch_ratio 1'); SendCommand('osd_show_text 1:1'); end;
       9: begin SendCommand('switch_ratio 1.22'); SendCommand('osd_show_text 1.22:1'); end;
-     10: begin if InterW>3*InterH then InterW:=3*InterH;
+     10: begin if (InterW<>0) and (InterW>3*InterH) then InterW:=3*InterH;
            NativeHeight:=InterH*NativeWidth DIV InterW; VideoSizeChanged;
            SendCommand('osd_show_text "'+OSD_Custom_Prompt+' '+IntToStr(InterW)+':'+IntToStr(InterH)+#34);
          end;
@@ -2208,7 +2208,7 @@ begin
            if WindowState=wsMaximized then
              SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_MAXIMIZE));
            i:=Width; j:=Height; WheelRolled:=true;
-           Height:=j+WheelDelta DIV 2; Width:=Height*i DIV j;
+           Height:=j+WheelDelta DIV 2; if j<>0 then Width:=Height*i DIV j;
            if Width=Constraints.MinWidth then Height:=Constraints.MinWidth*NativeHeight DIV NativeWidth;
            Left:=Left-(Width-i) DIV 2; Top:=Top-(Height-j) DIV 2;
            if Left<-5 then Left:=-5; if Top<-5 then Top:=-5;
@@ -2401,7 +2401,7 @@ begin
   end;
 
   if (not Running) then exit;
-  
+  if IPanel.Width<1 then IPanel.Width:=1;
   if IPanel.Height<1 then IPanel.Height:=1;
   i:=(OY-IPanel.Top)*100 DIV IPanel.Height;
 
@@ -2529,7 +2529,7 @@ begin
     InterW:=IPanel.Width; InterH:=IPanel.Height;
     MKaspect.Checked:=true;
     Aspect:=MCustomAspect.Tag; MCustomAspect.Checked:=true; 
-    NativeHeight:=InterH*NativeWidth DIV InterW;
+    if InterW<>0 then NativeHeight:=InterH*NativeWidth DIV InterW;
     FixSize;
   end;
   if MouseMode=-5 then begin
