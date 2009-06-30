@@ -1,6 +1,8 @@
-{   MPUI, an MPlayer frontend for Windows
+{   MPUI-hcb, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
     Copyright (C) 2005 Vasily Khoruzhick <fenix-fen@mail.ru>
+    Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+    based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -118,9 +120,9 @@ UTF8Decode(
 
 //because we need to set correct charset for font
   HelpForm.BClose.Caption:=UTF8Decode('Закрыть');
-  AboutForm.Caption:=UTF8Decode('О MPUI');
+  AboutForm.Caption:=UTF8Decode('О MPUI-hcb');
   AboutForm.BClose.Caption:=UTF8Decode('Закрыть');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('Версия MPUI: ');
+  AboutForm.LVersionMPUI.Caption:=UTF8Decode('Версия MPUI-hcb: ');
   AboutForm.LVersionMPlayer.Caption:=UTF8Decode('Версия MPlayer: ');
   with OptionsForm do begin
 

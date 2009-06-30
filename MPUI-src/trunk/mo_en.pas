@@ -1,5 +1,7 @@
-{   MPUI, an MPlayer frontend for Windows
+{   MPUI-hcb, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
+    Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+    based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -257,11 +259,11 @@ begin
 'While drag,release or press different function key invoke different function');
   HelpForm.BClose.Caption:='Close';
   with AboutForm do begin
-    Caption:='About MPUI';
+    Caption:='About MPUI-hcb';
     BClose.Caption:='Close';
-    LVersionMPUI.Caption:='MPUI version:';
+    LVersionMPUI.Caption:='MPUI-hcb version:';
     LVersionMPlayer.Caption:='MPlayer core version:';
-    FY.Caption:='Mender:';
+    FY.Caption:='Author:';
   end;
   with OptionsForm do begin
     Caption:='Options';

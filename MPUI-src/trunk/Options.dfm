@@ -777,13 +777,13 @@ object OptionsForm: TOptionsForm
         Left = 1
         Top = 102
         Width = 526
-        Height = 108
+        Height = 107
         Anchors = [akLeft, akTop, akRight, akBottom]
         Caption = 'Lyric'
         TabOrder = 10
         DesignSize = (
           526
-          108)
+          107)
         object LTCL: TTntLabel
           Left = 46
           Top = 51
@@ -983,7 +983,7 @@ object OptionsForm: TOptionsForm
         Width = 256
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 15
         OnChange = FontChange
       end
@@ -991,7 +991,7 @@ object OptionsForm: TOptionsForm
         Left = 8
         Top = 78
         Width = 514
-        Height = 45
+        Height = 44
         Anchors = [akLeft, akTop, akRight, akBottom]
         BevelOuter = bvNone
         Font.Charset = DEFAULT_CHARSET
@@ -1008,7 +1008,7 @@ object OptionsForm: TOptionsForm
         Width = 256
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 17
         OnChange = FontChange
       end

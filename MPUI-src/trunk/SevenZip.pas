@@ -1,5 +1,6 @@
-// Delphi interface to 7-zip32.dll
-// Written by Dominic Dumée (dominic@psas.co.za)
+{  MPUI-hcb, an MPlayer frontend for Windows
+   Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+   based on Delphi interface to 7-zip32.dll written by Dominic Dumée (dominic@psas.co.za)
 // Purpose: to create and extract files in the 7-zip format (www.7-zip.org)
 
 // 7-zip32.dll written by Akky. Download it here:
@@ -40,7 +41,7 @@
 
 // --> Added BaseDirectory parameter to SevenZipCreateArchive for easier handling of
 //     relative paths (note that absolute paths ARE NOT supported by the DLL) [Dominic Dumée]
-
+}
 unit SevenZip;
 
 interface

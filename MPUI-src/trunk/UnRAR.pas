@@ -1,6 +1,8 @@
-//MYC:2006/08/17 = Correction in TRARHeaderDataEx interface in order to handle stress Filenames in archive
-{
-  see UNRARDLL.TXT for Informations about UnRar.dll - Functions and structures
+{  MPUI-hcb, an MPlayer frontend for Windows
+   Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+   based on TDFUnRAR by <dfrischalowski@del-net.com>
+   
+   see UNRARDLL.TXT for Informations about UnRar.dll - Functions and structures
 }
 // ∂ØÃ¨‘ÿ»ÎUnRAR.dll
 unit UnRar;

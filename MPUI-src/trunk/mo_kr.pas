@@ -1,6 +1,8 @@
-{   MPUI, an MPlayer frontend for Windows
+{   MPUI-hcb, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
     Copyright (C) 2006 Ken Y. Yun <dalbaragi@gmail.com>
+    Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+    based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -120,9 +122,9 @@ begin
 '7/8'^I'채도 조정'
   );
   HelpForm.BClose.Caption:=UTF8Decode('닫기');
-  AboutForm.Caption:=UTF8Decode('MPUI 정보');
+  AboutForm.Caption:=UTF8Decode('MPUI-hcb 정보');
   AboutForm.BClose.Caption:=UTF8Decode('닫기');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI 버젼: ');
+  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb 버젼: ');
   AboutForm.LVersionMPlayer.Caption:=UTF8Decode('MPlayer 코어 버젼: ');
   with OptionsForm do begin
     Caption:=UTF8Decode('환경설정');

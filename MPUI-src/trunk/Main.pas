@@ -1,5 +1,6 @@
-{   MPUI, an MPlayer frontend for Windows
-    Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
+{   MPUI-hcb, an MPlayer frontend for Windows
+    Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+    based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -926,11 +927,11 @@ if MVideos.Visible then begin
                       end
                       else HandleCommand('vo_fullscreen');
           Ord('C'):   if MSubtitle.Count>0 then HandleCommand('sub_alignment');
-          Ord('T'):   if MSubtitle.Count>0 then begin
+          Ord('T'):   if (MSubtitle.Count>0) and (not Ass) then begin
                         HandleCommand('sub_pos +2'); subpos:=subpos+2;
                         if SubPos>100 then SubPos:=100;
                       end;
-          Ord('R'):   if MSubtitle.Count>0 then begin
+          Ord('R'):   if (MSubtitle.Count>0) and (not Ass) then begin
                         HandleCommand('sub_pos -2'); subpos:=subpos-2;
                         if SubPos<0 then SubPos:=0;
                       end;
@@ -2424,7 +2425,7 @@ begin
       if ass then SendCommand('sub_scale '+FloatToStr(FSize/3.2)+' 1')
       else SendCommand('sub_scale '+FloatToStr(FSize)+' 1');
     end
-    else begin       //Move Subtitle
+    else if not Ass then begin       //Move Subtitle
       SubPos:=i;
       if SubPos<0 then SubPos:=0; if SubPos>100 then SubPos:=100;
       SendCommand('sub_pos '+IntToStr(SubPos)+' 1');

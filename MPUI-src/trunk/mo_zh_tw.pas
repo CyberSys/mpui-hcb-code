@@ -1,5 +1,7 @@
-{   MPUI, an MPlayer frontend for Windows
+{   MPUI-hcb, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
+    Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+    based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -256,10 +258,13 @@ begin
 '在拖曳時，松開、按下不同的功能鍵和起始拖曳方向決定不同的功能'
   );
   HelpForm.BClose.Caption:=UTF8Decode('關閉');
-  AboutForm.Caption:=UTF8Decode('關於 MPUI');
-  AboutForm.BClose.Caption:=UTF8Decode('關閉');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI 版本: ');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('MPlayer 核心版本');
+  with AboutForm do begin
+    Caption:=UTF8Decode('關於 MPUI-hcb');
+    BClose.Caption:=UTF8Decode('關閉');
+    LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb 版本: ');
+    LVersionMPlayer.Caption:=UTF8Decode('MPlayer 核心版本');
+    FY.Caption:=UTF8Decode('作者:');
+  end;
   with OptionsForm do begin
     Caption:=UTF8Decode('選項');
     BOK.Caption:=UTF8Decode('確認');

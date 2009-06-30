@@ -1,6 +1,8 @@
 {   MPUI, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
     Copyright (C) 2006 Mohamed Magdy <alnokta@yahoo.com>
+    Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+    based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -119,9 +121,9 @@ begin
 '7/8'^I'تعديل saturation')
   ;
   HelpForm.BClose.Caption:=UTF8Decode('غلق');
-  AboutForm.Caption:=UTF8Decode('عن MPUI');
+  AboutForm.Caption:=UTF8Decode('عن MPUI-hcb');
   AboutForm.BClose.Caption:=UTF8Decode('غلق');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI نسخة:');
+  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb نسخة:');
   AboutForm.LVersionMPlayer.Caption:=UTF8Decode('MPlayerنسخة صميم:');
   with OptionsForm do begin
     Caption:=UTF8Decode('خيارات');

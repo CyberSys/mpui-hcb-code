@@ -1,16 +1,6 @@
-unit SevenZipVCL;
-(*
-   This Unit is under Mozilla Public Licence
-    ( 
-     - You can use this Unit for free in free, share and commercial application.
-     - Mark clearly in your Readme or Help file that you use this unit/VCL with a link the 
-       SevenZipVCL Homepage ( http://www.rg-software.de )
-     - Any changes of the source must be publised ( Just send it to me :- ) SevenZipVCL@rg-software.de )
-    )
-
-
-   TsevenZip by Ivo Andonov
-   TSevenZipVCL by Rainer Geigenberger ( -> http://www.rg-software.de - SevenZipVCL@rg-software.de )
+(* MPUI-hcb, an MPlayer frontend for Windows
+   Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+   based on TsevenZip by Ivo Andonov and TSevenZipVCL by Rainer Geigenberger ( -> http://www.rg-software.de - SevenZipVCL@rg-software.de )
 
    Thanks to:
     - Marko Kamin
@@ -21,10 +11,15 @@ unit SevenZipVCL;
     - Flurin Honegger
     - Zach Saw
     - Guillaume Di Giusto
-
+    This Unit is under Mozilla Public Licence
+    (
+     - You can use this Unit for free in free, share and commercial application.
+     - Mark clearly in your Readme or Help file that you use this unit/VCL with a link the
+       SevenZipVCL Homepage ( http://www.rg-software.de )
+     - Any changes of the source must be publised ( Just send it to me :- ) SevenZipVCL@rg-software.de )
+    )
 *)
-
-
+unit SevenZipVCL;
 interface
 
 uses

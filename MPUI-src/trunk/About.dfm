@@ -66,7 +66,7 @@ object AboutForm: TAboutForm
     Top = 103
     Width = 29
     Height = 13
-    Caption = #20462#25913':'
+    Caption = 'зїеп:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -2412,8 +2412,9 @@ object AboutForm: TAboutForm
       'This is free software, licensed under the terms of the'
       'GNU General Public License, Version 2.'
       ''
-      '(C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>'
-      'HomePage: http://mpui.sourceforge.net'
+      '(C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>'
+      'based on work by Martin J. Fiedler <martin.fiedler@gmx.net>'
+      ''
       'Code contributions and hints:'
       'Joackim Pennerup <joackim@pennerup.net>'
       'Vasily Khoruzhick <fenix-fen@mail.ru>'
