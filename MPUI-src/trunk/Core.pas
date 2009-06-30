@@ -118,7 +118,7 @@ var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
     LastPos,SecondPos,OSDLevel,MSecPos:integer;
 var Volume,MWC,CP:integer;
-    tEnd,Mute,LastMute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
+    tEnd,Mute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
     DTFormat:string;
     FormatSet:TFormatSettings;
     ExplicitStop,Rot,DefaultFontIndex:integer;
@@ -601,7 +601,14 @@ begin
   if ni then CmdLine:=CmdLine+' -ni';
   if nobps then CmdLine:=CmdLine+' -nobps';
   if ReIndex then CmdLine:=CmdLine+' -idx';
-  if SoftVol then CmdLine:=CmdLine+' -softvol -softvol-max 1000';
+  if SoftVol then begin
+    if mute then CmdLine:=CmdLine+' -softvol -softvol-max 1000 -volume 0'
+    else CmdLine:=CmdLine+' -softvol -softvol-max 1000 -volume '+IntToStr(Volume DIV 10);
+  end
+  else begin
+    if mute then CmdLine:=CmdLine+' -volume 0'
+    else CmdLine:=CmdLine+' -volume '+IntToStr(Volume);
+  end;
   if Uni then CmdLine:=CmdLine+' -unicode';
   if Utf then CmdLine:=CmdLine+' -utf8';
   if lavf then CmdLine:=CmdLine+' -demuxer lavf';
@@ -930,7 +937,7 @@ begin
 
   if Loadsub<>2 then Loadsub:=-1;
   ExplicitStop:=0; Dreset:=false;
-  Firstrun:=false; LastMute:=true;
+  Firstrun:=false;
   ResetStreamInfo; LastCacheFill:='';
   ChkVideo:=true; ChkAudio:=true;
   ChkStartPlay:=true; HaveChapters:=false;
@@ -996,12 +1003,6 @@ begin
   ClientWaitThread.Resume;
   Processor.Resume;
   MainForm.SetupStart;
-
-  if SoftVol then
-    SendCommand('set_property volume '+IntToStr(Volume DIV 10))
-  else
-    SendCommand('set_property volume '+IntToStr(Volume));
-  if mute then SendCommand('set_property mute 1');
 
 end;
 
@@ -1720,11 +1721,6 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     if (Copy(Line,6,5)='win32') or (Copy(Line,6,6)='dsound') then begin
       HaveAudio:=true; MainForm.MAudios.Visible:=true;
       MainForm.BMute.Enabled:=true; ChkAudio:=false;
-      if SoftVol then
-        SendCommand('set_property volume '+IntToStr(Volume DIV 10))
-      else
-        SendCommand('set_property volume '+IntToStr(Volume));
-      if mute then SendCommand('set_property mute 1');
       Result:=true;
     end
   end;
@@ -1913,10 +1909,7 @@ begin
             inc(CID); TotalTime:=UpdateLen; //针对不带chapter属性的mplayer
           end;
         end;
-        if mute and LastMute then begin
-          SendCommand('set_property mute 1');
-          LastMute:=false;
-        end;
+
        { if MainForm.MSIE.Checked and (EP>0) and (SecondPos>=Ep) then begin
           MainForm.UpdateParams; MainForm.NextFile(1,psPlayed);
         end; }

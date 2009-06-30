@@ -811,7 +811,6 @@ var i,j:integer;
     SendCommand(Command);
     if HaveChapters then Sendcommand('get_property chapter');
     SendCommand('get_time_length');
-    if Mute then SendCommand('set_property mute 1');
   end;
 begin
 if MVideos.Visible then begin
@@ -1320,7 +1319,6 @@ begin
   else SendCommand('seek '+IntToStr(LastPos)+' 2');}
   SendCommand('seek '+IntToStr(LastPos-SecondPos));
   if HaveVideo then SendCommand('osd_show_text '+IntToStr(100*LastPos DIV TotalTime)+'%');
-  if Mute then SendCommand('set_property mute 1');
   Seeking:=false; SeekBarSlider.ShowHint:=true;
   UpdateSeekBarAt:=GetTickCount()+1000;
   if not Win32PlatformIsUnicode then Restart;
@@ -1346,7 +1344,6 @@ begin
   else SendCommand('seek '+IntToStr(TotalTime*X DIV MaxPos)+' 2'); }
   SendCommand('seek '+IntToStr((TotalTime*X DIV MaxPos)-SecondPos));
   if HaveVideo then SendCommand('osd_show_text '+IntToStr(100*X DIV MaxPos)+'%');
-  if Mute then SendCommand('set_property mute 1');
   SeekBarSlider.Left:=X; UpdateSeekBarAt:=GetTickCount()+1000;
   if not Win32PlatformIsUnicode then Restart;
 end;
@@ -2190,7 +2187,8 @@ procedure TMainForm.BMuteClick(Sender: TObject);
 begin
   VolFrame.Enabled:=Mute; Mute:=not(Mute);
   BMute.Down:=Mute; MMute.Checked:=BMute.Down;
-  SendCommand('mute');
+  if mute then SendCommand('set_property volume 0')
+  else SendCommand('set_property volume '+IntToStr(Volume));
 end;
 
 procedure TMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
