@@ -97,7 +97,8 @@ begin
       MClose.Caption:=UTF8Decode('关闭');
       MQuit.Caption:=UTF8Decode('退出');
     MView.Caption:=UTF8Decode('查看');
-      MSizeAny.Caption:=UTF8Decode('自定义尺寸');
+      MSizeAny.Caption:=UTF8Decode('自定义尺寸 (');
+      MSCS.Caption:=UTF8Decode('设置 自定义尺寸');
       MSize50.Caption:=UTF8Decode('一半大小 50%');
       MSize100.Caption:=UTF8Decode('原始大小 100%');
       MSize200.Caption:=UTF8Decode('两倍大小 200%');

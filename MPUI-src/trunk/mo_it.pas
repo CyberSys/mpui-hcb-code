@@ -54,7 +54,7 @@ begin
       MClose.Caption:=UTF8Decode('Chiudi');
       MQuit.Caption:=UTF8Decode('Esci');
     MView.Caption:=UTF8Decode('Guarda');
-      MSizeAny.Caption:=UTF8Decode('Personalizza Dim.');
+      MSizeAny.Caption:=UTF8Decode('Personalizza Dim (');
       MSize50.Caption:=UTF8Decode('1/2 dimensione');
       MSize100.Caption:=UTF8Decode('1/1 diensione');
       MSize200.Caption:=UTF8Decode('2X dimensione');

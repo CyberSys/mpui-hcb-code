@@ -54,7 +54,7 @@ begin
       MClose.Caption:=UTF8Decode('닫기');
       MQuit.Caption:=UTF8Decode('종료');
     MView.Caption:=UTF8Decode('보기');
-      MSizeAny.Caption:=UTF8Decode('사용자 크기');
+      MSizeAny.Caption:=UTF8Decode('사용자 크기 (');
       MSize50.Caption:=UTF8Decode('절반 크기');
       MSize100.Caption:=UTF8Decode('원래 크기');
       MSize200.Caption:=UTF8Decode('두배 크기');

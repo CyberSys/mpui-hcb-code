@@ -51,7 +51,7 @@ begin
       MClose.Caption:=UTF8Decode('Cerrar');
       MQuit.Caption:=UTF8Decode('Salir');
     MView.Caption:=UTF8Decode('Ver');
-      MSizeAny.Caption:=UTF8Decode('Tamaño personalizado');
+      MSizeAny.Caption:=UTF8Decode('Tamaño personalizado (');
       MSize50.Caption:=UTF8Decode('Mitad del tamaño');
       MSize100.Caption:=UTF8Decode('Tamaño original');
       MSize200.Caption:=UTF8Decode('Doble del tamaño');

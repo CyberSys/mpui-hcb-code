@@ -54,7 +54,7 @@ begin
       MClose.Caption:=UTF8Decode('Media sluiten');
       MQuit.Caption:=UTF8Decode('Afsluiten');
     MView.Caption:=UTF8Decode('Beeld');
-      MSizeAny.Caption:=UTF8Decode('Willekeurig formaat');
+      MSizeAny.Caption:=UTF8Decode('Willekeurig formaat (');
       MSize50.Caption:=UTF8Decode('Half formaat');
       MSize100.Caption:=UTF8Decode('Origineel formaat');
       MSize200.Caption:=UTF8Decode('Dubbel formaat');

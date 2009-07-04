@@ -54,7 +54,7 @@ begin
       MClose.Caption:=UTF8Decode('fermi');
       MQuit.Caption:=UTF8Decode('eliro');
     MView.Caption:=UTF8Decode('vidaĵo');
-      MSizeAny.Caption:=UTF8Decode('ajna grandeco');
+      MSizeAny.Caption:=UTF8Decode('ajna grandeco (');
       MSize50.Caption:=UTF8Decode('duona grandeco');
       MSize100.Caption:=UTF8Decode('ĝusta grandeco');
       MSize200.Caption:=UTF8Decode('duopla grandeco');

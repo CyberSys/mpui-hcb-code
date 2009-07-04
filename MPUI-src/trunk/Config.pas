@@ -120,6 +120,8 @@ begin
            Core.GUI:=ReadBool(SectionName,'GUI',Core.GUI);
            Core.InterW:=ReadInteger(SectionName,'InnerPanel_Width',Core.InterW);
            Core.InterH:=ReadInteger(SectionName,'InnerPanel_Height',Core.InterH);
+           Core.NW:=ReadInteger(SectionName,'CWidth',Core.NW);
+           Core.NH:=ReadInteger(SectionName,'CHeight',Core.NH);
            Core.Bp:=ReadInteger(SectionName,'Intro',Core.Bp);
            Core.Ep:=ReadInteger(SectionName,'Ending',Core.Ep);
            Core.Volume:=ReadInteger(SectionName,'Volume',Core.Volume);
@@ -146,24 +148,28 @@ procedure Save(FileName:WideString; Mode:integer);
 var INI:TINIFile; d:WideString; h:integer;
 begin
   if NoAccess>1 then exit;
-  try INI:=TINIFile.Create(AppdataDir+WideExtractFileName(FileName));
+  if (NoAccess=1) or ( not WideFileExists(FileName)) then
+    FileName:=AppdataDir+WideExtractFileName(FileName);
+  h:=WideFileCreate(FileName);
+  case GetLastError of
+    ERROR_ALREADY_EXISTS,0: if not IsWideStringMappableToAnsi(FileName) then
+                            FileName:=WideExtractShortPathName(FileName);
+  end;
+  if h<0 then begin
+    d:=WideExtractFilePath(FileName);
+    if not IsWideStringMappableToAnsi(FileName) then
+      FileName:=WideExtractShortPathName(d)+WideExtractFileName(FileName);
+  end
+  else CloseHandle(h);
+
+  try INI:=TINIFile.Create(FileName);
   except
-    if NoAccess=1 then exit;
-    h:=WideFileCreate(FileName);
-    case GetLastError of
-      ERROR_ALREADY_EXISTS,0: if not IsWideStringMappableToAnsi(FileName) then
-                                FileName:=WideExtractShortPathName(FileName);
-    end;
-    if h<0 then begin
-      d:=WideExtractFilePath(FileName);
-      if not IsWideStringMappableToAnsi(FileName) then
-        FileName:=WideExtractShortPathName(d)+WideExtractFileName(FileName);
-    end
-    else CloseHandle(h);
-    try INI:=TINIFile.Create(FileName);
+    if (NoAccess=1) or ( not WideFileExists(FileName)) then exit;
+    try INI:=TINIFile.Create(AppdataDir+WideExtractFileName(FileName));
     except exit;
     end;
   end;
+  
   with INI do try
     case mode of
       0: begin
@@ -254,6 +260,10 @@ begin
            WriteBool   (SectionName,'UseUni',Core.UseUni);
          end;
       2: WriteBool  (SectionName,'instance',Core.oneM);
+      3: begin
+           WriteInteger(SectionName,'CWidth',Core.NW);
+           WriteInteger(SectionName,'CHeight',Core.NH);
+         end;
     end;
   finally
     Free;

@@ -54,7 +54,7 @@ begin
       MClose.Caption:=UTF8Decode('Închide');
       MQuit.Caption:=UTF8Decode('Ieşire');
     MView.Caption:=UTF8Decode('Vizualizare');
-      MSizeAny.Caption:=UTF8Decode('Mărime particulară');
+      MSizeAny.Caption:=UTF8Decode('Mărime particulară (');
       MSize50.Caption:=UTF8Decode('Jumătate din mărimea originală');
       MSize100.Caption:=UTF8Decode('Mărimea originală');
       MSize200.Caption:=UTF8Decode('Mărime dublă');

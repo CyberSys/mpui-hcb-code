@@ -54,7 +54,7 @@ begin
       MClose.Caption:=UTF8Decode('閉じる');
       MQuit.Caption:=UTF8Decode('終了');
     MView.Caption:=UTF8Decode('表示');
-      MSizeAny.Caption:=UTF8Decode('カスタムサイズ');
+      MSizeAny.Caption:=UTF8Decode('カスタムサイズ (');
       MSize50.Caption:=UTF8Decode('1/2 サイズ');
       MSize100.Caption:=UTF8Decode('オリジナルサイズ');
       MSize200.Caption:=UTF8Decode('X2 サイズ');

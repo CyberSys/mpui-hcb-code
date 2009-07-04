@@ -98,7 +98,7 @@ begin
       MClose.Caption:=UTF8Decode('Затвори');
       MQuit.Caption:=UTF8Decode('Изход');
     MView.Caption:=UTF8Decode('Изглед');
-      MSizeAny.Caption:=UTF8Decode('Потребителски размер');
+      MSizeAny.Caption:=UTF8Decode('Потребителски размер (');
       MSize50.Caption:=UTF8Decode('Размер на половина');
       MSize100.Caption:=UTF8Decode('Оригинален размер');
       MSize200.Caption:=UTF8Decode('Двоен размер');

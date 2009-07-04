@@ -50,7 +50,7 @@ begin
       MClose.Caption:=UTF8Decode('Bezárás');
       MQuit.Caption:=UTF8Decode('Kilépés');
     MView.Caption:=UTF8Decode('Nézet');
-      MSizeAny.Caption:=UTF8Decode('Más méret');
+      MSizeAny.Caption:=UTF8Decode('Más méret (');
       MSize50.Caption:=UTF8Decode('Feleakkora méret');
       MSize100.Caption:=UTF8Decode('Eredeti méret');
       MSize200.Caption:=UTF8Decode('Dupla méret');

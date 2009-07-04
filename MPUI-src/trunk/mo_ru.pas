@@ -51,7 +51,7 @@ begin
       MClose.Caption:= UTF8Decode('Закрыть');
       MQuit.Caption:= UTF8Decode('Выход');
     MView.Caption:= UTF8Decode('Вид');
-      MSizeAny.Caption:= UTF8Decode('Произвольный размер');
+      MSizeAny.Caption:= UTF8Decode('Произвольный размер (');
       MSize50.Caption:= UTF8Decode('1/2 размера');
       MSize100.Caption:= UTF8Decode('Оригинальный размер');
       MSize200.Caption:= UTF8Decode('Двойной размер');

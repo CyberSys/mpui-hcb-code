@@ -97,7 +97,8 @@ begin
       MClose.Caption:='Close';
       MQuit.Caption:='Quit';
     MView.Caption:='View';
-      MSizeAny.Caption:='Custom size';
+      MSizeAny.Caption:='Custom size (';
+      MSCS.Caption:='Set custom size';
       MSize50.Caption:='Half size';
       MSize100.Caption:='Original size';
       MSize200.Caption:='Double size';

@@ -54,7 +54,7 @@ begin
       MClose.Caption:=UTF8Decode('اغلاق');
       MQuit.Caption:=UTF8Decode('خروج');
     MView.Caption:=UTF8Decode('مظهر');
-      MSizeAny.Caption:=UTF8Decode('حجم معرف');
+      MSizeAny.Caption:=UTF8Decode('حجم معرف (');
       MSize50.Caption:=UTF8Decode('نصف الحجم');
       MSize100.Caption:=UTF8Decode('الحجم الاصلى');
       MSize200.Caption:=UTF8Decode('الحجم مضاعف');

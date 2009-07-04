@@ -54,7 +54,7 @@ begin
       MClose.Caption:=UTF8Decode('Luk');
       MQuit.Caption:=UTF8Decode('Afslut');
     MView.Caption:=UTF8Decode('Vis');
-      MSizeAny.Caption:=UTF8Decode('Normal størrelse');
+      MSizeAny.Caption:=UTF8Decode('Normal størrelse (');
       MSize50.Caption:=UTF8Decode('Halv størrelse');
       MSize100.Caption:=UTF8Decode('Original størrelse');
       MSize200.Caption:=UTF8Decode('Dobbelt størrelse');

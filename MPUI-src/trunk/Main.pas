@@ -294,6 +294,8 @@ type
     MSubScale1: TTntMenuItem;
     N21: TTntMenuItem;
     MSubScale2: TTntMenuItem;
+    MSCS: TTntMenuItem;
+    N35: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -403,6 +405,7 @@ type
     procedure MLoadlyricClick(Sender: TObject);
     procedure MUUniClick(Sender: TObject);
     procedure MSubScale2Click(Sender: TObject);
+    procedure MSCSClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -852,7 +855,7 @@ if MVideos.Visible then begin
   else begin
     if Wid and (ssAlt in Shift) then begin
       case Key of
-        Ord('3'):   MSizeAny.Checked:=True;
+        Ord('3'):   MSizeClick(MSizeAny);
         {`~} 192:   MSizeClick(MSize50);
         Ord('1'):   MSizeClick(MSize100);
         Ord('2'):   MSizeClick(MSize200);
@@ -1223,7 +1226,7 @@ begin
   if ControlledResize then
     ControlledResize:=false
   else begin
-    if not MSizeAny.Checked then MSizeAny.Checked:=true;
+    MSizeAny.Checked:=true; MSizeAny.Checked:=false;
   end;
 end;
 
@@ -1368,7 +1371,8 @@ var SX,SY,PX,PY:integer;
 begin
   if (not Wid) OR (not Win32PlatformIsUnicode) OR
     (NativeWidth=0) OR (NativeHeight=0) then exit;
-  if MSizeAny.Checked OR MFullscreen.Checked then begin
+  if (not (MSize50.Checked or MSize100.Checked or MSize200.Checked or MSizeAny.Checked))
+    OR MFullscreen.Checked then begin
     FixSize;
     exit;
   end;
@@ -1381,13 +1385,14 @@ begin
     end;
   end;
   if MSize200.Checked then begin SX:=SX*2; SY:=SY*2; end;
+  if MSizeAny.Checked then begin if NW<>0 then SX:=NW; if NH<>0 then SY:=NH; end;
   PX:=Left+((OPanel.Width-SX) DIV 2);
   PY:=Top+((OPanel.Height-SY) DIV 2);
   SX:=Width-(OPanel.Width-SX);
   SY:=Height-(OPanel.Height-SY);
   if PX<0 then PX:=0; if PY<0 then PY:=0;
-  if SX>Screen.Width then begin SX:=Screen.Width; MSizeAny.Checked:=True; end;
-  if SY>Screen.WorkAreaHeight then begin SY:=Screen.WorkAreaHeight; MSizeAny.Checked:=True; end;
+  if SX>Screen.Width then begin SX:=Screen.Width; MSizeAny.Checked:=True; MSizeAny.Checked:=false; end;
+  if SY>Screen.WorkAreaHeight then begin SY:=Screen.WorkAreaHeight; MSizeAny.Checked:=True; MSizeAny.Checked:=false; end;
   if (PX+SX)>Screen.Width then PX:=Screen.Width-SX;
   if (PY+SY)>Screen.WorkAreaHeight then PY:=Screen.WorkAreaHeight-SY;
   SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_MAXIMIZE));
@@ -1570,6 +1575,10 @@ procedure TMainForm.UpdateMenus(Sender: TObject);
 begin
   MCX.Caption:=Copy(MCustomAspect.Caption,1,Pos(' ',MCustomAspect.Caption))+FloatToStr(Speed);
   MCustomAspect.Caption:=Copy(MCustomAspect.Caption,1,Pos(' ',MCustomAspect.Caption))+IntToStr(InterW)+':'+IntToStr(InterH);
+  if (NW=0) or (NH=0) then
+    MSizeAny.Caption:=Copy(MSizeAny.Caption,1,Pos(' (',MSizeAny.Caption))+'(100%)'
+  else
+    MSizeAny.Caption:=Copy(MSizeAny.Caption,1,Pos(' (',MSizeAny.Caption))+'('+IntToStr(NW)+':'+IntToStr(NH)+')';
   MIntro.Caption:=Copy(MIntro.Caption,1,Pos(' ',MIntro.Caption))+SecondsToTime(Bp);
   MEnd.Caption:=Copy(MEnd.Caption,1,Pos(' ',MEnd.Caption))+SecondsToTime(Ep);
   MNext.Enabled:=BNext.Enabled;
@@ -1825,7 +1834,7 @@ begin
     CPanel.Visible:=CV; MenuBar.Visible:=MV; ViewMode:=0;
     Mctrl.Checked:=not CV; Hide_Menu.Checked:=not MV;
     MPCtrl.Checked:=CV and MV;
-    if not MSizeAny.Checked then LastScale:=100;
+    if MSize50.Checked or MSize100.Checked or MSize200.Checked or MSizeAny.Checked then LastScale:=100;
     ControlledResize:=true; FormResize(nil);
     if CV then UpdateCaption;  
   end;
@@ -2586,8 +2595,8 @@ begin
   MVideos.Visible:=Mode; MSub.Visible:=Mode; MPWheelControl.Visible:=Mode;
   N12.Visible:=Mode and Wid; MPFullscreen.Visible:=Mode; N3.Visible:=Mode;
   MPExpand.Visible:=Mode; OSDMenu.Visible:=Mode; MWheelControl.Visible:=Mode and Wid;
-  MOSD.Visible:=Mode; MFullscreen.Visible:=Mode and Wid;
-  MSizeAny.Visible:=Mode and Wid; MSize50.Visible:=Mode and Wid;
+  MOSD.Visible:=Mode; MFullscreen.Visible:=Mode and Wid; MSCS.Visible:=Mode and Wid;
+  N35.Visible:=Mode and Wid; MSizeAny.Visible:=Mode and Wid; MSize50.Visible:=Mode and Wid;
   MSize200.Visible:=Mode and Wid; MSize100.Visible:=Mode and Wid;
   MCompact.Visible:=Mode and Wid; Hide_menu.Visible:=Mode and Wid;
   Mctrl.Visible:=Mode and Wid; MKaspect.Visible:=Mode and Wid;
@@ -2989,6 +2998,12 @@ begin
   else SendCommand('set_property sub_scale 4.5');
   FSize:=4.5;
   SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_Scale_Prompt+'"');
+end;
+
+procedure TMainForm.MSCSClick(Sender: TObject);
+begin
+  NW:=OPanel.Width; NH:=OPanel.Height;
+  Config.Save(HomeDir+DefaultFileName,3);
 end;
 
 end.

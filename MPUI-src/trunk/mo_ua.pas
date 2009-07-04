@@ -58,7 +58,7 @@ begin
     MClose.Caption := UTF8Decode('Закрити');
     MQuit.Caption := UTF8Decode('Вийти');
     MView.Caption := UTF8Decode('Перегляд');
-    MSizeAny.Caption := UTF8Decode('Довільний розмір');  // виправлено 18.04.06
+    MSizeAny.Caption := UTF8Decode('Довільний розмір (');  // виправлено 18.04.06
     MSize50.Caption := UTF8Decode('Розмір 50%');
     MSize100.Caption := UTF8Decode('Розмір 100%');
     MSize200.Caption := UTF8Decode('Розмір 200%');

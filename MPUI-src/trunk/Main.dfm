@@ -1535,6 +1535,18 @@ object MainForm: TMainForm
         RadioItem = True
         ShortCut = 32819
         Visible = False
+        OnClick = MSizeClick
+      end
+      object N35: TTntMenuItem
+        Caption = '-'
+        GroupIndex = 1
+        Visible = False
+      end
+      object MSCS: TTntMenuItem
+        Caption = 'Set custom size'
+        GroupIndex = 1
+        Visible = False
+        OnClick = MSCSClick
       end
       object N3: TTntMenuItem
         Caption = '-'

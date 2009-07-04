@@ -54,7 +54,7 @@ begin
       MClose.Caption:=UTF8Decode('Zatvoriť');
       MQuit.Caption:=UTF8Decode('Koniec');
     MView.Caption:=UTF8Decode('Zobraziť');
-      MSizeAny.Caption:=UTF8Decode('Vlastná veľkosť');
+      MSizeAny.Caption:=UTF8Decode('Vlastná veľkosť (');
       MSize50.Caption:=UTF8Decode('Polovičná veľkosť');
       MSize100.Caption:=UTF8Decode('Pôvodná veľkosť');
       MSize200.Caption:=UTF8Decode('Dvojnásobná veľkosť');
