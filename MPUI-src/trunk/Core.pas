@@ -609,6 +609,7 @@ begin
     if mute then CmdLine:=CmdLine+' -volume 0'
     else CmdLine:=CmdLine+' -volume '+IntToStr(Volume);
   end;
+  MainForm.UpdateVolSlider;
   if Uni then CmdLine:=CmdLine+' -unicode';
   if Utf then CmdLine:=CmdLine+' -utf8';
   if lavf then CmdLine:=CmdLine+' -demuxer lavf';
@@ -871,8 +872,8 @@ begin
       i:=0;
       if HaveChapters and (CID>1) then begin
         t:=CheckMenu(MainForm.MDVDT,TID);
-        if Dnav then i:=CheckMenu(MainForm.MDVDT.Items[t].Items[0],CID-1)
-        else i:=CheckMenu(MainForm.MDVDT.Items[t].Items[0],CID);
+        {if Dnav then i:=CheckMenu(MainForm.MDVDT.Items[t].Items[0],CID-1)
+        else }i:=CheckMenu(MainForm.MDVDT.Items[t].Items[0],CID);
         s:=MainForm.MDVDT.Items[t].Items[0].Items[i].Caption;
         s:=Copy(s,pos('(',s)+1,8);
         i:=TimeToSeconds(s);
@@ -1337,7 +1338,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   end;
 
   function CheckChapterLen:boolean;
-  var e:boolean;
+  var e:boolean; ds,ts:string;
   begin
     Result:=false; j:=-1;
     if Dnav then begin
@@ -1350,9 +1351,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       s:=Copy(Line,11,length(Line));
     end;
     if e then begin
-      i:=pos(',',s);
+      i:=pos(',',s); ts:='00:00:00';
       while(i>0) do begin
-        inc(j);
+        inc(j); ds:=copy(s,1,i-1);
         r:=CheckMenu(MainForm.MDVDT,TID);
         if r<0 then r:=SubMenu_Add(MainForm.MDVDT,TID,TID,nil);
         if CheckMenu(MainForm.MDVDT.Items[r],0)<0 then begin
@@ -1362,8 +1363,13 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
         end;
         if CheckMenu(MainForm.MDVDT.Items[r].Items[0],j+1)<0 then
           SubMenu_Add(MainForm.MDVDT.Items[r].Items[0],j+1,CID,MainForm.MDVDCClick);
-        MainForm.MDVDT.Items[r].Items[0].Items[j].Caption:=IntToStr(MainForm.MDVDT.Items[r].Items[0].Items[j].Tag)+' ('+copy(s,1,i-1)+')';
-        s:=copy(s,i+1,length(s)); i:=pos(',',s);
+
+        if Dnav then
+          MainForm.MDVDT.Items[r].Items[0].Items[j].Caption:=IntToStr(MainForm.MDVDT.Items[r].Items[0].Items[j].Tag)+' ('+ts+')'
+        else
+          MainForm.MDVDT.Items[r].Items[0].Items[j].Caption:=IntToStr(MainForm.MDVDT.Items[r].Items[0].Items[j].Tag)+' ('+ds+')';
+        //MainForm.MDVDT.Items[r].Items[0].Items[j].Caption:=IntToStr(MainForm.MDVDT.Items[r].Items[0].Items[j].Tag)+' ('+copy(s,1,i-1)+')';
+        ts:=ds; s:=copy(s,i+1,length(s)); i:=pos(',',s);
       end;
       Result:=true; HaveChapters:=true;
     end;
@@ -1574,14 +1580,14 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
 
     s:=MainForm.MDVDT.Items[r].Items[0].Items[a].Caption;
     i:=pos('(',s);
-    if Dnav then begin //caption=endTime
+    {if Dnav then begin //caption=endTime
       if a=0 then r:=TimeToSeconds(copy(s,i+1,8))
       else begin
         k:=MainForm.MDVDT.Items[r].Items[0].Items[a-1].Caption;
         j:=pos('(',k); r:=TimeToSeconds(copy(s,i+1,8))-TimeToSeconds(copy(k,j+1,8));
       end;
     end
-    else begin //caption=startTime
+    else begin //caption=startTime}
       if a=MainForm.MDVDT.Items[r].Items[0].Count-1 then begin
         if (TTime>0) and (CID>1) then r:=TTime-TimeToSeconds(copy(s,i+1,8));
       end
@@ -1589,7 +1595,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
         k:=MainForm.MDVDT.Items[r].Items[0].Items[a+1].Caption;
         j:=pos('(',k); r:=TimeToSeconds(copy(k,j+1,8))-TimeToSeconds(copy(s,i+1,8));
       end;
-    end;
+    //end;
     if r>0 then Result:=r;
     Duration:=SecondsToTime(Result);
   end;

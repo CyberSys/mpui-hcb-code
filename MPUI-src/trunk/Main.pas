@@ -440,6 +440,7 @@ type
     procedure UpdateParams;
     procedure UpdateTime;
     procedure UpdateCaption;
+    procedure UpdateVolSlider;
     procedure SetVolumeRel(Increment:integer);
     procedure UpdateDockedWindows;
     procedure Localize;
@@ -521,10 +522,7 @@ begin
     if e <> 0 then i:=GetOEMCP;
     subcode:='CP'+IntToStr(i);
   end; }
-  if Volume>100 then begin
-    VolBoost.Visible:=True; VolBoost.Caption:=IntToStr(Volume)+'%';
-  end
-  else VolSlider.Left:=Volume*(VolFrame.ClientWidth-VolSlider.Width) DIV 100;
+  UpdateVolSlider;
   Left:=(screen.Width-Width) DIV 2;
   if Wid and Win32PlatformIsUnicode then
     Top:=(screen.Height-Height) Div 2
@@ -779,16 +777,11 @@ begin
   end;
 end;
 
-procedure TMainForm.SetVolumeRel(Increment:integer);
+procedure TMainForm.UpdateVolSlider;
 begin
-  if mute then exit;
-  if (Volume>100) OR ((Volume=100) AND (Increment>0))
-    then Increment:=Increment*10 DIV 3;  // bigger volume change steps if >100%
-  inc(Volume, Increment);
   if Volume<0 then Volume:=0;
   if (Volume>100) AND (not SoftVol) then Volume:=100;
-  if Volume>9999 then Volume:=9999;
-  SendVolumeChangeCommand(Volume);
+  if Volume>1000 then Volume:=1000;
   if Volume>100 then begin
     VolBoost.Visible:=True;
     VolBoost.Caption:=IntToStr(Volume)+'%';
@@ -797,6 +790,16 @@ begin
     VolBoost.Visible:=False;
     VolSlider.Left:=Volume*(VolFrame.ClientWidth-VolSlider.Width) DIV 100;
   end;
+end;
+
+procedure TMainForm.SetVolumeRel(Increment:integer);
+begin
+  if mute then exit;
+  if (Volume>100) OR ((Volume=100) AND (Increment>0))
+    then Increment:=Increment*10 DIV 3;  // bigger volume change steps if >100%
+  inc(Volume, Increment);
+  UpdateVolSlider;
+  SendVolumeChangeCommand(Volume);
 end;
 
 
@@ -2188,7 +2191,10 @@ begin
   VolFrame.Enabled:=Mute; Mute:=not(Mute);
   BMute.Down:=Mute; MMute.Checked:=BMute.Down;
   if mute then SendCommand('set_property volume 0')
-  else SendCommand('set_property volume '+IntToStr(Volume));
+  else begin
+    if SoftVol then SendCommand('set_property volume '+IntToStr(Volume div 10))
+    else SendCommand('set_property volume '+IntToStr(Volume));
+  end;
 end;
 
 procedure TMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
