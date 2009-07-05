@@ -21,7 +21,7 @@
 unit mo_ru;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist, info;
+uses Windows,Locale,Main,Log,Options,plist, info;
 
 procedure Activate;
 begin
@@ -138,7 +138,7 @@ UTF8Decode(
     CSoftVol.Caption:=UTF8Decode('Програмная регулировка громкости');
     CPriorityBoost.Caption:=UTF8Decode('Выполнять с более высоким приоритетом');
     LParams.Caption:=UTF8Decode('Дополнительные параметры MPlayer:');
-    LHelp.Caption:=UTF8Decode('Помощь');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('Плейлист');

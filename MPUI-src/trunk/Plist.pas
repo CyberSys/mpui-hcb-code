@@ -285,7 +285,7 @@ var
 
 implementation
 
-uses Main, Core, UnRAR, Locale,About, Options, SevenZip;
+uses Main, Core, UnRAR, Locale,Options, SevenZip;
 
 {$R *.dfm}
 {$R plist_img.res}

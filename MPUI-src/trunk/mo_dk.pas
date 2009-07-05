@@ -21,7 +21,7 @@
 unit mo_dk;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info;
+uses Windows,Locale,Main,Log,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -140,7 +140,7 @@ begin
     CSoftVol.Caption:=UTF8Decode('Software lydstyrke kontrol / Forstærk lydstyrken');
     CPriorityBoost.Caption:=UTF8Decode('Kør med højere prioritet');
     LParams.Caption:=UTF8Decode('Flere MPlayer parametre:');
-    LHelp.Caption:=UTF8Decode('Hjælp');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('Spilleliste');

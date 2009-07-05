@@ -21,7 +21,7 @@
 unit mo_hu;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist;
+uses Windows,Locale,Main,Log,Options,plist;
 
 procedure Activate;
 begin
@@ -130,7 +130,7 @@ begin
     CIndex.Caption:=UTF8Decode('File index újraép'+
 'tése, ha szükséges');
     LParams.Caption:=UTF8Decode('További MPlayer paraméterek:');
-    LHelp.Caption:=UTF8Decode('Súgó');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('Lejátszási lista');

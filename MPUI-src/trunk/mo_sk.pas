@@ -21,7 +21,7 @@
 unit mo_sk;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info;
+uses Windows,Locale,Main,Log,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -142,7 +142,7 @@ begin
     CSoftVol.Caption:=UTF8Decode('Softwarové ovládanie hlasitosti / Volume boost');
     CPriorityBoost.Caption:=UTF8Decode('Spustiť s vyššou prioritou');
     LParams.Caption:=UTF8Decode('Dotatočné parametre MPlayera:');
-    LHelp.Caption:=UTF8Decode('Pomocník');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('Zoznam skladieb');

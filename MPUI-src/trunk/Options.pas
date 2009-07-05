@@ -154,10 +154,10 @@ type
     VersionMPUI: TTntLabel;
     LVersionMPlayer: TTntLabel;
     VersionMPlayer: TTntLabel;
-    FYI: TImage;
     FY: TTntLabel;
     CRS: TTntCheckBox;
     CRP: TTntCheckBox;
+    HCB: TTntLabel;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -206,7 +206,7 @@ var
   OptionsForm: TOptionsForm; IsDsLoaded:THandle=0;
 
 implementation
-uses Core, Config, Main, Locale, About, plist;
+uses Core, Config, Main, Locale, plist;
 
 {$R *.dfm}
 var DirectSoundEnumerate: function (lpDSEnumCallback:PDSEnumCallback; lpContext:pointer):HRESULT; stdcall;

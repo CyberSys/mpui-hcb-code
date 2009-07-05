@@ -21,7 +21,7 @@
 unit mo_bg;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info,Core,Equalizer;
+uses Windows,Locale,Main,Log,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -339,7 +339,7 @@ begin
     CAss.Caption:=UTF8Decode('Използвай libass за SubRender');
     CAss.Hint:=UTF8Decode('Включва SSA/ASS рендиране на субтитрите. При избиране на тази опция libass ще бъде използван за SSA/ASS външни субтитри and Matroska поток от данни');
     LParams.Caption:=UTF8Decode('Допълнителни параметри към MPlayer:');
-    LHelp.Caption:=UTF8Decode('Помощ');
+    LHelp.Caption:=THelp.Caption;
     SLyric.Caption:=UTF8Decode('Директория с говор');
     TLyric.Caption:=UTF8Decode('Говор');
     LScroll.Caption:=UTF8Decode('Гладко скролиране');

@@ -181,7 +181,7 @@ procedure SendVolumeChangeCommand(Vol:integer);
 procedure ResetStreamInfo;
 
 implementation
-uses Main,config,Log,plist,Info,UnRAR,Equalizer,Locale,Options,About,Help,SevenZip;
+uses Main,config,Log,plist,Info,UnRAR,Equalizer,Locale,Options,SevenZip;
 
 type TClientWaitThread=class(TThread)
                          private procedure ClientDone;

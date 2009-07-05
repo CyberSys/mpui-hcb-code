@@ -21,7 +21,7 @@
 unit mo_ro;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info;
+uses Windows,Locale,Main,Log,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -141,7 +141,7 @@ begin
     CSoftVol.Caption:=UTF8Decode('Control software al volumului / Amplificarea Volumului');
     CPriorityBoost.Caption:=UTF8Decode('Execută aplicaţia cu prioritate de tip higher');
     LParams.Caption:=UTF8Decode('Parametri adiţionali pentru MPlayer:');
-    LHelp.Caption:=UTF8Decode('Ajutor');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('Lista de redare');

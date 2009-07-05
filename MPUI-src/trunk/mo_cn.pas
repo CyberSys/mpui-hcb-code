@@ -20,7 +20,7 @@
 unit mo_cn;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info,Core,Equalizer;
+uses Windows,Locale,Main,Log,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -256,7 +256,7 @@ begin
 '在拖曳时，松开、按下不同的功能键和起始拖曳方向决定不同的功能'
   );
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('快捷键');
+    THelp.Caption:=UTF8Decode('帮助');
     TAbout.Caption:=UTF8Decode('关于');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb 版本:');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayer 版本:');
@@ -362,7 +362,7 @@ begin
     CPriorityBoost.Hint:=UTF8Decode('使用高的优先级会避免因系统繁忙造成的播放不流畅的现象，'^M^J+
                                     '有时候可能造成其他的一些问题');
     LParams.Caption:=UTF8Decode('其它 MPlayer 播放参数:');
-    LHelp.Caption:=UTF8Decode('帮助');
+    LHelp.Caption:=THelp.Caption;
     SSF.Caption:=UTF8Decode('保存截图的目录');
     SLyric.Caption:=UTF8Decode('歌词目录:');
     TLyric.Caption:=UTF8Decode('歌词');

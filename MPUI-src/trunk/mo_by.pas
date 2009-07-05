@@ -21,7 +21,7 @@
 unit mo_by;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist, Info;
+uses Windows,Locale,Main,Log,Options,plist, Info;
 
 procedure Activate;
 begin
@@ -135,7 +135,7 @@ UTF8Decode(
     CSoftVol.Caption:=UTF8Decode('Праграмная рэгуліроўка гуку');
     CPriorityBoost.Caption:=UTF8Decode('Выконваць з большым прыарытэтам');
     LParams.Caption:=UTF8Decode('Дадатковыя параметры MPlayer:');
-    LHelp.Caption:=UTF8Decode('Дапамога');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('Спіс файлаў');

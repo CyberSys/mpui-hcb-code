@@ -97,7 +97,7 @@ procedure RegisterLocale(const _Name:WideString; const _Func:proc; _LangID:integ
 procedure ActivateLocale(Index:integer);
 
 implementation
-uses Windows, Forms, Main, Help, Options, plist, About, Log, Info, Core;
+uses Windows, Forms, Main, Options, plist, Log, Info, Core;
 
 procedure RegisterLocale(const _Name:WideString; const _Func:proc; _LangID:integer; _Charset:TFontCharset);
 begin

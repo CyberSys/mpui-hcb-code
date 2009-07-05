@@ -21,7 +21,7 @@
 unit mo_kr;
 interface
 implementation
-uses Windows, Locale, Main, Log, Help, About, Options, plist, info;
+uses Windows, Locale, Main, Log, Options, plist, info;
 
 procedure Activate;
 begin
@@ -141,7 +141,7 @@ begin
     CSoftVol.Caption:=UTF8Decode('소프트웨어 볼륨 조정 / 증폭');
     CPriorityBoost.Caption:=UTF8Decode('높은 작업순위로 재생');
     LParams.Caption:=UTF8Decode('MPlayer 파라미터 추가:');
-    LHelp.Caption:=UTF8Decode('도움말(영문)');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('재생목록');

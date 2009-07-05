@@ -21,7 +21,7 @@
 unit mo_eo;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info;
+uses Windows,Locale,Main,Log,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -140,7 +140,7 @@ begin
     CSoftVol.Caption:=UTF8Decode('softvara sonregulado (ebligas pli laŭta sono)');
     CPriorityBoost.Caption:=UTF8Decode('pli alta prioritato');
     LParams.Caption:=UTF8Decode('pliaj MPlayer-parametro:');
-    LHelp.Caption:=UTF8Decode('helpo');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('ludigolisto');

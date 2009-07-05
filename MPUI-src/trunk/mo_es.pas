@@ -21,7 +21,7 @@
 unit mo_es;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist;
+uses Windows,Locale,Main,Log,Options,plist;
 
 procedure Activate;
 begin
@@ -130,7 +130,7 @@ begin
     LOCstr_AutoLocale:=UTF8Decode('(Auto-selección)');
     CIndex.Caption:=UTF8Decode('Reconstruir índice del archivo si es necesario');
     LParams.Caption:=UTF8Decode('Parámetros MPlayer adicionales:');
-    LHelp.Caption:=UTF8Decode('Ayuda');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('Lista de reproducción');

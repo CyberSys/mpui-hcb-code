@@ -25,7 +25,7 @@
 unit mo_pl;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info,Core,Equalizer;
+uses Windows,Locale,Main,Log,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -363,7 +363,7 @@ begin
     CAss.Hint:=UTF8Decode('Turn on SSA/ASS subtitle rendering. With this option, libass will'^M^J+
                'be used for SSA/ASS external subtitles and Matroska tracks');
     LParams.Caption:=UTF8Decode('Dodatkowe parametry wywołania MPlayer:');
-    LHelp.Caption:=UTF8Decode('Pomoc');
+    LHelp.Caption:=THelp.Caption;
     SLyric.Caption:=UTF8Decode('Katalog Lyric');
     TLyric.Caption:=UTF8Decode('Lyric');
     LScroll.Caption:=UTF8Decode('Gładkie przewijanie');

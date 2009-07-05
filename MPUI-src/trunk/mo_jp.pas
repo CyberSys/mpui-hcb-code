@@ -21,7 +21,7 @@
 unit mo_jp;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info;
+uses Windows,Locale,Main,Log,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -141,7 +141,7 @@ begin
     CSoftVol.Caption:=UTF8Decode('ソフトウェア音量調整 / 音量ブースト');
     CPriorityBoost.Caption:=UTF8Decode('起動時に優先度を高める');
     LParams.Caption:=UTF8Decode('MPlayerに追加のパラメータ:');
-    LHelp.Caption:=UTF8Decode('ヘルプ');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('再生リスト');

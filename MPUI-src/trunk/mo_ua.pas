@@ -22,7 +22,7 @@
 unit mo_ua;
 interface
 implementation
-uses Windows, Locale, Main, Log, Help, About, Options, plist;
+uses Windows, Locale, Main, Log, Options, plist;
 
 procedure Activate;
 begin
@@ -150,7 +150,7 @@ begin
     CSoftVol.Caption:= UTF8Decode('Програмне регулювання гучності звуку');
     CPriorityBoost.Caption:= UTF8Decode('Запускати з підвищеним пріоритетом'); 
     LParams.Caption := UTF8Decode('Допоміжні налаштування MPlayer:');
-    LHelp.Caption := UTF8Decode('Допомога');
+    LHelp.Caption := THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('Плейліст');

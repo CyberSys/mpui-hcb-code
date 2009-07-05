@@ -20,7 +20,7 @@
 unit mo_de;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info;
+uses Windows,Locale,Main,Log,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -138,7 +138,7 @@ begin
     CSoftVol.Caption:=UTF8Decode('Software-Lautstärkereglung (ermöglicht höhere Lautstärke)');
     CPriorityBoost.Caption:=UTF8Decode('Höhere Priorität');
     LParams.Caption:=UTF8Decode('Zusätzliche MPlayer-Parameter:');
-    LHelp.Caption:=UTF8Decode('Hilfe');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('Wiedergabeliste');

@@ -21,7 +21,7 @@
 unit mo_ar;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info;
+uses Windows,Locale,Main,Log,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -138,7 +138,7 @@ begin
     CSoftVol.Caption:=UTF8Decode('Software volume control / Volume boost');
     CPriorityBoost.Caption:=UTF8Decode('تشغيل باأولوية عالية');
     LParams.Caption:=UTF8Decode('اوامر امبلاير اضافية:');
-    LHelp.Caption:=UTF8Decode('مساعدة');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('لائحة العرض');

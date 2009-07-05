@@ -21,7 +21,7 @@
 unit mo_nl;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info;
+uses Windows,Locale,Main,Log,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -140,7 +140,7 @@ begin
     CSoftVol.Caption:=UTF8Decode('Softwarematige volumeregeling / Volume boost');
     CPriorityBoost.Caption:=UTF8Decode('Afspelen met hogere prioriteit');
     LParams.Caption:=UTF8Decode('Additionele MPlayer parameters:');
-    LHelp.Caption:=UTF8Decode('Help');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('Speellijst');

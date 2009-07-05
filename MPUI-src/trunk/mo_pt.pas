@@ -21,7 +21,7 @@
 unit mo_pt;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info;
+uses Windows,Locale,Main,Log,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -137,7 +137,7 @@ begin
     CSoftVol.Caption:=UTF8Decode('Controlo de volume / Aumentar volume');
     CPriorityBoost.Caption:=UTF8Decode('Executar com prioridade total');
     LParams.Caption:=UTF8Decode('Parâmetros MPlayer adicionais:');
-    LHelp.Caption:=UTF8Decode('Ajuda');
+    LHelp.Caption:=THelp.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('Lista de reprodução');

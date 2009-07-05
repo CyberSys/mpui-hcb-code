@@ -20,7 +20,7 @@
 unit mo_zh_tw;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options,plist,Info,Core,Equalizer;
+uses Windows,Locale,Main,Log,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -267,7 +267,7 @@ begin
     TAudio.Caption:=MainForm.MAudios.Caption;
     TSub.Caption:=MainForm.MSub.Caption;
     TAbout.Caption:=UTF8Decode('關於');
-    THelp.Caption:=UTF8Decode('快速鍵');
+    THelp.Caption:=UTF8Decode('説明');
     CRP.Caption:=UTF8Decode('啟動時使用上次的窗體位置');
     CRS.Caption:=UTF8Decode('啟動時使用上次的窗體大小');
     LAudioOut.Caption:=UTF8Decode('音效輸出驅動程式');
@@ -363,7 +363,7 @@ begin
                                     '有時候可能造成其他的一些問題');
     LMAspect.Caption:=UTF8Decode('顯示器的寬高比');
     LParams.Caption:=UTF8Decode('其它 MPlayer 播放參數: ');
-    LHelp.Caption:=UTF8Decode('說明');
+    LHelp.Caption:=THelp.Caption;
     SSF.Caption:=UTF8Decode('保存截圖的目錄');
     SLyric.Caption:=UTF8Decode('歌詞目錄:');
     TLyric.Caption:=UTF8Decode('歌词');

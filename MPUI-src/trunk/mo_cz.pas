@@ -21,7 +21,7 @@
 unit mo_cz;
 interface
 implementation
-uses Windows,Locale,Main,Log,Help,About,Options;
+uses Windows,Locale,Main,Log,Options;
 
 procedure Activate;
 begin
@@ -117,7 +117,7 @@ begin
     LOCstr_AutoLocale:=UTF8Decode('Automatický výběr');
     CIndex.Caption:=UTF8Decode('Zrekonstruování indexu souboru, pokud je to nezbytné');
     LParams.Caption:=UTF8Decode('Dodatkové parametry MPlayeru:');
-    LHelp.Caption:=UTF8Decode('Nápověda');
+    LHelp.Caption:=THelp.Caption;
   end;
 end;
 
