@@ -90,14 +90,10 @@ begin
       MLanguage.Caption:=UTF8Decode('Sprache');
       MStreamInfo.Caption:=UTF8Decode('Clip-Informationen anzeigen ...');
       MShowOutput.Caption:=UTF8Decode('MPlayer-Ausgabe anzeigen ...');
-    MHelp.Caption:=UTF8Decode('Hilfe');
-      MKeyHelp.Caption:=UTF8Decode('Tastaturhilfe ...');
-      MAbout.Caption:=UTF8Decode('Über ...');
   end;
   LogForm.Caption:=UTF8Decode('MPlayer-Ausgabe');
   LogForm.BClose.Caption:=UTF8Decode('Schließen');
-  HelpForm.Caption:=UTF8Decode('Tastaturhilfe');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'Navigationstasten:'^M^J+
 'Leertaste'^I'Abspielen/Pause'^M^J+
 'Rechts'^I'10 Sekunden vorwärts'^M^J+
@@ -118,19 +114,17 @@ begin
 '1/2'^I'Helligkeit einstellen'^M^J+
 '3/4'^I'Kontrast einstellen'^M^J+
 '5/6'^I'Farbton einstellen'^M^J+
-'7/8'^I'Sättigung einstellen')
-  ;
-  HelpForm.BClose.Caption:=UTF8Decode('Schließen');
-  AboutForm.Caption:=UTF8Decode('Über MPUI-hcb');
-  AboutForm.BClose.Caption:=UTF8Decode('Schließen');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb Version:');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('MPlayer-Version:');
+'7/8'^I'Sättigung einstellen');
   with OptionsForm do begin
+    THelp.Caption:=UTF8Decode('Hilfe');
+    TAbout.Caption:=UTF8Decode('Über');
+    LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb Version:');
+    LVersionMPlayer.Caption:=UTF8Decode('MPlayer-Version:');
     Caption:=UTF8Decode('Optionen');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Übernehmen');
     BSave.Caption:=UTF8Decode('Speichern');
-    BClose.Caption:=UTF8Decode('Schließen');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Soundausgabetreiber');
       CAudioOut.Items[0]:=UTF8Decode('(keinen Sound decodieren)');
       CAudioOut.Items[1]:=UTF8Decode('(keinen Sound ausgeben)');

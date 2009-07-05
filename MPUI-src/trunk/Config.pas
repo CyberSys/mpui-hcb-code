@@ -118,6 +118,8 @@ begin
            Core.AutoPlay:=ReadBool(SectionName,'AutoPlay',Core.AutoPlay);
            Core.uof:=ReadBool(SectionName,'UseOSDfont',Core.uof);
            Core.GUI:=ReadBool(SectionName,'GUI',Core.GUI);
+           Core.RS:=ReadBool(SectionName,'RSize',Core.RS);
+           Core.RP:=ReadBool(SectionName,'RPos',Core.RP);
            Core.EL:=ReadInteger(SectionName,'LastLeft',Core.EL);
            Core.ET:=ReadInteger(SectionName,'LastTop',Core.ET);
            Core.EW:=ReadInteger(SectionName,'LastWidth',Core.EW);
@@ -255,6 +257,8 @@ begin
            WriteBool  (SectionName,'GUI',Core.GUI);
            WriteBool  (SectionName,'FilterDrop',Core.FilterDrop);
            WriteBool  (SectionName,'Scroll',Core.PScroll);
+           WriteBool  (SectionName,'RSize',Core.RS);
+           WriteBool  (SectionName,'RPos',Core.RP);
            WriteString(SectionName,'Params',Core.Params);
          end;
       1: begin

@@ -84,14 +84,10 @@ begin
       MOptions.Caption:=UTF8Decode('Beállítások ...');
       MLanguage.Caption:=UTF8Decode('Nyelv');
       MShowOutput.Caption:=UTF8Decode('MPlayer kimenet mutatása');
-    MHelp.Caption:=UTF8Decode('Súgó');
-      MKeyHelp.Caption:=UTF8Decode('Billentyûparancsok ...');
-      MAbout.Caption:=UTF8Decode('Névjegy ...');
   end;
   LogForm.Caption:=UTF8Decode('MPlayer kimenet');
   LogForm.BClose.Caption:=UTF8Decode('Bezárás');
-  HelpForm.Caption:=UTF8Decode('Billentyûparancsok');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'Navigáló billentyûk:'^M^J+
 'Space'^I'Lejátszás/Sz'+
 'net'^M^J+
@@ -111,19 +107,17 @@ begin
 '1/2'^I'Fényesség beállítása'^M^J+
 '3/4'^I'Kontraszt beállítása'^M^J+
 '5/6'^I'Árnyalat beállítása'^M^J+
-'7/8'^I'Telítettség beállítása')
-  ;
-  HelpForm.BClose.Caption:=UTF8Decode('Bezárás');
-  AboutForm.Caption:=UTF8Decode('Az MPUI-hcb névjegye');
-  AboutForm.BClose.Caption:=UTF8Decode('Bezárás');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb verzió:');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('MPlayer core verzió:');
+'7/8'^I'Telítettség beállítása');
   with OptionsForm do begin
+    THelp.Caption:=UTF8Decode('Súgó');
+    TAbout.Caption:=UTF8Decode('Névjegy');
+    LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb verzió:');
+    LVersionMPlayer.Caption:=UTF8Decode('MPlayer core verzió:');
     Caption:=UTF8Decode('Beállítások');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Alkalmaz');
     BSave.Caption:=UTF8Decode('Mentés');
-    BClose.Caption:=UTF8Decode('Bezárás');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Hang kimeneti driver');
       CAudioOut.Items[0]:=UTF8Decode('(nincs hangdekódolás)');
       CAudioOut.Items[1]:=UTF8Decode('(nincs hanglejátszás)');

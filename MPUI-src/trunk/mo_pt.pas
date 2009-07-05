@@ -90,14 +90,10 @@ begin
       MLanguage.Caption:=UTF8Decode('Idioma');
       MStreamInfo.Caption:=UTF8Decode('Mostrar detalhes do filme...');
       MShowOutput.Caption:=UTF8Decode('Mostrar mensagens do MPlayer');
-    MHelp.Caption:=UTF8Decode('Ajuda');
-      MKeyHelp.Caption:=UTF8Decode('Ajuda do teclado...');
-      MAbout.Caption:=UTF8Decode('Sobre o...');
   end;
   LogForm.Caption:=UTF8Decode('Mensagens do MPlayer');
   LogForm.BClose.Caption:=UTF8Decode('Fechar');
-  HelpForm.Caption:=UTF8Decode('Ajuda do teclado');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'Teclas de navegação:'^M^J+
 'Espaço'^I'Reproduzir/Pausa'^M^J+
 'Dereita'^I'Avançar 10 segundos'^M^J+
@@ -116,19 +112,18 @@ begin
 '1/2'^I'Ajustar brilho'^M^J+
 '3/4'^I'Ajustar contraste'^M^J+
 '5/6'^I'Ajustar cor'^M^J+
-'7/8'^I'Ajustar saturação')
-  ;
-  HelpForm.BClose.Caption:=UTF8Decode('Fechar');
-  AboutForm.Caption:=UTF8Decode('Sobre o MPUI-hcb');
-  AboutForm.BClose.Caption:=UTF8Decode('Fechar');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('Versão do MPUI-hcb:');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('Versão do MPlayer:');
+'7/8'^I'Ajustar saturação');
+
   with OptionsForm do begin
+    LVersionMPUI.Caption:=UTF8Decode('Versão do MPUI-hcb:');
+    LVersionMPlayer.Caption:=UTF8Decode('Versão do MPlayer:');
+    THelp.Caption:=UTF8Decode('Ajuda');
+    TAbout.Caption:=UTF8Decode('Sobre o');
     Caption:=UTF8Decode('Preferências');
     BOK.Caption:=UTF8Decode('Aceitar');
     BApply.Caption:=UTF8Decode('Aplicar');
     BSave.Caption:=UTF8Decode('Guardar');
-    BClose.Caption:=UTF8Decode('Fechar');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Controlador de saída de áudio:');
       CAudioOut.Items[0]:=UTF8Decode('(não descodificar som)');
       CAudioOut.Items[1]:=UTF8Decode('(não reproduzir som)');

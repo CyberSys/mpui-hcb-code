@@ -180,9 +180,6 @@ begin
       MUUni.Caption:='Use Unicode for output info';
       MStreamInfo.Caption:='Show clip information ...';
       MShowOutput.Caption:='Show MPlayer output ...';
-    MHelp.Caption:='Help';
-      MKeyHelp.Caption:='Keyboard help ...';
-      MAbout.Caption:='About ...';
     MVideos.Caption:='Video';
     MAudios.Caption:='Audio';
     MSub.Caption:='Subtitles';
@@ -220,8 +217,7 @@ begin
   end;
   LogForm.Caption:='MPlayer output';
   LogForm.BClose.Caption:='Close';
-  HelpForm.Caption:='Keyboard help';
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'Space'^I'Play/Pause'^I'T/R'^I'Adjust subtitle position'^M^J+
 'Left'^I'Rewind 10 seconds'^I'Y/U'^I'Adjust subtitle step'^M^J+
 'Right'^I'Forward 10 seconds Z/X'^I'Adjust subtitle delay'^M^J+
@@ -258,24 +254,23 @@ begin
 '`'^I'Reset brightness,contrast,hue,saturation,gamma'^M^J+
 'Alt+LMB drag video'^I'Adjust brightness,contrast,hue,saturation,gamma'^M^J+
 'While drag,release or press different function key invoke different function');
-  HelpForm.BClose.Caption:='Close';
-  with AboutForm do begin
-    Caption:='About MPUI-hcb';
-    BClose.Caption:='Close';
+  with OptionsForm do begin
+    THelp.Caption:='Help';
+    TAbout.Caption:='About';
     LVersionMPUI.Caption:='MPUI-hcb version:';
     LVersionMPlayer.Caption:='MPlayer core version:';
     FY.Caption:='Author:';
-  end;
-  with OptionsForm do begin
     Caption:='Options';
     BOK.Caption:='OK';
     BApply.Caption:='Apply';
     BSave.Caption:='Save';
-    BClose.Caption:='Close';
-    TabSheet1.Caption:='System';
-    TabSheet2.Caption:='Video';
-    TabSheet3.Caption:='Audio';
-    TabSheet4.Caption:='Subtitle';
+    BClose.Caption:=LogForm.BClose.Caption;
+    TSystem.Caption:='System';
+    TVideo.Caption:='Video';
+    TAudio.Caption:='Audio';
+    TSub.Caption:='Subtitle';
+    CRP.Caption:='start MPUI with last postion';
+    CRS.Caption:='start MPUI with last size';
     LAudioOut.Caption:='Sound output driver';
       CAudioOut.Items[0]:='(don''t decode sound)';
       CAudioOut.Items[1]:='(don''t play sound)';

@@ -96,7 +96,7 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     MAspect,subcode,MaxLenLyricA,VideoOut:string;
     FirstOpen,PClear,Fd,Async,Cache,uof,oneM,FilterDrop:boolean;
     Wid,Dreset,UpdateSkipBar,Pri,HaveChapters,HaveMsg:boolean;
-    AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
+    RS,RP,AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
     ControlledResize,ni,nobps,Dnav,lavf,UseekC,vsync:boolean;
     Flip,Mirror,Yuy2,Eq2,LastEq2,Dda,LastDda,Wadsp:boolean;
@@ -1736,8 +1736,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     with MainForm do begin
       if ChkVideo and (StreamInfo.Video.Codec='') then begin
         if LastHaveVideo then begin
-          if not (OptionsForm.Visible or AboutForm.Visible
-            or EqualizerForm.Visible or HelpForm.Visible) then Enabled:=true;
+          EW:=OPanel.Width; EH:=OPanel.Height;
+          if not (OptionsForm.Visible or EqualizerForm.Visible) then Enabled:=true;
           if MFullscreen.Checked then SetFullscreen(false);
           if MCompact.Checked  or MMaxW.Checked then SetCompact(false);
           Mctrl.Checked:=false; Hide_menu.Checked:=false; MPCtrl.Checked:=true;
@@ -1833,7 +1833,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if Wid then begin
         if not LastHaveVideo then begin
           OPanel.Visible:=true;
-          if (EW<>0) or (EH<>0) then begin
+          if RS and (EW<>0) and (EH<>0) then begin
             j:=8+EW; p:=MWC+MenuBar.Height+CPanel.Height+8+EH;
           end
           else begin
@@ -1842,7 +1842,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           end;
           r:=Left-((j-Constraints.MinWidth) DIV 2);
           i:=Top-((p-Constraints.MinHeight) DIV 2);
-          if (EW<>0) or (EH<>0) then begin
+          if RS and (EW<>0) and (EH<>0) then begin
             if r<0 then r:=0; if i<0 then i:=0;
             if j>Screen.Width then begin j:=Screen.Width; end;
             if p>Screen.WorkAreaHeight then begin p:=Screen.WorkAreaHeight; end;
@@ -1860,8 +1860,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       end
       else begin
         if LastHaveVideo then begin
-          if not (OptionsForm.Visible or AboutForm.Visible
-            or EqualizerForm.Visible or HelpForm.Visible) then Enabled:=true;
+          if not (OptionsForm.Visible or EqualizerForm.Visible) then Enabled:=true;
           if MFullscreen.Checked then SetFullscreen(false);
           if MCompact.Checked or MMaxW.Checked then SetCompact(false);
           Mctrl.Checked:=false; Hide_menu.Checked:=false; MPCtrl.Checked:=true;
@@ -2296,7 +2295,7 @@ begin
   LTextColor:=clWindowText; LBGColor:=clWindow; LHGColor:=$93; ClientProcess:=0;
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
-  NW:=0; NH:=0; EW:=0; EH:=0; EL:=-1; ET:=-1;
+  NW:=0; NH:=0; EW:=0; EH:=0; EL:=-1; ET:=-1; RS:=false; RP:=false;
   ResetStreamInfo;
 end.
 

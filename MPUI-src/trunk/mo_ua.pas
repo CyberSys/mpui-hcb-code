@@ -99,14 +99,9 @@ begin
     MLanguage.Caption := UTF8Decode('Мова програми (Language)');
     MStreamInfo.Caption:= UTF8Decode('Показати інформацію про кліп');
     MShowOutput.Caption := UTF8Decode('Показати журнал MPlayer');
-    MHelp.Caption := UTF8Decode('Допомога');
-    MKeyHelp.Caption := UTF8Decode('Клавіатурні команди ...');  // виправлено
-    MAbout.Caption := UTF8Decode('Про програму ...');
   end;
   LogForm.Caption := UTF8Decode('Журнал MPlayer');
-  LogForm.BClose.Caption := UTF8Decode('Закрити');
-  HelpForm.Caption := UTF8Decode('Клавіатурні команди');  //виправлено 18.04.06
-  HelpForm.HelpText.Text :=UTF8Decode(
+  OptionsForm.HelpText.Text :=UTF8Decode(
     'Навіація:'#13#10^M^J +
     'Space'^I'Грати/Пауза'^M^J +
     'Right'^I'Вперед на 10 секунд'^M^J +
@@ -131,19 +126,17 @@ begin
     '7/8'^I'Регулювання насиченості')
     ; // виправлено
 
-  HelpForm.HelpText.Text := UTF8Decode(HelpForm.HelpText.Text);
-  HelpForm.BClose.Caption := UTF8Decode('Закрити');
-  AboutForm.Caption := UTF8Decode('Про програму MPUI-hcb');
-  AboutForm.BClose.Caption := UTF8Decode('Закрити');
-  AboutForm.LVersionMPUI.Caption := UTF8Decode('Версія MPUI-hcb: ');
-  AboutForm.LVersionMPlayer.Caption := UTF8Decode('Версія програвача MPlayer: ');
-  with OptionsForm do
-  begin
+  OptionsForm.Caption := UTF8Decode('Про програму MPUI-hcb');
+  OptionsForm.LVersionMPUI.Caption := UTF8Decode('Версія MPUI-hcb: ');
+  OptionsForm.LVersionMPlayer.Caption := UTF8Decode('Версія програвача MPlayer: ');
+  with OptionsForm do begin
+    THelp.Caption := UTF8Decode('Допомога');
+    TAbout.Caption := UTF8Decode('Про програму');
     Caption := UTF8Decode('Налаштування');
     BOK.Caption := UTF8Decode('OK');
     BApply.Caption := UTF8Decode('Застосувати');
     BSave.Caption := UTF8Decode('Зберегти');
-    BClose.Caption := UTF8Decode('Закрити');
+    BClose.Caption := LogForm.BClose.Caption;
     LAudioOut.Caption := UTF8Decode('Виведення звуку через');
     LAudioDev.Caption := UTF8Decode('Пристрій виведення звуку');
     CAudioOut.Items[0] := UTF8Decode('(не декодувати звук)');

@@ -91,14 +91,10 @@ begin
       MLanguage.Caption:=UTF8Decode('Limbă');
       MStreamInfo.Caption:=UTF8Decode('Arată informaţii despre fişierul multimedia ...');
       MShowOutput.Caption:=UTF8Decode('Arată mesajele de informare de la MPlayer ...');
-    MHelp.Caption:=UTF8Decode('Ajutor');
-      MKeyHelp.Caption:=UTF8Decode('Operare cu tastele ...');
-      MAbout.Caption:=UTF8Decode('Despre ...');
   end;
   LogForm.Caption:=UTF8Decode('Mesajele de informare de la MPlayer');
   LogForm.BClose.Caption:=UTF8Decode('Închide');
-  HelpForm.Caption:=UTF8Decode('Operare cu tastele');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'Taste de navigare:'^M^J+
 'Space'^I'Redare/Pauză'^M^J+
 'Right'^I'Înainte 10 secunde'^M^J+
@@ -121,17 +117,17 @@ begin
 '5/6'^I'Ajustează nuanţele'^M^J+
 '7/8'^I'Ajustează saturaţia'
   );
-  HelpForm.BClose.Caption:=UTF8Decode('Închide');
-  AboutForm.Caption:=UTF8Decode('Despre MPUI-hcb');
-  AboutForm.BClose.Caption:=UTF8Decode('Închide');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('Versiunea MPUI-hcb:');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('Versiunea MPlayer:');
+
   with OptionsForm do begin
+    TAbout.Caption:=UTF8Decode('Despre');
+    THelp.Caption:=UTF8Decode('Ajutor');
+    LVersionMPUI.Caption:=UTF8Decode('Versiunea MPUI-hcb:');
+    LVersionMPlayer.Caption:=UTF8Decode('Versiunea MPlayer:');
     Caption:=UTF8Decode('Opţiuni');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Aplică');
     BSave.Caption:=UTF8Decode('Salvează');
-    BClose.Caption:=UTF8Decode('Închide');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Driver-ul pentru sunet');
       CAudioOut.Items[0]:=UTF8Decode('(nu decodifica sunetul)');
       CAudioOut.Items[1]:=UTF8Decode('(nu reda sunetul)');

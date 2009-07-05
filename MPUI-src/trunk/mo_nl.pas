@@ -91,14 +91,10 @@ begin
       MLanguage.Caption:=UTF8Decode('Taal');
       MStreamInfo.Caption:=UTF8Decode('Toon media-informatie ...');
       MShowOutput.Caption:=UTF8Decode('Toon MPlayer output ...');
-    MHelp.Caption:=UTF8Decode('Help');
-      MKeyHelp.Caption:=UTF8Decode('Toetsenbord help ...');
-      MAbout.Caption:=UTF8Decode('Info ...');
   end;
   LogForm.Caption:='MPlayer output';
   LogForm.BClose.Caption:='Sluiten';
-  HelpForm.Caption:='Toetsenbord help';
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'Navigatietoetsen:'^M^J+
 'Spatie'^I'Afspelen/Pause'^M^J+
 'Rechts'^I'10 seconden doorspoelen'^M^J+
@@ -119,19 +115,18 @@ begin
 '1/2'^I'Helderheid aanpassen'^M^J+
 '3/4'^I'Contrast aanpassen'^M^J+
 '5/6'^I'Kleurbalans aanpassen'^M^J+
-'7/8'^I'Kleurverzadiging aanpassen')
-  ;
-  HelpForm.BClose.Caption:=UTF8Decode('Sluiten');
-  AboutForm.Caption:=UTF8Decode('Over MPUI-hcb');
-  AboutForm.BClose.Caption:=UTF8Decode('Sluiten');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb versie:');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('MPlayer core versie:');
+'7/8'^I'Kleurverzadiging aanpassen');
+
   with OptionsForm do begin
+    THelp.Caption:=UTF8Decode('Help');
+    TAbout.Caption:=UTF8Decode('Over');
+    LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb versie:');
+    LVersionMPlayer.Caption:=UTF8Decode('MPlayer core versie:');
     Caption:=UTF8Decode('Opties');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Toepassen');
     BSave.Caption:=UTF8Decode('Opslaan');
-    BClose.Caption:=UTF8Decode('Sluiten');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Stuurprogramma voor geluid');
       CAudioOut.Items[0]:=UTF8Decode('(geluidsspoor niet decoderen)');
       CAudioOut.Items[1]:=UTF8Decode('(geluidsspoor niet afspelen)');

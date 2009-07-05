@@ -1431,14 +1431,6 @@ object MainForm: TMainForm
       Grouped = True
       MenuItem = OMExtra
     end
-    object MHelp: TTntToolButton
-      Left = 258
-      Top = 0
-      AutoSize = True
-      Caption = 'Help'
-      Grouped = True
-      MenuItem = OMHelp
-    end
   end
   object MainMenu: TTntMainMenu
     Images = Imagery
@@ -2526,21 +2518,6 @@ object MainForm: TMainForm
         ImageIndex = 36
         ShortCut = 123
         OnClick = MShowOutputClick
-      end
-    end
-    object OMHelp: TTntMenuItem
-      Caption = 'Help'
-      GroupIndex = 1
-      OnClick = UpdateMenus
-      object MKeyHelp: TTntMenuItem
-        Caption = 'Keybord help'
-        ImageIndex = 37
-        OnClick = MKeyHelpClick
-      end
-      object MAbout: TTntMenuItem
-        Caption = 'About'
-        ImageIndex = 38
-        OnClick = MAboutClick
       end
     end
   end

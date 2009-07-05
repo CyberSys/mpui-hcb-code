@@ -92,14 +92,10 @@ begin
       MLanguage.Caption:=UTF8Decode('Sprog');
       MStreamInfo.Caption:=UTF8Decode('Vis Klip information ...');
       MShowOutput.Caption:=UTF8Decode('Vis MPlayer udlæsning ...');
-    MHelp.Caption:=UTF8Decode('Hjælp');
-      MKeyHelp.Caption:=UTF8Decode('Tastaturhjælp ...');
-      MAbout.Caption:=UTF8Decode('Om ...');
   end;
   LogForm.Caption:=UTF8Decode('MPlayer udlæsning');
   LogForm.BClose.Caption:=UTF8Decode('Luk');
-  HelpForm.Caption:=UTF8Decode('Tastaturhjælp');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'Navigationstast:'^M^J+
 'Mellemrum'^I'Afspil/pause'^M^J+
 'Højre'^I'Spol 10 sekunder fremad'^M^J+
@@ -120,19 +116,17 @@ begin
 '1/2'^I'Tilpas lysstyrke'^M^J+
 '3/4'^I'Tilpas kontrast'^M^J+
 '5/6'^I'Tilpas farve'^M^J+
-'7/8'^I'Tilpas mætning')
-  ;
-  HelpForm.BClose.Caption:=UTF8Decode('Luk');
-  AboutForm.Caption:=UTF8Decode('Om MPUI-hcb');
-  AboutForm.BClose.Caption:=UTF8Decode('Luk');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb version:');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('MPlayer kerne version:');
+'7/8'^I'Tilpas mætning');
   with OptionsForm do begin
+    THelp.Caption:=UTF8Decode('Hjælp');
+    TAbout.Caption:=UTF8Decode('Om');
+    LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb version:');
+    LVersionMPlayer.Caption:=UTF8Decode('MPlayer kerne version:');
     Caption:=UTF8Decode('Funktioner');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Tilføj');
     BSave.Caption:=UTF8Decode('Gem');
-    BClose.Caption:=UTF8Decode('Luk');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Lydudlæsnings driver');
       CAudioOut.Items[0]:=UTF8Decode('(Lad være med at afkode lyd)');
       CAudioOut.Items[1]:=UTF8Decode('(Lad være med at afspille lyd)');

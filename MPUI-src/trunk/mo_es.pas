@@ -85,14 +85,10 @@ begin
       MOptions.Caption:=UTF8Decode('Preferencias ...');
       MLanguage.Caption:=UTF8Decode('Idioma');
       MShowOutput.Caption:=UTF8Decode('Mostrar mensajes de MPlayer');
-    MHelp.Caption:=UTF8Decode('Ayuda');
-      MKeyHelp.Caption:=UTF8Decode('Ayuda de teclado ...');
-      MAbout.Caption:=UTF8Decode('Acerca de ...');
   end;
   LogForm.Caption:=UTF8Decode('Mensajes de MPlayer');
   LogForm.BClose.Caption:=UTF8Decode('Cerrar');
-  HelpForm.Caption:=UTF8Decode('Ayuda de teclado');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'Teclas de navegación:'^M^J+
 'Espacio'^I'Reproducir/Pausar'^M^J+
 'Derecha'^I'Avanzar 10 segundos'^M^J+
@@ -111,19 +107,18 @@ begin
 '1/2'^I'Ajustar brillo'^M^J+
 '3/4'^I'Ajustar contraste'^M^J+
 '5/6'^I'Ajustar tinta'^M^J+
-'7/8'^I'Ajustar saturación')
-  ;
-  HelpForm.BClose.Caption:=UTF8Decode('Cerrar');
-  AboutForm.Caption:=UTF8Decode('Acerca de MPUI-hcb');
-  AboutForm.BClose.Caption:=UTF8Decode('Cerrar');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('Versión de MPUI-hcb:');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('Versión de MPlayer:');
+'7/8'^I'Ajustar saturación');
+
   with OptionsForm do begin
+    THelp.Caption:=UTF8Decode('Ayuda');
+    TAbout.Caption:=UTF8Decode('Acerca de');
+    LVersionMPUI.Caption:=UTF8Decode('Versión de MPUI-hcb:');
+    LVersionMPlayer.Caption:=UTF8Decode('Versión de MPlayer:');
     Caption:=UTF8Decode('Preferencias');
     BOK.Caption:=UTF8Decode('Aceptar');
     BApply.Caption:=UTF8Decode('Aplicar');
     BSave.Caption:=UTF8Decode('Guardar');
-    BClose.Caption:=UTF8Decode('Cerrar');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Controlador de salida de audio');
       CAudioOut.Items[0]:=UTF8Decode('(no decodificar sonido)');
       CAudioOut.Items[1]:=UTF8Decode('(no reproducir sonido)');

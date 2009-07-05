@@ -180,9 +180,6 @@ begin
       MStreamInfo.Caption:=UTF8Decode('显示文件信息 ...');
       MUUni.Caption:=UTF8Decode('使用Unicode显示输出信息');
       MShowOutput.Caption:=UTF8Decode('显示 MPlayer 输出信息 ...');
-    MHelp.Caption:=UTF8Decode('帮助');
-      MKeyHelp.Caption:=UTF8Decode('快捷键 ...');
-      MAbout.Caption:=UTF8Decode('关于 ...');
     MVideos.Caption:=UTF8Decode('视频');
     MAudios.Caption:=UTF8Decode('音频');
     MSub.Caption:=UTF8Decode('字幕');
@@ -220,8 +217,7 @@ begin
   end;
   LogForm.Caption:=UTF8Decode('MPlayer 输出');
   LogForm.BClose.Caption:=UTF8Decode('关闭');
-  HelpForm.Caption:=UTF8Decode('快捷键');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 '快捷键:'^M^J+
 'Space'^I'播放/暂停'^I'T/R'^I'调节字幕在屏位置'^M^J+
 'Right'^I'前进10 秒'^I'Y/U'^I'调节字幕语句'^M^J+
@@ -259,24 +255,23 @@ begin
 '`'^I'恢复亮度、对比、色调、饱和、伽玛 到默认值'^M^J+
 '在拖曳时，松开、按下不同的功能键和起始拖曳方向决定不同的功能'
   );
-  HelpForm.BClose.Caption:=UTF8Decode('关闭');
-  with AboutForm do begin 
-    Caption:=UTF8Decode('关于 MPUI-hcb');
-    BClose.Caption:=UTF8Decode('关闭');
+  with OptionsForm do begin
+    THelp.Caption:=UTF8Decode('快捷键');
+    TAbout.Caption:=UTF8Decode('关于');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb 版本:');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayer 版本:');
     FY.Caption:=UTF8Decode('作者:');
-  end;
-  with OptionsForm do begin
     Caption:=UTF8Decode('选项');
     BOK.Caption:=UTF8Decode('确定');
     BApply.Caption:=UTF8Decode('应用');
     BSave.Caption:=UTF8Decode('保存');
-    BClose.Caption:=UTF8Decode('关闭');
-    TabSheet1.Caption:=UTF8Decode('系统');
-    TabSheet2.Caption:=UTF8Decode('视频');
-    TabSheet3.Caption:=UTF8Decode('音频');
-    TabSheet4.Caption:=UTF8Decode('字幕');
+    BClose.Caption:=LogForm.BClose.Caption;
+    TSystem.Caption:=UTF8Decode('系统');
+    TVideo.Caption:=MainForm.MVideos.Caption;
+    TAudio.Caption:=MainForm.MAudios.Caption;
+    TSub.Caption:=MainForm.MSub.Caption;
+    CRP.Caption:=UTF8Decode('启动时使用上次的窗体位置');
+    CRS.Caption:=UTF8Decode('启动时使用上次的窗体大小');
     LAudioOut.Caption:=UTF8Decode('音频输出的驱动:');
       CAudioOut.Items[0]:=UTF8Decode('(不解码 音频)');
       CAudioOut.Items[1]:=UTF8Decode('(不播放 音频)');

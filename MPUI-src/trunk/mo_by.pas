@@ -88,15 +88,10 @@ begin
       MLanguage.Caption:= UTF8Decode('Мова');
       MStreamInfo.Caption:=UTF8Decode('Адлюстраваць інфармацыю пра файл ...');
       MShowOutput.Caption:= UTF8Decode('Адлюстроўваць вывад MPlayer');
-      
-    MHelp.Caption:= UTF8Decode('Дапамога');
-      MKeyHelp.Caption:= UTF8Decode('Дапамога па клавіятуры ...');
-      MAbout.Caption:= UTF8Decode('Пра праграму ...');
   end;
   LogForm.Caption:= UTF8Decode('Вывад MPlayer');
   LogForm.BClose.Caption:= UTF8Decode('Зачыніць');
-  HelpForm.Caption:= UTF8Decode('Дапамога па клавіятуры');
-  HelpForm.HelpText.Text:=
+  OptionsForm.HelpText.Text:=
 UTF8Decode(
 'Клавішы навігацыі:'^M^J+
 'Прабел'^I'Прайграваць/паўза'^M^J+
@@ -116,20 +111,17 @@ UTF8Decode(
 '1/2'^I'Наладзіць яркасць'^M^J+
 '3/4'^I'Наладзіць кантраст'^M^J+
 '5/6'^I'Наладзіць гамму'^M^J+
-'7/8'^I'Наладзіць цветавую насычанасць')
-  ;
-  HelpForm.BClose.Caption:=UTF8Decode('Зачыніць');
-  AboutForm.Caption:=UTF8Decode('Пра MPUI-hcb');
-  AboutForm.BClose.Caption:=UTF8Decode('Зачыніць');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('Версія MPUI-hcb: ');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('Версія MPlayer: ');
+'7/8'^I'Наладзіць цветавую насычанасць');
   with OptionsForm do begin
-
+    THelp.Caption:= UTF8Decode('Дапамога');
+    TAbout.Caption:=UTF8Decode('Пра');
+    LVersionMPUI.Caption:=UTF8Decode('Версія MPUI-hcb: ');
+    LVersionMPlayer.Caption:=UTF8Decode('Версія MPlayer: ');
     Caption:=UTF8Decode('Опцыі');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Прымяніць');
     BSave.Caption:=UTF8Decode('Захаваць');
-    BClose.Caption:=UTF8Decode('Зачыніць');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Драйвер вывада гука');
       CAudioOut.Items[0]:=UTF8Decode('(Не дэкадаваць гук)');
       CAudioOut.Items[1]:=UTF8Decode('(Не прайграваць гук)');

@@ -88,14 +88,10 @@ begin
       MLanguage.Caption:= UTF8Decode('Язык');
       MStreamInfo.Caption:=UTF8Decode('Показать информацию о файле ...');
       MShowOutput.Caption:= UTF8Decode('Показывать вывод MPlayer');
-    MHelp.Caption:= UTF8Decode('Помощь');
-      MKeyHelp.Caption:= UTF8Decode('Помощь по клавиатуре ...');
-      MAbout.Caption:= UTF8Decode('О программе ...');
   end;
   LogForm.Caption:= UTF8Decode('Вывод MPlayer');
   LogForm.BClose.Caption:= UTF8Decode('Закрыть');
-  HelpForm.Caption:= UTF8Decode('Помощь по клавиатуре');
-  HelpForm.HelpText.Text:=
+  OptionsForm.HelpText.Text:=
 UTF8Decode(
 'Клавиши навигации:'^M^J+
 'Пробел'^I'Играть/пауза'^M^J+
@@ -119,18 +115,16 @@ UTF8Decode(
   ;
 
 //because we need to set correct charset for font
-  HelpForm.BClose.Caption:=UTF8Decode('Закрыть');
-  AboutForm.Caption:=UTF8Decode('О MPUI-hcb');
-  AboutForm.BClose.Caption:=UTF8Decode('Закрыть');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('Версия MPUI-hcb: ');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('Версия MPlayer: ');
   with OptionsForm do begin
-
+    LVersionMPUI.Caption:=UTF8Decode('Версия MPUI-hcb: ');
+    LVersionMPlayer.Caption:=UTF8Decode('Версия MPlayer: ');
+    THelp.Caption:=UTF8Decode('Помощь');
+    TAbout.Caption:=UTF8Decode('О программе');
     Caption:=UTF8Decode('Опции');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Применить');
     BSave.Caption:=UTF8Decode('Сохранить');
-    BClose.Caption:=UTF8Decode('Закрыть');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Драйвер вывода звука');
       CAudioOut.Items[0]:=UTF8Decode('(Не декодировать звук)');
       CAudioOut.Items[1]:=UTF8Decode('(Не проигрывать звук)');

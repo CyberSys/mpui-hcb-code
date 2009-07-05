@@ -134,16 +134,16 @@ begin
     $804,$404: begin
                  if not Win32PlatformIsUnicode then begin
                    MainForm.Font.Size:=9; OptionsForm.Font.Size:=9;
-                   PlaylistForm.Font.Size:=9; HelpForm.Font.Size:=9;
-                   InfoForm.Font.Size:=9; LogForm.Font.Size:=9;
+                   PlaylistForm.Font.Size:=9; InfoForm.Font.Size:=9;
+                   LogForm.Font.Size:=9;
                  end;
                  DTFormat:='dddddd@tt';
                end;
     else begin
               if not Win32PlatformIsUnicode then begin
                 MainForm.Font.Size:=8; OptionsForm.Font.Size:=8;
-                PlaylistForm.Font.Size:=8; HelpForm.Font.Size:=8;
-                InfoForm.Font.Size:=8; LogForm.Font.Size:=8;
+                PlaylistForm.Font.Size:=8; InfoForm.Font.Size:=8;
+                LogForm.Font.Size:=8;
               end;
               DTFormat:='ddddd@tt';
           end;
@@ -152,19 +152,16 @@ begin
   MainForm.Font.Charset:=Locales[Index].Charset;
   OptionsForm.Font.Charset:=Locales[Index].Charset;
   PlaylistForm.Font.Charset:=Locales[Index].Charset;
-  HelpForm.Font.Charset:=Locales[Index].Charset;
   InfoForm.Font.Charset:=Locales[Index].Charset;
 
   MainForm.LEscape.Font.Charset:=Locales[Index].Charset;
   OptionsForm.LHelp.Font.Charset:=Locales[Index].Charset;
-  AboutForm.Font.Charset:=Locales[Index].Charset;
-  AboutForm.LVersionMPUI.Font.Charset:=Locales[Index].Charset;
-  AboutForm.LVersionMPlayer.Font.Charset:=Locales[Index].Charset;
+  OptionsForm.LVersionMPUI.Font.Charset:=Locales[Index].Charset;
+  OptionsForm.LVersionMPlayer.Font.Charset:=Locales[Index].Charset;
 
   CurrentLocale:=Index;
   MainForm.MLanguage.Items[CurrentLocale].Checked:=true;
   Locales[Index].Func;
-  HelpForm.Format;
   OptionsForm.Localize;
   InfoForm.UpdateInfo;
   MainForm.Localize;

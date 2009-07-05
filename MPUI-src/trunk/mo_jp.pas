@@ -91,14 +91,10 @@ begin
       MLanguage.Caption:=UTF8Decode('言語');
       MStreamInfo.Caption:=UTF8Decode('クリップ情報を表示 ...');
       MShowOutput.Caption:=UTF8Decode('MPlayer出力を表示 ...');
-    MHelp.Caption:=UTF8Decode('ヘルプ');
-      MKeyHelp.Caption:=UTF8Decode('キーボードヘルプ ...');
-      MAbout.Caption:=UTF8Decode('MPUIについて ...');
   end;
   LogForm.Caption:=UTF8Decode('MPlayer出力');
   LogForm.BClose.Caption:=UTF8Decode('閉じる');
-  HelpForm.Caption:=UTF8Decode('キーボードヘルプ');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 '操作キー:'^M^J+
 'Space'^I'再生/一時停止'^M^J+
 'Right'^I'10 秒早送り'^M^J+
@@ -121,17 +117,17 @@ begin
 '5/6'^I'調節 色合い'^M^J+
 '7/8'^I'調節 彩度'
 );
-  HelpForm.BClose.Caption:=UTF8Decode('閉じる');
-  AboutForm.Caption:=UTF8Decode('MPUI-hcbについて');
-  AboutForm.BClose.Caption:=UTF8Decode('閉じる');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI-hcbのバージョン:');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('MPlayerコアのバージョン:');
+
   with OptionsForm do begin
+    THelp.Caption:=UTF8Decode('ヘルプ');
+    TAbout.Caption:=UTF8Decode('について');
+    LVersionMPUI.Caption:=UTF8Decode('MPUI-hcbのバージョン:');
+    LVersionMPlayer.Caption:=UTF8Decode('MPlayerコアのバージョン:');
     Caption:=UTF8Decode('オプション');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('適用');
     BSave.Caption:=UTF8Decode('保存');
-    BClose.Caption:=UTF8Decode('閉じる');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('サウンド出力ドライバ');
       CAudioOut.Items[0]:=UTF8Decode('(サウンドをデコードしない)');
       CAudioOut.Items[1]:=UTF8Decode('(サウンドを再生しない)');

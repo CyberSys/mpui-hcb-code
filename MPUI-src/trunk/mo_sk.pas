@@ -91,14 +91,11 @@ begin
       MLanguage.Caption:=UTF8Decode('Jazyk');
       MStreamInfo.Caption:=UTF8Decode('Zobraziť informácie o klipe ...');
       MShowOutput.Caption:=UTF8Decode('Zobraziť výstup MPlayeru ...');
-    MHelp.Caption:=UTF8Decode('Pomocník');
-      MKeyHelp.Caption:=UTF8Decode('Klávesové skratky ...');
-      MAbout.Caption:=UTF8Decode('O programe ...');
+
   end;
   LogForm.Caption:=UTF8Decode('Výstup MPlayeru');
   LogForm.BClose.Caption:=UTF8Decode('Zatvoriť');
-  HelpForm.Caption:=UTF8Decode('Klávesové skratky');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'Navigačné klávesy:'^M^J+
 'Medzerník'^I'Prehrať/Pauza'^M^J+
 'Šípka doprava'^I'Doperdu o 10 sekúnd'^M^J+
@@ -121,17 +118,17 @@ begin
 '5/6'^I'Nastavenie farieb'^M^J+
 '7/8'^I'Nastavenie sýtosti'
   );
-  HelpForm.BClose.Caption:=UTF8Decode('Zatvoriť');
-  AboutForm.Caption:=UTF8Decode('O programe MPUI-hcb');
-  AboutForm.BClose.Caption:=UTF8Decode('Zatvoriť');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('Verzia MPUI-hcb:');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('Verzia MPlayer:');
+
   with OptionsForm do begin
+    LVersionMPUI.Caption:=UTF8Decode('Verzia MPUI-hcb:');
+    LVersionMPlayer.Caption:=UTF8Decode('Verzia MPlayer:');
+    THelp.Caption:=UTF8Decode('Pomocník');
+    TAbout.Caption:=UTF8Decode('O programe');
     Caption:=UTF8Decode('Nastavenie');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Použiť');
     BSave.Caption:=UTF8Decode('Uložiť');
-    BClose.Caption:=UTF8Decode('Zatvoriť');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Výstupný ovládač zvuku');
       CAudioOut.Items[0]:=UTF8Decode('(nedekódovať zvuk)');
       CAudioOut.Items[1]:=UTF8Decode('(neprehrávať zvuk)');

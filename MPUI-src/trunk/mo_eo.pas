@@ -91,14 +91,10 @@ begin
       MLanguage.Caption:=UTF8Decode('lingvo');
       MStreamInfo.Caption:=UTF8Decode('montri Clip-informojn ...');
       MShowOutput.Caption:=UTF8Decode('montri MPlayer-indikon ...');
-    MHelp.Caption:=UTF8Decode('helpo');
-      MKeyHelp.Caption:=UTF8Decode('klavarohelpo ...');
-      MAbout.Caption:=UTF8Decode('pri ...');
   end;
   LogForm.Caption:=UTF8Decode('MPlayer-indiko');
   LogForm.BClose.Caption:=UTF8Decode('fermi');
-  HelpForm.Caption:=UTF8Decode('klavarohelpo');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'navigada klavoj:'^M^J+
 'spacoklavo'^I'ludi/paŭzo'^M^J+
 'dekstre'^I'dek sekundoj antaŭen'^M^J+
@@ -121,17 +117,16 @@ begin
 '5/6'^I'reguli kolortonon'^M^J+
 '7/8'^I'reguli saturitecon'
   );
-  HelpForm.BClose.Caption:=UTF8Decode('fermi');
-  AboutForm.Caption:=UTF8Decode('pri MPUI-hcb');
-  AboutForm.BClose.Caption:=UTF8Decode('fermi');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb versio:');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('MPlayer-versio:');
   with OptionsForm do begin
+    THelp.Caption:=UTF8Decode('helpo');
+    TAbout.Caption:=UTF8Decode('pri');
+    LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb versio:');
+    LVersionMPlayer.Caption:=UTF8Decode('MPlayer-versio:');
     Caption:=UTF8Decode('kalibrigoj');
     BOK.Caption:=UTF8Decode('okej');
     BApply.Caption:=UTF8Decode('akcepti');
     BSave.Caption:=UTF8Decode('konservi');
-    BClose.Caption:=UTF8Decode('fermi');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('sonoeligilo');
       CAudioOut.Items[0]:=UTF8Decode('(ne malkodadi sonon)');
       CAudioOut.Items[1]:=UTF8Decode('(ne eligi sonon)');

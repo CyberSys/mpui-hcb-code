@@ -91,14 +91,10 @@ begin
       MLanguage.Caption:=UTF8Decode('언어');
       MStreamInfo.Caption:=UTF8Decode('클립 정보 보기 ...');
       MShowOutput.Caption:=UTF8Decode('MPlayer 출력 보기 ...');
-    MHelp.Caption:=UTF8Decode('도움말');
-      MKeyHelp.Caption:=UTF8Decode('단축키 목록 ...');
-      MAbout.Caption:=UTF8Decode('이 프로그램은 ...');
   end;
   LogForm.Caption:=UTF8Decode('MPlayer 출력');
   LogForm.BClose.Caption:=UTF8Decode('닫기');
-  HelpForm.Caption:=UTF8Decode('단축키 목록');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 '탐색:'^M^J+
 'Space'^I'재생/멈춤'^M^J+
 'Right'^I'앞으로 10초 이동'^M^J+
@@ -121,17 +117,17 @@ begin
 '5/6'^I'색상 조정'^M^J+
 '7/8'^I'채도 조정'
   );
-  HelpForm.BClose.Caption:=UTF8Decode('닫기');
-  AboutForm.Caption:=UTF8Decode('MPUI-hcb 정보');
-  AboutForm.BClose.Caption:=UTF8Decode('닫기');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb 버젼: ');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('MPlayer 코어 버젼: ');
+
   with OptionsForm do begin
+    THelp.Caption:=UTF8Decode('도움말');
+    TAbout.Caption:=UTF8Decode('이 프로그램은');
+    LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb 버젼: ');
+    LVersionMPlayer.Caption:=UTF8Decode('MPlayer 코어 버젼: ');
     Caption:=UTF8Decode('환경설정');
     BOK.Caption:=UTF8Decode('확인');
     BApply.Caption:=UTF8Decode('적용');
     BSave.Caption:=UTF8Decode('저장');
-    BClose.Caption:=UTF8Decode('닫기');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('사운드 출력 드라이버');
       CAudioOut.Items[0]:=UTF8Decode('(디코딩 않음)');
       CAudioOut.Items[1]:=UTF8Decode('(재생 않음)');

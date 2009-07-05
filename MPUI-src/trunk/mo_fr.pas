@@ -85,14 +85,10 @@ begin
       MOptions.Caption:=UTF8Decode('Préférences ...');
       MLanguage.Caption:=UTF8Decode('Langue');
       MShowOutput.Caption:=UTF8Decode('Afficher la sortie de MPlayer');
-    MHelp.Caption:=UTF8Decode('Aide');
-      MKeyHelp.Caption:=UTF8Decode('Aide du clavier ...');
-      MAbout.Caption:=UTF8Decode('À propos ...');
   end;
   LogForm.Caption:=UTF8Decode('Sortie MPlayer');
   LogForm.BClose.Caption:=UTF8Decode('Fermer');
-  HelpForm.Caption:=UTF8Decode('Aide du clavier');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'Clefs de navigation:'^M^J+
 'Espace'^I'Jouer/Suspendre'^M^J+
 'Droite'^I'Avancer 10 secondes'^M^J+
@@ -113,17 +109,17 @@ begin
 '5/6'^I'Ajuster la hue'^M^J+
 '7/8'^I'Ajuster la saturation')
   ;
-  HelpForm.BClose.Caption:=UTF8Decode('Fermer');
-  AboutForm.Caption:=UTF8Decode('À propos de MPUI-hcb');
-  AboutForm.BClose.Caption:=UTF8Decode('Fermer');
-  AboutForm.LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb version:');
-  AboutForm.LVersionMPlayer.Caption:=UTF8Decode('MPlayer version:');
+
   with OptionsForm do begin
+    THelp.Caption:=UTF8Decode('Aide');
+    TAbout.Caption:=UTF8Decode('À propos');
+    LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb version:');
+    LVersionMPlayer.Caption:=UTF8Decode('MPlayer version:');
     Caption:=UTF8Decode('Préférences');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Appliquer');
     BSave.Caption:=UTF8Decode('Sauver');
-    BClose.Caption:=UTF8Decode('Fermer');
+    BClose.Caption:=LogForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Pilote de sortie audio');
       CAudioOut.Items[0]:=UTF8Decode('(ne pas décoder le son)');
       CAudioOut.Items[1]:=UTF8Decode('(ne pas jouer le son)');

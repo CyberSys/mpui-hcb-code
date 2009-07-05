@@ -180,9 +180,6 @@ begin
       MUUni.Caption:=UTF8Decode('Използвай Unicode за изходните данни');
       MStreamInfo.Caption:=UTF8Decode('Покажи информация за клипа ...');
       MShowOutput.Caption:=UTF8Decode('Покажи изходните данни от MPlayer');
-    MHelp.Caption:=UTF8Decode('Помощ');
-      MKeyHelp.Caption:=UTF8Decode('Помощ за клавиатурата ...');
-      MAbout.Caption:=UTF8Decode('Относно ...');
     MVideos.Caption:=UTF8Decode('Видео');
     MAudios.Caption:=UTF8Decode('Аудио');
     MSub.Caption:=UTF8Decode('Субтитри');
@@ -216,8 +213,7 @@ begin
   end;
   LogForm.Caption:=UTF8Decode('MPlayer репорт');
   LogForm.BClose.Caption:=UTF8Decode('Затвори');
-  HelpForm.Caption:=UTF8Decode('Помощ за клавиатурата');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'Клавиши за навигация и други:'^M^J+
 'Space'^I'Старт/Пауза'^I'T/R'^I'Коригиране на позицията на субтитрите'^M^J+
 'Left'^I'Назад с 10 секунди'^I'Y/U'^I'Коригиране на стъпката на субтитрите'^M^J+
@@ -255,24 +251,21 @@ begin
 '`'^I'Нулиране на яркост, контраст, oттенък, наситеност, гама'^M^J+
 'Alt+LMB drag video'^I'Коригиране на яркост, контраст, oттенък, наситеност, гама'^M^J+
 'Докато премествате/хващате, натиснете или отпуснете различни функционални клавиши, за да извикате различна функционалност');
-  HelpForm.BClose.Caption:=UTF8Decode('Затвори');
-  with AboutForm do begin
-    Caption:=UTF8Decode('Относно MPUI-hcb');
-    BClose.Caption:=UTF8Decode('Затвори');
+  with OptionsForm do begin
+    THelp.Caption:=UTF8Decode('Помощ');
+    TAbout.Caption:=UTF8Decode('Относно');
     LVersionMPUI.Caption:=UTF8Decode('Версия на MPUI-hcb: ');
     LVersionMPlayer.Caption:=UTF8Decode('Версия на MPlayer:');
     FY.Caption:=UTF8Decode('Корекции от: ');
-  end;
-  with OptionsForm do begin
     Caption:=UTF8Decode('Настройки');
     BOK.Caption:=UTF8Decode('ДА');
     BApply.Caption:=UTF8Decode('Приеми');
     BSave.Caption:=UTF8Decode('Запамети');
-    BClose.Caption:=UTF8Decode('Затвори');
-    TabSheet1.Caption:=UTF8Decode('Система');
-    TabSheet2.Caption:=UTF8Decode('Видео');
-    TabSheet3.Caption:=UTF8Decode('Аудио');
-    TabSheet4.Caption:=UTF8Decode('Субтитри');
+    BClose.Caption:=LogForm.BClose.Caption;
+    TSystem.Caption:=UTF8Decode('Система');
+    TVideo.Caption:=UTF8Decode('Видео');
+    TAudio.Caption:=UTF8Decode('Аудио');
+    TSub.Caption:=UTF8Decode('Субтитри');
     LAudioOut.Caption:=UTF8Decode('Драйвер за звука');
       CAudioOut.Items[0]:=UTF8Decode('(не декодирай звука)');
       CAudioOut.Items[1]:=UTF8Decode('(изключи звука)');

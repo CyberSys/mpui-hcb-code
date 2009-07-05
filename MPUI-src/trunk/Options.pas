@@ -22,8 +22,9 @@ interface
 
 uses
   Windows, TntWindows, Messages, SysUtils, TntSysUtils, Variants, Classes, Graphics, Controls,
-  Forms,TntForms, Dialogs, StdCtrls, ShellAPI, ComCtrls, Tabs, TabNotBk, ExtCtrls,
-  TntExtCtrls, TntComCtrls, TntStdCtrls, TntFileCtrl, ImgList, TntRegistry, TntClasses;
+  Forms,TntForms, Dialogs, StdCtrls, ShellAPI, ComCtrls, Tabs, TabNotBk, ExtCtrls, TntSystem,
+  TntExtCtrls, TntComCtrls, TntStdCtrls, TntFileCtrl, ImgList, TntRegistry, TntClasses,
+  jpeg;
 
 type
   TOptionsForm = class(TTntForm)
@@ -35,10 +36,10 @@ type
     LParams: TTntLabel;
     LHelp: TTntLabel;
     Tab: TTntPageControl;
-    TabSheet1: TTntTabSheet;
-    TabSheet2: TTntTabSheet;
-    TabSheet3: TTntTabSheet;
-    TabSheet4: TTntTabSheet;
+    TSystem: TTntTabSheet;
+    TVideo: TTntTabSheet;
+    TAudio: TTntTabSheet;
+    TSub: TTntTabSheet;
     LAudioOut: TTntLabel;
     CAudioOut: TTntComboBox;
     LPostproc: TTntLabel;
@@ -141,6 +142,22 @@ type
     FontDialog1: TFontDialog;
     LVideoout: TTntLabel;
     CVideoOut: TComboBox;
+    THelp: TTntTabSheet;
+    TAbout: TTntTabSheet;
+    LURL: TLabel;
+    MCredits: TMemo;
+    HelpText: TTntMemo;
+    PLogo: TPanel;
+    ILogo: TImage;
+    MTitle: TTntLabel;
+    LVersionMPUI: TTntLabel;
+    VersionMPUI: TTntLabel;
+    LVersionMPlayer: TTntLabel;
+    VersionMPlayer: TTntLabel;
+    FYI: TImage;
+    FY: TTntLabel;
+    CRS: TTntCheckBox;
+    CRP: TTntCheckBox;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -168,6 +185,7 @@ type
     procedure SOsdfontClick(Sender: TObject);
     procedure BSsfClick(Sender: TObject);
     procedure BFontClick(Sender: TObject);
+    procedure TAboutShow(Sender: TObject);
   private
     { Private declarations }
     HelpFile:WideString;
@@ -213,6 +231,37 @@ end;
 procedure TOptionsForm.BCloseClick(Sender: TObject);
 begin
   Close;
+end;
+
+function GetProductVersion(const FileName:WideString):WideString;
+var BufSize,cbSize,VerLen:Cardinal;
+    VerOut:PWideChar; Buf:array of WideChar;
+begin
+  Result:='?';
+  BufSize:=Tnt_GetFileVersionInfoSizeW(PWideChar(FileName),cbSize);
+  if BufSize=0 then exit;
+  SetLength(Buf,BufSize);
+  if not Tnt_GetFileVersionInfoW(PWideChar(FileName),0,BufSize,Buf) then exit;
+  if not Tnt_VerQueryValueW(Buf,'\StringFileInfo\000004B0\ProductVersion',Pointer(VerOut),VerLen) then exit;
+  Result:=VerOut;
+end;
+
+function GetFileVersion(const FileName:WideString):WideString;
+var BufSize,cbSize,VerLen:Cardinal;
+    Info:^VS_FIXEDFILEINFO; Buf:array of WideChar;
+begin
+  Result:='?';
+  BufSize:=Tnt_GetFileVersionInfoSizeW(PWideChar(FileName),cbSize);
+  if BufSize=0 then exit;
+  SetLength(Buf,BufSize);
+  if not Tnt_GetFileVersionInfoW(PWideChar(FileName),0,BufSize,Buf) then exit;
+  if not Tnt_VerQueryValueW(Buf,'\',Pointer(Info),VerLen) then exit;
+  Result:=IntToStr(Info.dwFileVersionMS SHR 16)+'.'+
+          IntToStr(Info.dwFileVersionMS AND $FFFF)+'.'+
+          IntToStr(Info.dwFileVersionLS SHR 16)+' build '+
+          IntToStr(Info.dwFileVersionLS AND $FFFF);
+  if (Info.dwFileFlags AND VS_FF_DEBUG<>0) then Result:=Result+' (debug)';
+  if (Info.dwFileFlags AND VS_FF_PRERELEASE<>0) then Result:=Result+' (pre-release)';
 end;
 
 procedure TOptionsForm.Localize;
@@ -288,7 +337,8 @@ begin
   EMplayerLocation.Enabled:=ML;
   BMplayer.Enabled:=ML;
   CWid.Checked:=Wid;
-
+  CRS.Checked:=RS;
+  CRP.Checked:=RP;
   EMplayerLocation.Text:=MplayerLocation;
   CMAspect.Text:=MAspect;
   CVideoOut.Text:=VideoOut;
@@ -651,6 +701,8 @@ begin
     ActivateLocale(DefaultLocale);
   end;
   if WideDirectoryExists(ELyric.Text) then LyricDir:=ELyric.Text;
+  RP:=CRP.Checked;
+  RS:=CRS.Checked;
   vsync:=CVSync.Checked;
   UseekC:=CUseekC.Checked;
   oneM:=Cone.Checked;
@@ -768,6 +820,7 @@ begin
   {$IFDEF VER150}
   // some fixes for Delphi>=7 VCLs
     PTc.ParentBackground:=False; POc.ParentBackground:=False;
+    PLogo.ParentBackground:=False;
   {$ENDIF}
 end;
 
@@ -958,6 +1011,14 @@ begin
       UpdatePW:=True;
     end;
   end;
+end;
+
+procedure TOptionsForm.TAboutShow(Sender: TObject);
+begin
+  MTitle.Caption:=LOCstr_Title;
+  if ML then VersionMPlayer.Caption:=GetProductVersion(MplayerLocation)
+  else VersionMPlayer.Caption:=GetProductVersion(HomeDir+'mplayer.exe');
+  VersionMPUI.Caption:=GetFileVersion(WideParamStr(0));
 end;
 
 end.

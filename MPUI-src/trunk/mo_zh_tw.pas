@@ -179,9 +179,6 @@ begin
       MStreamInfo.Caption:=UTF8Decode('顯示影片訊息 ...');
       MUUni.Caption:=UTF8Decode('使用Unicode顯示輸出訊息');
       MShowOutput.Caption:=UTF8Decode('顯示 MPlayer 輸出 ...');
-    MHelp.Caption:=UTF8Decode('說明');
-      MKeyHelp.Caption:=UTF8Decode('快速鍵說明 ...');
-      MAbout.Caption:=UTF8Decode('關於 ...');
     MVideos.Caption:=UTF8Decode('視頻');
     MAudios.Caption:=UTF8Decode('音頻');
     MSub.Caption:=UTF8Decode('字幕');
@@ -218,9 +215,7 @@ begin
      MSubScale2.Caption:=UTF8Decode(OSD_Reset_Prompt)+' '+MSub.Caption+UTF8Decode(OSD_Scale_Prompt);
   end;
   LogForm.Caption:=UTF8Decode('MPlayer 輸出');
-  LogForm.BClose.Caption:=UTF8Decode('關閉');
-  HelpForm.Caption:=UTF8Decode('快速鍵說明');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 '快捷鍵:'^M^J+
 'Space'^I'播放/暫停'^I'T/R'^I'調節字幕在屏位置'^M^J+
 'Right'^I'前進10 秒'^I'Y/U'^I'調節字幕語句'^M^J+
@@ -258,24 +253,23 @@ begin
 '`'^I'恢復亮度、對比、色調、飽和、伽瑪 到默認值'^M^J+
 '在拖曳時，松開、按下不同的功能鍵和起始拖曳方向決定不同的功能'
   );
-  HelpForm.BClose.Caption:=UTF8Decode('關閉');
-  with AboutForm do begin
-    Caption:=UTF8Decode('關於 MPUI-hcb');
-    BClose.Caption:=UTF8Decode('關閉');
+  with OptionsForm do begin
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb 版本: ');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayer 核心版本');
     FY.Caption:=UTF8Decode('作者:');
-  end;
-  with OptionsForm do begin
     Caption:=UTF8Decode('選項');
     BOK.Caption:=UTF8Decode('確認');
     BApply.Caption:=UTF8Decode('套用');
     BSave.Caption:=UTF8Decode('儲存');
-    BClose.Caption:=UTF8Decode('關閉');
-    TabSheet1.Caption:=UTF8Decode('系統');
-    TabSheet2.Caption:=UTF8Decode('視頻');
-    TabSheet3.Caption:=UTF8Decode('音頻');
-    TabSheet4.Caption:=UTF8Decode('字幕');
+    BClose.Caption:=LogForm.BClose.Caption;
+    TSystem.Caption:=UTF8Decode('系統');
+    TVideo.Caption:=MainForm.MVideos.Caption;
+    TAudio.Caption:=MainForm.MAudios.Caption;
+    TSub.Caption:=MainForm.MSub.Caption;
+    TAbout.Caption:=UTF8Decode('關於');
+    THelp.Caption:=UTF8Decode('快速鍵');
+    CRP.Caption:=UTF8Decode('啟動時使用上次的窗體位置');
+    CRS.Caption:=UTF8Decode('啟動時使用上次的窗體大小');
     LAudioOut.Caption:=UTF8Decode('音效輸出驅動程式');
       CAudioOut.Items[0]:=UTF8Decode('(不解碼音效)');
       CAudioOut.Items[1]:=UTF8Decode('(不播放音效)');

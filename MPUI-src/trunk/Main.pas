@@ -74,9 +74,6 @@ type
     MSizeAny: TTntMenuItem;
     MOpenURL: TTntMenuItem;
     MOnTop: TTntMenuItem;
-    OMHelp: TTntMenuItem;
-    MAbout: TTntMenuItem;
-    MKeyHelp: TTntMenuItem;
     MShowOutput: TTntMenuItem;
     OMExtra: TTntMenuItem;
     N4: TTntMenuItem;
@@ -133,7 +130,6 @@ type
     MAudios: TTntToolButton;
     MSub: TTntToolButton;
     MExtra: TTntToolButton;
-    MHelp: TTntToolButton;
     MVideo: TTntMenuItem;
     N11: TTntMenuItem;
     Hide_menu: TTntMenuItem;
@@ -332,8 +328,6 @@ type
     procedure MOpenFileClick(Sender: TObject);
     procedure MOpenURLClick(Sender: TObject);
     procedure MOpenDriveClick(Sender: TObject);
-    procedure MKeyHelpClick(Sender: TObject);
-    procedure MAboutClick(Sender: TObject);
     procedure MLanguageClick(Sender: TObject);
     procedure MAspectClick(Sender: TObject);
     procedure MOptionsClick(Sender: TObject);
@@ -526,14 +520,15 @@ begin
     subcode:='CP'+IntToStr(i);
   end; }
   UpdateVolSlider;
-  if EL=-1 then Left:=(screen.Width-Width) DIV 2
-  else Left:=EL;
-  if ET=-1 then begin
+  if RP and (EL<>-1) then Left:=EL
+  else Left:=(screen.Width-Width) DIV 2;
+  if RP and (ET<>-1) then Top:=ET
+  else begin
     if Wid and Win32PlatformIsUnicode then
       Top:=(screen.Height-Height) Div 2
     else Top:=screen.WorkAreaHeight-Constraints.MinHeight;
-  end
-  else Top:=ET;
+  end;
+
   if RFScr then begin
       OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
   end
@@ -1725,16 +1720,6 @@ begin
   Playlist.Changed;
   UpdateParams; 
   NextFile(0,psPlaying);
-end;
-
-procedure TMainForm.MKeyHelpClick(Sender: TObject);
-begin
-  if not HelpForm.Visible then HelpForm.Showmodal;
-end;
-
-procedure TMainForm.MAboutClick(Sender: TObject);
-begin
-  if not AboutForm.Visible then AboutForm.Showmodal;
 end;
 
 procedure TMainForm.Init_MLanguage;

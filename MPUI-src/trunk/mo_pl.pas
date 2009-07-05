@@ -184,9 +184,6 @@ begin
       MUUni.Caption:=UTF8Decode('Użyj Unicode dla informacji wyjściowych');
       MStreamInfo.Caption:=UTF8Decode('Pokaż informacje o pliku...');
       MShowOutput.Caption:=UTF8Decode('Pokaż konsolę MPlayer...');
-    MHelp.Caption:=UTF8Decode('Pomoc');
-      MKeyHelp.Caption:=UTF8Decode('Skróty klawiszowe...');
-      MAbout.Caption:=UTF8Decode('O programie...');
     MVideos.Caption:=UTF8Decode('Wideo');
     MAudios.Caption:=UTF8Decode('Audio');
     MSub.Caption:=UTF8Decode('Napisy');
@@ -224,8 +221,7 @@ begin
   end;
   LogForm.Caption:=UTF8Decode('Log MPlayer');
   LogForm.BClose.Caption:=UTF8Decode('Zamknij');
-  HelpForm.Caption:=UTF8Decode('Skróty klawiszowe');
-  HelpForm.HelpText.Text:=UTF8Decode(
+  OptionsForm.HelpText.Text:=UTF8Decode(
 'Space'^I'Play/Pause'^I'T/R'^I'Adjust subtitle position'^M^J+
 'Left'^I'Rewind 10 seconds'^I'Y/U'^I'Adjust subtitle step'^M^J+
 'Right'^I'Forward 10 seconds Z/X'^I'Adjust subtitle delay'^M^J+
@@ -262,24 +258,21 @@ begin
 '`'^I'Reset brightness,contrast,hue,saturation,gamma'^M^J+
 'Alt+LMB drag video'^I'Adjust brightness,contrast,hue,saturation,gamma'^M^J+
 'While drag,release or press different function key invoke different function');
-  HelpForm.BClose.Caption:=UTF8Decode('Zamknij');
-  with AboutForm do begin
-    Caption:=UTF8Decode('Informacje o programie MPUI-hcb');
-    BClose.Caption:=UTF8Decode('Zamknij');
+  with OptionsForm do begin
+    THelp.Caption:=UTF8Decode('Pomoc');
+    TAbout.Caption:=UTF8Decode('O programie');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb wersja:');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayer core version:');
     FY.Caption:=UTF8Decode('Mender:');
-  end;
-  with OptionsForm do begin
     Caption:=UTF8Decode('Ustawienia');
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Zastosuj');
     BSave.Caption:=UTF8Decode('Zapisz');
-    BClose.Caption:=UTF8Decode('Zamknij');
-    TabSheet1.Caption:=UTF8Decode('System');
-    TabSheet2.Caption:=UTF8Decode('Wideo');
-    TabSheet3.Caption:=UTF8Decode('Audio');
-    TabSheet4.Caption:=UTF8Decode('Napisy');
+    BClose.Caption:=LogForm.BClose.Caption;
+    TSystem.Caption:=UTF8Decode('System');
+    TVideo.Caption:=UTF8Decode('Wideo');
+    TAudio.Caption:=UTF8Decode('Audio');
+    TSub.Caption:=UTF8Decode('Napisy');
     LAudioOut.Caption:=UTF8Decode('Sterownik dźwięku');
       CAudioOut.Items[0]:=UTF8Decode('nie dekoduj dźwięku');
       CAudioOut.Items[1]:=UTF8Decode('nie odtwarzaj dźwięku');
