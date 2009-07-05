@@ -526,10 +526,14 @@ begin
     subcode:='CP'+IntToStr(i);
   end; }
   UpdateVolSlider;
-  Left:=(screen.Width-Width) DIV 2;
-  if Wid and Win32PlatformIsUnicode then
-    Top:=(screen.Height-Height) Div 2
-  else Top:=screen.WorkAreaHeight-Constraints.MinHeight;
+  if EL=-1 then Left:=(screen.Width-Width) DIV 2
+  else Left:=EL;
+  if ET=-1 then begin
+    if Wid and Win32PlatformIsUnicode then
+      Top:=(screen.Height-Height) Div 2
+    else Top:=screen.WorkAreaHeight-Constraints.MinHeight;
+  end
+  else Top:=ET;
   if RFScr then begin
       OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
   end

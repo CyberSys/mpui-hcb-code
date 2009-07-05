@@ -109,7 +109,7 @@ var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
     AudiochannelsID,CurLyric,NextLyric,LyricCount:integer;
     VobsubCount,VobFileCount:integer;
     CurrentSubCount,OnTop,VobAndInterSubCount,IntersubCount:integer;
-    InterW,InterH,NW,NH,OldX,OldY,Scale,LastScale:integer;
+    EL,ET,EW,EH,InterW,InterH,NW,NH,OldX,OldY,Scale,LastScale:integer;
     MFunc,CBHSA,bri,briD,contr,contrD,hu,huD,sat,satD,gam,gamD:integer;
 var AudioOut,AudioDev,Postproc,Deinterlace,Aspect:integer;
     ReIndex,SoftVol,RFScr,dbbuf,nfc,Firstrun,Volnorm,Dr:boolean;
@@ -1832,11 +1832,28 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
 
       if Wid then begin
         if not LastHaveVideo then begin
-          OPanel.Visible:=true; j:=8+NativeWidth;
-          p:=MWC+MenuBar.Height+CPanel.Height+8+NativeHeight;
+          OPanel.Visible:=true;
+          if (EW<>0) or (EH<>0) then begin
+            j:=8+EW; p:=MWC+MenuBar.Height+CPanel.Height+8+EH;
+          end
+          else begin
+            j:=8+NativeWidth;
+            p:=MWC+MenuBar.Height+CPanel.Height+8+NativeHeight;
+          end;
           r:=Left-((j-Constraints.MinWidth) DIV 2);
           i:=Top-((p-Constraints.MinHeight) DIV 2);
-          SetBounds(r,i,j,p); MSize100.Checked:=true;
+          if (EW<>0) or (EH<>0) then begin
+            if r<0 then r:=0; if i<0 then i:=0;
+            if j>Screen.Width then begin j:=Screen.Width; end;
+            if p>Screen.WorkAreaHeight then begin p:=Screen.WorkAreaHeight; end;
+            if (r+j)>Screen.Width then r:=Screen.Width-j;
+            if (i+p)>Screen.WorkAreaHeight then i:=Screen.WorkAreaHeight-p;
+            SetBounds(r,i,j,p);
+          end
+          else begin
+            SetBounds(r,i,j,p);
+            MSize100.Checked:=true;
+          end;
           SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
         end;
         LastHaveVideo:=true;
@@ -2279,7 +2296,7 @@ begin
   LTextColor:=clWindowText; LBGColor:=clWindow; LHGColor:=$93; ClientProcess:=0;
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
-  NW:=0; NH:=0;
+  NW:=0; NH:=0; EW:=0; EH:=0; EL:=-1; ET:=-1;
   ResetStreamInfo;
 end.
 

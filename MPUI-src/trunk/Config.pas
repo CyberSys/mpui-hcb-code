@@ -118,8 +118,12 @@ begin
            Core.AutoPlay:=ReadBool(SectionName,'AutoPlay',Core.AutoPlay);
            Core.uof:=ReadBool(SectionName,'UseOSDfont',Core.uof);
            Core.GUI:=ReadBool(SectionName,'GUI',Core.GUI);
-           Core.InterW:=ReadInteger(SectionName,'InnerPanel_Width',Core.InterW);
-           Core.InterH:=ReadInteger(SectionName,'InnerPanel_Height',Core.InterH);
+           Core.EL:=ReadInteger(SectionName,'LastLeft',Core.EL);
+           Core.ET:=ReadInteger(SectionName,'LastTop',Core.ET);
+           Core.EW:=ReadInteger(SectionName,'LastWidth',Core.EW);
+           Core.EH:=ReadInteger(SectionName,'LastHeight',Core.EH);
+           Core.InterW:=ReadInteger(SectionName,'IPanelWidth',Core.InterW);
+           Core.InterH:=ReadInteger(SectionName,'IPanelHeight',Core.InterH);
            Core.NW:=ReadInteger(SectionName,'CWidth',Core.NW);
            Core.NH:=ReadInteger(SectionName,'CHeight',Core.NH);
            Core.Bp:=ReadInteger(SectionName,'Intro',Core.Bp);
@@ -254,8 +258,17 @@ begin
            WriteString(SectionName,'Params',Core.Params);
          end;
       1: begin
-           WriteInteger(SectionName,'InnerPanel_Width',Core.InterW);
-           WriteInteger(SectionName,'InnerPanel_Height',Core.InterH);
+           WriteInteger(SectionName,'IPanelWidth',Core.InterW);
+           WriteInteger(SectionName,'IPanelHeight',Core.InterH);
+           Core.EL:=MainForm.Left+((MainForm.Width-MainForm.Constraints.MinWidth) DIV 2);
+           Core.ET:=MainForm.Top+((MainForm.Height-MainForm.Constraints.MinHeight) DIV 2);
+           if Core.EL<0 then Core.EL:=0; if Core.ET<0 then Core.ET:=0;
+           WriteInteger(SectionName,'LastLeft',Core.EL);
+           WriteInteger(SectionName,'LastTop',Core.ET);
+           if LastHaveVideo then begin
+             WriteInteger(SectionName,'LastWidth',MainForm.OPanel.Width);
+             WriteInteger(SectionName,'LastHeight',MainForm.OPanel.Height);
+           end;
            WriteInteger(SectionName,'Intro',Core.Bp);
            WriteInteger(SectionName,'Ending',Core.Ep);
            WriteInteger(SectionName,'Volume',Core.Volume);
