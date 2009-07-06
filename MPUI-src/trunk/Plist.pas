@@ -563,54 +563,79 @@ begin
 end;
 
 function TPlaylist.AddM3U(const FileName:WideString; FileExtIndex:integer):boolean;
-var FileNameList:TStringList; BasePath,f:WideString; s:String; i:integer;
-procedure AddToPls(str:string; Mode:boolean);
+var BasePath,s:WideString;
+procedure AddToPls(str:WideString);
 begin
-   if Mode then f:=UTF8Decode(str) else f:=WideString(str);
-   if WideDirectoryExists(f) then begin
-      AddDirectory(f);
+   if WideDirectoryExists(str) then begin
+      AddDirectory(str);
       empty:=true;
    end
-   else AddFiles(ExpandName(BasePath,f));
+   else begin
+     str:=ExpandName(BasePath,str);
+     if WideFileExists(str) then AddFiles(str)
+     else exit;
+   end;
+   Result:=true;
 end;
-procedure HandleStr(const b,e:string; Mode:boolean);
+procedure HandleStr(const b,e:WideString);
+var r:integer;
 begin
-  i:=pos(b,s);
-  while i>0 do begin
-    s:=copy(s,i+length(b),length(s));
-    i:=pos(b,s);
-    if e<>'' then AddToPls(copy(s,1,pos(e,s)-1),Mode)
+  r:=pos(b,s);
+  while r>0 do begin
+    s:=copy(s,r+length(b),length(s));
+    r:=pos(b,s);
+    if e<>'' then AddToPls(copy(s,1,pos(e,s)-1))
     else begin
-      if i>0 then AddToPls(copy(s,1,i-1),Mode)
-      else AddToPls(s,Mode);
+      if r>0 then AddToPls(copy(s,1,r-1))
+      else AddToPls(s);
     end;
   end;
 end;
+procedure parseFile(mode:TTntStreamCharSet);
+var FileNameList:TWStringList; a:TTntStringList; i:integer;
 begin
-  Result:=false;
-  FileNameList:=TStringList.Create;
-  if IsWideStringMappableToAnsi(FileName) then 
-    FileNameList.LoadFromFile(FileName)
-  else FileNameList.LoadFromFile(WideExtractShortPathName(FileName));
-  if FileNameList.Count<1 then exit;
-  BasePath:=WideIncludeTrailingPathDelimiter(WideExtractFilePath(FileName));
+  if Result then exit;
+  FileNameList:=TWStringList.Create;
+  if mode<>csAnsi then begin
+    FileNameList.LoadFromFile(FileName,mode);
+    if FileNameList.Count<1 then begin FileNameList.Free; exit; end;
+  end
+  else begin
+    a:=TTntStringList.Create;
+    a.LoadFromFile(FileName);
+    if a.Count<1 then begin
+      FileNameList.Free; a.Free; exit;
+    end
+    else begin
+      FileNameList.Text:=a.Text; a.Free;
+    end;
+  end;
+
   for i:=0 to FileNameList.Count-1 do begin
     s:=Trim(FileNameList[i]);
     if length(s)<1 then continue;
     case FileExtIndex of
-    {m3u} 0: if s[1]<>'#' then AddToPls(s,false);
-    {asx} 1: HandleStr('<Param Name = "SourceURL" Value = "','"',false);
-    {wpl} 2: HandleStr('<media src="','"',true);
-    {pls} 3: if s[1]='F' then AddToPls(copy(s,pos('=',s)+1,length(s)),false);
-   {ttpl} 4: HandleStr('<item file="','"',true);
-    {rmp} 5: HandleStr('<FILENAME>','</FILENAME>',false);
-   {xspf} 6: HandleStr('<location>','</location>',true);
-   {smpl} 7: HandleStr('path="','"/>',false);
-   {m3u8} 8: if s[1]<>'#' then AddToPls(s,true);
-  {mpcpl} 9: HandleStr('filename,','',false);
+    {m3u} 0: if s[1]<>'#' then AddToPls(s);
+    {asx} 1: HandleStr('<Param Name = "SourceURL" Value = "','"');
+    {wpl} 2: HandleStr('<media src="','"');
+    {pls} 3: if s[1]='F' then AddToPls(copy(s,pos('=',s)+1,length(s)));
+   {ttpl} 4: HandleStr('<item file="','"');
+    {rmp} 5: HandleStr('<FILENAME>','</FILENAME>');
+   {xspf} 6: HandleStr('<location>','</location>');
+   {smpl} 7: HandleStr('path="','"/>');
+   {m3u8} 8: if s[1]<>'#' then AddToPls(s);
+  {mpcpl} 9: HandleStr('filename,','');
     end;
   end;
-  Result:=True;
+  FileNameList.Free;
+end;
+begin
+  Result:=false;
+  BasePath:=WideIncludeTrailingPathDelimiter(WideExtractFilePath(FileName));
+  parseFile(csUtf8);
+  parseFile(csUnicode);
+  parseFile(csUnicodeSwapped);
+  parseFile(csAnsi);
 end;
 
 procedure TLyric.ParseLyric(const FileName:WideString);
@@ -629,9 +654,7 @@ var s:string; TimeEntry:TLyricTimeCodeEntry;
 begin
   if IsParsed then exit;
   a:=TStringList.Create;
-  if IsWideStringMappableToAnsi(FileName) then
-    a.LoadFromFile(FileName)
-  else a.LoadFromFile(WideExtractShortPathName(FileName));
+  a.LoadFromFile(WideExtractShortPathName(FileName));
   if a.Count<1 then begin a.Free; exit; end;
   Lyricindex:=0; offset:=0; len:=-1; sMaxLen:=0; First:=true;
   for j:=0 to a.Count-1 do begin
@@ -752,7 +775,7 @@ begin
     until false;
     if NoTag or (LyricStringsW=nil) then continue;
     inc(Lyricindex); s:=Trim(s);
-    LyricStringsW.Add(s);
+    LyricStringsW.Add(s); LyricStringsW.SaveToFile(s);
     i:=length(s);
     if i>sMaxLen then begin
       sMaxLen:=i; MaxLenLyricW:=s;
@@ -1142,15 +1165,25 @@ begin
 end;
 
 procedure TPlaylistForm.BSaveClick(Sender: TObject);
-var FileNameList:TStringList; i:integer;
+var FList:TStringList; i,h:integer; FileName:WideString;
 begin
   SaveDialog.Title:=BSave.Hint;
   if SaveDialog.Execute then begin
-    FileNameList:=TStringList.Create;
-    for i:=0 to Playlist.Count-1 do FileNameList.Add(UTF8Encode(Playlist[i].FullURL));
-    if IsWideStringMappableToAnsi(SaveDialog.FileName) then
-      FileNameList.SaveToFile(SaveDialog.FileName)
-    else FileNameList.SaveToFile(WideExtractShortPathName(SaveDialog.FileName));
+    FileName:=SaveDialog.FileName;
+    FList:=TStringList.Create;
+    for i:=0 to Playlist.Count-1 do FList.Add(UTF8Encode(Playlist[i].FullURL));
+    if not WideFileExists(FileName) then begin
+      h:=WideFileCreate(FileName);
+      if GetLastError=0 then FileName:=WideExtractShortPathName(FileName);
+      if h<0 then
+        FileName:=WideExtractShortPathName(WideExtractFilePath(FileName))+WideExtractFileName(FileName)
+      else CloseHandle(h);
+    end
+    else begin
+      if WideFileIsReadOnly(FileName) then WideFileSetReadOnly(FileName,false);
+      FileName:=WideExtractShortPathName(FileName);
+    end;
+    FList.SaveToFile(FileName);
   end;
 end;
 

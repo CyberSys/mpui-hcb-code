@@ -45,8 +45,7 @@ begin
     FileName:=AppdataDir+WideExtractFileName(FileName);
     if not WideFileExists(FileName) then exit;
   end;
-  if not IsWideStringMappableToAnsi(FileName) then FileName:=WideExtractShortPathName(FileName);
-  INI:=TINIFile.Create(FileName);
+  INI:=TINIFile.Create(WideExtractShortPathName(FileName));
   with INI do begin
     case mode of
       0: begin
@@ -151,34 +150,23 @@ begin
 end;
 
 procedure Save(FileName:WideString; Mode:integer);
-var INI:TINIFile; d:WideString; h:integer;
+var INI:TINIFile; h:integer;
 begin
-  if NoAccess>1 then exit;
-  if (NoAccess=1) or ( not WideFileExists(FileName)) then
-    FileName:=AppdataDir+WideExtractFileName(FileName);
+  if NoAccess>0 then exit;
+  if not WideFileExists(FileName) then FileName:=AppdataDir+WideExtractFileName(FileName);
   if not WideFileExists(FileName) then begin
     h:=WideFileCreate(FileName);
-    case GetLastError of
-      ERROR_ALREADY_EXISTS,0: if not IsWideStringMappableToAnsi(FileName) then
-                              FileName:=WideExtractShortPathName(FileName);
-    end;
-    if h<0 then begin
-      d:=WideExtractFilePath(FileName);
-      if not IsWideStringMappableToAnsi(FileName) then
-        FileName:=WideExtractShortPathName(d)+WideExtractFileName(FileName);
-    end
+    if GetLastError=0 then FileName:=WideExtractShortPathName(FileName);
+    if h<0 then
+        FileName:=WideExtractShortPathName(WideExtractFilePath(FileName))+WideExtractFileName(FileName)
     else CloseHandle(h);
   end
-  else FileName:=WideExtractShortPathName(FileName);
-
-  try INI:=TINIFile.Create(FileName);
-  except
-    if (NoAccess=1) or ( not WideFileExists(FileName)) then exit;
-    try INI:=TINIFile.Create(AppdataDir+WideExtractFileName(FileName));
-    except exit;
-    end;
+  else begin
+    if WideFileIsReadOnly(FileName) then WideFileSetReadOnly(FileName,false);
+    FileName:=WideExtractShortPathName(FileName);
   end;
-  
+
+  INI:=TINIFile.Create(FileName);
   with INI do try
     case mode of
       0: begin
