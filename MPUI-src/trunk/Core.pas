@@ -2217,7 +2217,7 @@ begin
     else AsFloat:=AsInt;
 
     // handle some common ID fields
-    FileName:=mediaURL;
+    FileName:=DisplayURL;
     if ID='VIDEO_BITRATE' then Video.Bitrate:=AsInt
     else if ID='VIDEO_WIDTH'   then Video.Width:=AsInt
     else if ID='VIDEO_HEIGHT'  then Video.Height:=AsInt

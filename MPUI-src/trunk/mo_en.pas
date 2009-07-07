@@ -442,7 +442,7 @@ begin
   InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   InfoForm.TCB.Caption:='Copy Info';
   LOCstr_NoInfo:='No clip information is available at the moment.';
-  LOCstr_InfoFileName:='Clip';
+  LOCstr_InfoFileName:='Clip name';
   LOCstr_InfoFileFormat:='Format';
   LOCstr_InfoPlaybackTime:='Duration';
   LOCstr_InfoTags:='Clip Metadata';
