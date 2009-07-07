@@ -520,9 +520,9 @@ begin
     subcode:='CP'+IntToStr(i);
   end; }
   UpdateVolSlider;
-  if RS and (EL<>-1) then Left:=EL
+  if RP and (EL<>-1) then Left:=EL
   else Left:=(screen.Width-Width) DIV 2;
-  if RS and (ET<>-1) then Top:=ET
+  if RP and (ET<>-1) then Top:=ET
   else begin
     if Wid and Win32PlatformIsUnicode then
       Top:=(screen.Height-Height) Div 2
@@ -2109,7 +2109,6 @@ begin
     end;
     if Plist.PlaylistForm.Visible then SetWindowPos(Plist.PlaylistForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     if InfoForm.Visible then SetWindowPos(InfoForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
-    if OptionsForm.Visible then SetWindowPos(OptionsForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     if OptionsForm.Visible then SetWindowPos(OptionsForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     if EqualizerForm.Visible then SetWindowPos(EqualizerForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
   end;

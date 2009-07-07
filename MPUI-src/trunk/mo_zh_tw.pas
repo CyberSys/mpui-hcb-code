@@ -261,7 +261,7 @@ begin
     BOK.Caption:=UTF8Decode('確認');
     BApply.Caption:=UTF8Decode('套用');
     BSave.Caption:=UTF8Decode('儲存');
-    BClose.Caption:=OptionsForm.BClose.Caption;
+    BClose.Caption:=UTF8Decode('關閉');
     TSystem.Caption:=UTF8Decode('系統');
     TVideo.Caption:=MainForm.MVideos.Caption;
     TAudio.Caption:=MainForm.MAudios.Caption;
@@ -277,7 +277,7 @@ begin
       CAudioOut.Items[1]:=UTF8Decode('(不播放音效)');
     LAudioDev.Caption:=UTF8Decode('DirectSound 輸出裝置');
     LPostproc.Caption:=UTF8Decode('後置處理');
-      CPostproc.Items[0]:=UTF8Decode('關閉');
+      CPostproc.Items[0]:=OptionsForm.BClose.Caption;
       CPostproc.Items[1]:=UTF8Decode('自動');
       CPostproc.Items[2]:=UTF8Decode('最佳品質');
     LOCstr_AutoLocale:=UTF8Decode('(自動選擇)');
@@ -432,15 +432,17 @@ begin
   with EqualizerForm do begin
     Caption:=MainForm.MEqualizer.Caption;
     BReset.Caption:=UTF8Decode(OSD_Reset_Prompt);
-    BClose.Caption:=UTF8Decode('關閉');
+    BClose.Caption:=OptionsForm.BClose.Caption;
     SBri.Caption:=UTF8Decode(OSD_Brightness_Prompt);
     SCon.Caption:=UTF8Decode(OSD_Contrast_Prompt);
     SSat.Caption:=UTF8Decode(OSD_Saturation_Prompt);
     SHue.Caption:=UTF8Decode(OSD_Hue_Prompt);
   end;
   InfoForm.Caption:=UTF8Decode('影片資訊');
-  InfoForm.BClose.Caption:=UTF8Decode('關閉');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
+  InfoForm.TCB.Caption:=UTF8Decode('拷貝資訊');
   LOCstr_NoInfo:=UTF8Decode('目前沒有可用的影片資訊');
+  LOCstr_InfoFileName:=UTF8Decode('影片');
   LOCstr_InfoFileFormat:=UTF8Decode('影片格式');
   LOCstr_InfoPlaybackTime:=UTF8Decode('影片長度');
   LOCstr_InfoTags:=UTF8Decode('影片 metadata');

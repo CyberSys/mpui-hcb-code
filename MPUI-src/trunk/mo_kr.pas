@@ -92,7 +92,6 @@ begin
       MStreamInfo.Caption:=UTF8Decode('클립 정보 보기 ...');
       MShowOutput.Caption:=UTF8Decode('MPlayer 출력 보기 ...');
   end;
-  OptionsForm.Caption:=UTF8Decode('MPlayer 출력');
   OptionsForm.BClose.Caption:=UTF8Decode('닫기');
   OptionsForm.HelpText.Text:=UTF8Decode(
 '탐색:'^M^J+
@@ -127,7 +126,6 @@ begin
     BOK.Caption:=UTF8Decode('확인');
     BApply.Caption:=UTF8Decode('적용');
     BSave.Caption:=UTF8Decode('저장');
-    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('사운드 출력 드라이버');
       CAudioOut.Items[0]:=UTF8Decode('(디코딩 않음)');
       CAudioOut.Items[1]:=UTF8Decode('(재생 않음)');
@@ -154,7 +152,7 @@ begin
     CLoop.Hint:=UTF8Decode('반복');
   end;
   InfoForm.Caption:=UTF8Decode('클립 정보');
-  InfoForm.BClose.Caption:=UTF8Decode('닫기');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   LOCstr_NoInfo:=UTF8Decode('클립 정보 보기는 현재 불가능 합니다.');
   LOCstr_InfoFileFormat:=UTF8Decode('포맷');
   LOCstr_InfoPlaybackTime:=UTF8Decode('길이');

@@ -92,7 +92,6 @@ begin
       MStreamInfo.Caption:=UTF8Decode('Toon media-informatie ...');
       MShowOutput.Caption:=UTF8Decode('Toon MPlayer output ...');
   end;
-  OptionsForm.Caption:='MPlayer output';
   OptionsForm.BClose.Caption:='Sluiten';
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Navigatietoetsen:'^M^J+
@@ -126,7 +125,6 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Toepassen');
     BSave.Caption:=UTF8Decode('Opslaan');
-    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Stuurprogramma voor geluid');
       CAudioOut.Items[0]:=UTF8Decode('(geluidsspoor niet decoderen)');
       CAudioOut.Items[1]:=UTF8Decode('(geluidsspoor niet afspelen)');
@@ -154,7 +152,7 @@ begin
     BSave.Hint:=UTF8Decode('Opslaan ...');
   end;
   InfoForm.Caption:=UTF8Decode('Media-informatie');
-  InfoForm.BClose.Caption:=UTF8Decode('Sluiten');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   LOCstr_NoInfo:=UTF8Decode('Momenteel geen media-informatie beschikbaar.');
   LOCstr_InfoFileFormat:=UTF8Decode('Bestandsformaat');
   LOCstr_InfoPlaybackTime:=UTF8Decode('Speelduur');

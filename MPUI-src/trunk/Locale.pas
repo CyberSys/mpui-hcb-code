@@ -76,6 +76,7 @@ var LOCstr_Title:WideString;
     LyricFilter:WideString;
 
 var LOCstr_NoInfo:WideString;
+    LOCstr_InfoFileName:WideString;
     LOCstr_InfoFileFormat:WideString;
     LOCstr_InfoPlaybackTime:WideString;
     LOCstr_InfoTags:WideString;

@@ -219,7 +219,6 @@ begin
      MSubScale1.Caption:=UTF8Decode('Zoom -');
      MSubScale2.Caption:=UTF8Decode('Reset Subtitles Scale');
   end;
-  OptionsForm.Caption:=UTF8Decode('Log MPlayer');
   OptionsForm.BClose.Caption:=UTF8Decode('Zamknij');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Space'^I'Play/Pause'^I'T/R'^I'Adjust subtitle position'^M^J+
@@ -268,7 +267,6 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Zastosuj');
     BSave.Caption:=UTF8Decode('Zapisz');
-    BClose.Caption:=OptionsForm.BClose.Caption;
     TSystem.Caption:=UTF8Decode('System');
     TVideo.Caption:=UTF8Decode('Wideo');
     TAudio.Caption:=UTF8Decode('Audio');
@@ -429,14 +427,14 @@ begin
   with EqualizerForm do begin
     Caption:=MainForm.MEqualizer.Caption;
     BReset.Caption:=UTF8Decode(OSD_Reset_Prompt);
-    BClose.Caption:=UTF8Decode('Zamknij');
+    BClose.Caption:=OptionsForm.BClose.Caption;
     SBri.Caption:=UTF8Decode(OSD_Brightness_Prompt);
     SCon.Caption:=UTF8Decode(OSD_Contrast_Prompt);
     SSat.Caption:=UTF8Decode(OSD_Saturation_Prompt);
     SHue.Caption:=UTF8Decode(OSD_Hue_Prompt);
   end;
   InfoForm.Caption:=UTF8Decode('Informacje o pliku');
-  InfoForm.BClose.Caption:=UTF8Decode('Zamknij');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   LOCstr_NoInfo:=UTF8Decode('Brak informacji o pliku w tym momencie');
   LOCstr_InfoFileFormat:=UTF8Decode('Format');
   LOCstr_InfoPlaybackTime:=UTF8Decode('Czas trwania');

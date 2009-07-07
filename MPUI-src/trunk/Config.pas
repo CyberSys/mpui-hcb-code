@@ -18,7 +18,7 @@
 }
 unit Config;
 interface
-uses Core, Main, Locale;
+uses Core, Main, Locale, info;
 
 const DefaultFileName='MPUI.ini';
       SectionName='MPUI';
@@ -121,6 +121,8 @@ begin
            Core.RP:=ReadBool(SectionName,'RPostion',Core.RP);
            Core.SP:=ReadBool(SectionName,'SPause',Core.SP);
            Core.CT:=ReadBool(SectionName,'DTime',Core.CT);
+           Core.IL:=ReadInteger(SectionName,'InfoLeft',Core.IL);
+           Core.IT:=ReadInteger(SectionName,'InfoTop',Core.IT);
            Core.EL:=ReadInteger(SectionName,'LastLeft',Core.EL);
            Core.ET:=ReadInteger(SectionName,'LastTop',Core.ET);
            Core.EW:=ReadInteger(SectionName,'LastWidth',Core.EW);
@@ -259,12 +261,12 @@ begin
            Core.EL:=MainForm.Left+((MainForm.Width-MainForm.Constraints.MinWidth) DIV 2);
            Core.ET:=MainForm.Top+((MainForm.Height-MainForm.Constraints.MinHeight) DIV 2);
            if Core.EL<0 then Core.EL:=0; if Core.ET<0 then Core.ET:=0;
+           WriteInteger(SectionName,'InfoLeft',InfoForm.Left);
+           WriteInteger(SectionName,'InfoTop',InfoForm.Top);
            WriteInteger(SectionName,'LastLeft',Core.EL);
            WriteInteger(SectionName,'LastTop',Core.ET);
-           if LastHaveVideo then begin
-             WriteInteger(SectionName,'LastWidth',MainForm.OPanel.Width);
-             WriteInteger(SectionName,'LastHeight',MainForm.OPanel.Height);
-           end;
+           WriteInteger(SectionName,'LastWidth',Core.EW);
+           WriteInteger(SectionName,'LastHeight',Core.EH);
            WriteInteger(SectionName,'Intro',Core.Bp);
            WriteInteger(SectionName,'Ending',Core.Ep);
            WriteInteger(SectionName,'Volume',Core.Volume);

@@ -92,7 +92,6 @@ begin
       MStreamInfo.Caption:=UTF8Decode('Arată informaţii despre fişierul multimedia ...');
       MShowOutput.Caption:=UTF8Decode('Arată mesajele de informare de la MPlayer ...');
   end;
-  OptionsForm.Caption:=UTF8Decode('Mesajele de informare de la MPlayer');
   OptionsForm.BClose.Caption:=UTF8Decode('Închide');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Taste de navigare:'^M^J+
@@ -127,7 +126,6 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Aplică');
     BSave.Caption:=UTF8Decode('Salvează');
-    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Driver-ul pentru sunet');
       CAudioOut.Items[0]:=UTF8Decode('(nu decodifica sunetul)');
       CAudioOut.Items[1]:=UTF8Decode('(nu reda sunetul)');
@@ -155,7 +153,7 @@ begin
     BSave.Hint:=UTF8Decode('Salvează ...');
   end;
   InfoForm.Caption:=UTF8Decode('Informaţii despre fişierul multimedia');
-  InfoForm.BClose.Caption:=UTF8Decode('Închide');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   LOCstr_NoInfo:=UTF8Decode('Acum nu este disponibilă nici o informaţie despre fisierul multimedia.');
   LOCstr_InfoFileFormat:=UTF8Decode('Format');
   LOCstr_InfoPlaybackTime:=UTF8Decode('Întindere');

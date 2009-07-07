@@ -92,7 +92,6 @@ begin
       MStreamInfo.Caption:=UTF8Decode('クリップ情報を表示 ...');
       MShowOutput.Caption:=UTF8Decode('MPlayer出力を表示 ...');
   end;
-  OptionsForm.Caption:=UTF8Decode('MPlayer出力');
   OptionsForm.BClose.Caption:=UTF8Decode('閉じる');
   OptionsForm.HelpText.Text:=UTF8Decode(
 '操作キー:'^M^J+
@@ -127,7 +126,6 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('適用');
     BSave.Caption:=UTF8Decode('保存');
-    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('サウンド出力ドライバ');
       CAudioOut.Items[0]:=UTF8Decode('(サウンドをデコードしない)');
       CAudioOut.Items[1]:=UTF8Decode('(サウンドを再生しない)');
@@ -155,7 +153,7 @@ begin
     BSave.Hint:=UTF8Decode('保存 ...');
   end;
   InfoForm.Caption:=UTF8Decode('クリップ情報');
-  InfoForm.BClose.Caption:=UTF8Decode('閉じる');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   LOCstr_NoInfo:=UTF8Decode('利用可能なクリップ情報がありません.');
   LOCstr_InfoFileFormat:=UTF8Decode('形式');
   LOCstr_InfoPlaybackTime:=UTF8Decode('合計時間');

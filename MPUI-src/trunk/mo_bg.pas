@@ -211,8 +211,6 @@ begin
      MSubDelay1.Caption:=UTF8Decode('Измести назад -');
      MSubDelay2.Caption:=UTF8Decode(OSD_Reset_Prompt+' на '+OSD_SubDelay_Prompt);
   end;
-  OptionsForm.Caption:=UTF8Decode('MPlayer репорт');
-  OptionsForm.BClose.Caption:=UTF8Decode('Затвори');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Клавиши за навигация и други:'^M^J+
 'Space'^I'Старт/Пауза'^I'T/R'^I'Коригиране на позицията на субтитрите'^M^J+
@@ -261,7 +259,7 @@ begin
     BOK.Caption:=UTF8Decode('ДА');
     BApply.Caption:=UTF8Decode('Приеми');
     BSave.Caption:=UTF8Decode('Запамети');
-    BClose.Caption:=OptionsForm.BClose.Caption;
+    BClose.Caption:=UTF8Decode('Затвори');
     TSystem.Caption:=UTF8Decode('Система');
     TVideo.Caption:=UTF8Decode('Видео');
     TAudio.Caption:=UTF8Decode('Аудио');
@@ -403,7 +401,7 @@ begin
   with EqualizerForm do begin
     Caption:=MainForm.MEqualizer.Caption;
     BReset.Caption:=OSD_Reset_Prompt;
-    BClose.Caption:=UTF8Decode('Затвори');
+    BClose.Caption:=OptionsForm.BClose.Caption;
     SBri.Caption:=OSD_Brightness_Prompt;
     SCon.Caption:=OSD_Contrast_Prompt;
     SSat.Caption:=OSD_Saturation_Prompt;
@@ -411,7 +409,7 @@ begin
   end;
   
   InfoForm.Caption:=UTF8Decode('Информация за клипа');
-  InfoForm.BClose.Caption:=UTF8Decode('Затвори');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   LOCstr_NoInfo:=UTF8Decode('Няма информация за клипа.');
   LOCstr_InfoFileFormat:=UTF8Decode('Формат');
   LOCstr_InfoPlaybackTime:=UTF8Decode('Продължителност');

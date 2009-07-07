@@ -92,7 +92,6 @@ begin
       MStreamInfo.Caption:=UTF8Decode('Mostra info su clip ...');
       MShowOutput.Caption:=UTF8Decode('Mostra MPlayer info ...');
   end;
-  OptionsForm.Caption:=UTF8Decode('MPlayer output');
   OptionsForm.BClose.Caption:=UTF8Decode('Chiudi');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Tasti Navigazione:'^M^J+
@@ -126,7 +125,6 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Applica');
     BSave.Caption:=UTF8Decode('Salva');
-    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Driver sonoro');
       CAudioOut.Items[0]:=UTF8Decode('(non decodificare audio)');
       CAudioOut.Items[1]:=UTF8Decode('(non fare suoni)');
@@ -151,7 +149,7 @@ begin
     BDelete.Hint:=UTF8Decode('Togli');
   end;
   InfoForm.Caption:=UTF8Decode('Informzioni sulla Clip');
-  InfoForm.BClose.Caption:=UTF8Decode('Chiudi');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   LOCstr_NoInfo:=UTF8Decode('Nessuna informazione disponibile.');
   LOCstr_InfoFileFormat:=UTF8Decode('Formato');
   LOCstr_InfoPlaybackTime:=UTF8Decode('Durata');

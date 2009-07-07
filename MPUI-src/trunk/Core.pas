@@ -109,7 +109,7 @@ var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
     AudiochannelsID,CurLyric,NextLyric,LyricCount:integer;
     VobsubCount,VobFileCount:integer;
     CurrentSubCount,OnTop,VobAndInterSubCount,IntersubCount:integer;
-    EL,ET,EW,EH,InterW,InterH,NW,NH,OldX,OldY,Scale,LastScale:integer;
+    IL,IT,EL,ET,EW,EH,InterW,InterH,NW,NH,OldX,OldY,Scale,LastScale:integer;
     MFunc,CBHSA,bri,briD,contr,contrD,hu,huD,sat,satD,gam,gamD:integer;
 var AudioOut,AudioDev,Postproc,Deinterlace,Aspect:integer;
     ReIndex,SoftVol,RFScr,dbbuf,nfc,Firstrun,Volnorm,Dr:boolean;
@@ -2217,7 +2217,7 @@ begin
     else AsFloat:=AsInt;
 
     // handle some common ID fields
-    FileName:=core.DisplayURL;
+    FileName:=mediaURL;
     if ID='VIDEO_BITRATE' then Video.Bitrate:=AsInt
     else if ID='VIDEO_WIDTH'   then Video.Width:=AsInt
     else if ID='VIDEO_HEIGHT'  then Video.Height:=AsInt
@@ -2298,7 +2298,7 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; EW:=0; EH:=0; EL:=-1; ET:=-1; RS:=false; RP:=false; SP:=true;
-  CT:=true;
+  CT:=true; IL:=-1; IT:=-1;
   ResetStreamInfo;
 end.
 

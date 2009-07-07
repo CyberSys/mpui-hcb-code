@@ -215,7 +215,6 @@ begin
      MSubScale1.Caption:=MScale2.Caption;
      MSubScale2.Caption:=UTF8Decode(OSD_Reset_Prompt)+' '+MSub.Caption+UTF8Decode(OSD_Scale_Prompt);
   end;
-  OptionsForm.Caption:=UTF8Decode('MPlayer 输出');
   OptionsForm.BClose.Caption:=UTF8Decode('关闭');
   OptionsForm.HelpText.Text:=UTF8Decode(
 '快捷键:'^M^J+
@@ -265,7 +264,6 @@ begin
     BOK.Caption:=UTF8Decode('确定');
     BApply.Caption:=UTF8Decode('应用');
     BSave.Caption:=UTF8Decode('保存');
-    BClose.Caption:=OptionsForm.BClose.Caption;
     TSystem.Caption:=UTF8Decode('系统');
     TVideo.Caption:=MainForm.MVideos.Caption;
     TAudio.Caption:=MainForm.MAudios.Caption;
@@ -431,15 +429,17 @@ begin
   with EqualizerForm do begin
     Caption:=MainForm.MEqualizer.Caption;
     BReset.Caption:=UTF8Decode(OSD_Reset_Prompt);
-    BClose.Caption:=UTF8Decode('关闭');
+    BClose.Caption:=OptionsForm.BClose.Caption;
     SBri.Caption:=UTF8Decode(OSD_Brightness_Prompt);
     SCon.Caption:=UTF8Decode(OSD_Contrast_Prompt);
     SSat.Caption:=UTF8Decode(OSD_Saturation_Prompt);
     SHue.Caption:=UTF8Decode(OSD_Hue_Prompt);
   end;
   InfoForm.Caption:=UTF8Decode('文件信息');
-  InfoForm.BClose.Caption:=UTF8Decode('关闭');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
+  InfoForm.TCB.Caption:=UTF8Decode('复制信息');
   LOCstr_NoInfo:=UTF8Decode('当前无可用的文件信息');
+  LOCstr_InfoFileName:=UTF8Decode('片名');
   LOCstr_InfoFileFormat:=UTF8Decode('格式');
   LOCstr_InfoPlaybackTime:=UTF8Decode('片长');
   LOCstr_InfoTags:=UTF8Decode('文件 元信息');

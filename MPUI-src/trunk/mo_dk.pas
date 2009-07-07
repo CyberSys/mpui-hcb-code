@@ -93,7 +93,6 @@ begin
       MStreamInfo.Caption:=UTF8Decode('Vis Klip information ...');
       MShowOutput.Caption:=UTF8Decode('Vis MPlayer udlæsning ...');
   end;
-  OptionsForm.Caption:=UTF8Decode('MPlayer udlæsning');
   OptionsForm.BClose.Caption:=UTF8Decode('Luk');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Navigationstast:'^M^J+
@@ -126,7 +125,6 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Tilføj');
     BSave.Caption:=UTF8Decode('Gem');
-    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Lydudlæsnings driver');
       CAudioOut.Items[0]:=UTF8Decode('(Lad være med at afkode lyd)');
       CAudioOut.Items[1]:=UTF8Decode('(Lad være med at afspille lyd)');
@@ -154,7 +152,7 @@ begin
     BSave.Hint:=UTF8Decode('Gem ...');
   end;
   InfoForm.Caption:=UTF8Decode('Klip information');
-  InfoForm.BClose.Caption:=UTF8Decode('Luk');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   LOCstr_NoInfo:=UTF8Decode('Ingen klip information er tilgængelig i øjeblikket.');
   LOCstr_InfoFileFormat:=UTF8Decode('Format');
   LOCstr_InfoPlaybackTime:=UTF8Decode('Varighed');

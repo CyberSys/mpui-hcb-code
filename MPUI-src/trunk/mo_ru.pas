@@ -89,7 +89,6 @@ begin
       MStreamInfo.Caption:=UTF8Decode('Показать информацию о файле ...');
       MShowOutput.Caption:= UTF8Decode('Показывать вывод MPlayer');
   end;
-  OptionsForm.Caption:= UTF8Decode('Вывод MPlayer');
   OptionsForm.BClose.Caption:= UTF8Decode('Закрыть');
   OptionsForm.HelpText.Text:=
 UTF8Decode(
@@ -124,7 +123,6 @@ UTF8Decode(
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Применить');
     BSave.Caption:=UTF8Decode('Сохранить');
-    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Драйвер вывода звука');
       CAudioOut.Items[0]:=UTF8Decode('(Не декодировать звук)');
       CAudioOut.Items[1]:=UTF8Decode('(Не проигрывать звук)');
@@ -152,7 +150,7 @@ UTF8Decode(
     BSave.Hint:=UTF8Decode('Сохранить ...');
   end;
   InfoForm.Caption:=UTF8Decode('Информация о файле');
-  InfoForm.BClose.Caption:=UTF8Decode('Закрыть');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   LOCstr_NoInfo:=UTF8Decode('Информация недоступна на данный момент');
   LOCstr_InfoFileFormat:=UTF8Decode('Формат');
   LOCstr_InfoPlaybackTime:=UTF8Decode('Длительность');

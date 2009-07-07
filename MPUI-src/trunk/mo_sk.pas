@@ -93,7 +93,6 @@ begin
       MShowOutput.Caption:=UTF8Decode('Zobraziť výstup MPlayeru ...');
 
   end;
-  OptionsForm.Caption:=UTF8Decode('Výstup MPlayeru');
   OptionsForm.BClose.Caption:=UTF8Decode('Zatvoriť');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Navigačné klávesy:'^M^J+
@@ -128,7 +127,6 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Použiť');
     BSave.Caption:=UTF8Decode('Uložiť');
-    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Výstupný ovládač zvuku');
       CAudioOut.Items[0]:=UTF8Decode('(nedekódovať zvuk)');
       CAudioOut.Items[1]:=UTF8Decode('(neprehrávať zvuk)');
@@ -156,7 +154,7 @@ begin
     BSave.Hint:=UTF8Decode('Uložiť ...');
   end;
   InfoForm.Caption:=UTF8Decode('Informácie o klipe');
-  InfoForm.BClose.Caption:=UTF8Decode('Zatvoriť');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   LOCstr_NoInfo:=UTF8Decode('V tejto chvíli nie sú dostupné žiadne informácie.');
   LOCstr_InfoFileFormat:=UTF8Decode('Formát');
   LOCstr_InfoPlaybackTime:=UTF8Decode('Trvanie');

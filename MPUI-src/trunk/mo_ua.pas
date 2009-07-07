@@ -100,7 +100,6 @@ begin
     MStreamInfo.Caption:= UTF8Decode('Показати інформацію про кліп');
     MShowOutput.Caption := UTF8Decode('Показати журнал MPlayer');
   end;
-  OptionsForm.Caption := UTF8Decode('Журнал MPlayer');
   OptionsForm.HelpText.Text :=UTF8Decode(
     'Навіація:'#13#10^M^J +
     'Space'^I'Грати/Пауза'^M^J +
@@ -126,17 +125,16 @@ begin
     '7/8'^I'Регулювання насиченості')
     ; // виправлено
 
-  OptionsForm.Caption := UTF8Decode('Про програму MPUI-hcb');
-  OptionsForm.LVersionMPUI.Caption := UTF8Decode('Версія MPUI-hcb: ');
-  OptionsForm.LVersionMPlayer.Caption := UTF8Decode('Версія програвача MPlayer: ');
   with OptionsForm do begin
+    LVersionMPUI.Caption := UTF8Decode('Версія MPUI-hcb: ');
+    LVersionMPlayer.Caption := UTF8Decode('Версія програвача MPlayer: ');
     THelp.Caption := UTF8Decode('Допомога');
     TAbout.Caption := UTF8Decode('Про програму');
     Caption := UTF8Decode('Налаштування');
     BOK.Caption := UTF8Decode('OK');
     BApply.Caption := UTF8Decode('Застосувати');
     BSave.Caption := UTF8Decode('Зберегти');
-    BClose.Caption := OptionsForm.BClose.Caption;
+    BClose.Caption := UTF8Decode('Закрити');
     LAudioOut.Caption := UTF8Decode('Виведення звуку через');
     LAudioDev.Caption := UTF8Decode('Пристрій виведення звуку');
     CAudioOut.Items[0] := UTF8Decode('(не декодувати звук)');

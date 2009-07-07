@@ -92,7 +92,6 @@ begin
       MStreamInfo.Caption:=UTF8Decode('montri Clip-informojn ...');
       MShowOutput.Caption:=UTF8Decode('montri MPlayer-indikon ...');
   end;
-  OptionsForm.Caption:=UTF8Decode('MPlayer-indiko');
   OptionsForm.BClose.Caption:=UTF8Decode('fermi');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'navigada klavoj:'^M^J+
@@ -126,7 +125,6 @@ begin
     BOK.Caption:=UTF8Decode('okej');
     BApply.Caption:=UTF8Decode('akcepti');
     BSave.Caption:=UTF8Decode('konservi');
-    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('sonoeligilo');
       CAudioOut.Items[0]:=UTF8Decode('(ne malkodadi sonon)');
       CAudioOut.Items[1]:=UTF8Decode('(ne eligi sonon)');
@@ -151,7 +149,7 @@ begin
     BDelete.Hint:=UTF8Decode('forigi');
   end;
   InfoForm.Caption:=UTF8Decode('Clip-informoj');
-  InfoForm.BClose.Caption:=UTF8Decode('fermi');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   LOCstr_NoInfo:=UTF8Decode('Ĉitempe informoj ne estas disponebla.');
   LOCstr_InfoFileFormat:=UTF8Decode('formato');
   LOCstr_InfoPlaybackTime:=UTF8Decode('ludodaŭro');

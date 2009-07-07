@@ -92,8 +92,6 @@ begin
       MStreamInfo.Caption:=UTF8Decode('اظهار معلومات الكليب ...');
       MShowOutput.Caption:=UTF8Decode('اظهار خرج امبلاير');
   end;
-  OptionsForm.Caption:=UTF8Decode('MPlayer خرج');
-  OptionsForm.BClose.Caption:=UTF8Decode('غلق');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'مفاتيح الملاحة:'^M^J+
 'Space'^I'عرض/وقف'^M^J+
@@ -152,7 +150,7 @@ begin
     BSave.Hint:=UTF8Decode('حفظ ...');
   end;
   InfoForm.Caption:=UTF8Decode('معلومات الكليب');
-  InfoForm.BClose.Caption:=UTF8Decode('غلق');
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   LOCstr_NoInfo:=UTF8Decode('لا توجد معلومات عن الكليب حاليا.');
   LOCstr_InfoFileFormat:=UTF8Decode('النوعية');
   LOCstr_InfoPlaybackTime:=UTF8Decode('المدة');

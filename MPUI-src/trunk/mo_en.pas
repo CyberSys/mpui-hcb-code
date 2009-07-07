@@ -215,7 +215,6 @@ begin
      MSubScale1.Caption:=MScale2.Caption;
      MSubScale2.Caption:=UTF8Decode(OSD_Reset_Prompt)+' '+MSubScale.Caption;
   end;
-  OptionsForm.Caption:='MPlayer output';
   OptionsForm.BClose.Caption:='Close';
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Space'^I'Play/Pause'^I'T/R'^I'Adjust subtitle position'^M^J+
@@ -264,7 +263,6 @@ begin
     BOK.Caption:='OK';
     BApply.Caption:='Apply';
     BSave.Caption:='Save';
-    BClose.Caption:=OptionsForm.BClose.Caption;
     TSystem.Caption:='System';
     TVideo.Caption:='Video';
     TAudio.Caption:='Audio';
@@ -434,15 +432,17 @@ begin
   with EqualizerForm do begin
     Caption:=MainForm.MEqualizer.Caption;
     BReset.Caption:=OSD_Reset_Prompt;
-    BClose.Caption:='Close';
+    BClose.Caption:=OptionsForm.BClose.Caption;
     SBri.Caption:=OSD_Brightness_Prompt;
     SCon.Caption:=OSD_Contrast_Prompt;
     SSat.Caption:=OSD_Saturation_Prompt;
     SHue.Caption:=OSD_Hue_Prompt;
   end;
   InfoForm.Caption:='Clip information';
-  InfoForm.BClose.Caption:='Close';
+  InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
+  InfoForm.TCB.Caption:='Copy Info';
   LOCstr_NoInfo:='No clip information is available at the moment.';
+  LOCstr_InfoFileName:='Clip';
   LOCstr_InfoFileFormat:='Format';
   LOCstr_InfoPlaybackTime:='Duration';
   LOCstr_InfoTags:='Clip Metadata';
