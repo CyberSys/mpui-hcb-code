@@ -25,7 +25,7 @@
 unit mo_pl;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist,Info,Core,Equalizer;
+uses Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -219,8 +219,8 @@ begin
      MSubScale1.Caption:=UTF8Decode('Zoom -');
      MSubScale2.Caption:=UTF8Decode('Reset Subtitles Scale');
   end;
-  LogForm.Caption:=UTF8Decode('Log MPlayer');
-  LogForm.BClose.Caption:=UTF8Decode('Zamknij');
+  OptionsForm.Caption:=UTF8Decode('Log MPlayer');
+  OptionsForm.BClose.Caption:=UTF8Decode('Zamknij');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Space'^I'Play/Pause'^I'T/R'^I'Adjust subtitle position'^M^J+
 'Left'^I'Rewind 10 seconds'^I'Y/U'^I'Adjust subtitle step'^M^J+
@@ -268,7 +268,7 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Zastosuj');
     BSave.Caption:=UTF8Decode('Zapisz');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     TSystem.Caption:=UTF8Decode('System');
     TVideo.Caption:=UTF8Decode('Wideo');
     TAudio.Caption:=UTF8Decode('Audio');

@@ -1,8 +1,8 @@
 object PlaylistForm: TPlaylistForm
-  Left = 437
-  Top = 267
+  Left = 438
+  Top = 268
   Width = 365
-  Height = 260
+  Height = 265
   BorderIcons = [biSystemMenu]
   Caption = 'PlaylistForm'
   Color = clBtnFace
@@ -24,14 +24,14 @@ object PlaylistForm: TPlaylistForm
   OnShow = FormShow
   DesignSize = (
     357
-    226)
+    231)
   PixelsPerInch = 96
   TextHeight = 13
   object TntPageControl1: TTntPageControl
     Left = -5
     Top = 0
     Width = 370
-    Height = 263
+    Height = 261
     ActivePage = TntTabSheet2
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
@@ -40,7 +40,7 @@ object PlaylistForm: TPlaylistForm
       ImageIndex = 16
       DesignSize = (
         362
-        235)
+        233)
       object CShuffle: TTntSpeedButton
         Left = 200
         Top = 2
@@ -208,7 +208,7 @@ object PlaylistForm: TPlaylistForm
         Left = 0
         Top = 28
         Width = 358
-        Height = 180
+        Height = 178
         Style = lbVirtualOwnerDraw
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 16
@@ -238,12 +238,12 @@ object PlaylistForm: TPlaylistForm
       ImageIndex = 24
       DesignSize = (
         362
-        235)
+        233)
       object TMLyric: TTntListBox
         Left = 0
         Top = 24
         Width = 358
-        Height = 187
+        Height = 185
         Style = lbVirtualOwnerDraw
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 16

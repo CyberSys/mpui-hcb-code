@@ -21,7 +21,7 @@
 unit mo_hu;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist;
+uses Windows,Locale,Main,Options,plist;
 
 procedure Activate;
 begin
@@ -85,8 +85,8 @@ begin
       MLanguage.Caption:=UTF8Decode('Nyelv');
       MShowOutput.Caption:=UTF8Decode('MPlayer kimenet mutatása');
   end;
-  LogForm.Caption:=UTF8Decode('MPlayer kimenet');
-  LogForm.BClose.Caption:=UTF8Decode('Bezárás');
+  OptionsForm.Caption:=UTF8Decode('MPlayer kimenet');
+  OptionsForm.BClose.Caption:=UTF8Decode('Bezárás');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Navigáló billentyûk:'^M^J+
 'Space'^I'Lejátszás/Sz'+
@@ -117,7 +117,7 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Alkalmaz');
     BSave.Caption:=UTF8Decode('Mentés');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Hang kimeneti driver');
       CAudioOut.Items[0]:=UTF8Decode('(nincs hangdekódolás)');
       CAudioOut.Items[1]:=UTF8Decode('(nincs hanglejátszás)');

@@ -21,7 +21,7 @@
 unit mo_ar;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist,Info;
+uses Windows,Locale,Main,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -92,8 +92,8 @@ begin
       MStreamInfo.Caption:=UTF8Decode('اظهار معلومات الكليب ...');
       MShowOutput.Caption:=UTF8Decode('اظهار خرج امبلاير');
   end;
-  LogForm.Caption:=UTF8Decode('MPlayer خرج');
-  LogForm.BClose.Caption:=UTF8Decode('غلق');
+  OptionsForm.Caption:=UTF8Decode('MPlayer خرج');
+  OptionsForm.BClose.Caption:=UTF8Decode('غلق');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'مفاتيح الملاحة:'^M^J+
 'Space'^I'عرض/وقف'^M^J+

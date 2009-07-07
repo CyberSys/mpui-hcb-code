@@ -39,6 +39,7 @@ type
     TSystem: TTntTabSheet;
     TVideo: TTntTabSheet;
     TAudio: TTntTabSheet;
+    TLog: TTntTabSheet;
     TSub: TTntTabSheet;
     LAudioOut: TTntLabel;
     CAudioOut: TTntComboBox;
@@ -156,8 +157,12 @@ type
     VersionMPlayer: TTntLabel;
     FY: TTntLabel;
     CRS: TTntCheckBox;
-    CRP: TTntCheckBox;
+    CSP: TTntCheckBox;
     HCB: TTntLabel;
+    TheLog: TTntMemo;
+    Command: TTntEdit;
+    CRP: TTntCheckBox;
+    CTime: TTntCheckBox;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -186,15 +191,22 @@ type
     procedure BSsfClick(Sender: TObject);
     procedure BFontClick(Sender: TObject);
     procedure TAboutShow(Sender: TObject);
+    procedure TLogShow(Sender: TObject);
+    procedure CommandKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure CommandKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
     HelpFile:WideString;
     Changed,oML:boolean;
+    History:TTntStringList;
+    HistoryPos:Longword;
   public
     { Public declarations }
     procedure Localize;
     procedure ApplyValues;
     procedure LoadValues;
+    procedure AddLine(const Line:Widestring);
   end;
   
   PDSEnumCallback = function(lpGuid:PGUID; lpcstrDescription,lpcstrModule:PChar; lpContext:pointer):LongBool; stdcall;
@@ -338,7 +350,9 @@ begin
   BMplayer.Enabled:=ML;
   CWid.Checked:=Wid;
   CRS.Checked:=RS;
+  CSP.Checked:=SP;
   CRP.Checked:=RP;
+  CTime.Checked:=CT;
   EMplayerLocation.Text:=MplayerLocation;
   CMAspect.Text:=MAspect;
   CVideoOut.Text:=VideoOut;
@@ -703,6 +717,8 @@ begin
   if WideDirectoryExists(ELyric.Text) then LyricDir:=ELyric.Text;
   RP:=CRP.Checked;
   RS:=CRS.Checked;
+  SP:=CSP.Checked;
+  CT:=CTime.Checked;
   vsync:=CVSync.Checked;
   UseekC:=CUseekC.Checked;
   oneM:=Cone.Checked;
@@ -814,7 +830,7 @@ begin
 end;
 begin
   initFontList;
-  Tab.TabIndex:=0;
+  Tab.TabIndex:=0; History:=TTntStringList.Create;
   if IsDsLoaded=0 then LoadDsLibrary;
   if IsDsLoaded<>0 then DirectSoundEnumerate(EnumFunc,@CAudioDev);
   {$IFDEF VER150}
@@ -1019,6 +1035,45 @@ begin
   if ML then VersionMPlayer.Caption:=GetProductVersion(MplayerLocation)
   else VersionMPlayer.Caption:=GetProductVersion(HomeDir+'mplayer.exe');
   VersionMPUI.Caption:=GetFileVersion(WideParamStr(0));
+end;
+
+procedure TOptionsForm.TLogShow(Sender: TObject);
+begin
+ TheLog.Perform(EM_LINESCROLL,0,32767); Command.Focused;
+end;
+
+procedure TOptionsForm.AddLine(const Line:Widestring);
+begin
+  TheLog.Lines.Add(Line);
+  if Visible then TheLog.Perform(EM_LINESCROLL,0,32767);
+end;
+
+procedure TOptionsForm.CommandKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=VK_UP) AND (HistoryPos>0) then begin
+    dec(HistoryPos);
+    Command.Text:=History[HistoryPos];
+  end;
+  if (Key=VK_DOWN) AND (HistoryPos<History.Count) then begin
+    inc(HistoryPos);
+    if HistoryPos>=History.Count
+      then Command.Text:=''
+      else Command.Text:=History[HistoryPos];
+  end;
+  if Key=VK_F12 then Close;
+end;
+
+procedure TOptionsForm.CommandKeyPress(Sender: TObject; var Key: Char);
+begin
+  if not Running then exit;
+  if Key=^M then begin
+    TheLog.Lines.Add(WideString('> ')+Command.Text);
+    SendCommand(UTF8Encode(Command.Text));
+    History.Add(Command.Text);
+    HistoryPos:=History.Count;
+    Command.Text:='';
+  end;
 end;
 
 end.

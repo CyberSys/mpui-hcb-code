@@ -118,7 +118,9 @@ begin
            Core.uof:=ReadBool(SectionName,'UseOSDfont',Core.uof);
            Core.GUI:=ReadBool(SectionName,'GUI',Core.GUI);
            Core.RS:=ReadBool(SectionName,'RSize',Core.RS);
-           Core.RP:=ReadBool(SectionName,'RPos',Core.RP);
+           Core.RP:=ReadBool(SectionName,'RPostion',Core.RP);
+           Core.SP:=ReadBool(SectionName,'SPause',Core.SP);
+           Core.CT:=ReadBool(SectionName,'DTime',Core.CT);
            Core.EL:=ReadInteger(SectionName,'LastLeft',Core.EL);
            Core.ET:=ReadInteger(SectionName,'LastTop',Core.ET);
            Core.EW:=ReadInteger(SectionName,'LastWidth',Core.EW);
@@ -246,7 +248,9 @@ begin
            WriteBool  (SectionName,'FilterDrop',Core.FilterDrop);
            WriteBool  (SectionName,'Scroll',Core.PScroll);
            WriteBool  (SectionName,'RSize',Core.RS);
-           WriteBool  (SectionName,'RPos',Core.RP);
+           WriteBool  (SectionName,'RPostion',Core.RP);
+           WriteBool  (SectionName,'SPause',Core.SP);
+           WriteBool  (SectionName,'DTime',Core.CT);
            WriteString(SectionName,'Params',Core.Params);
          end;
       1: begin

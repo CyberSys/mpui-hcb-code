@@ -21,7 +21,7 @@
 unit mo_by;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist, Info;
+uses Windows,Locale,Main,Options,plist, Info;
 
 procedure Activate;
 begin
@@ -89,8 +89,8 @@ begin
       MStreamInfo.Caption:=UTF8Decode('Адлюстраваць інфармацыю пра файл ...');
       MShowOutput.Caption:= UTF8Decode('Адлюстроўваць вывад MPlayer');
   end;
-  LogForm.Caption:= UTF8Decode('Вывад MPlayer');
-  LogForm.BClose.Caption:= UTF8Decode('Зачыніць');
+  OptionsForm.Caption:= UTF8Decode('Вывад MPlayer');
+  OptionsForm.BClose.Caption:= UTF8Decode('Зачыніць');
   OptionsForm.HelpText.Text:=
 UTF8Decode(
 'Клавішы навігацыі:'^M^J+
@@ -121,7 +121,7 @@ UTF8Decode(
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Прымяніць');
     BSave.Caption:=UTF8Decode('Захаваць');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Драйвер вывада гука');
       CAudioOut.Items[0]:=UTF8Decode('(Не дэкадаваць гук)');
       CAudioOut.Items[1]:=UTF8Decode('(Не прайграваць гук)');

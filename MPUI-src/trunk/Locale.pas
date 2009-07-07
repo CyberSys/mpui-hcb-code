@@ -97,7 +97,7 @@ procedure RegisterLocale(const _Name:WideString; const _Func:proc; _LangID:integ
 procedure ActivateLocale(Index:integer);
 
 implementation
-uses Windows, Forms, Main, Options, plist, Log, Info, Core;
+uses Windows, Forms, Main, Options, plist, Info, Core;
 
 procedure RegisterLocale(const _Name:WideString; const _Func:proc; _LangID:integer; _Charset:TFontCharset);
 begin
@@ -135,7 +135,7 @@ begin
                  if not Win32PlatformIsUnicode then begin
                    MainForm.Font.Size:=9; OptionsForm.Font.Size:=9;
                    PlaylistForm.Font.Size:=9; InfoForm.Font.Size:=9;
-                   LogForm.Font.Size:=9;
+                   OptionsForm.Font.Size:=9;
                  end;
                  DTFormat:='dddddd@tt';
                end;
@@ -143,7 +143,7 @@ begin
               if not Win32PlatformIsUnicode then begin
                 MainForm.Font.Size:=8; OptionsForm.Font.Size:=8;
                 PlaylistForm.Font.Size:=8; InfoForm.Font.Size:=8;
-                LogForm.Font.Size:=8;
+                OptionsForm.Font.Size:=8;
               end;
               DTFormat:='ddddd@tt';
           end;

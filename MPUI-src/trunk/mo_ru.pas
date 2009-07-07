@@ -21,7 +21,7 @@
 unit mo_ru;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist, info;
+uses Windows,Locale,Main,Options,plist, info;
 
 procedure Activate;
 begin
@@ -89,8 +89,8 @@ begin
       MStreamInfo.Caption:=UTF8Decode('Показать информацию о файле ...');
       MShowOutput.Caption:= UTF8Decode('Показывать вывод MPlayer');
   end;
-  LogForm.Caption:= UTF8Decode('Вывод MPlayer');
-  LogForm.BClose.Caption:= UTF8Decode('Закрыть');
+  OptionsForm.Caption:= UTF8Decode('Вывод MPlayer');
+  OptionsForm.BClose.Caption:= UTF8Decode('Закрыть');
   OptionsForm.HelpText.Text:=
 UTF8Decode(
 'Клавиши навигации:'^M^J+
@@ -124,7 +124,7 @@ UTF8Decode(
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Применить');
     BSave.Caption:=UTF8Decode('Сохранить');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Драйвер вывода звука');
       CAudioOut.Items[0]:=UTF8Decode('(Не декодировать звук)');
       CAudioOut.Items[1]:=UTF8Decode('(Не проигрывать звук)');

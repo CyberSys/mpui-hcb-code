@@ -96,7 +96,7 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     MAspect,subcode,MaxLenLyricA,VideoOut:string;
     FirstOpen,PClear,Fd,Async,Cache,uof,oneM,FilterDrop:boolean;
     Wid,Dreset,UpdateSkipBar,Pri,HaveChapters,HaveMsg:boolean;
-    RS,RP,AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
+    CT,RP,RS,SP,AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
     ControlledResize,ni,nobps,Dnav,lavf,UseekC,vsync:boolean;
     Flip,Mirror,Yuy2,Eq2,LastEq2,Dda,LastDda,Wadsp:boolean;
@@ -181,7 +181,7 @@ procedure SendVolumeChangeCommand(Vol:integer);
 procedure ResetStreamInfo;
 
 implementation
-uses Main,config,Log,plist,Info,UnRAR,Equalizer,Locale,Options,SevenZip;
+uses Main,config,plist,Info,UnRAR,Equalizer,Locale,Options,SevenZip;
 
 type TClientWaitThread=class(TThread)
                          private procedure ClientDone;
@@ -568,7 +568,7 @@ begin
     end;
   end;
   if Win9xWarnLevel=wlReject then begin
-    LogForm.TheLog.Text:=LOCstr_NoSuport_OS_Prompt;
+    OptionsForm.TheLog.Text:=LOCstr_NoSuport_OS_Prompt;
     Status:=sError;
     MainForm.UpdateStatus;
     MainForm.SetupStop;
@@ -908,7 +908,7 @@ begin
     else CmdLine:=CmdLine+#32+EscapeParam(WideExtractShortPathName(MediaURL));
   end;
 
-  with LogForm do begin
+  with OptionsForm do begin
     TheLog.Clear;
     AddLine(LOCstr_CmdLine_Prompt);
     s:=CmdLine;
@@ -982,16 +982,16 @@ begin
   CloseHandle(DummyPipe2);
 
   if not Success then begin
-    LogForm.AddLine(LOCstr_Error1_Prompt+IntToStr(Error)+LOCstr_Error2_Prompt);
+    OptionsForm.AddLine(LOCstr_Error1_Prompt+IntToStr(Error)+LOCstr_Error2_Prompt);
     if Win32PlatformIsUnicode then begin
       FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM,nil,Error,0,@ErrorMessageW[0],1023,nil);
-      LogForm.AddLine(ErrorMessageW);
+      OptionsForm.AddLine(ErrorMessageW);
     end
     else begin
       FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,nil,Error,0,@ErrorMessage[0],1023,nil);
-      LogForm.AddLine(ErrorMessage);
+      OptionsForm.AddLine(ErrorMessage);
     end;
-    if Error=2 then LogForm.AddLine(LOCstr_Check_Mplayer_Prompt);
+    if Error=2 then OptionsForm.AddLine(LOCstr_Check_Mplayer_Prompt);
     ClientWaitThread.ClientDone;  // this is a synchronized function, so I may
                                   // call it here from this thread as well
     exit;
@@ -1966,16 +1966,16 @@ begin
   if (len>=18) AND (Line[18]='%') AND (Copy(Line,1,11)='Cache fill:') then begin
     if Copy(Line,12,6)=LastCacheFill then exit;
     MainForm.LStatus.Caption:=Line;
-    if (Copy(LogForm.TheLog.Lines[LogForm.TheLog.Lines.Count-1],1,11)='Cache fill:') then
-      LogForm.TheLog.Lines[LogForm.TheLog.Lines.Count-1]:=Line;
+    if (Copy(OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1],1,11)='Cache fill:') then
+      OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1]:=Line;
     Sleep(0);  // "yield"
     exit;
   end;
   if (len>=16) AND (Line[16]='%') AND (CheckInfo(CacheFill,Copy(Line,1,9))>-1) then begin
     if Copy(Line,10,6)=LastCacheFill then exit;
     MainForm.LStatus.Caption:=Line;
-    if (CheckInfo(CacheFill,Copy(LogForm.TheLog.Lines[LogForm.TheLog.Lines.Count-1],1,9))>-1) then
-      LogForm.TheLog.Lines[LogForm.TheLog.Lines.Count-1]:=Line;
+    if (CheckInfo(CacheFill,Copy(OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1],1,9))>-1) then
+      OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1]:=Line;
     Sleep(0);  // "yield"
     exit;
   end;
@@ -1984,16 +1984,16 @@ begin
   if (len>=23) AND (Line[23]='%') AND (Copy(Line,1,17)='Generating Index:') then begin
     if Copy(Line,18,6)=LastCacheFill then exit;
     MainForm.LStatus.Caption:=Line;
-    if (Copy(LogForm.TheLog.Lines[LogForm.TheLog.Lines.Count-1],1,17)='Generating Index:') then
-      LogForm.TheLog.Lines[LogForm.TheLog.Lines.Count-1]:=Line;
+    if (Copy(OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1],1,17)='Generating Index:') then
+      OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1]:=Line;
     Sleep(0);  // "yield"
     exit;
   end;
   if (len>=19) AND (Line[19]='%') AND (CheckInfo(GenIndex,Copy(Line,1,13))>-1) then begin
     if Copy(Line,14,6)=LastCacheFill then exit;
     MainForm.LStatus.Caption:=Line;
-    if (CheckInfo(GenIndex,Copy(LogForm.TheLog.Lines[LogForm.TheLog.Lines.Count-1],1,13))>-1) then
-      LogForm.TheLog.Lines[LogForm.TheLog.Lines.Count-1]:=Line;
+    if (CheckInfo(GenIndex,Copy(OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1],1,13))>-1) then
+      OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1]:=Line;
     Sleep(0);  // "yield"
     exit;
   end;
@@ -2159,12 +2159,12 @@ begin
     exit;
   end;
   if LineRepeatCount>0 then
-    LogForm.AddLine('(last message repeated '+IntToStr(LineRepeatCount)+' times)');
+    OptionsForm.AddLine('(last message repeated '+IntToStr(LineRepeatCount)+' times)');
   LastLine:=Line;
   LineRepeatCount:=0;
   // add line to log and check for special patterns
-  if UseUni then LogForm.AddLine(UTF8Decode(Line))
-  else LogForm.AddLine(Line);
+  if UseUni then OptionsForm.AddLine(UTF8Decode(Line))
+  else OptionsForm.AddLine(Line);
 
   if not CheckVobsubID then
   if not CheckVobsubLang then
@@ -2216,60 +2216,62 @@ begin
     end
     else AsFloat:=AsInt;
 
-  // handle some common ID fields
-       if ID='FILENAME'      then FileName:=Content
-  else if ID='VIDEO_BITRATE' then Video.Bitrate:=AsInt
-  else if ID='VIDEO_WIDTH'   then Video.Width:=AsInt
-  else if ID='VIDEO_HEIGHT'  then Video.Height:=AsInt
-  else if ID='VIDEO_FPS'     then Video.FPS:=AsFloat
-  else if ID='VIDEO_ASPECT'  then Video.Aspect:=AsFloat
-  else if ID='AUDIO_BITRATE' then Audio.Bitrate:=AsInt
-  else if ID='AUDIO_RATE'    then Audio.Rate:=AsInt
-  else if ID='AUDIO_NCH'     then Audio.Channels:=AsInt
-  else if (ID='DEMUXER') then begin
-         DemuxerName:=Content;
-         if (length(FileFormat)=0) then FileFormat:=Content;
-       end
-  else if (ID='VIDEO_FORMAT') AND (length(Video.Decoder)=0) then Video.Decoder:=Content
-  else if (ID='VIDEO_CODEC') AND (length(Video.Codec)=0) then Video.Codec:=Content
-  else if (ID='AUDIO_FORMAT') AND (length(Audio.Decoder)=0) then Audio.Decoder:=Content
-  else if (ID='AUDIO_CODEC') AND (length(Audio.Codec)=0) then Audio.Codec:=Content
-  else if (ID='LENGTH') AND (AsFloat>0.001) then begin
-    AsFloat:=Frac(AsFloat);
-    if (AsFloat>0.0009) then begin
-      str(AsFloat:0:3, PlaybackTime);
-      PlaybackTime:=WideString(SecondsToTime(AsInt)) + Copy(PlaybackTime,2,20);
-    end else
-      PlaybackTime:=WideString(SecondsToTime(AsInt));
-  end else if (Copy(ID,1,14)='CLIP_INFO_NAME') AND (length(ID)=15) then begin
-    r:=Ord(ID[15])-Ord('0');
-    if (r>=0) AND (r<=9) then ClipInfo[r].Key:=Content;
-  end else if (Copy(ID,1,15)='CLIP_INFO_VALUE') AND (length(ID)=16) then begin
-    r:=Ord(ID[16])-Ord('0');
-    if (r>=0) AND (r<=9) then ClipInfo[r].Value:=Content;
+    // handle some common ID fields
+    FileName:=core.DisplayURL;
+    if ID='VIDEO_BITRATE' then Video.Bitrate:=AsInt
+    else if ID='VIDEO_WIDTH'   then Video.Width:=AsInt
+    else if ID='VIDEO_HEIGHT'  then Video.Height:=AsInt
+    else if ID='VIDEO_FPS'     then Video.FPS:=AsFloat
+    else if ID='VIDEO_ASPECT'  then Video.Aspect:=AsFloat
+    else if ID='AUDIO_BITRATE' then Audio.Bitrate:=AsInt
+    else if ID='AUDIO_RATE'    then Audio.Rate:=AsInt
+    else if ID='AUDIO_NCH'     then Audio.Channels:=AsInt
+    else if (ID='DEMUXER') then begin
+      DemuxerName:=Content;
+      if (length(FileFormat)=0) then FileFormat:=Content;
+    end
+    else if (ID='VIDEO_FORMAT') AND (length(Video.Decoder)=0) then Video.Decoder:=Content
+    else if (ID='VIDEO_CODEC') AND (length(Video.Codec)=0) then Video.Codec:=Content
+    else if (ID='AUDIO_FORMAT') AND (length(Audio.Decoder)=0) then Audio.Decoder:=Content
+    else if (ID='AUDIO_CODEC') AND (length(Audio.Codec)=0) then Audio.Codec:=Content
+    else if (ID='LENGTH') AND (AsFloat>0.001) then begin
+      AsFloat:=Frac(AsFloat);
+      if (AsFloat>0.0009) then begin
+        str(AsFloat:0:3, PlaybackTime);
+        PlaybackTime:=WideString(SecondsToTime(AsInt)) + Copy(PlaybackTime,2,20);
+      end
+      else PlaybackTime:=WideString(SecondsToTime(AsInt));
+    end
+    else if (Copy(ID,1,14)='CLIP_INFO_NAME') AND (length(ID)=15) then begin
+      r:=Ord(ID[15])-Ord('0');
+      if (r>=0) AND (r<=9) then ClipInfo[r].Key:=Content;
+    end
+    else if (Copy(ID,1,15)='CLIP_INFO_VALUE') AND (length(ID)=16) then begin
+      r:=Ord(ID[16])-Ord('0');
+      if (r>=0) AND (r<=9) then ClipInfo[r].Value:=Content;
+    end;
   end;
-end; end;
-
+end;
 
 procedure ResetStreamInfo;
 var i:integer;
 begin
   with StreamInfo do begin
-    FileName:='';
-    FileFormat:='';
-    PlaybackTime:='';
-  with Video do begin
-    Decoder:=''; Codec:='';
-    Bitrate:=0; Width:=0; Height:=0; FPS:=0.0; Aspect:=0.0;
-  end;
-  with Audio do begin
-    Decoder:=''; Codec:='';
-    Bitrate:=0; Rate:=0; Channels:=0;
-  end;
-  for i:=0 to 9 do
-    with ClipInfo[i] do begin
-      Key:=''; Value:='';
+      FileName:='';
+      FileFormat:='';
+      PlaybackTime:='';
+    with Video do begin
+      Decoder:=''; Codec:='';
+      Bitrate:=0; Width:=0; Height:=0; FPS:=0.0; Aspect:=0.0;
     end;
+    with Audio do begin
+      Decoder:=''; Codec:='';
+      Bitrate:=0; Rate:=0; Channels:=0;
+    end;
+    for i:=0 to 9 do
+      with ClipInfo[i] do begin
+        Key:=''; Value:='';
+      end;
   end;
 end;
 
@@ -2295,7 +2297,8 @@ begin
   LTextColor:=clWindowText; LBGColor:=clWindow; LHGColor:=$93; ClientProcess:=0;
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
-  NW:=0; NH:=0; EW:=0; EH:=0; EL:=-1; ET:=-1; RS:=false; RP:=false;
+  NW:=0; NH:=0; EW:=0; EH:=0; EL:=-1; ET:=-1; RS:=false; RP:=false; SP:=true;
+  CT:=true;
   ResetStreamInfo;
 end.
 

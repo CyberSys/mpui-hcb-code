@@ -21,7 +21,7 @@
 unit mo_dk;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist,Info;
+uses Windows,Locale,Main,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -93,8 +93,8 @@ begin
       MStreamInfo.Caption:=UTF8Decode('Vis Klip information ...');
       MShowOutput.Caption:=UTF8Decode('Vis MPlayer udlæsning ...');
   end;
-  LogForm.Caption:=UTF8Decode('MPlayer udlæsning');
-  LogForm.BClose.Caption:=UTF8Decode('Luk');
+  OptionsForm.Caption:=UTF8Decode('MPlayer udlæsning');
+  OptionsForm.BClose.Caption:=UTF8Decode('Luk');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Navigationstast:'^M^J+
 'Mellemrum'^I'Afspil/pause'^M^J+
@@ -126,7 +126,7 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Tilføj');
     BSave.Caption:=UTF8Decode('Gem');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Lydudlæsnings driver');
       CAudioOut.Items[0]:=UTF8Decode('(Lad være med at afkode lyd)');
       CAudioOut.Items[1]:=UTF8Decode('(Lad være med at afspille lyd)');

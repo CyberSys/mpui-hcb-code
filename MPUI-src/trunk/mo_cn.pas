@@ -20,7 +20,7 @@
 unit mo_cn;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist,Info,Core,Equalizer;
+uses Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -215,8 +215,8 @@ begin
      MSubScale1.Caption:=MScale2.Caption;
      MSubScale2.Caption:=UTF8Decode(OSD_Reset_Prompt)+' '+MSub.Caption+UTF8Decode(OSD_Scale_Prompt);
   end;
-  LogForm.Caption:=UTF8Decode('MPlayer 输出');
-  LogForm.BClose.Caption:=UTF8Decode('关闭');
+  OptionsForm.Caption:=UTF8Decode('MPlayer 输出');
+  OptionsForm.BClose.Caption:=UTF8Decode('关闭');
   OptionsForm.HelpText.Text:=UTF8Decode(
 '快捷键:'^M^J+
 'Space'^I'播放/暂停'^I'T/R'^I'调节字幕在屏位置'^M^J+
@@ -265,13 +265,15 @@ begin
     BOK.Caption:=UTF8Decode('确定');
     BApply.Caption:=UTF8Decode('应用');
     BSave.Caption:=UTF8Decode('保存');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     TSystem.Caption:=UTF8Decode('系统');
     TVideo.Caption:=MainForm.MVideos.Caption;
     TAudio.Caption:=MainForm.MAudios.Caption;
     TSub.Caption:=MainForm.MSub.Caption;
-    CRP.Caption:=UTF8Decode('启动时使用上次的窗体位置');
+    CSP.Caption:=UTF8Decode('单击画面暂停');
     CRS.Caption:=UTF8Decode('启动时使用上次的窗体大小');
+    CTime.Caption:=UTF8Decode('在状态栏显示系统时间');
+    CRP.Caption:=UTF8Decode('启动时使用上次的窗体位置');
     LAudioOut.Caption:=UTF8Decode('音频输出的驱动:');
       CAudioOut.Items[0]:=UTF8Decode('(不解码 音频)');
       CAudioOut.Items[1]:=UTF8Decode('(不播放 音频)');

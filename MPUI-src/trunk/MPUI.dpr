@@ -25,7 +25,6 @@ uses
   TntSysUtils,
   TntSystem,
   Main in 'Main.pas' {MainForm},
-  Log in 'Log.pas' {LogForm},
   Core in 'Core.pas',
   Locale in 'Locale.pas',
   Options in 'Options.pas' {OptionsForm},
@@ -91,7 +90,6 @@ begin
     Application.Initialize;
     TntApplication.Title := 'MPUI';
     Application.CreateForm(TMainForm, MainForm);
-    Application.CreateForm(TLogForm, LogForm);
     Application.CreateForm(TOptionsForm, OptionsForm);
     Application.CreateForm(TPlaylistForm, PlaylistForm);
     Application.CreateForm(TInfoForm, InfoForm);

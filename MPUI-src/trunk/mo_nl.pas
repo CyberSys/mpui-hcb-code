@@ -21,7 +21,7 @@
 unit mo_nl;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist,Info;
+uses Windows,Locale,Main,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -92,8 +92,8 @@ begin
       MStreamInfo.Caption:=UTF8Decode('Toon media-informatie ...');
       MShowOutput.Caption:=UTF8Decode('Toon MPlayer output ...');
   end;
-  LogForm.Caption:='MPlayer output';
-  LogForm.BClose.Caption:='Sluiten';
+  OptionsForm.Caption:='MPlayer output';
+  OptionsForm.BClose.Caption:='Sluiten';
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Navigatietoetsen:'^M^J+
 'Spatie'^I'Afspelen/Pause'^M^J+
@@ -126,7 +126,7 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Toepassen');
     BSave.Caption:=UTF8Decode('Opslaan');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Stuurprogramma voor geluid');
       CAudioOut.Items[0]:=UTF8Decode('(geluidsspoor niet decoderen)');
       CAudioOut.Items[1]:=UTF8Decode('(geluidsspoor niet afspelen)');

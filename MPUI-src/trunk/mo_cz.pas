@@ -21,7 +21,7 @@
 unit mo_cz;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options;
+uses Windows,Locale,Main,Options;
 
 procedure Activate;
 begin
@@ -74,8 +74,8 @@ begin
       MLanguage.Caption:=UTF8Decode('Jazyk');
       MShowOutput.Caption:=UTF8Decode('Zobraz konzoli MPlayeru');
   end;
-  LogForm.Caption:=UTF8Decode('Výstup Mplayeru');
-  LogForm.BClose.Caption:=UTF8Decode('Zavřít');
+  OptionsForm.Caption:=UTF8Decode('Výstup Mplayeru');
+  OptionsForm.BClose.Caption:=UTF8Decode('Zavřít');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Navigační klávesy:'^M^J+
 'Mezerník'^I'Přehrávat/Pozastavit'^M^J+
@@ -106,7 +106,7 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Použít');
     BSave.Caption:=UTF8Decode('Uložit');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Výstupní ovladač zvuku');
       CAudioOut.Items[0]:=UTF8Decode('(nedekódovat zvuk)');
       CAudioOut.Items[1]:=UTF8Decode('(nepřehrávat zvuk)');

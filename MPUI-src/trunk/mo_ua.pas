@@ -22,7 +22,7 @@
 unit mo_ua;
 interface
 implementation
-uses Windows, Locale, Main, Log, Options, plist;
+uses Windows, Locale, Main, Options, plist;
 
 procedure Activate;
 begin
@@ -100,7 +100,7 @@ begin
     MStreamInfo.Caption:= UTF8Decode('Показати інформацію про кліп');
     MShowOutput.Caption := UTF8Decode('Показати журнал MPlayer');
   end;
-  LogForm.Caption := UTF8Decode('Журнал MPlayer');
+  OptionsForm.Caption := UTF8Decode('Журнал MPlayer');
   OptionsForm.HelpText.Text :=UTF8Decode(
     'Навіація:'#13#10^M^J +
     'Space'^I'Грати/Пауза'^M^J +
@@ -136,7 +136,7 @@ begin
     BOK.Caption := UTF8Decode('OK');
     BApply.Caption := UTF8Decode('Застосувати');
     BSave.Caption := UTF8Decode('Зберегти');
-    BClose.Caption := LogForm.BClose.Caption;
+    BClose.Caption := OptionsForm.BClose.Caption;
     LAudioOut.Caption := UTF8Decode('Виведення звуку через');
     LAudioDev.Caption := UTF8Decode('Пристрій виведення звуку');
     CAudioOut.Items[0] := UTF8Decode('(не декодувати звук)');

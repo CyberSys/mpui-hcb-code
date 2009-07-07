@@ -21,7 +21,7 @@
 unit mo_fr;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist;
+uses Windows,Locale,Main,Options,plist;
 
 procedure Activate;
 begin
@@ -86,8 +86,8 @@ begin
       MLanguage.Caption:=UTF8Decode('Langue');
       MShowOutput.Caption:=UTF8Decode('Afficher la sortie de MPlayer');
   end;
-  LogForm.Caption:=UTF8Decode('Sortie MPlayer');
-  LogForm.BClose.Caption:=UTF8Decode('Fermer');
+  OptionsForm.Caption:=UTF8Decode('Sortie MPlayer');
+  OptionsForm.BClose.Caption:=UTF8Decode('Fermer');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Clefs de navigation:'^M^J+
 'Espace'^I'Jouer/Suspendre'^M^J+
@@ -119,7 +119,7 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Appliquer');
     BSave.Caption:=UTF8Decode('Sauver');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Pilote de sortie audio');
       CAudioOut.Items[0]:=UTF8Decode('(ne pas décoder le son)');
       CAudioOut.Items[1]:=UTF8Decode('(ne pas jouer le son)');

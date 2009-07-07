@@ -21,7 +21,7 @@
 unit mo_es;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist;
+uses Windows,Locale,Main,Options,plist;
 
 procedure Activate;
 begin
@@ -86,8 +86,8 @@ begin
       MLanguage.Caption:=UTF8Decode('Idioma');
       MShowOutput.Caption:=UTF8Decode('Mostrar mensajes de MPlayer');
   end;
-  LogForm.Caption:=UTF8Decode('Mensajes de MPlayer');
-  LogForm.BClose.Caption:=UTF8Decode('Cerrar');
+  OptionsForm.Caption:=UTF8Decode('Mensajes de MPlayer');
+  OptionsForm.BClose.Caption:=UTF8Decode('Cerrar');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Teclas de navegación:'^M^J+
 'Espacio'^I'Reproducir/Pausar'^M^J+
@@ -118,7 +118,7 @@ begin
     BOK.Caption:=UTF8Decode('Aceptar');
     BApply.Caption:=UTF8Decode('Aplicar');
     BSave.Caption:=UTF8Decode('Guardar');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Controlador de salida de audio');
       CAudioOut.Items[0]:=UTF8Decode('(no decodificar sonido)');
       CAudioOut.Items[1]:=UTF8Decode('(no reproducir sonido)');

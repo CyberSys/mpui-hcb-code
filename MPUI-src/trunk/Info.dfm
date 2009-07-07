@@ -1,11 +1,11 @@
 object InfoForm: TInfoForm
-  Left = 588
-  Top = 239
+  Left = 589
+  Top = 240
   ActiveControl = BClose
   AutoScroll = False
   BorderIcons = []
   Caption = 'InfoForm'
-  ClientHeight = 317
+  ClientHeight = 315
   ClientWidth = 300
   Color = clBtnFace
   Constraints.MinHeight = 90
@@ -24,14 +24,14 @@ object InfoForm: TInfoForm
   OnShow = FormShow
   DesignSize = (
     300
-    317)
+    315)
   PixelsPerInch = 96
   TextHeight = 13
   object InfoBox: TTntListBox
     Left = 4
     Top = 4
     Width = 292
-    Height = 279
+    Height = 277
     Style = lbOwnerDrawFixed
     Anchors = [akLeft, akTop, akRight, akBottom]
     ItemHeight = 16
@@ -40,7 +40,7 @@ object InfoForm: TInfoForm
   end
   object BClose: TTntButton
     Left = 221
-    Top = 288
+    Top = 286
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]

@@ -456,7 +456,7 @@ var
   MainForm: TMainForm;
 
 implementation
-uses Locale, Config, Log, Options, Info,
+uses Locale, Config, Options, Info,
      UnRAR, Equalizer, SevenZip;
 
 {$R *.dfm}
@@ -520,9 +520,9 @@ begin
     subcode:='CP'+IntToStr(i);
   end; }
   UpdateVolSlider;
-  if RP and (EL<>-1) then Left:=EL
+  if RS and (EL<>-1) then Left:=EL
   else Left:=(screen.Width-Width) DIV 2;
-  if RP and (ET<>-1) then Top:=ET
+  if RS and (ET<>-1) then Top:=ET
   else begin
     if Wid and Win32PlatformIsUnicode then
       Top:=(screen.Height-Height) Div 2
@@ -878,8 +878,10 @@ if MVideos.Visible then begin
           VK_ADD:      if HaveVideo and HaveAudio and (Adelay<99.9)then begin
                          Adelay:=Adelay+0.1; HandleCommand('audio_delay +0.100');
                        end;
-          Ord('O'):   begin OSDLevel:=(OSDLevel+1) MOD 4;
-                        HandleCommand('osd');
+          Ord('O'):   begin
+                        if OSDLevel<>1 then OSDLevel:=1
+                        else OSDLevel:=3;
+                        HandleCommand('osd '+IntToStr(OSDLevel));
                         MOSD.Items[OSDLevel].Checked:=true;
                         OSDMenu.Items[OSDLevel].Checked:=true;
                       end;
@@ -1178,8 +1180,10 @@ begin
     ///////////////////
   end
   else begin
-    if (Status=sNone) OR (Status=sStopped) then
-      LTime.Caption:=FormatDateTime(DTFormat,Now,FormatSet);
+    if Status in [sNone,sStopped] then begin
+      if CT then LTime.Caption:=FormatDateTime(DTFormat,Now,FormatSet)
+      else LTime.Caption:='';
+    end;
   end;
 end;
 
@@ -1415,7 +1419,10 @@ end;
 
 procedure TMainForm.MShowOutputClick(Sender: TObject);
 begin
-  if not LogForm.Visible then LogForm.Showmodal;
+  if not OptionsForm.Visible then begin
+    OptionsForm.Tab.TabIndex:=4;
+    OptionsForm.Showmodal;
+  end;
 end;
 
 procedure TMainForm.MOSDClick(Sender: TObject);
@@ -1740,7 +1747,10 @@ end;
 
 procedure TMainForm.MOptionsClick(Sender: TObject);
 begin
-  if not OptionsForm.Visible then OptionsForm.Showmodal;
+  if not OptionsForm.Visible then begin
+    if OptionsForm.Tab.TabIndex>3 then OptionsForm.Tab.TabIndex:=0;
+    OptionsForm.Showmodal;
+  end;
 end;
 
 procedure TMainForm.SetCtrlV(Mode:boolean);
@@ -1796,8 +1806,8 @@ begin
     MPCtrl.Checked:=false;
     Pivot:=OPanel.ClientToScreen(Point(0,0));
     PX:=FS_PX-Pivot.X; PY:=FS_PY-Pivot.Y;
-    SX:=Screen.Width +FS_SX-OPanel.ClientWidth;
-    SY:=Screen.Height+FS_SY-OPanel.ClientHeight;
+    SX:=Screen.Width +FS_SX-OPanel.Width;
+    SY:=Screen.Height+FS_SY-OPanel.Height;
     ControlledResize:=true; 
     SetWindowPos(Handle,HWND_TOPMOST,PX,PY,SX,SY,0);
     LEscape.Visible:=not Running;
@@ -2099,7 +2109,7 @@ begin
     end;
     if Plist.PlaylistForm.Visible then SetWindowPos(Plist.PlaylistForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     if InfoForm.Visible then SetWindowPos(InfoForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
-    if LogForm.Visible then SetWindowPos(LogForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
+    if OptionsForm.Visible then SetWindowPos(OptionsForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     if OptionsForm.Visible then SetWindowPos(OptionsForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     if EqualizerForm.Visible then SetWindowPos(EqualizerForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
   end;
@@ -2295,13 +2305,13 @@ begin
       SendCommand('dvdnav mouse');
       exit;
     end;
-    SendCommand('pause');
+    if SP then SendCommand('pause');
   end;
 end;
 
 procedure TMainForm.DisplayDblClick(Sender: TObject);
 begin
-  if Running and (not (Dnav and (SecondPos=0))) and (MouseMode>-1) then SendCommand('pause');
+  if SP and Running and (not (Dnav and (SecondPos=0))) and (MouseMode>-1) then SendCommand('pause');
   SimulateKey(MFullscreen);
 end;
 
@@ -2594,8 +2604,8 @@ end;
 procedure TMainForm.LStatusClick(Sender: TObject);
 begin
   if Status=sError then begin
-    if not LogForm.Visible then LogForm.ShowModal;
-    LogForm.TheLog.ScrollBy(0,32767);
+    if not OptionsForm.Visible then OptionsForm.ShowModal;
+    OptionsForm.TheLog.ScrollBy(0,32767);
   end;
 end;
 

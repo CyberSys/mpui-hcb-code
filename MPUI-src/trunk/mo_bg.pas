@@ -21,7 +21,7 @@
 unit mo_bg;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist,Info,Core,Equalizer;
+uses Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -211,8 +211,8 @@ begin
      MSubDelay1.Caption:=UTF8Decode('Измести назад -');
      MSubDelay2.Caption:=UTF8Decode(OSD_Reset_Prompt+' на '+OSD_SubDelay_Prompt);
   end;
-  LogForm.Caption:=UTF8Decode('MPlayer репорт');
-  LogForm.BClose.Caption:=UTF8Decode('Затвори');
+  OptionsForm.Caption:=UTF8Decode('MPlayer репорт');
+  OptionsForm.BClose.Caption:=UTF8Decode('Затвори');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Клавиши за навигация и други:'^M^J+
 'Space'^I'Старт/Пауза'^I'T/R'^I'Коригиране на позицията на субтитрите'^M^J+
@@ -261,7 +261,7 @@ begin
     BOK.Caption:=UTF8Decode('ДА');
     BApply.Caption:=UTF8Decode('Приеми');
     BSave.Caption:=UTF8Decode('Запамети');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     TSystem.Caption:=UTF8Decode('Система');
     TVideo.Caption:=UTF8Decode('Видео');
     TAudio.Caption:=UTF8Decode('Аудио');

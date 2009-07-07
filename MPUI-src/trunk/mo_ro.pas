@@ -21,7 +21,7 @@
 unit mo_ro;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist,Info;
+uses Windows,Locale,Main,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -92,8 +92,8 @@ begin
       MStreamInfo.Caption:=UTF8Decode('Arată informaţii despre fişierul multimedia ...');
       MShowOutput.Caption:=UTF8Decode('Arată mesajele de informare de la MPlayer ...');
   end;
-  LogForm.Caption:=UTF8Decode('Mesajele de informare de la MPlayer');
-  LogForm.BClose.Caption:=UTF8Decode('Închide');
+  OptionsForm.Caption:=UTF8Decode('Mesajele de informare de la MPlayer');
+  OptionsForm.BClose.Caption:=UTF8Decode('Închide');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Taste de navigare:'^M^J+
 'Space'^I'Redare/Pauză'^M^J+
@@ -127,7 +127,7 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Aplică');
     BSave.Caption:=UTF8Decode('Salvează');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Driver-ul pentru sunet');
       CAudioOut.Items[0]:=UTF8Decode('(nu decodifica sunetul)');
       CAudioOut.Items[1]:=UTF8Decode('(nu reda sunetul)');

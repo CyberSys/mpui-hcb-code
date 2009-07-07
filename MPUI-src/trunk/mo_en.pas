@@ -20,7 +20,7 @@
 unit mo_en;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist,Info,Core,Equalizer;
+uses Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -215,8 +215,8 @@ begin
      MSubScale1.Caption:=MScale2.Caption;
      MSubScale2.Caption:=UTF8Decode(OSD_Reset_Prompt)+' '+MSubScale.Caption;
   end;
-  LogForm.Caption:='MPlayer output';
-  LogForm.BClose.Caption:='Close';
+  OptionsForm.Caption:='MPlayer output';
+  OptionsForm.BClose.Caption:='Close';
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Space'^I'Play/Pause'^I'T/R'^I'Adjust subtitle position'^M^J+
 'Left'^I'Rewind 10 seconds'^I'Y/U'^I'Adjust subtitle step'^M^J+
@@ -264,13 +264,15 @@ begin
     BOK.Caption:='OK';
     BApply.Caption:='Apply';
     BSave.Caption:='Save';
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     TSystem.Caption:='System';
     TVideo.Caption:='Video';
     TAudio.Caption:='Audio';
     TSub.Caption:='Subtitle';
-    CRP.Caption:='start MPUI with last postion';
+    CSP.Caption:='Click video to pause';
     CRS.Caption:='start MPUI with last size';
+    CTime.Caption:='Display OS time in status bar';
+    CRP.Caption:='start MPUI with last postion';
     LAudioOut.Caption:='Sound output driver';
       CAudioOut.Items[0]:='(don''t decode sound)';
       CAudioOut.Items[1]:='(don''t play sound)';

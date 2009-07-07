@@ -304,13 +304,20 @@ begin
         Stream.Read(PAnsiChar(SA)^, DataLeft);
         SetTextStr(UTF8ToWideString(SA));
       end
-      else if DataLeft<SizeOf(WideChar) then SW:=''
+      else if (CharSet in [csUnicode, csUnicodeSwapped]) then begin
+        if DataLeft<SizeOf(WideChar) then SW:=''
+        else begin
+          SetLength(SW,DataLeft div SizeOf(WideChar));
+          Stream.Read(PWideChar(SW)^,DataLeft);
+          if CharSet=csUnicodeSwapped then
+            StrSwapByteOrder(PWideChar(SW));
+          SetTextStr(SW);
+        end;
+      end
       else begin
-        SetLength(SW,DataLeft div SizeOf(WideChar));
-        Stream.Read(PWideChar(SW)^,DataLeft);
-        if CharSet=csUnicodeSwapped then
-          StrSwapByteOrder(PWideChar(SW));
-        SetTextStr(SW);
+        SetLength(SA, DataLeft div SizeOf(AnsiChar));
+        Stream.Read(PAnsiChar(SA)^, DataLeft);
+        SetTextStr(SA);
       end;
     finally
       EndUpdate;
@@ -592,39 +599,27 @@ begin
   end;
 end;
 procedure parseFile(mode:TTntStreamCharSet);
-var FileNameList:TWStringList; a:TTntStringList; i:integer;
+var FileNameList:TWStringList; i:integer;
 begin
   if Result then exit;
   FileNameList:=TWStringList.Create;
-  if mode<>csAnsi then begin
-    FileNameList.LoadFromFile(FileName,mode);
-    if FileNameList.Count<1 then begin FileNameList.Free; exit; end;
-  end
-  else begin
-    a:=TTntStringList.Create;
-    a.LoadFromFile(FileName);
-    if a.Count<1 then begin
-      FileNameList.Free; a.Free; exit;
-    end
-    else begin
-      FileNameList.Text:=a.Text; a.Free;
-    end;
-  end;
-
-  for i:=0 to FileNameList.Count-1 do begin
-    s:=Trim(FileNameList[i]);
-    if length(s)<1 then continue;
-    case FileExtIndex of
-    {m3u} 0: if s[1]<>'#' then AddToPls(s);
-    {asx} 1: HandleStr('<Param Name = "SourceURL" Value = "','"');
-    {wpl} 2: HandleStr('<media src="','"');
-    {pls} 3: if s[1]='F' then AddToPls(copy(s,pos('=',s)+1,length(s)));
-   {ttpl} 4: HandleStr('<item file="','"');
-    {rmp} 5: HandleStr('<FILENAME>','</FILENAME>');
-   {xspf} 6: HandleStr('<location>','</location>');
-   {smpl} 7: HandleStr('path="','"/>');
-   {m3u8} 8: if s[1]<>'#' then AddToPls(s);
-  {mpcpl} 9: HandleStr('filename,','');
+  FileNameList.LoadFromFile(FileName,mode);
+  if FileNameList.Count>0 then begin
+    for i:=0 to FileNameList.Count-1 do begin
+      s:=Trim(FileNameList[i]);
+      if length(s)<1 then continue;
+      case FileExtIndex of
+      {m3u} 0: if s[1]<>'#' then AddToPls(s);
+      {asx} 1: HandleStr('<Param Name = "SourceURL" Value = "','"');
+      {wpl} 2: HandleStr('<media src="','"');
+      {pls} 3: if s[1]='F' then AddToPls(copy(s,pos('=',s)+1,length(s)));
+     {ttpl} 4: HandleStr('<item file="','"');
+      {rmp} 5: HandleStr('<FILENAME>','</FILENAME>');
+     {xspf} 6: HandleStr('<location>','</location>');
+     {smpl} 7: HandleStr('path="','"/>');
+     {m3u8} 8: if s[1]<>'#' then AddToPls(s);
+    {mpcpl} 9: HandleStr('filename,','');
+      end;
     end;
   end;
   FileNameList.Free;

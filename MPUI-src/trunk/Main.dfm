@@ -1,10 +1,10 @@
 object MainForm: TMainForm
-  Left = 236
-  Top = 237
+  Left = 237
+  Top = 238
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'MainForm'
-  ClientHeight = 87
+  ClientHeight = 85
   ClientWidth = 357
   Color = clBtnFace
   Constraints.MinHeight = 114
@@ -864,7 +864,7 @@ object MainForm: TMainForm
   end
   object CPanel: TTntPanel
     Left = 0
-    Top = 24
+    Top = 22
     Width = 357
     Height = 63
     Align = alBottom

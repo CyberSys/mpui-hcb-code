@@ -21,7 +21,7 @@
 unit mo_eo;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist,Info;
+uses Windows,Locale,Main,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -92,8 +92,8 @@ begin
       MStreamInfo.Caption:=UTF8Decode('montri Clip-informojn ...');
       MShowOutput.Caption:=UTF8Decode('montri MPlayer-indikon ...');
   end;
-  LogForm.Caption:=UTF8Decode('MPlayer-indiko');
-  LogForm.BClose.Caption:=UTF8Decode('fermi');
+  OptionsForm.Caption:=UTF8Decode('MPlayer-indiko');
+  OptionsForm.BClose.Caption:=UTF8Decode('fermi');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'navigada klavoj:'^M^J+
 'spacoklavo'^I'ludi/paŭzo'^M^J+
@@ -126,7 +126,7 @@ begin
     BOK.Caption:=UTF8Decode('okej');
     BApply.Caption:=UTF8Decode('akcepti');
     BSave.Caption:=UTF8Decode('konservi');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('sonoeligilo');
       CAudioOut.Items[0]:=UTF8Decode('(ne malkodadi sonon)');
       CAudioOut.Items[1]:=UTF8Decode('(ne eligi sonon)');

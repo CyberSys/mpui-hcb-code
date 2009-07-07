@@ -21,7 +21,7 @@
 unit mo_jp;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist,Info;
+uses Windows,Locale,Main,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -92,8 +92,8 @@ begin
       MStreamInfo.Caption:=UTF8Decode('クリップ情報を表示 ...');
       MShowOutput.Caption:=UTF8Decode('MPlayer出力を表示 ...');
   end;
-  LogForm.Caption:=UTF8Decode('MPlayer出力');
-  LogForm.BClose.Caption:=UTF8Decode('閉じる');
+  OptionsForm.Caption:=UTF8Decode('MPlayer出力');
+  OptionsForm.BClose.Caption:=UTF8Decode('閉じる');
   OptionsForm.HelpText.Text:=UTF8Decode(
 '操作キー:'^M^J+
 'Space'^I'再生/一時停止'^M^J+
@@ -127,7 +127,7 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('適用');
     BSave.Caption:=UTF8Decode('保存');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('サウンド出力ドライバ');
       CAudioOut.Items[0]:=UTF8Decode('(サウンドをデコードしない)');
       CAudioOut.Items[1]:=UTF8Decode('(サウンドを再生しない)');

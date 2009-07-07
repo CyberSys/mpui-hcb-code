@@ -21,7 +21,7 @@
 unit mo_it;
 interface
 implementation
-uses Windows,Locale,Main,Log,Options,plist,Info;
+uses Windows,Locale,Main,Options,plist,Info;
 
 procedure Activate;
 begin
@@ -92,8 +92,8 @@ begin
       MStreamInfo.Caption:=UTF8Decode('Mostra info su clip ...');
       MShowOutput.Caption:=UTF8Decode('Mostra MPlayer info ...');
   end;
-  LogForm.Caption:=UTF8Decode('MPlayer output');
-  LogForm.BClose.Caption:=UTF8Decode('Chiudi');
+  OptionsForm.Caption:=UTF8Decode('MPlayer output');
+  OptionsForm.BClose.Caption:=UTF8Decode('Chiudi');
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Tasti Navigazione:'^M^J+
 'Spazio'^I'Avvia/Pausa'^M^J+
@@ -126,7 +126,7 @@ begin
     BOK.Caption:=UTF8Decode('OK');
     BApply.Caption:=UTF8Decode('Applica');
     BSave.Caption:=UTF8Decode('Salva');
-    BClose.Caption:=LogForm.BClose.Caption;
+    BClose.Caption:=OptionsForm.BClose.Caption;
     LAudioOut.Caption:=UTF8Decode('Driver sonoro');
       CAudioOut.Items[0]:=UTF8Decode('(non decodificare audio)');
       CAudioOut.Items[1]:=UTF8Decode('(non fare suoni)');
