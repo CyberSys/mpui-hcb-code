@@ -1687,7 +1687,7 @@ end;
 
 procedure TMainForm.Init_MOpenDrive;
 var Mask:cardinal; Name:array[0..3]of char; Drive:char;
-    Item:TTntMenuItem; MDrive,s:WideString;
+    Item:TTntMenuItem; MDrive:WideString;
 begin
   NoAccess:=0;
   MDrive:=Tnt_WideLowerCase(WideExtractFileDrive(HomeDir));

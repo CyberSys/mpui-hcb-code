@@ -50,11 +50,11 @@ object InfoForm: TInfoForm
     OnClick = BCloseClick
   end
   object TCB: TTntButton
-    Left = 8
+    Left = 5
     Top = 286
     Width = 89
     Height = 25
-    Anchors = [akRight, akBottom]
+    Anchors = [akLeft, akBottom]
     Caption = 'Copy Info'
     Default = True
     TabOrder = 2

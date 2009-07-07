@@ -223,7 +223,7 @@ begin
     else WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,s);
     p:=InfoBox.Count*InfoBox.ItemHeight+10;
     if p>InfoBox.Height then Height:=Height-InfoBox.Height+p;
-    p:=WideCanvasTextWidth(InfoBox.Canvas,s)+Rect.Left+32;
+    p:=WideCanvasTextWidth(InfoBox.Canvas,s)+Rect.Left+42;
     if p>MW then begin MW:=p; Width:=Width-InfoBox.Width+MW; end;
   end;
 end;
@@ -245,7 +245,6 @@ begin
 end;
 
 procedure TInfoForm.TCBClick(Sender: TObject);
-var i:integer;
 begin
   TntClipboard.AsWideText:=ClipText;
 end;
