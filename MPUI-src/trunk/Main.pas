@@ -74,6 +74,9 @@ type
     MSizeAny: TTntMenuItem;
     MOpenURL: TTntMenuItem;
     MOnTop: TTntMenuItem;
+    OMHelp: TTntMenuItem;
+    MAbout: TTntMenuItem;
+    MKeyHelp: TTntMenuItem;
     MShowOutput: TTntMenuItem;
     OMExtra: TTntMenuItem;
     N4: TTntMenuItem;
@@ -130,6 +133,7 @@ type
     MAudios: TTntToolButton;
     MSub: TTntToolButton;
     MExtra: TTntToolButton;
+    MHelp: TTntToolButton;
     MVideo: TTntMenuItem;
     N11: TTntMenuItem;
     Hide_menu: TTntMenuItem;
@@ -328,6 +332,8 @@ type
     procedure MOpenFileClick(Sender: TObject);
     procedure MOpenURLClick(Sender: TObject);
     procedure MOpenDriveClick(Sender: TObject);
+    procedure MKeyHelpClick(Sender: TObject);
+    procedure MAboutClick(Sender: TObject);
     procedure MLanguageClick(Sender: TObject);
     procedure MAspectClick(Sender: TObject);
     procedure MOptionsClick(Sender: TObject);
@@ -1179,12 +1185,7 @@ begin
       and (TickCount>=HideMouseAt) then SetMouseV(false);
     ///////////////////
   end
-  else begin
-    if Status in [sNone,sStopped] then begin
-      if CT then LTime.Caption:=FormatDateTime(DTFormat,Now,FormatSet)
-      else LTime.Caption:='';
-    end;
-  end;
+  else if CT and (Status in [sNone,sStopped]) then LTime.Caption:=FormatDateTime(DTFormat,Now,FormatSet);
 end;
 
 procedure TMainForm.FixSize;
@@ -1720,6 +1721,22 @@ begin
   Playlist.Changed;
   UpdateParams; 
   NextFile(0,psPlaying);
+end;
+
+procedure TMainForm.MKeyHelpClick(Sender: TObject);
+begin
+  if not OptionsForm.Visible then begin
+    OptionsForm.Tab.TabIndex:=5;
+    OptionsForm.Showmodal;
+  end;
+end;
+
+procedure TMainForm.MAboutClick(Sender: TObject);
+begin
+  if not OptionsForm.Visible then begin
+    OptionsForm.Tab.TabIndex:=6;
+    OptionsForm.Showmodal;
+  end;
 end;
 
 procedure TMainForm.Init_MLanguage;
@@ -2602,9 +2619,9 @@ end;
 
 procedure TMainForm.LStatusClick(Sender: TObject);
 begin
-  if Status=sError then begin
-    if not OptionsForm.Visible then OptionsForm.ShowModal;
-    OptionsForm.TheLog.ScrollBy(0,32767);
+  if (Status=sError) and (not OptionsForm.Visible) then begin
+    OptionsForm.Tab.TabIndex:=4;
+    OptionsForm.Showmodal;
   end;
 end;
 

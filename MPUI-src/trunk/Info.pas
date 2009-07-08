@@ -90,6 +90,7 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
     W,i,j:integer; s:WideString;
   procedure AddItem(Key,Value:WideString);
   begin
+    Key:=Key+':';
     W:=WideCanvasTextWidth(InfoBox.Canvas,Key);
     if W>TabOffset then TabOffset:=W;
     ClipText:=ClipText+Key+^I+Value+^M^J;
@@ -202,7 +203,7 @@ end;
 
 procedure TInfoForm.InfoBoxDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
-var s:WideString; p:integer;
+var s,t:WideString; p:integer;
 begin
   with InfoBox.Canvas do begin
     s:=InfoBox.Items[Index];
@@ -210,20 +211,22 @@ begin
       Brush.Color:=clBtnFace;
       Font.Color:=clBtnText;
       Font.Style:=Font.Style+[fsBold];
-      FillRect(Rect);
-      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,copy(s,2,length(s)));
+      FillRect(Rect); t:=copy(s,2,length(s));
+      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,t);
       exit;
     end;
     p:=Pos(^I,s);
     FillRect(Rect);
     if p>0 then begin
-      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,copy(s,1,p-1));
-      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+TabOffset+10,Rect.Top+1,copy(s,p+1,length(s)));
+      t:=copy(s,1,p-1);
+      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,t);
+      t:=copy(s,p+1,length(s));
+      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+TabOffset+10,Rect.Top+1,t);
     end
     else WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,s);
     p:=InfoBox.Count*InfoBox.ItemHeight+10;
     if p>InfoBox.Height then Height:=Height-InfoBox.Height+p;
-    p:=WideCanvasTextWidth(InfoBox.Canvas,s)+Rect.Left+42;
+    p:=Rect.Left+TabOffset+20+WideCanvasTextWidth(InfoBox.Canvas,t);
     if p>MW then begin MW:=p; Width:=Width-InfoBox.Width+MW; end;
   end;
 end;

@@ -200,7 +200,7 @@ type
     HelpFile:WideString;
     Changed,oML:boolean;
     History:TTntStringList;
-    HistoryPos:Longword;
+    HistoryPos:integer;
   public
     { Public declarations }
     procedure Localize;

@@ -91,6 +91,9 @@ begin
       MLanguage.Caption:=UTF8Decode('Taal');
       MStreamInfo.Caption:=UTF8Decode('Toon media-informatie ...');
       MShowOutput.Caption:=UTF8Decode('Toon MPlayer output ...');
+      MHelp.Caption:=UTF8Decode('Help');
+        MKeyHelp.Caption:=UTF8Decode('Toetsenbord help ...');
+        MAbout.Caption:=UTF8Decode('Info ...');
   end;
   OptionsForm.BClose.Caption:='Sluiten';
   OptionsForm.HelpText.Text:=UTF8Decode(
@@ -117,7 +120,7 @@ begin
 '7/8'^I'Kleurverzadiging aanpassen');
 
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('Help');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('Over');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb versie:');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayer core versie:');

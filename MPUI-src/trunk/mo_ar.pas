@@ -91,6 +91,9 @@ begin
       MLanguage.Caption:=UTF8Decode('اللغة');
       MStreamInfo.Caption:=UTF8Decode('اظهار معلومات الكليب ...');
       MShowOutput.Caption:=UTF8Decode('اظهار خرج امبلاير');
+      MHelp.Caption:=UTF8Decode('مساعدة');
+      MKeyHelp.Caption:=UTF8Decode('مساعدة لوحة المفاتيح ...');
+      MAbout.Caption:=UTF8Decode('عن ...');
   end;
   OptionsForm.HelpText.Text:=UTF8Decode(
 'مفاتيح الملاحة:'^M^J+
@@ -114,7 +117,7 @@ begin
 '5/6'^I'تعديل hue'^M^J+
 '7/8'^I'تعديل saturation');
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('مساعدة');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('عن');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb نسخة:');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayerنسخة صميم:');

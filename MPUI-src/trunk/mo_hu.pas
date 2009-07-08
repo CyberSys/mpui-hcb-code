@@ -84,6 +84,9 @@ begin
       MOptions.Caption:=UTF8Decode('Beállítások ...');
       MLanguage.Caption:=UTF8Decode('Nyelv');
       MShowOutput.Caption:=UTF8Decode('MPlayer kimenet mutatása');
+      MHelp.Caption:=UTF8Decode('Súgó');
+        MKeyHelp.Caption:=UTF8Decode('Billentyûparancsok ...');
+        MAbout.Caption:=UTF8Decode('Névjegy ...');
   end;
   OptionsForm.Caption:=UTF8Decode('MPlayer kimenet');
   OptionsForm.BClose.Caption:=UTF8Decode('Bezárás');
@@ -109,7 +112,7 @@ begin
 '5/6'^I'Árnyalat beállítása'^M^J+
 '7/8'^I'Telítettség beállítása');
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('Súgó');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('Névjegy');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb verzió:');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayer core verzió:');

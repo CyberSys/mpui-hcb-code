@@ -99,6 +99,9 @@ begin
     MLanguage.Caption := UTF8Decode('Мова програми (Language)');
     MStreamInfo.Caption:= UTF8Decode('Показати інформацію про кліп');
     MShowOutput.Caption := UTF8Decode('Показати журнал MPlayer');
+    MHelp.Caption := UTF8Decode('Допомога');
+      MKeyHelp.Caption := UTF8Decode('Клавіатурні команди ...');  // виправлено
+      MAbout.Caption := UTF8Decode('Про програму ...');
   end;
   OptionsForm.HelpText.Text :=UTF8Decode(
     'Навіація:'#13#10^M^J +
@@ -128,7 +131,7 @@ begin
   with OptionsForm do begin
     LVersionMPUI.Caption := UTF8Decode('Версія MPUI-hcb: ');
     LVersionMPlayer.Caption := UTF8Decode('Версія програвача MPlayer: ');
-    THelp.Caption := UTF8Decode('Допомога');
+    THelp.Caption := MainForm.MHelp.Caption;
     TAbout.Caption := UTF8Decode('Про програму');
     Caption := UTF8Decode('Налаштування');
     BOK.Caption := UTF8Decode('OK');

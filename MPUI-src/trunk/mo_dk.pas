@@ -92,6 +92,9 @@ begin
       MLanguage.Caption:=UTF8Decode('Sprog');
       MStreamInfo.Caption:=UTF8Decode('Vis Klip information ...');
       MShowOutput.Caption:=UTF8Decode('Vis MPlayer udlæsning ...');
+      MHelp.Caption:=UTF8Decode('Hjælp');
+        MKeyHelp.Caption:=UTF8Decode('Tastaturhjælp ...');
+        MAbout.Caption:=UTF8Decode('Om ...');
   end;
   OptionsForm.BClose.Caption:=UTF8Decode('Luk');
   OptionsForm.HelpText.Text:=UTF8Decode(
@@ -117,7 +120,7 @@ begin
 '5/6'^I'Tilpas farve'^M^J+
 '7/8'^I'Tilpas mætning');
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('Hjælp');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('Om');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb version:');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayer kerne version:');

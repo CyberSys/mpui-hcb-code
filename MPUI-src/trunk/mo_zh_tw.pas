@@ -213,6 +213,9 @@ begin
      MSubScale0.Caption:=MScale1.Caption;
      MSubScale1.Caption:=MScale2.Caption;
      MSubScale2.Caption:=UTF8Decode(OSD_Reset_Prompt)+' '+MSub.Caption+UTF8Decode(OSD_Scale_Prompt);
+   MHelp.Caption:=UTF8Decode('說明');
+     MKeyHelp.Caption:=UTF8Decode('快速鍵說明 ...');
+     MAbout.Caption:=UTF8Decode('關於 ...');
   end;
   OptionsForm.Caption:=UTF8Decode('MPlayer 輸出');
   OptionsForm.HelpText.Text:=UTF8Decode(
@@ -267,7 +270,7 @@ begin
     TAudio.Caption:=MainForm.MAudios.Caption;
     TSub.Caption:=MainForm.MSub.Caption;
     TAbout.Caption:=UTF8Decode('關於');
-    THelp.Caption:=UTF8Decode('説明');
+    THelp.Caption:=MainForm.MHelp.Caption;
     CSP.Caption:=UTF8Decode('單擊畫面暫停');
     CRS.Caption:=UTF8Decode('啟動時使用上次的窗體大小');
     CRP.Caption:=UTF8Decode('啟動時使用上次的窗體位置');

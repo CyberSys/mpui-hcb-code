@@ -85,6 +85,9 @@ begin
       MOptions.Caption:=UTF8Decode('Preferencias ...');
       MLanguage.Caption:=UTF8Decode('Idioma');
       MShowOutput.Caption:=UTF8Decode('Mostrar mensajes de MPlayer');
+      MHelp.Caption:=UTF8Decode('Ayuda');
+        MKeyHelp.Caption:=UTF8Decode('Ayuda de teclado ...');
+        MAbout.Caption:=UTF8Decode('Acerca de ...');
   end;
   OptionsForm.Caption:=UTF8Decode('Mensajes de MPlayer');
   OptionsForm.BClose.Caption:=UTF8Decode('Cerrar');
@@ -110,7 +113,7 @@ begin
 '7/8'^I'Ajustar saturación');
 
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('Ayuda');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('Acerca de');
     LVersionMPUI.Caption:=UTF8Decode('Versión de MPUI-hcb:');
     LVersionMPlayer.Caption:=UTF8Decode('Versión de MPlayer:');

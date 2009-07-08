@@ -210,6 +210,9 @@ begin
      MSubDelay0.Caption:=UTF8Decode('Измести напред +');
      MSubDelay1.Caption:=UTF8Decode('Измести назад -');
      MSubDelay2.Caption:=UTF8Decode(OSD_Reset_Prompt+' на '+OSD_SubDelay_Prompt);
+   MHelp.Caption:=UTF8Decode('Помощ');
+     MKeyHelp.Caption:=UTF8Decode('Помощ за клавиатурата ...');
+     MAbout.Caption:=UTF8Decode('Относно ...');
   end;
   OptionsForm.HelpText.Text:=UTF8Decode(
 'Клавиши за навигация и други:'^M^J+
@@ -250,7 +253,7 @@ begin
 'Alt+LMB drag video'^I'Коригиране на яркост, контраст, oттенък, наситеност, гама'^M^J+
 'Докато премествате/хващате, натиснете или отпуснете различни функционални клавиши, за да извикате различна функционалност');
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('Помощ');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('Относно');
     LVersionMPUI.Caption:=UTF8Decode('Версия на MPUI-hcb: ');
     LVersionMPlayer.Caption:=UTF8Decode('Версия на MPlayer:');

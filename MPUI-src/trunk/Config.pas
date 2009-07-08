@@ -157,7 +157,8 @@ procedure Save(FileName:WideString; Mode:integer);
 var INI:TINIFile; h:integer;
 begin
   if NoAccess>0 then exit;
-  if not WideFileExists(FileName) then FileName:=AppdataDir+WideExtractFileName(FileName);
+  if (NoAccess>0) or (not WideFileExists(FileName)) then
+    FileName:=AppdataDir+WideExtractFileName(FileName);
   if not WideFileExists(FileName) then begin
     h:=WideFileCreate(FileName);
     if GetLastError=0 then FileName:=WideExtractShortPathName(FileName);

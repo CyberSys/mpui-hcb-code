@@ -19,7 +19,7 @@
 unit Core;
 interface
 uses Windows, TntWindows, SysUtils, TntSysUtils, TntSystem, Classes, Forms, Menus,TntMenus, 
-     Controls,Graphics, Dialogs, MultiMon, ShlObj, TntClasses; //,ShellAPI;
+     Controls,Graphics, Dialogs, MultiMon, ShlObj, TntClasses;
 
 const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
 
@@ -179,6 +179,7 @@ procedure Terminate;
 procedure SendCommand(Command:String);
 procedure SendVolumeChangeCommand(Vol:integer);
 procedure ResetStreamInfo;
+function GetAbsolutePath(const BasePath,Rpath:WideString):WideString;
 
 implementation
 uses Main,config,plist,Info,UnRAR,Equalizer,Locale,Options,SevenZip;
@@ -206,6 +207,15 @@ var ClientWaitThread:TClientWaitThread;
 
 procedure HandleInputLine(Line:String); forward;
 procedure HandleIDLine(ID:string; Content:WideString); forward;
+
+function GetAbsolutePath(const BasePath,Rpath:WideString):WideString;
+var s:WideString;
+begin
+  s:=WideGetCurrentDir;
+  WideSetCurrentDir(BasePath);
+  Result:= WideExpandFileName(Rpath);
+  WideSetCurrentDir(s);
+end;
 
 function CheckMenu(Menu:TMenuItem; ID:integer):integer;
 var a:integer;
@@ -524,9 +534,7 @@ begin
 
   if Win32PlatformIsVista then ShotDir:=GetShellPath(RFID_PERSONAL)
   else ShotDir:=GetFolderPath(CSIDL_PERSONAL);
-  if ShotDir='' then ShotDir:=TempDir else ShotDir:=WideIncludeTrailingPathDelimiter(ShotDir);
-  if WideDirectoryExists(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap'
-  else if WideCreateDir(ShotDir+'MPUISnap') then ShotDir:=ShotDir+'MPUISnap';
+  if ShotDir='' then ShotDir:=TempDir+'MPUISnap' else ShotDir:=WideIncludeTrailingPathDelimiter(ShotDir)+'MPUISnap';
   LyricDir:=ShotDir;
   // check for Win9x
   if Win32PlatformIsUnicode then Win9xWarnLevel:=wlAccept
@@ -700,6 +708,7 @@ begin
     end;
 
     s:=Tnt_WideLowerCase(WideExtractFileExt(MediaURL));
+    j:=GetAbsolutePath(HomeDir,LyricDir);
     if CheckInfo(ZipType,s)>-1 then begin
       i:=Pos(':',DisplayURL);
       if i>0 then ArcPW:=copy(DisplayURL,i+1,length(DisplayURL)-i)
@@ -711,7 +720,7 @@ begin
         TmpURL:=copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie)))+'.lrc';
         LyricURL:=WideExtractFilePath(MediaURL)+TmpURL;
         if not WideFileExists(LyricURL) then
-          LyricURL:=WideIncludeTrailingPathDelimiter(LyricDir)+TmpURL;
+          LyricURL:=WideIncludeTrailingPathDelimiter(j)+TmpURL;
         if WideFileExists(LyricURL) then Lyric.ParseLyric(LyricURL);
       end;
     end
@@ -724,7 +733,7 @@ begin
         Lyric.ParseLyric(LyricURL)
       else begin
         LyricURL:=WideExtractFileName(MediaURL);
-        LyricURL:=WideIncludeTrailingPathDelimiter(LyricDir)
+        LyricURL:=WideIncludeTrailingPathDelimiter(j)
                +copy(LyricURL,1,length(LyricURL)-length(WideExtractFileExt(MediaURL)))+'.lrc';
         if WideFileExists(LyricURL) then Lyric.ParseLyric(LyricURL);
       end;
@@ -974,8 +983,12 @@ begin
   si.hStdInput:=DummyPipe2;
   si.hStdOutput:=DummyPipe1;
   si.hStdError:=DummyPipe1;
+
+  s:=GetAbsolutePath(HomeDir,ShotDir);
+  if not WideDirectoryExists(s) then
+  if not WideCreateDir(s) then s:=TempDir;
   
-  Success:=Tnt_CreateProcessW(nil,PwideChar(CmdLine),nil,nil,true,DETACHED_PROCESS,nil,PwideChar(ShotDir),si,pi);
+  Success:=Tnt_CreateProcessW(nil,PwideChar(CmdLine),nil,nil,true,DETACHED_PROCESS,nil,PwideChar(s),si,pi);
   Error:=GetLastError;
 
   CloseHandle(DummyPipe1);

@@ -85,6 +85,9 @@ begin
       MOptions.Caption:=UTF8Decode('Préférences ...');
       MLanguage.Caption:=UTF8Decode('Langue');
       MShowOutput.Caption:=UTF8Decode('Afficher la sortie de MPlayer');
+      MHelp.Caption:=UTF8Decode('Aide');
+        MKeyHelp.Caption:=UTF8Decode('Aide du clavier ...');
+        MAbout.Caption:=UTF8Decode('À propos ...');
   end;
   OptionsForm.Caption:=UTF8Decode('Sortie MPlayer');
   OptionsForm.BClose.Caption:=UTF8Decode('Fermer');
@@ -111,7 +114,7 @@ begin
   ;
 
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('Aide');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('À propos');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb version:');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayer version:');

@@ -88,6 +88,9 @@ begin
       MLanguage.Caption:= UTF8Decode('Язык');
       MStreamInfo.Caption:=UTF8Decode('Показать информацию о файле ...');
       MShowOutput.Caption:= UTF8Decode('Показывать вывод MPlayer');
+      MHelp.Caption:= UTF8Decode('Помощь');
+        MKeyHelp.Caption:= UTF8Decode('Помощь по клавиатуре ...');
+        MAbout.Caption:= UTF8Decode('О программе ...');
   end;
   OptionsForm.BClose.Caption:= UTF8Decode('Закрыть');
   OptionsForm.HelpText.Text:=
@@ -117,7 +120,7 @@ UTF8Decode(
   with OptionsForm do begin
     LVersionMPUI.Caption:=UTF8Decode('Версия MPUI-hcb: ');
     LVersionMPlayer.Caption:=UTF8Decode('Версия MPlayer: ');
-    THelp.Caption:=UTF8Decode('Помощь');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('О программе');
     Caption:=UTF8Decode('Опции');
     BOK.Caption:=UTF8Decode('OK');

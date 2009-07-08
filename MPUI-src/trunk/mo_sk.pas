@@ -91,7 +91,9 @@ begin
       MLanguage.Caption:=UTF8Decode('Jazyk');
       MStreamInfo.Caption:=UTF8Decode('Zobraziť informácie o klipe ...');
       MShowOutput.Caption:=UTF8Decode('Zobraziť výstup MPlayeru ...');
-
+      MHelp.Caption:=UTF8Decode('Pomocník');
+        MKeyHelp.Caption:=UTF8Decode('Klávesové skratky ...');
+        MAbout.Caption:=UTF8Decode('O programe ...');
   end;
   OptionsForm.BClose.Caption:=UTF8Decode('Zatvoriť');
   OptionsForm.HelpText.Text:=UTF8Decode(
@@ -121,7 +123,7 @@ begin
   with OptionsForm do begin
     LVersionMPUI.Caption:=UTF8Decode('Verzia MPUI-hcb:');
     LVersionMPlayer.Caption:=UTF8Decode('Verzia MPlayer:');
-    THelp.Caption:=UTF8Decode('Pomocník');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('O programe');
     Caption:=UTF8Decode('Nastavenie');
     BOK.Caption:=UTF8Decode('OK');

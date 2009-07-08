@@ -218,6 +218,9 @@ begin
      MSubScale0.Caption:=UTF8Decode('Zoom +');
      MSubScale1.Caption:=UTF8Decode('Zoom -');
      MSubScale2.Caption:=UTF8Decode('Reset Subtitles Scale');
+   MHelp.Caption:=UTF8Decode('Pomoc');   
+     MKeyHelp.Caption:=UTF8Decode('Skróty klawiszowe...');
+     MAbout.Caption:=UTF8Decode('O programie...');
   end;
   OptionsForm.BClose.Caption:=UTF8Decode('Zamknij');
   OptionsForm.HelpText.Text:=UTF8Decode(
@@ -258,7 +261,7 @@ begin
 'Alt+LMB drag video'^I'Adjust brightness,contrast,hue,saturation,gamma'^M^J+
 'While drag,release or press different function key invoke different function');
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('Pomoc');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('O programie');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb wersja:');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayer core version:');

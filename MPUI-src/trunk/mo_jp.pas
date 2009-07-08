@@ -91,6 +91,9 @@ begin
       MLanguage.Caption:=UTF8Decode('言語');
       MStreamInfo.Caption:=UTF8Decode('クリップ情報を表示 ...');
       MShowOutput.Caption:=UTF8Decode('MPlayer出力を表示 ...');
+      MHelp.Caption:=UTF8Decode('ヘルプ');
+        MKeyHelp.Caption:=UTF8Decode('キーボードヘルプ ...');
+        MAbout.Caption:=UTF8Decode('MPUIについて ...');
   end;
   OptionsForm.BClose.Caption:=UTF8Decode('閉じる');
   OptionsForm.HelpText.Text:=UTF8Decode(
@@ -118,7 +121,7 @@ begin
 );
 
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('ヘルプ');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('について');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcbのバージョン:');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayerコアのバージョン:');

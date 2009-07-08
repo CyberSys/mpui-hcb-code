@@ -91,6 +91,9 @@ begin
       MLanguage.Caption:=UTF8Decode('언어');
       MStreamInfo.Caption:=UTF8Decode('클립 정보 보기 ...');
       MShowOutput.Caption:=UTF8Decode('MPlayer 출력 보기 ...');
+      MHelp.Caption:=UTF8Decode('도움말');
+        MKeyHelp.Caption:=UTF8Decode('단축키 목록 ...');
+        MAbout.Caption:=UTF8Decode('이 프로그램은 ...');
   end;
   OptionsForm.BClose.Caption:=UTF8Decode('닫기');
   OptionsForm.HelpText.Text:=UTF8Decode(
@@ -118,7 +121,7 @@ begin
   );
 
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('도움말');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('이 프로그램은');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb 버젼: ');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayer 코어 버젼: ');

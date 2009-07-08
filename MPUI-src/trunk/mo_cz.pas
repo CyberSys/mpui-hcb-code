@@ -73,6 +73,9 @@ begin
       MOptions.Caption:=UTF8Decode('Nastavení ...');
       MLanguage.Caption:=UTF8Decode('Jazyk');
       MShowOutput.Caption:=UTF8Decode('Zobraz konzoli MPlayeru');
+      MHelp.Caption:=UTF8Decode('Nápověda');
+        MKeyHelp.Caption:=UTF8Decode('Klávesové zkratky ...');
+        MAbout.Caption:=UTF8Decode('O programu ...');
   end;
   OptionsForm.Caption:=UTF8Decode('Výstup Mplayeru');
   OptionsForm.BClose.Caption:=UTF8Decode('Zavřít');
@@ -98,7 +101,7 @@ begin
 '7/8'^I'Nastavení sytosti'
   );
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('Nápověda');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('O programu');
     LVersionMPUI.Caption:=UTF8Decode('Verze MPUI-hcb: ');
     LVersionMPlayer.Caption:=UTF8Decode('Verze Mplayeru:');

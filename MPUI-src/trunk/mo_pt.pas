@@ -90,6 +90,9 @@ begin
       MLanguage.Caption:=UTF8Decode('Idioma');
       MStreamInfo.Caption:=UTF8Decode('Mostrar detalhes do filme...');
       MShowOutput.Caption:=UTF8Decode('Mostrar mensagens do MPlayer');
+      MHelp.Caption:=UTF8Decode('Ajuda');
+        MKeyHelp.Caption:=UTF8Decode('Ajuda do teclado...');
+        MAbout.Caption:=UTF8Decode('Sobre o...');
   end;
   OptionsForm.BClose.Caption:=UTF8Decode('Fechar');
   OptionsForm.HelpText.Text:=UTF8Decode(
@@ -116,7 +119,7 @@ begin
   with OptionsForm do begin
     LVersionMPUI.Caption:=UTF8Decode('Versão do MPUI-hcb:');
     LVersionMPlayer.Caption:=UTF8Decode('Versão do MPlayer:');
-    THelp.Caption:=UTF8Decode('Ajuda');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('Sobre o');
     Caption:=UTF8Decode('Preferências');
     BOK.Caption:=UTF8Decode('Aceitar');

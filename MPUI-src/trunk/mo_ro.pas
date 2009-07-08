@@ -91,6 +91,9 @@ begin
       MLanguage.Caption:=UTF8Decode('Limbă');
       MStreamInfo.Caption:=UTF8Decode('Arată informaţii despre fişierul multimedia ...');
       MShowOutput.Caption:=UTF8Decode('Arată mesajele de informare de la MPlayer ...');
+      MHelp.Caption:=UTF8Decode('Ajutor');
+        MKeyHelp.Caption:=UTF8Decode('Operare cu tastele ...');
+        MAbout.Caption:=UTF8Decode('Despre ...');
   end;
   OptionsForm.BClose.Caption:=UTF8Decode('Închide');
   OptionsForm.HelpText.Text:=UTF8Decode(
@@ -119,7 +122,7 @@ begin
 
   with OptionsForm do begin
     TAbout.Caption:=UTF8Decode('Despre');
-    THelp.Caption:=UTF8Decode('Ajutor');
+    THelp.Caption:=MainForm.MHelp.Caption;
     LVersionMPUI.Caption:=UTF8Decode('Versiunea MPUI-hcb:');
     LVersionMPlayer.Caption:=UTF8Decode('Versiunea MPlayer:');
     Caption:=UTF8Decode('Opţiuni');

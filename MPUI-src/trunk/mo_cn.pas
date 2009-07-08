@@ -214,6 +214,9 @@ begin
      MSubScale0.Caption:=MScale1.Caption;
      MSubScale1.Caption:=MScale2.Caption;
      MSubScale2.Caption:=UTF8Decode(OSD_Reset_Prompt)+' '+MSub.Caption+UTF8Decode(OSD_Scale_Prompt);
+   MHelp.Caption:=UTF8Decode('帮助');   
+     MKeyHelp.Caption:=UTF8Decode('快捷键 ...');
+     MAbout.Caption:=UTF8Decode('关于 ...');
   end;
   OptionsForm.BClose.Caption:=UTF8Decode('关闭');
   OptionsForm.HelpText.Text:=UTF8Decode(
@@ -255,7 +258,7 @@ begin
 '在拖曳时，松开、按下不同的功能键和起始拖曳方向决定不同的功能'
   );
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('帮助');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('关于');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb 版本:');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayer 版本:');

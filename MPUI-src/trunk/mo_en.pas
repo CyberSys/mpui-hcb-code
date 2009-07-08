@@ -214,6 +214,9 @@ begin
      MSubScale0.Caption:=MScale1.Caption;
      MSubScale1.Caption:=MScale2.Caption;
      MSubScale2.Caption:=UTF8Decode(OSD_Reset_Prompt)+' '+MSubScale.Caption;
+   MHelp.Caption:='Help';
+     MKeyHelp.Caption:='Keyboard help ...';
+     MAbout.Caption:='About ...';
   end;
   OptionsForm.BClose.Caption:='Close';
   OptionsForm.HelpText.Text:=UTF8Decode(
@@ -254,7 +257,7 @@ begin
 'Alt+LMB drag video'^I'Adjust brightness,contrast,hue,saturation,gamma'^M^J+
 'While drag,release or press different function key invoke different function');
   with OptionsForm do begin
-    THelp.Caption:='Help';
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:='About';
     LVersionMPUI.Caption:='MPUI-hcb version:';
     LVersionMPlayer.Caption:='MPlayer core version:';

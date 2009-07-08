@@ -91,6 +91,9 @@ begin
       MLanguage.Caption:=UTF8Decode('Linguaggio');
       MStreamInfo.Caption:=UTF8Decode('Mostra info su clip ...');
       MShowOutput.Caption:=UTF8Decode('Mostra MPlayer info ...');
+      MHelp.Caption:=UTF8Decode('Aiuto');   
+        MKeyHelp.Caption:=UTF8Decode('Aiuto Tastiera ...');
+        MAbout.Caption:=UTF8Decode('Circa ...');
   end;
   OptionsForm.BClose.Caption:=UTF8Decode('Chiudi');
   OptionsForm.HelpText.Text:=UTF8Decode(
@@ -117,7 +120,7 @@ begin
 '7/8'^I'Aggiusta saturazione');
 
   with OptionsForm do begin
-    THelp.Caption:=UTF8Decode('Aiuto');
+    THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('Circa');
     LVersionMPUI.Caption:=UTF8Decode('Versione MPUI-hcb:');
     LVersionMPlayer.Caption:=UTF8Decode('Versione MPlayer:');
