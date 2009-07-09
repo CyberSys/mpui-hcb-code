@@ -38,6 +38,7 @@ type
     procedure FormDblClick(Sender: TObject);
     procedure FormHide(Sender: TObject);
     procedure TCBClick(Sender: TObject);
+    procedure TntFormResize(Sender: TObject);
   private
     { Private declarations }
     TabOffset,MW:integer;
@@ -85,25 +86,63 @@ begin
 end;
 
 procedure TInfoForm.UpdateInfo;
-const k=34;
 var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
     W,i,j:integer; s:WideString;
-  procedure AddItem(Key,Value:WideString);
-  begin
-    Key:=Key+':';
-    W:=WideCanvasTextWidth(InfoBox.Canvas,Key);
+  procedure calcOffset;
+  var a:integer;
+  begin TabOffset:=0;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoFileName);
     if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoFileFormat);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoPlaybackTime);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoDecoder);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoCodec);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoBitrate);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoVideoSize);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoVideoFPS);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoVideoAspect);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoAudioRate);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoVideoAspect);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoAudioChannels);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoVideo);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoAudio);
+    if W>TabOffset then TabOffset:=W;
+    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoTags);
+    if W>TabOffset then TabOffset:=W;
+    for a:=0 to 9 do begin
+      W:=WideCanvasTextWidth(InfoBox.Canvas,StreamInfo.ClipInfo[a].key);
+      if W>TabOffset then TabOffset:=W;
+    end;
+  end;
+
+  procedure AddItem(Key,Value:WideString);
+  var d,k:integer;
+  begin
+    Key:=Key+':'; k:=InfoBox.Width-TabOffset-20;
     ClipText:=ClipText+Key+^I+Value+^M^J;
     repeat
-      j:=length(Value);
-      if j>k then begin
-        InfoBox.Items.Add(Key+^I+copy(Value,1,k));
-        Value:=copy(Value,k+1,j);
-        j:=j-k; Key:='';
-      end
-      else begin
-        InfoBox.Items.Add(Key+^I+Value);
-        break;
+      for d:=1 to length(Value) do begin
+        j:=WideCanvasTextWidth(InfoBox.Canvas,copy(Value,1,d));
+        if j>k then begin
+          InfoBox.Items.Add(Key+^I+copy(Value,1,d-1));
+          Value:=copy(Value,d,length(Value));
+          Key:=''; break;
+        end;
+      end;
+      if d>length(Value) then begin
+        InfoBox.Items.Add(Key+^I+Value);break;
       end;
     until False;
   end;
@@ -138,7 +177,7 @@ begin
   with StreamInfo do begin
     if not Visible then exit;
     InfoBox.Items.Clear;
-    ClipText:=''; TabOffset:=0; MW:=0;
+    ClipText:=''; calcOffset; MW:=0;
     if length(FileName)=0 then begin
       InfoBox.Items.Add(LOCstr_NoInfo);
       exit;
@@ -224,10 +263,11 @@ begin
       WideCanvasTextOut(InfoBox.Canvas,Rect.Left+TabOffset+10,Rect.Top+1,t);
     end
     else WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,s);
-    p:=InfoBox.Count*InfoBox.ItemHeight+10;
-    if p>InfoBox.Height then Height:=Height-InfoBox.Height+p;
-    p:=Rect.Left+TabOffset+20+WideCanvasTextWidth(InfoBox.Canvas,t);
-    if p>MW then begin MW:=p; Width:=Width-InfoBox.Width+MW; end;
+    p:=InfoBox.Count*InfoBox.ItemHeight+5;
+    if p>InfoBox.Height then begin
+      Height:=Height-InfoBox.Height+p;
+      Constraints.MinHeight:=Height;
+    end;
   end;
 end;
 
@@ -250,6 +290,11 @@ end;
 procedure TInfoForm.TCBClick(Sender: TObject);
 begin
   TntClipboard.AsWideText:=ClipText;
+end;
+
+procedure TInfoForm.TntFormResize(Sender: TObject);
+begin
+  UpdateInfo;
 end;
 
 end.

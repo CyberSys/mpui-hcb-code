@@ -75,9 +75,9 @@ const VideoDemuxer:array[0..5]of WideString=(
         'avinini','avini','avi','mpegts','lavf','lavfpref'
       );
 
-const AudioDemuxer:array[0..11]of WideString=(
+const AudioDemuxer:array[0..12]of WideString=(
         'mkv','mpegts','mpegps','mpegpes','mpeges',
-        'mpeg4es','h264es','lavf','lavfpref','avinini','avini','avi'
+        'mpeg4es','h264es','lavf','lavfpref','avinini','avini','avi','pmp'
       );
 
 type TStatus=(sNone,sOpening,sClosing,sPlaying,sPaused,sStopped,sError);

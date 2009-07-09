@@ -21,6 +21,7 @@ object InfoForm: TInfoForm
   OnDblClick = FormDblClick
   OnDestroy = FormDestroy
   OnHide = FormHide
+  OnResize = TntFormResize
   OnShow = FormShow
   DesignSize = (
     300
