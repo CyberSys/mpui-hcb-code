@@ -1749,12 +1749,12 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     with MainForm do begin
       if ChkVideo and (StreamInfo.Video.Codec='') then begin
         if LastHaveVideo then begin
-          EW:=OPanel.Width; EH:=OPanel.Height;
+          OPanel.Visible:=false;
           if not (OptionsForm.Visible or EqualizerForm.Visible) then Enabled:=true;
           if MFullscreen.Checked then SetFullscreen(false);
           if MCompact.Checked  or MMaxW.Checked then SetCompact(false);
           Mctrl.Checked:=false; Hide_menu.Checked:=false; MPCtrl.Checked:=true;
-          OPanel.Visible:=false; CPanel.Visible:=true; MenuBar.Visible:=true;
+          CPanel.Visible:=true; MenuBar.Visible:=true;
           UpdateMenuEV(false);
           SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX));
           r:=Left+((Width-Constraints.MinWidth) DIV 2);
@@ -1873,6 +1873,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       end
       else begin
         if LastHaveVideo then begin
+          OPanel.Visible:=false;
           if not (OptionsForm.Visible or EqualizerForm.Visible) then Enabled:=true;
           if MFullscreen.Checked then SetFullscreen(false);
           if MCompact.Checked or MMaxW.Checked then SetCompact(false);
@@ -1884,7 +1885,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           SetBounds(r,i,Constraints.MinWidth,Constraints.MinHeight);
           PlaylistForm.Left:=Left-PlaylistForm.Width;
           PlaylistForm.Top:=Top+Height-PlaylistForm.Height;
-          OPanel.Visible:=false; MFunc:=0;
+          MFunc:=0;
           MWheelControl.Items[0].Checked:=true;
           MPWheelControl.Items[0].Checked:=true;
         end;

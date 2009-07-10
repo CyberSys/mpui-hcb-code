@@ -1,8 +1,8 @@
 object PlaylistForm: TPlaylistForm
-  Left = 438
-  Top = 268
+  Left = 437
+  Top = 267
   Width = 365
-  Height = 265
+  Height = 260
   BorderIcons = [biSystemMenu]
   Caption = 'PlaylistForm'
   Color = clBtnFace
@@ -24,14 +24,14 @@ object PlaylistForm: TPlaylistForm
   OnShow = FormShow
   DesignSize = (
     357
-    231)
+    233)
   PixelsPerInch = 96
   TextHeight = 13
   object TntPageControl1: TTntPageControl
     Left = -5
     Top = 0
     Width = 370
-    Height = 261
+    Height = 263
     ActivePage = TntTabSheet2
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
@@ -40,7 +40,7 @@ object PlaylistForm: TPlaylistForm
       ImageIndex = 16
       DesignSize = (
         362
-        233)
+        235)
       object CShuffle: TTntSpeedButton
         Left = 200
         Top = 2
@@ -208,7 +208,7 @@ object PlaylistForm: TPlaylistForm
         Left = 0
         Top = 28
         Width = 358
-        Height = 178
+        Height = 180
         Style = lbVirtualOwnerDraw
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 16
@@ -238,7 +238,7 @@ object PlaylistForm: TPlaylistForm
       ImageIndex = 24
       DesignSize = (
         362
-        233)
+        235)
       object TMLyric: TTntListBox
         Left = 0
         Top = 24
@@ -351,7 +351,7 @@ object PlaylistForm: TPlaylistForm
   end
   object SaveDialog: TTntSaveDialog
     DefaultExt = 'm3u8'
-    Filter = 'M3U Playlist (*.m3u8)|*.m3u8|All Files (*.*)|*.*'
+    Filter = 'M3U8 Playlist (*.m3u8)|*.m3u8|M3U Playlist (*.m3u)|*.m3u'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Title = 'Save Playlist ...'
     Left = 256

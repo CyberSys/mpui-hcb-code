@@ -1191,6 +1191,9 @@ end;
 procedure TMainForm.FixSize;
 var SX,SY,NX,NY:integer;
 begin
+  if Opanel.Visible then begin
+    EW:=Opanel.Width; EH:=Opanel.Height;
+  end;
   if (NativeWidth=0) OR (NativeHeight=0)
     OR (not MKaspect.Checked) then exit;
 

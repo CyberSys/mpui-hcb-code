@@ -1166,7 +1166,9 @@ begin
   if SaveDialog.Execute then begin
     FileName:=SaveDialog.FileName;
     FList:=TStringList.Create;
-    for i:=0 to Playlist.Count-1 do FList.Add(UTF8Encode(Playlist[i].FullURL));
+    for i:=0 to Playlist.Count-1 do
+      if SaveDialog.FilterIndex=1 then FList.Add(UTF8Encode(Playlist[i].FullURL))
+      else FList.Add(Playlist[i].FullURL);
     if not WideFileExists(FileName) then begin
       h:=WideFileCreate(FileName);
       if GetLastError=0 then FileName:=WideExtractShortPathName(FileName);
