@@ -1796,7 +1796,7 @@ begin
 end;
 
 procedure TMainForm.SetFullscreen(Mode:boolean);
-var Pivot:TPoint; PX,PY,SX,SY:integer;
+var PX,PY,SX,SY:integer;// Pivot:TPoint; 
 begin
   MFullscreen.Checked:=Mode; BFullscreen.Down:=Mode;
   MPFullscreen.Checked:=Mode;
@@ -1819,11 +1819,13 @@ begin
     CPanel.Visible:=false; MenuBar.Visible:=false;
     mctrl.Checked:=true; hide_menu.Checked:=true;
     MPCtrl.Checked:=false;
-    Pivot:=OPanel.ClientToScreen(Point(0,0));
-    PX:=FS_PX-Pivot.X; PY:=FS_PY-Pivot.Y;
-    SX:=Screen.Width +FS_SX-OPanel.Width;
-    SY:=Screen.Height+FS_SY-OPanel.Height;
-    ControlledResize:=true; 
+   // Pivot:=OPanel.ClientToScreen(Point(0,0));
+  //  PX:=FS_PX-Pivot.X; PY:=FS_PY-Pivot.Y;
+    PX:=(OPanel.Width-Width) DIV 2;
+    PY:=OPanel.Height-Height-PX;
+    SX:=Screen.Width+Width-OPanel.Width;
+    SY:=Screen.Height+Height-OPanel.Height;
+    ControlledResize:=true;
     SetWindowPos(Handle,HWND_TOPMOST,PX,PY,SX,SY,0);
     LEscape.Visible:=not Running;
   end
@@ -1860,9 +1862,10 @@ begin
     //SetWindowLong(Handle,GWL_STYLE,(DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_POPUP) AND (NOT WS_DLGFRAME));
     if (Width>=(Screen.Width-20)) OR (Height>=(Screen.WorkAreaHeight-20)) OR MMaxW.Checked then begin
       SetWindowLong(Handle,GWL_STYLE,WS_VISIBLE AND (NOT WS_DLGFRAME));
-      L:=-2; T:=-2; W:=Screen.Width+4; H:=Screen.WorkAreaHeight+4;
       MFunc:=0; MWheelControl.Items[0].Checked:=true;
       MPWheelControl.Items[0].Checked:=true;
+      L:=(OPanel.Width-Width) DIV 2; T:=L;
+      W:=Screen.Width+Width-OPanel.Width; H:=Screen.WorkAreaHeight+Width-OPanel.Width;
     end
     else begin
       if MenuBar.Visible then
@@ -2220,7 +2223,7 @@ begin
       0: SetVolumeRel(WheelDelta DIV 40);
       1: if MFullscreen.Checked then SetVolumeRel(WheelDelta DIV 40)
          else if (NativeWidth<>0) then begin
-           if ((Width=Screen.Width+10) AND (Height=Screen.WorkAreaHeight+10) AND (WheelDelta>0)) OR
+           if ((OPanel.Width=Screen.Width) AND (Height=Screen.WorkAreaHeight+Width-OPanel.Width) AND (WheelDelta>0)) OR
               ((Height=Constraints.MinWidth*NativeHeight DIV NativeWidth) AND (WheelDelta<0)) OR
               MFullscreen.Checked then exit;
            if WindowState=wsMaximized then
@@ -2229,11 +2232,12 @@ begin
            Height:=j+WheelDelta DIV 2; if j<>0 then Width:=Height*i DIV j;
            if Width=Constraints.MinWidth then Height:=Constraints.MinWidth*NativeHeight DIV NativeWidth;
            Left:=Left-(Width-i) DIV 2; Top:=Top-(Height-j) DIV 2;
-           if Left<-5 then Left:=-5; if Top<-5 then Top:=-5;
-           if Width>(Screen.Width+10) then Width:=Screen.Width+10;
-           if Height>(Screen.WorkAreaHeight+10) then Height:=Screen.WorkAreaHeight+10;
-           if (Left+Width)>(Screen.Width+5) then Left:=Screen.Width+5-Width;
-           if (Top+Height)>(Screen.WorkAreaHeight+5) then Top:=Screen.WorkAreaHeight+5-Height;
+           if Left<((OPanel.Width-Width) DIV 2) then Left:=(OPanel.Width-Width) DIV 2;
+           if Top<((OPanel.Width-Width) DIV 2) then Top:=(OPanel.Width-Width) DIV 2;
+           if Width>(Screen.Width+Width-OPanel.Width) then Width:=Screen.Width+Width-OPanel.Width;
+           if Height>(Screen.WorkAreaHeight+Width-OPanel.Width) then Height:=Screen.WorkAreaHeight+Width-OPanel.Width;
+           if (Left+Width)>(Screen.Width+(Width-OPanel.Width) DIV 2) then Left:=Screen.Width-(Width+OPanel.Width) DIV 2;
+           if (Top+Height)>(Screen.WorkAreaHeight+(Width-OPanel.Width) DIV 2) then Top:=Screen.WorkAreaHeight-Height+(Width-OPanel.Width) DIV 2;
          end;
     end;
   end;
@@ -2380,30 +2384,30 @@ end;
 begin
   GetCursorPos(p);
   if MCompact.Checked then begin
-    OY:=p.Y-(Top+2+OPanel.Top+1);
-    NOY:=(Top+2+OPanel.Top+OPanel.Height-1)-p.Y;
+    OY:=p.Y-(Top+OPanel.Top+OPanel.BevelWidth+(Width-ClientWidth) DIV 2);
+    NOY:=(Top+OPanel.Top+OPanel.Height-OPanel.BevelWidth+(Width-ClientWidth) DIV 2)-p.Y;
   end
   else begin
     if MMaxW.Checked then begin
-      OY:=p.Y-(Top+OPanel.Top+1);
-      NOY:=(Top+OPanel.Top+OPanel.Height-1)-p.Y;
+      OY:=p.Y-(Top+OPanel.Top+OPanel.BevelWidth);
+      NOY:=(Top+OPanel.Top+OPanel.Height-OPanel.BevelWidth)-p.Y;
     end
     else begin
-      OY:=p.Y-(Top+3+MWC+OPanel.Top+1);
-      NOY:=(Top+3+MWC+OPanel.Top+OPanel.Height-1)-p.Y;
+      OY:=p.Y-(OPanel.Top+OPanel.BevelWidth+Top+MWC+(Width-ClientWidth) DIV 2);
+      NOY:=(OPanel.Top+OPanel.Height-OPanel.BevelWidth+Top+MWC+(Width-ClientWidth) DIV 2)-p.Y;
     end;
   end;
   if (not MPCtrl.Checked) and (MouseMode=0) then begin
     if (MSubtitle.Count>0) and Running then begin
-      if (not CPanel.Visible) AND (OY>=(OPanel.ClientHeight-25)) then SetCtrlV(True);
-      if (not MenuBar.Visible) AND (NOY>=OPanel.ClientHeight-10) then SetMenuBarV(True);
+      if (not CPanel.Visible) AND (OY>=(OPanel.Height-25)) then SetCtrlV(True);
+      if (not MenuBar.Visible) AND (NOY>=OPanel.Height-10) then SetMenuBarV(True);
     end
     else begin
-      if (not CPanel.Visible) AND (OY>=(OPanel.ClientHeight-CPanel.Height)) then SetCtrlV(True);
-      if (not MenuBar.Visible) AND (NOY>=(OPanel.ClientHeight-MenuBar.Height)) then SetMenuBarV(True);
+      if (not CPanel.Visible) AND (OY>=(OPanel.Height-CPanel.Height)) then SetCtrlV(True);
+      if (not MenuBar.Visible) AND (NOY>=(OPanel.Height-MenuBar.Height)) then SetMenuBarV(True);
     end;
-    if CPanel.Visible AND (OY<OPanel.ClientHeight) then SetCtrlV(false);
-    if MenuBar.Visible AND (NOY<OPanel.ClientHeight) then SetMenuBarV(false);
+    if CPanel.Visible AND (OY<OPanel.Height) then SetCtrlV(false);
+    if MenuBar.Visible AND (NOY<OPanel.Height) then SetMenuBarV(false);
   end;
 
   if abs(MouseMode)=1 then begin

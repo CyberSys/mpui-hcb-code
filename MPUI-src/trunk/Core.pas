@@ -1611,6 +1611,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     //end;
     if r>0 then Result:=r;
     Duration:=SecondsToTime(Result);
+    StreamInfo.PlaybackTime:=Duration;
+    InfoForm.UpdateInfo(false);
   end;
 
   function CheckLength:boolean;
@@ -1621,6 +1623,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if r=0 then begin
         TotalTime:=abs(round(f)); TTime:=TotalTime;
         Duration:=SecondsToTime(TotalTime);
+        StreamInfo.PlaybackTime:=Duration;
       end;
       if HaveChapters then TotalTime:=UpdateLen;
     end;
@@ -1800,13 +1803,14 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
         exit;
       end;
       NativeWidth:=i; NativeHeight:=j;
-      if NativeWidth<(Constraints.MinWidth-6) then begin
-        NativeWidth:=Constraints.MinWidth-6;
+      StreamInfo.Video.Width:=i; StreamInfo.Video.Height:=j;
+      if j<>0 then StreamInfo.Video.Aspect:=i/j;
+      if NativeWidth<(Constraints.MinWidth+OPanel.Width-Width) then begin
+        NativeWidth:=Constraints.MinWidth+OPanel.Width-Width;
         if i<>0 then NativeHeight:=NativeWidth*j DIV i;
       end;
       case CBHSA of
         3: begin VideoSizeChanged;
-             StreamInfo.Video.Width:=i; StreamInfo.Video.Height:=j;
              InfoForm.UpdateInfo(false);
              Result:=true;
              exit;
@@ -1849,11 +1853,11 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
         if not LastHaveVideo then begin
           OPanel.Visible:=true;
           if RS and (EW<>0) and (EH<>0) then begin
-            j:=8+EW; p:=MWC+MenuBar.Height+CPanel.Height+8+EH;
+            j:=Width-OPanel.Width+EW; p:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+EH;
           end
           else begin
-            j:=8+NativeWidth;
-            p:=MWC+MenuBar.Height+CPanel.Height+8+NativeHeight;
+            j:=Width-OPanel.Width+NativeWidth;
+            p:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+NativeHeight;
           end;
           r:=Left-((j-Constraints.MinWidth) DIV 2);
           i:=Top-((p-Constraints.MinHeight) DIV 2);
@@ -2159,6 +2163,8 @@ begin
     if r=0 then begin
       TotalTime:=abs(round(f)); TTime:=TotalTime;
       Duration:=SecondsToTime(TotalTime);
+      StreamInfo.PlaybackTime:=Duration;
+      InfoForm.UpdateInfo(false);
     end;
     if CID+AID>2 then begin MainForm.LTime.Font.Size:=12; MainForm.LTime.Top:=0; end;
     if HaveChapters then TotalTime:=UpdateLen;
@@ -2229,10 +2235,10 @@ begin
 
     // handle some common ID fields
     if ID='VIDEO_BITRATE' then Video.Bitrate:=AsInt
-    else if ID='VIDEO_WIDTH'   then Video.Width:=AsInt
-    else if ID='VIDEO_HEIGHT'  then Video.Height:=AsInt
+    //else if ID='VIDEO_WIDTH'   then Video.Width:=AsInt
+    //else if ID='VIDEO_HEIGHT'  then Video.Height:=AsInt
     else if ID='VIDEO_FPS'     then Video.FPS:=AsFloat
-    else if ID='VIDEO_ASPECT'  then Video.Aspect:=AsFloat
+    //else if ID='VIDEO_ASPECT'  then Video.Aspect:=AsFloat
     else if ID='AUDIO_BITRATE' then Audio.Bitrate:=AsInt
     else if ID='AUDIO_RATE'    then Audio.Rate:=AsInt
     else if ID='AUDIO_NCH'     then Audio.Channels:=AsInt
@@ -2244,14 +2250,14 @@ begin
     else if (ID='VIDEO_CODEC') AND (length(Video.Codec)=0) then Video.Codec:=Content
     else if (ID='AUDIO_FORMAT') AND (length(Audio.Decoder)=0) then Audio.Decoder:=Content
     else if (ID='AUDIO_CODEC') AND (length(Audio.Codec)=0) then Audio.Codec:=Content
-    else if (ID='LENGTH') AND (AsFloat>0.001) then begin
+    {else if (ID='LENGTH') AND (AsFloat>0.001) then begin
       AsFloat:=Frac(AsFloat);
       if (AsFloat>0.0009) then begin
         str(AsFloat:0:3, PlaybackTime);
         PlaybackTime:=WideString(SecondsToTime(AsInt)) + Copy(PlaybackTime,2,20);
       end
       else PlaybackTime:=WideString(SecondsToTime(AsInt));
-    end
+    end}
     else if (Copy(ID,1,14)='CLIP_INFO_NAME') AND (length(ID)=15) then begin
       r:=Ord(ID[15])-Ord('0');
       if (r>=0) AND (r<=9) then ClipInfo[r].Key:=Content;

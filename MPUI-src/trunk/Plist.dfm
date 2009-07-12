@@ -208,7 +208,7 @@ object PlaylistForm: TPlaylistForm
         Left = 0
         Top = 28
         Width = 358
-        Height = 180
+        Height = 182
         Style = lbVirtualOwnerDraw
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 16
@@ -351,7 +351,9 @@ object PlaylistForm: TPlaylistForm
   end
   object SaveDialog: TTntSaveDialog
     DefaultExt = 'm3u8'
-    Filter = 'M3U8 Playlist (*.m3u8)|*.m3u8|M3U Playlist (*.m3u)|*.m3u'
+    Filter = 
+      'M3U8 Playlist [UTF-8] (*.m3u8)|*.m3u8|M3U Playlist [ANSI] (*.m3u' +
+      ')|*.m3u'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Title = 'Save Playlist ...'
     Left = 256

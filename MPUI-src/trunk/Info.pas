@@ -142,7 +142,7 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
   begin
     if Flag then exit;
     InfoBox.Items.Add(WideString('!')+Caption);
-    ClipText:=ClipText+Caption+^M^J;
+    ClipText:=ClipText+^M^J+Caption+^M^J;
     Flag:=true;
   end;
 

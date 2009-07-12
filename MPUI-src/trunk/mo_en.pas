@@ -106,7 +106,7 @@ begin
       MCompact.Caption:='Compact mode';
       MMaxW.Caption:='Maximize Windows';
       MOnTop.Caption:='On Top';
-        MNoOnTop.Caption:='Nerve On Top';
+        MNoOnTop.Caption:='Never On Top';
         MAOnTop.Caption:='Always on top';
         MWOnTop.Caption:='While Playing On Top';
       MKaspect.Caption:='Keep movie aspect';
