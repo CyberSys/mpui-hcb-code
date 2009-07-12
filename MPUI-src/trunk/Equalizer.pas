@@ -21,32 +21,33 @@ unit Equalizer;
 interface
 
 uses Windows, SysUtils, Classes, Graphics, Forms, TntForms, Controls, StdCtrls, 
-  Buttons, ExtCtrls, ComCtrls, TntStdCtrls;
+  Buttons, ExtCtrls, ComCtrls, TntStdCtrls, TntButtons;
 
 type
   TEqualizerForm = class(TTntForm)
     BReset: TTntButton;
     BClose: TTntButton;
-    Sbri: TTntStaticText;
     TBri: TTrackBar;
-    SCon: TTntStaticText;
     TCon: TTrackBar;
-    SSat: TTntStaticText;
     TSat: TTrackBar;
-    Shue: TTntStaticText;
     THue: TTrackBar;
     Bevel1: TBevel;
-    SGam: TTntStaticText;
     TGam: TTrackBar;
+    Sbri: TTntSpeedButton;
+    SCon: TTntSpeedButton;
+    SSat: TTntSpeedButton;
+    SHue: TTntSpeedButton;
+    SGam: TTntSpeedButton;
     procedure BCloseClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
-    procedure TBriChange(Sender: TObject);
-    procedure TConChange(Sender: TObject);
-    procedure THueChange(Sender: TObject);
-    procedure TSatChange(Sender: TObject);
+    procedure TbChange(Sender: TObject);
     procedure BResetClick(Sender: TObject);
-    procedure TGamChange(Sender: TObject);
+    procedure SbriClick(Sender: TObject);
+    procedure SConClick(Sender: TObject);
+    procedure SGamClick(Sender: TObject);
+    procedure SHueClick(Sender: TObject);
+    procedure SSatClick(Sender: TObject);
   private
     { Private declarations }
     Changed:boolean;
@@ -91,74 +92,60 @@ begin
   if (top+height)>=Screen.WorkAreaHeight then top:=Screen.WorkAreaHeight-height;
 end;
 
-procedure TEqualizerForm.TBriChange(Sender: TObject);
+procedure TEqualizerForm.TbChange(Sender: TObject);
 begin
   if CBHSA<>5 then exit
   else begin
     Changed:=true;
-    SendCommand('set_property brightness '+IntToStr(TBri.Position));
-  end;
-end;
-
-procedure TEqualizerForm.TConChange(Sender: TObject);
-begin
-  if CBHSA<>5 then exit
-  else begin
-    Changed:=true;
-    SendCommand('set_property contrast '+IntToStr(TCon.Position));
-  end;
-end;
-
-procedure TEqualizerForm.THueChange(Sender: TObject);
-begin
-  if CBHSA<>5 then exit
-  else begin
-    Changed:=true;
-    SendCommand('set_property hue '+IntToStr(THue.Position));
-  end;
-end;
-
-procedure TEqualizerForm.TSatChange(Sender: TObject);
-begin
-  if CBHSA<>5 then exit
-  else begin
-    Changed:=true;
-    SendCommand('set_property saturation '+IntToStr(TSat.Position));
-  end;
-end;
-
-procedure TEqualizerForm.TGamChange(Sender: TObject);
-begin
-  if CBHSA<>5 then exit
-  else begin
-    Changed:=true;
-    SendCommand('set_property gamma '+IntToStr(TGam.Position));
+    SendCommand('set_property '+(Sender as TTrackBar).Hint+' '+IntToStr((Sender as TTrackBar).Position));
   end;
 end;
 
 procedure TEqualizerForm.BResetClick(Sender: TObject);
 begin
-  if contrD<>101 then begin
-    Changed:=true; contr:=contrD; TCon.Position:=contrD;
-    SendCommand('set_property contrast '+IntToStr(contrD));
-  end;
+  SbriClick(nil); SConClick(nil); SGamClick(nil);
+  SHueClick(nil); SSatClick(nil);
+  SendCommand('osd_show_text "'+OSD_Reset_Prompt+' C/B/H/S/G"');
+end;
+
+procedure TEqualizerForm.SbriClick(Sender: TObject);
+begin
   if briD<>101 then begin
     Changed:=true; bri:=briD; TBri.Position:=briD;
     SendCommand('set_property brightness '+IntToStr(briD));
   end;
-  if huD<>101 then begin
-    Changed:=true; hu:=huD; THue.Position:=huD;
-    SendCommand('set_property hue '+IntToStr(huD));
+end;
+
+procedure TEqualizerForm.SConClick(Sender: TObject);
+begin
+  if contrD<>101 then begin
+    Changed:=true; contr:=contrD; TCon.Position:=contrD;
+    SendCommand('set_property contrast '+IntToStr(contrD));
   end;
-  if satD<>101 then begin
-    Changed:=true; sat:=satD; TSat.Position:=satD;
-    SendCommand('set_property saturation '+IntToStr(satD)+' 1');
-  end;
+end;
+
+procedure TEqualizerForm.SGamClick(Sender: TObject);
+begin
   if (gamD<>101) and Eq2 then begin
     Changed:=true; gam:=gamD; TGam.Position:=gamD;
     SendCommand('set_property gamma '+IntToStr(gamD)+' 1');
   end;
-  SendCommand('osd_show_text "'+OSD_Reset_Prompt+' C/B/H/S/G"');
+end;
+
+procedure TEqualizerForm.SHueClick(Sender: TObject);
+begin
+  if huD<>101 then begin
+    Changed:=true; hu:=huD; THue.Position:=huD;
+    SendCommand('set_property hue '+IntToStr(huD));
+  end;
+end;
+
+procedure TEqualizerForm.SSatClick(Sender: TObject);
+begin
+  if satD<>101 then begin
+    Changed:=true; sat:=satD; TSat.Position:=satD;
+    SendCommand('set_property saturation '+IntToStr(satD)+' 1');
+  end;
 end;
 
 end.

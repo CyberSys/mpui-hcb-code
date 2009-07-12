@@ -23,8 +23,8 @@ uses Windows, TntWindows, SysUtils, TntSysUtils, TntSystem, Classes, Forms, Menu
 
 const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
 
-const CacheFill:array[0..3]of WideString=('缓存填充:','缓冲填充:','緩存填充:','緩沖填充:');
-const GenIndex:array[0..1]of WideString=('正在生成索引:','正在生成索引:');
+const CacheFill:array[0..4]of WideString=('Cache fill:','缓存填充:','缓冲填充:','緩存填充:','緩沖填充:');
+const GenIndex:array[0..2]of WideString=('Generating Index:','正在生成索引:','正在生成索引:');
 
 const szdllCount=2;
 const szdll:array[0..szdllCount]of WideString=('7zxa.dll','7za.dll','7z.dll');
@@ -951,7 +951,7 @@ begin
   ResetStreamInfo; LastCacheFill:='';
   ChkVideo:=true; ChkAudio:=true;
   ChkStartPlay:=true; HaveChapters:=false;
-  StreamInfo.FileName:=MediaURL;
+  StreamInfo.FileName:=DisplayURL;
   LastLine:=''; LineRepeatCount:=0;
   VobsubCount:=0; IntersubCount:=0;
   with MainForm do begin
@@ -1721,7 +1721,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     StreamInfo.ClipInfo[P].Key:='Title';
     if StreamInfo.ClipInfo[P].Value<>Widestring(Line) then begin
       StreamInfo.ClipInfo[P].Value:=Widestring(Line);
-      InfoForm.UpdateInfo;
+      InfoForm.UpdateInfo(true);
     end;
   end;
 
@@ -1806,6 +1806,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       end;
       case CBHSA of
         3: begin VideoSizeChanged;
+             StreamInfo.Video.Width:=i; StreamInfo.Video.Height:=j;
+             InfoForm.UpdateInfo(false);
              Result:=true;
              exit;
            end;
@@ -1911,6 +1913,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
 
 begin
   Line:=Trim(Line); len:=length(Line);
+  if len<1 then exit;
   // Time position indicators are "first-class citizens", because they
   // make up for 99.999% of all traffic. So we have to handle them *FAST*!
   if len>2 then begin
@@ -1977,39 +1980,33 @@ begin
   end;
 
   // normal line handling: check for "cache fill"
-  if (len>=18) AND (Line[18]='%') AND (Copy(Line,1,11)='Cache fill:') then begin
-    if Copy(Line,12,6)=LastCacheFill then exit;
-    MainForm.LStatus.Caption:=Line;
-    if (Copy(OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1],1,11)='Cache fill:') then
-      OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1]:=Line;
-    Sleep(0);  // "yield"
-    exit;
-  end;
-  if (len>=16) AND (Line[16]='%') AND (CheckInfo(CacheFill,Copy(Line,1,9))>-1) then begin
-    if Copy(Line,10,6)=LastCacheFill then exit;
-    MainForm.LStatus.Caption:=Line;
-    if (CheckInfo(CacheFill,Copy(OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1],1,9))>-1) then
-      OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1]:=Line;
-    Sleep(0);  // "yield"
-    exit;
+  for i:=0 to 4 do begin
+    r:=length(CacheFill[i]);
+    if len<(r+7) then continue;
+    p:=pos(CacheFill[i],Line);
+    if (p=1) and (Line[r+7]='%') then begin
+      if Copy(Line,r+1,6)=LastCacheFill then exit;
+      MainForm.LStatus.Caption:=Line;
+      if (Copy(OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1],1,r)=CacheFill[i]) then
+        OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1]:=Line;
+      Sleep(0);  // "yield"
+      exit;
+    end;
   end;
 
   // check "Generating Index"  正在生成索引:  14 %  Generating Index:  99 %
-  if (len>=23) AND (Line[23]='%') AND (Copy(Line,1,17)='Generating Index:') then begin
-    if Copy(Line,18,6)=LastCacheFill then exit;
-    MainForm.LStatus.Caption:=Line;
-    if (Copy(OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1],1,17)='Generating Index:') then
-      OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1]:=Line;
-    Sleep(0);  // "yield"
-    exit;
-  end;
-  if (len>=19) AND (Line[19]='%') AND (CheckInfo(GenIndex,Copy(Line,1,13))>-1) then begin
-    if Copy(Line,14,6)=LastCacheFill then exit;
-    MainForm.LStatus.Caption:=Line;
-    if (CheckInfo(GenIndex,Copy(OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1],1,13))>-1) then
-      OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1]:=Line;
-    Sleep(0);  // "yield"
-    exit;
+  for i:=0 to 2 do begin
+    r:=length(GenIndex[i]);
+    if len<(r+6) then continue;
+    p:=pos(GenIndex[i],Line);
+    if (p=1) and (Line[r+6]='%') then begin
+      if Copy(Line,r+1,6)=LastCacheFill then exit;
+      MainForm.LStatus.Caption:=Line;
+      if (Copy(OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1],1,r)=GenIndex[i]) then
+        OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1]:=Line;
+      Sleep(0);  // "yield"
+      exit;
+    end;
   end;
 
   // check contrast (hidden from log)
@@ -2231,7 +2228,6 @@ begin
     else AsFloat:=AsInt;
 
     // handle some common ID fields
-    FileName:=DisplayURL;
     if ID='VIDEO_BITRATE' then Video.Bitrate:=AsInt
     else if ID='VIDEO_WIDTH'   then Video.Width:=AsInt
     else if ID='VIDEO_HEIGHT'  then Video.Height:=AsInt

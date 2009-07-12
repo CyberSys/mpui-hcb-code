@@ -8,8 +8,8 @@ object InfoForm: TInfoForm
   ClientHeight = 315
   ClientWidth = 300
   Color = clBtnFace
-  Constraints.MinHeight = 90
-  Constraints.MinWidth = 308
+  Constraints.MinHeight = 112
+  Constraints.MinWidth = 200
   Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

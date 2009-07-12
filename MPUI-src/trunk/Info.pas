@@ -22,7 +22,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, TntGraphics, Controls, Forms,
-  Dialogs, TntStdCtrls,TntForms, StdCtrls, Graphics, TntClipBrd;
+  Dialogs, TntStdCtrls,TntForms, StdCtrls, Graphics, TntClipBrd, TntClasses;
 
 type
   TInfoForm = class(TTntForm)
@@ -47,7 +47,7 @@ type
   public
     { Public declarations }
     ControlledMove:boolean;
-    procedure UpdateInfo;
+    procedure UpdateInfo(calcoff:boolean);
   end;
 
 var
@@ -75,7 +75,6 @@ end;
 
 procedure TInfoForm.FormCreate(Sender: TObject);
 begin
-  UpdateInfo;
   ControlledMove:=True; Docked:=true;
   if Core.RP then begin Left:=Core.IL; Top:=Core.IT; end;
 end;
@@ -85,64 +84,56 @@ begin
   Close;
 end;
 
-procedure TInfoForm.UpdateInfo;
+procedure TInfoForm.UpdateInfo(calcoff:boolean);
 var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
-    W,i,j:integer; s:WideString;
+    i,j:integer; s:WideString;
   procedure calcOffset;
-  var a:integer;
-  begin TabOffset:=0;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoFileName);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoFileFormat);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoPlaybackTime);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoDecoder);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoCodec);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoBitrate);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoVideoSize);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoVideoFPS);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoVideoAspect);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoAudioRate);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoVideoAspect);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoAudioChannels);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoVideo);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoAudio);
-    if W>TabOffset then TabOffset:=W;
-    W:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_InfoTags);
-    if W>TabOffset then TabOffset:=W;
-    for a:=0 to 9 do begin
-      W:=WideCanvasTextWidth(InfoBox.Canvas,StreamInfo.ClipInfo[a].key);
-      if W>TabOffset then TabOffset:=W;
+  var w,a:integer; KeySet:TTntStringList;
+  begin
+    with StreamInfo do begin
+      TabOffset:=0; KeySet:=TTntStringList.Create;
+      KeySet.Add(LOCstr_InfoFileName);
+      if length(FileFormat)>0 then KeySet.Add(LOCstr_InfoFileFormat);
+      if length(PlaybackTime)>0 then KeySet.Add(LOCstr_InfoPlaybackTime);
+      if (length(Video.Decoder)>0) or (length(Audio.Decoder)>0) then KeySet.Add(LOCstr_InfoDecoder);
+      if (length(Video.Codec)>0) or (length(Audio.Codec)>0) then KeySet.Add(LOCstr_InfoCodec);
+      if Video.Bitrate<>0 then KeySet.Add(LOCstr_InfoBitrate);
+      if (Video.Width<>0) AND (Video.Height<>0) then KeySet.Add(LOCstr_InfoVideoSize);
+      if (Video.FPS>0.01) then KeySet.Add(LOCstr_InfoVideoFPS);
+      if (Video.Aspect>0.01) then KeySet.Add(LOCstr_InfoVideoAspect);
+      if Audio.Bitrate<>0 then KeySet.Add(LOCstr_InfoBitrate);
+      if Audio.Rate<>0 then KeySet.Add(LOCstr_InfoAudioRate);
+      if Audio.Channels<>0 then KeySet.Add(LOCstr_InfoAudioChannels);
+      for a:=0 to 9 do
+        With ClipInfo[a] do
+          if (length(Key)>0) AND (length(Value)>0) then KeySet.Add(Key);
+      for a:=0 to KeySet.Count-1 do begin
+        w:=WideCanvasTextWidth(InfoBox.Canvas,KeySet[a])+20;
+        if w>TabOffset then TabOffset:=w;
+      end;
+      KeySet.Free;
     end;
   end;
 
   procedure AddItem(Key,Value:WideString);
-  var d,k:integer;
+  var d:integer;
   begin
-    Key:=Key+':'; k:=InfoBox.Width-TabOffset-20;
+    Key:=Key+':';
     ClipText:=ClipText+Key+^I+Value+^M^J;
+    j:=TabOffset+20+WideCanvasTextWidth(InfoBox.Canvas,Value);
+    if j>MW then MW:=j;
     repeat
       for d:=1 to length(Value) do begin
         j:=WideCanvasTextWidth(InfoBox.Canvas,copy(Value,1,d));
-        if j>k then begin
+        if j>(InfoBox.Width-TabOffset-10) then begin
           InfoBox.Items.Add(Key+^I+copy(Value,1,d-1));
           Value:=copy(Value,d,length(Value));
           Key:=''; break;
         end;
       end;
       if d>length(Value) then begin
-        InfoBox.Items.Add(Key+^I+Value);break;
+        InfoBox.Items.Add(Key+^I+Value);
+        break;
       end;
     until False;
   end;
@@ -172,55 +163,43 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
     AddHeader(HaveAudioHeader,LOCstr_InfoAudio);
     AddItem(Key,Value);
   end;
-  
+
 begin
   with StreamInfo do begin
     if not Visible then exit;
-    InfoBox.Items.Clear;
-    ClipText:=''; calcOffset; MW:=0;
+    InfoBox.Items.Clear; ClipText:='';
     if length(FileName)=0 then begin
       InfoBox.Items.Add(LOCstr_NoInfo);
+      j:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_NoInfo)+20;
+      if j>MW then MW:=j;
       exit;
     end;
+    if calcOff then calcOffset;
     HaveTagHeader:=false; HaveVideoHeader:=false; HaveAudioHeader:=false;
     AddItem(LOCstr_InfoFileName,FileName);
-    if length(FileFormat)>0 then
-      AddItem(LOCstr_InfoFileFormat,FileFormat);
-    if length(PlaybackTime)>0 then
-      AddItem(LOCstr_InfoPlaybackTime,PlaybackTime);
+    if length(FileFormat)>0 then AddItem(LOCstr_InfoFileFormat,FileFormat);
+    if length(PlaybackTime)>0 then AddItem(LOCstr_InfoPlaybackTime,PlaybackTime);
     for i:=0 to 9 do
       with ClipInfo[i] do
         if (length(Key)>0) AND (length(Value)>0) then T(Key, Value);
-    if length(Video.Decoder)>0 then
-      V(LOCstr_InfoDecoder, Video.Decoder);
-    if length(Video.Codec)>0 then
-      V(LOCstr_InfoCodec, Video.Codec);
-    if Video.Bitrate<>0 then
-      V(LOCstr_InfoBitrate, IntToStr(Video.Bitrate DIV 1000)+' kbps');
-    if (Video.Width<>0) AND (Video.Height<>0) then
-      V(LOCstr_InfoVideoSize, IntToStr(Video.Width)+' x '+IntToStr(Video.Height));
-    if (Video.FPS>0.01) then begin
-      str(Video.FPS:0:3,s); V(LOCstr_InfoVideoFPS, s+' fps');
-    end;
-    if (Video.Aspect>0.01) then begin
-      V(LOCstr_InfoVideoAspect, FormatAspectRatio(Video.Aspect));
-    end;
-    if length(Audio.Decoder)>0 then
-      A(LOCstr_InfoDecoder, Audio.Decoder);
-    if length(Audio.Codec)>0 then
-      A(LOCstr_InfoCodec, Audio.Codec);
-    if Audio.Bitrate<>0 then
-      A(LOCstr_InfoBitrate, IntToStr(Audio.Bitrate DIV 1000)+' kbps');
-    if Audio.Rate<>0 then  
-      A(LOCstr_InfoAudioRate, IntToStr(Audio.Rate)+' Hz');
-    if Audio.Channels<>0 then
-      A(LOCstr_InfoAudioChannels, IntToStr(Audio.Channels));
+    if length(Video.Decoder)>0 then V(LOCstr_InfoDecoder, Video.Decoder);
+    if length(Video.Codec)>0 then V(LOCstr_InfoCodec, Video.Codec);
+    if Video.Bitrate<>0 then V(LOCstr_InfoBitrate, IntToStr(Video.Bitrate DIV 1000)+' kbps');
+    if (Video.Width<>0) AND (Video.Height<>0) then V(LOCstr_InfoVideoSize, IntToStr(Video.Width)+' x '+IntToStr(Video.Height));
+    if (Video.FPS>0.01) then begin str(Video.FPS:0:3,s); V(LOCstr_InfoVideoFPS, s+' fps'); end;
+    if (Video.Aspect>0.01) then begin V(LOCstr_InfoVideoAspect, FormatAspectRatio(Video.Aspect)); end;
+    if length(Audio.Decoder)>0 then A(LOCstr_InfoDecoder, Audio.Decoder);
+    if length(Audio.Codec)>0 then A(LOCstr_InfoCodec, Audio.Codec);
+    if Audio.Bitrate<>0 then A(LOCstr_InfoBitrate, IntToStr(Audio.Bitrate DIV 1000)+' kbps');
+    if Audio.Rate<>0 then A(LOCstr_InfoAudioRate, IntToStr(Audio.Rate)+' Hz');
+    if Audio.Channels<>0 then A(LOCstr_InfoAudioChannels, IntToStr(Audio.Channels));
+    Constraints.MinHeight:=Height-InfoBox.Height+InfoBox.Count*InfoBox.ItemHeight+5;
   end;
 end;
 
 procedure TInfoForm.FormShow(Sender: TObject);
 begin
-  UpdateInfo; ControlledMove:=true;
+  UpdateInfo(true); ControlledMove:=true;
   MainForm.MStreamInfo.Checked:=True;
   MainForm.BStreamInfo.Down:=True;
   if (left+width)>=Screen.Width then begin ControlledMove:=true; left:=Screen.Width-width; end;
@@ -244,30 +223,25 @@ procedure TInfoForm.InfoBoxDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 var s,t:WideString; p:integer;
 begin
+  if InfoBox.Items.Count<1 then exit;
   with InfoBox.Canvas do begin
     s:=InfoBox.Items[Index];
     if (length(s)>0) AND (s[1]='!') then begin
       Brush.Color:=clBtnFace;
       Font.Color:=clBtnText;
       Font.Style:=Font.Style+[fsBold];
-      FillRect(Rect); t:=copy(s,2,length(s));
-      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,t);
+      FillRect(Rect);
+      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,copy(s,2,length(s)));
       exit;
     end;
     p:=Pos(^I,s);
-    FillRect(Rect);
     if p>0 then begin
-      t:=copy(s,1,p-1);
-      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,t);
+      FillRect(Rect);
+      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,copy(s,1,p-1));
       t:=copy(s,p+1,length(s));
-      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+TabOffset+10,Rect.Top+1,t);
+      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+TabOffset,Rect.Top+1,t);
     end
     else WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,s);
-    p:=InfoBox.Count*InfoBox.ItemHeight+5;
-    if p>InfoBox.Height then begin
-      Height:=Height-InfoBox.Height+p;
-      Constraints.MinHeight:=Height;
-    end;
   end;
 end;
 
@@ -294,7 +268,7 @@ end;
 
 procedure TInfoForm.TntFormResize(Sender: TObject);
 begin
-  UpdateInfo;
+   if InfoBox.Width<=MW then UpdateInfo(false);
 end;
 
 end.

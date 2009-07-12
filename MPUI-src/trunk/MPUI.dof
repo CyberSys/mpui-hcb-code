@@ -124,16 +124,16 @@ DLL=0
 Locale=1033
 CodePage=1252
 [Version Info Keys]
-CompanyName=KeyJ
+CompanyName=
 FileDescription=Windows frontend for MPlayer
 FileVersion=1.1.10.33
-InternalName=MPUI
-LegalCopyright=(C) 2005 Martin J. Fiedler
+InternalName=MPUI-hcb
+LegalCopyright=(C) 2006 - 2009 Huang chen bin
 LegalTrademarks=
 OriginalFilename=MPUI.dpr
-ProductName=MPUI: a Windows frontend for MPlayer
+ProductName=MPUI-hcb: a Windows frontend for MPlayer
 ProductVersion=1.1
-Comments=Fenny8248 Modified
+Comments=
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;

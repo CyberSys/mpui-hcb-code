@@ -1243,10 +1243,8 @@ begin
   BPlay.Down:=true;
   BStop.Enabled:=true;
   SeekBarSlider.Visible:=true;
-  //SeekBarSlider.Left:=0;
   BPause.Enabled:=true;
   BPause.Down:=false;
- // BStreamInfo.Enabled:=true;
 end;
 
 procedure TMainForm.SetupPlay;
@@ -1256,9 +1254,7 @@ begin
   IPanel.Visible:=HaveVideo and Wid;
   Seeking:=false; LTime.Cursor:=crHandPoint;
   LTime.Font.Size:=14; LTime.Top:=-2;
-  //if HaveVideo then FixSize;
-  //UpdateTime;
-  InfoForm.UpdateInfo;
+  InfoForm.UpdateInfo(true);
 end;
 
 procedure TMainForm.SetupStop;
@@ -1270,7 +1266,6 @@ begin
   IPanel.Visible:=false;
   BPause.Enabled:=false;
   BPause.Down:=false;
-  //BStreamInfo.Enabled:=false;
   Logo.Visible:=not Running;
   LEscape.Visible:=MFullscreen.Checked;
   SetMouseV(true);

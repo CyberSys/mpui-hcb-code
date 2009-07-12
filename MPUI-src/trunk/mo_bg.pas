@@ -403,12 +403,12 @@ begin
 
   with EqualizerForm do begin
     Caption:=MainForm.MEqualizer.Caption;
-    BReset.Caption:=OSD_Reset_Prompt;
+    BReset.Caption:=UTF8Decode(OSD_Reset_Prompt);
     BClose.Caption:=OptionsForm.BClose.Caption;
-    SBri.Caption:=OSD_Brightness_Prompt;
-    SCon.Caption:=OSD_Contrast_Prompt;
-    SSat.Caption:=OSD_Saturation_Prompt;
-    SHue.Caption:=OSD_Hue_Prompt;
+    SBri.Caption:=UTF8Decode(OSD_Brightness_Prompt);
+    SCon.Caption:=UTF8Decode(OSD_Contrast_Prompt);
+    SSat.Caption:=UTF8Decode(OSD_Saturation_Prompt);
+    SHue.Caption:=UTF8Decode(OSD_Hue_Prompt);
   end;
   
   InfoForm.Caption:=UTF8Decode('Информация за клипа');

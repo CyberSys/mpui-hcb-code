@@ -98,7 +98,7 @@ procedure RegisterLocale(const _Name:WideString; const _Func:proc; _LangID:integ
 procedure ActivateLocale(Index:integer);
 
 implementation
-uses Windows, Forms, Main, Options, plist, Info, Core;
+uses Windows, Forms, Main, Options, plist, Info, Core, Equalizer;
 
 procedure RegisterLocale(const _Name:WideString; const _Func:proc; _LangID:integer; _Charset:TFontCharset);
 begin
@@ -154,6 +154,7 @@ begin
   OptionsForm.Font.Charset:=Locales[Index].Charset;
   PlaylistForm.Font.Charset:=Locales[Index].Charset;
   InfoForm.Font.Charset:=Locales[Index].Charset;
+  EqualizerForm.Font.Charset:=Locales[Index].Charset;
 
   MainForm.LEscape.Font.Charset:=Locales[Index].Charset;
   OptionsForm.LHelp.Font.Charset:=Locales[Index].Charset;
@@ -164,7 +165,7 @@ begin
   MainForm.MLanguage.Items[CurrentLocale].Checked:=true;
   Locales[Index].Func;
   OptionsForm.Localize;
-  InfoForm.UpdateInfo;
+  InfoForm.UpdateInfo(true);
   MainForm.Localize;
   case Status of
     sNone:    MainForm.LStatus.Caption:='';
