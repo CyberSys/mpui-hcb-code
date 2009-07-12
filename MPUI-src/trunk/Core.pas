@@ -1852,6 +1852,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if Wid then begin
         if not LastHaveVideo then begin
           OPanel.Visible:=true;
+          SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
           if RS and (EW<>0) and (EH<>0) then begin
             j:=Width-OPanel.Width+EW; p:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+EH;
           end
@@ -1873,7 +1874,6 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
             SetBounds(r,i,j,p);
             MSize100.Checked:=true;
           end;
-          SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
         end;
         LastHaveVideo:=true;
       end
