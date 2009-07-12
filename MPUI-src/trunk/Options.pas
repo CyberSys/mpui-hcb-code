@@ -480,11 +480,8 @@ begin
   if SoftVol<>CSoftVol.Checked then begin
     SoftVol:=CSoftVol.Checked; changed:=true;
   end;
-  
-  if (Volume>100) AND (not SoftVol) then begin
-    Volume:=100; MainForm.VolBoost.Visible:=False;
-    MainForm.VolSlider.Left:=Volume*(MainForm.VolFrame.ClientWidth-MainForm.VolSlider.Width) DIV 100;
-  end;
+
+  MainForm.UpdateVolSlider;
 
   if Dr<>CDr.Checked then begin
     Dr:=CDr.Checked; changed:=true;
@@ -685,15 +682,8 @@ begin
     GUI:=CGUI.Checked; changed:=true;
   end;
 
-  if WideDirectoryExists(ESsf.Text) then begin
-    if ShotDir<>ESsf.Text then begin
-      ShotDir:=ESsf.Text; changed:=true;
-    end;
-  end
-  else if WideCreateDir(ESsf.Text) then begin
-    if ShotDir<>ESsf.Text then begin
-      ShotDir:=ESsf.Text; changed:=true;
-    end;
+  if ShotDir<>ESsf.Text then begin
+    ShotDir:=ESsf.Text; changed:=true;
   end;
   
   RFScr:=CRFScr.Checked;

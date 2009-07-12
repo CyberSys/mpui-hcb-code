@@ -472,10 +472,10 @@ begin
               if (not IsWideStringMappableToAnsi(FName)) or (pos(',',FName)>0) then FName:=WideExtractShortPathName(FName);
               if Firstrun or (not Win32PlatformIsUnicode) then begin
                 Loadsub:=2; Loadsrt:=2;
-                AddChain(j,substring,EscapePath(EscapeParam(FName)));
+                AddChain(j,substring,Tnt_WideStringReplace(EscapeParam(FName),'\','/',[rfReplaceAll]));
               end
               else
-                SendCommand('sub_load '+EscapePath(EscapeParam(FName)));
+                SendCommand('sub_load '+Tnt_WideStringReplace(EscapeParam(FName),'\','/',[rfReplaceAll]));
             end;
           end
           else begin
@@ -555,10 +555,10 @@ begin
           if (not IsWideStringMappableToAnsi(FName)) or (pos(',',FName)>0) then FName:=WideExtractShortPathName(FName);
           if Firstrun or (not Win32PlatformIsUnicode) then begin
             Loadsub:=2; Loadsrt:=2;
-            AddChain(j,substring,EscapePath(EscapeParam(FName)));
+            AddChain(j,substring,Tnt_WideStringReplace(EscapeParam(FName),'\','/',[rfReplaceAll]));
           end
           else
-            SendCommand('sub_load '+EscapePath(EscapeParam(FName)));
+            SendCommand('sub_load '+Tnt_WideStringReplace(EscapeParam(FName),'\','/',[rfReplaceAll]));
         end;
       end
       else begin

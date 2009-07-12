@@ -22,7 +22,7 @@ uses Windows, TntWindows, SysUtils, TntSysUtils, TntSystem, Classes, Forms, Menu
      Controls,Graphics, Dialogs, MultiMon, ShlObj, TntClasses;
 
 const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
-
+const PauseInfo:array[0..1]of WideString=('=  PAUSE  =','= ÔÝÍ£ =');
 const CacheFill:array[0..4]of WideString=('Cache fill:','»º´æÌî³ä:','»º³åÌî³ä:','¾´æÌî³ä:','¾›_Ìî³ä:');
 const GenIndex:array[0..2]of WideString=('Generating Index:','ÕýÔÚÉú³ÉË÷Òý:','ÕýÔÚÉú³ÉË÷Òý:');
 
@@ -158,7 +158,6 @@ function CheckOption(OPTN:WideString):boolean;
 function SecondsToTime(Seconds:integer):String;
 function TimeToSeconds(TimeCode:string):integer;
 function EscapeParam(const Param:widestring):widestring;
-function EscapePath(Path:WideString):WideString;
 function CheckSubfont(Sfont:WideString):WideString;
 function CheckInfo(const Map:array of WideString; Value:WideString):integer;
 function ColorToStr(Color:Longint):WideString;
@@ -179,7 +178,9 @@ procedure Terminate;
 procedure SendCommand(Command:String);
 procedure SendVolumeChangeCommand(Vol:integer);
 procedure ResetStreamInfo;
-function GetAbsolutePath(const BasePath,Rpath:WideString):WideString;
+function ExpandName(const BasePath, FileName:WideString):WideString;
+procedure HandleInputLine(Line:String);
+procedure HandleIDLine(ID:string; Content:WideString);
 
 implementation
 uses Main,config,plist,Info,UnRAR,Equalizer,Locale,Options,SevenZip;
@@ -205,16 +206,12 @@ var ClientWaitThread:TClientWaitThread;
     LineRepeatCount:integer;
     LastCacheFill:string;
 
-procedure HandleInputLine(Line:String); forward;
-procedure HandleIDLine(ID:string; Content:WideString); forward;
-
-function GetAbsolutePath(const BasePath,Rpath:WideString):WideString;
-var s:WideString;
+function ExpandName(const BasePath, FileName:WideString):WideString;
 begin
-  s:=WideGetCurrentDir;
-  WideSetCurrentDir(BasePath);
-  Result:= WideExpandFileName(Rpath);
-  WideSetCurrentDir(s);
+  Result:=FileName;
+  if Pos(':',FileName)>0 then exit;
+  if (length(FileName)>1) AND ((FileName[1]='/') OR (FileName[1]='\')) then exit;
+  Result:=WideExpandUNCFileName(BasePath+FileName);
 end;
 
 function CheckMenu(Menu:TMenuItem; ID:integer):integer;
@@ -416,13 +413,6 @@ begin
   if Pos(#32,Param)>0 then Result:=#34+Param+#34 else Result:=Param;
 end;
 
-function EscapePath(Path:WideString):WideString;
-var i:integer;
-begin
-  for i:=1 to length(Path) do if Path[i]='\' then Path[i]:='/';
-  Result:=Path;
-end;
-
 function SecondsToTime(Seconds:integer):String;
 var m,s:integer;
 begin
@@ -453,7 +443,7 @@ end;
 function CheckSubfont(Sfont:WideString):WideString;
 var i:integer; s:WideString;
 begin
-  if WideFileExists(Sfont) then begin
+  if WideFileExists(ExpandName(HomeDir,Sfont)) then begin
     Result:=Sfont;
     if not IsWideStringMappableToAnsi(Sfont) then Result:=WideExtractShortPathName(Sfont);
   end
@@ -482,7 +472,7 @@ begin
 end;
 
 function ColorToStr(Color:Longint):WideString;
-var i:integer; s:string;
+var i:integer; s:WideString;
 begin
   s:=Tnt_WideFormat('%.8x',[Color]);
   for i:=length(s) downto 1 do Result:=Result+s[i];
@@ -586,7 +576,7 @@ begin
   FirstChance:=true; afCount:=0; afChain:='';
   ClientWaitThread:=TClientWaitThread.Create(true);
   Processor:=TProcessor.Create(true);
-  if ML then CmdLine:=EscapeParam(MplayerLocation)
+  if ML then CmdLine:=EscapeParam(ExpandName(HomeDir,MplayerLocation))
   else CmdLine:=EscapeParam(HomeDir+'mplayer.exe');
   if not GUI then CmdLine:=CmdLine+' -nogui -noconsolecontrols';
   CmdLine:=CmdLine+' -slave -identify -noquiet -nofs -nomsgmodule -term-osd-esc "[Fenny8248] "'
@@ -708,7 +698,7 @@ begin
     end;
 
     s:=Tnt_WideLowerCase(WideExtractFileExt(MediaURL));
-    j:=GetAbsolutePath(HomeDir,LyricDir);
+    j:=ExpandName(HomeDir,LyricDir);
     if CheckInfo(ZipType,s)>-1 then begin
       i:=Pos(':',DisplayURL);
       if i>0 then ArcPW:=copy(DisplayURL,i+1,length(DisplayURL)-i)
@@ -773,10 +763,8 @@ begin
         WaitForSingleObject(UNRART.Handle,100);
         if WideFileExists(MediaURL) then begin
           WaitForSingleObject(UNRART.Handle,1000);
-          Application.ProcessMessages;
           break;
         end;
-        Application.ProcessMessages;
       end;
       if not WideFileExists(MediaURL) then begin
        MainForm.LStatus.Caption:=''; exit;
@@ -859,10 +847,11 @@ begin
     3: AddChain(afCount,afChain,'pan=2:0.65:0.35:0.35:0.65');
   end;
   if Wadsp then begin
-    s:=Trim(WadspL);
-    if WideFileExists(WadspL) and ((not IsWideStringMappableToAnsi(WadspL)) or (pos(',',WadspL)>0)) then
-      s:=WideExtractShortPathName(WadspL);
-    if s<>'' then AddChain(afCount,afChain,'wadsp='+EscapeParam(s));
+    s:=ExpandName(HomeDir,WadspL);
+    if WideFileExists(s) then begin
+      if (not IsWideStringMappableToAnsi(s)) or (pos(',',s)>0) then s:=WideExtractShortPathName(s);
+      AddChain(afCount,afChain,'wadsp='+EscapeParam(s));
+    end;
   end;
   if Volnorm then AddChain(afCount,afChain,'volnorm');
 
@@ -984,7 +973,7 @@ begin
   si.hStdOutput:=DummyPipe1;
   si.hStdError:=DummyPipe1;
 
-  s:=GetAbsolutePath(HomeDir,ShotDir);
+  s:=ExpandName(HomeDir,ShotDir);
   if not WideDirectoryExists(s) then
   if not WideCreateDir(s) then s:=TempDir;
   
@@ -1058,13 +1047,15 @@ begin
 end;
 
 procedure TProcessor.Process;
-var LastEOL,EOL,Len:integer;
+var LastEOL,EOL,Len:integer; s:String;
 begin
   Len:=length(Data);
   LastEOL:=0;
   for EOL:=1 to Len do
-    if (EOL>LastEOL) AND ((Data[EOL]=#13) OR (Data[EOL]=#10)) then begin
-      HandleInputLine(Copy(Data,LastEOL+1,EOL-(LastEOL+1)));
+    if (EOL>LastEOL) AND (Data[EOL] in [#13,#10]) then begin
+      //HandleInputLine(Copy(Data,LastEOL+1,EOL-(LastEOL+1)));
+      s:=Copy(Data,LastEOL+1,EOL-(LastEOL+1));
+      SendMessage(MainForm.Handle,$0402,integer(true),integer(@s[1]));
       LastEOL:=EOL;
       if (LastEOL<Len) AND (Data[LastEOL+1]=#10) then inc(LastEOL);
     end;
@@ -1079,7 +1070,7 @@ begin
   Data:='';
   repeat
     BytesRead:=0;
-    if not ReadFile(hPipe,Buffer[0],BufSize,BytesRead,nil) then break;
+    if Terminated or (not ReadFile(hPipe,Buffer[0],BufSize,BytesRead,nil)) then break;
     Buffer[BytesRead]:=#0;
     Data:=Data+Buffer;
     Synchronize(Process);
@@ -1128,7 +1119,8 @@ procedure SendCommand(Command:String);
 var Dummy:cardinal;
 begin
   if (ClientProcess=0) OR (WritePipe=0) OR (not Win32PlatformIsUnicode) then exit;
-  Command:=Command+#10;
+  if Status=sPaused then Command:='pausing_keep '+Command+#10
+  else Command:=Command+#10;
   WriteFile(WritePipe,Command[1],length(Command),Dummy,nil);
 end;
 
@@ -1567,7 +1559,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
              Loadsrt:=1;
            end;
         2: begin
-             if Pos(EscapePath(TempDir),s)>0 then begin
+             if Pos(Tnt_WideStringReplace(TempDir,'\','/',[rfReplaceAll]),s)>0 then begin
                AddChain(subcount,substring,EscapeParam(s));
                Lastsubcount:=subcount;
              end;
@@ -1957,7 +1949,14 @@ begin
           MainForm.UpdateParams; MainForm.NextFile(1,psPlayed);
         end; }
         if Mainform.MSIE.Checked then begin
-          if (p=0) and (Bp>p) and (Bp<TotalTime) then SendCommand('seek '+IntToStr(Bp));
+          if (p=0) and (Bp>p) and (Bp<TotalTime) then begin
+            if Status=sPaused then SendCommand('seek '+IntToStr(Bp))
+            else begin
+              SendCommand('mute 1');
+              SendCommand('seek '+IntToStr(Bp));
+              SendCommand('mute 0');
+            end;
+          end;
           if (EP>0) and (SecondPos=Ep) then begin
             if HaveChapters then begin
               key:=VK_HOME;
@@ -1979,10 +1978,12 @@ begin
     if Status=sPlaying then begin
       Status:=sPaused; MainForm.BPause.Down:=true;
       MainForm.BPlay.Down:=false; MainForm.UpdateStatus;
+      SendCommand('mute 1');
     end;
     exit;
   end;
-
+  for i:=0 to 1 do if Pos(PauseInfo[i],Line)<>0 then exit;
+  
   // normal line handling: check for "cache fill"
   for i:=0 to 4 do begin
     r:=length(CacheFill[i]);
@@ -2260,7 +2261,10 @@ begin
     end}
     else if (Copy(ID,1,14)='CLIP_INFO_NAME') AND (length(ID)=15) then begin
       r:=Ord(ID[15])-Ord('0');
-      if (r>=0) AND (r<=9) then ClipInfo[r].Key:=Content;
+      if (r>=0) AND (r<=9) then begin
+        if length(Content)>0 then Tnt_CharUpperW(PWideChar(Content[1]));
+        ClipInfo[r].Key:=Content;
+      end;
     end
     else if (Copy(ID,1,15)='CLIP_INFO_VALUE') AND (length(ID)=16) then begin
       r:=Ord(ID[16])-Ord('0');
@@ -2294,7 +2298,7 @@ end;
 begin
   DecimalSeparator:='.'; Wadsp:=false; GUI:=false; HaveMsg:=false; Uni:=false;
   MFunc:=0; ETime:=false; InSubDir:=true; ML:=false; Pri:=true; HaveLyric:=0;
-  AudiochannelsID:=0; OSDLevel:=1; Ch:=0; Wid:=true; Fd:=false; oneM:=true;
+  AudiochannelsID:=0; OSDLevel:=0; Ch:=0; Wid:=true; Fd:=false; oneM:=true;
   Deinterlace:=0; Aspect:=0; Postproc:=0; IntersubCount:=0; UpdatePW:=false;
   AudioOut:=2; AudioDev:=0; Expand:=0; SPDIF:=false; DirHIdx:=0; DirHSub:=0;
   ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=false; Fol:=2;

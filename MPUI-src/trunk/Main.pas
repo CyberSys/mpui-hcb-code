@@ -454,6 +454,7 @@ type
     procedure UpdateMenuCheck;
     procedure CreateParams(var Params: TCreateParams); override;
     Procedure PassMsg(var msg: Tmessage); message $0401;
+    Procedure HandleLog(var msg: Tmessage); message $0402;
   end;
 
   PDDEnumCallbackEx=function(lpGuid:PGUID; lpDriverDescription,lpDriverName:PChar; lpContext:pointer; hm:HMONITOR):LongBool; stdcall;
@@ -693,10 +694,10 @@ begin
               if (not IsWideStringMappableToAnsi(t)) or (pos(',',t)>0) then t:=WideExtractShortPathName(t);
               if not Win32PlatformIsUnicode then begin
                 Loadsub:=2; Loadsrt:=2;
-                AddChain(s,substring,EscapePath(EscapeParam(t)));
+                AddChain(s,substring,Tnt_WideStringReplace(EscapeParam(t),'\','/',[rfReplaceAll]));
               end
               else
-                SendCommand('sub_load '+EscapePath(EscapeParam(t)));
+                SendCommand('sub_load '+Tnt_WideStringReplace(EscapeParam(t),'\','/',[rfReplaceAll]));
             end;
           end;
         end;
@@ -722,6 +723,11 @@ procedure TMainForm.CreateParams(var Params: TCreateParams);
 begin
   inherited CreateParams(Params);
   Params.WinClassName:='fengying';
+end;
+
+procedure TMainForm.HandleLog(var msg:TMessage);
+begin
+  HandleInputLine(String(msg.LParam));
 end;
 
 procedure TMainForm.PassMsg(var msg:Tmessage);
@@ -782,6 +788,7 @@ begin
   if Status=sPaused then begin
     BPause.Down:=false; BPlay.Down:=true;
     Status:=sPlaying; UpdateStatus;
+    SendCommand('mute 0');
   end;
 end;
 
@@ -802,7 +809,7 @@ end;
 
 procedure TMainForm.SetVolumeRel(Increment:integer);
 begin
-  if mute then exit;
+  if mute or (Status=sPaused) then exit;
   if (Volume>100) OR ((Volume=100) AND (Increment>0))
     then Increment:=Increment*10 DIV 3;  // bigger volume change steps if >100%
   inc(Volume, Increment);
@@ -819,7 +826,12 @@ var i,j:integer;
   end;
   procedure HandleSeekCommand(const Command:string); begin
     if not Win32PlatformIsUnicode then exit;
-    SendCommand(Command);
+    if Status=sPaused then SendCommand(Command)
+    else begin 
+      SendCommand('mute 1');
+      SendCommand(Command);
+      SendCommand('mute 0');
+    end;
     if HaveChapters then Sendcommand('get_property chapter');
     SendCommand('get_time_length');
   end;
@@ -1325,10 +1337,15 @@ begin
   SeekBarSlider.BevelInner:=bvLowered;
   {if (CID>1) and HaveChapters then SendCommand('seek '+IntToStr(LastPos-SecondPos))
   else SendCommand('seek '+IntToStr(LastPos)+' 2');}
-  SendCommand('seek '+IntToStr(LastPos-SecondPos));
+  if Status=sPaused then SendCommand('seek '+IntToStr(LastPos-SecondPos))
+  else begin
+    SendCommand('mute 1');
+    SendCommand('seek '+IntToStr(LastPos-SecondPos));
+    SendCommand('mute 0');
+  end;
   if HaveVideo then SendCommand('osd_show_text '+IntToStr(100*LastPos DIV TotalTime)+'%');
   Seeking:=false; SeekBarSlider.ShowHint:=true;
-  UpdateSeekBarAt:=GetTickCount()+1000;
+  UpdateSeekBarAt:=GetTickCount()+500;
   if not Win32PlatformIsUnicode then Restart;
 end;
 
@@ -1350,9 +1367,14 @@ begin
   if MaxPos=0 then exit;
   {if (CID>1) and HaveChapters then SendCommand('seek '+IntToStr((TotalTime*X DIV MaxPos)-SecondPos))
   else SendCommand('seek '+IntToStr(TotalTime*X DIV MaxPos)+' 2'); }
-  SendCommand('seek '+IntToStr((TotalTime*X DIV MaxPos)-SecondPos));
+  if Status=sPaused then SendCommand('seek '+IntToStr((TotalTime*X DIV MaxPos)-SecondPos))
+  else begin
+    SendCommand('mute 1');
+    SendCommand('seek '+IntToStr((TotalTime*X DIV MaxPos)-SecondPos));
+    SendCommand('mute 0');
+  end;
   if HaveVideo then SendCommand('osd_show_text '+IntToStr(100*X DIV MaxPos)+'%');
-  SeekBarSlider.Left:=X; UpdateSeekBarAt:=GetTickCount()+1000;
+  SeekBarSlider.Left:=X; UpdateSeekBarAt:=GetTickCount()+500;
   if not Win32PlatformIsUnicode then Restart;
 end;
 
@@ -2217,7 +2239,14 @@ procedure TMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 var i,j:integer;
 begin
-  if ssCtrl in Shift then SendCommand('seek '+IntToStr(WheelDelta DIV 20))
+  if ssCtrl in Shift then begin
+    if Status=sPaused then SendCommand('seek '+IntToStr(WheelDelta DIV 20))
+    else begin
+      SendCommand('mute 1');
+      SendCommand('seek '+IntToStr(WheelDelta DIV 20));
+      SendCommand('mute 0');
+    end;
+  end
   else begin
     case MFunc of
       0: SetVolumeRel(WheelDelta DIV 40);
@@ -2698,10 +2727,10 @@ begin
             if (not IsWideStringMappableToAnsi(j)) or (pos(',',j)>0) then j:=WideExtractShortPathName(j);
             if not Win32PlatformIsUnicode then begin
               Loadsub:=2; Loadsrt:=2;
-              AddChain(s,substring,EscapePath(EscapeParam(j)));
+              AddChain(s,substring,Tnt_WideStringReplace(EscapeParam(j),'\','/',[rfReplaceAll]));
             end
             else
-              SendCommand('sub_load '+EscapePath(EscapeParam(j)));
+              SendCommand('sub_load '+Tnt_WideStringReplace(EscapeParam(j),'\','/',[rfReplaceAll]));
           end;
         end;
       end;
@@ -2810,7 +2839,14 @@ begin
     if TotalTime>0 then begin
       UpdateSkipBar:=false;
       if (Bp>0) and (Bp<TotalTime) then begin
-        if Bp>SecondPos then SendCommand('seek '+IntToStr(Bp-SecondPos));
+        if Bp>SecondPos then begin
+          if Status=sPaused then SendCommand('seek '+IntToStr(Bp-SecondPos))
+          else begin
+            SendCommand('mute 1');
+            SendCommand('seek '+IntToStr(Bp-SecondPos));
+            SendCommand('mute 0');
+          end;
+        end;
         SkipBar.Left:=SeekBar.Left+SeekBar.Width*Bp DIV TotalTime;
       end
       else SkipBar.Left:=SeekBar.Left;

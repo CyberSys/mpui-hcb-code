@@ -561,14 +561,6 @@ begin
   Changed;
 end;
 
-function ExpandName(const BasePath, FileName:WideString):WideString;
-begin
-  Result:=FileName;
-  if Pos(':',FileName)>0 then exit;
-  if (length(FileName)>1) AND ((FileName[1]='/') OR (FileName[1]='\')) then exit;
-  Result:=WideExpandUNCFileName(BasePath+FileName);
-end;
-
 function TPlaylist.AddM3U(const FileName:WideString; FileExtIndex:integer):boolean;
 var BasePath,s:WideString;
 procedure AddToPls(str:WideString);
@@ -1160,27 +1152,28 @@ begin
 end;
 
 procedure TPlaylistForm.BSaveClick(Sender: TObject);
-var FList:TStringList; i,h:integer; FileName:WideString;
+var FList:TStringList; i,h:integer; FN:WideString;
 begin
-  SaveDialog.Title:=BSave.Hint;
-  if SaveDialog.Execute then begin
-    FileName:=SaveDialog.FileName;
-    FList:=TStringList.Create;
-    for i:=0 to Playlist.Count-1 do
-      if SaveDialog.FilterIndex=1 then FList.Add(UTF8Encode(Playlist[i].FullURL))
-      else FList.Add(Playlist[i].FullURL);
-    if not WideFileExists(FileName) then begin
-      h:=WideFileCreate(FileName);
-      if GetLastError=0 then FileName:=WideExtractShortPathName(FileName);
-      if h<0 then
-        FileName:=WideExtractShortPathName(WideExtractFilePath(FileName))+WideExtractFileName(FileName)
-      else CloseHandle(h);
-    end
-    else begin
-      if WideFileIsReadOnly(FileName) then WideFileSetReadOnly(FileName,false);
-      FileName:=WideExtractShortPathName(FileName);
+  With SaveDialog do begin
+    Title:=BSave.Hint;
+    if Execute then begin
+      FList:=TStringList.Create;
+      if Tnt_WideLowerCase(WideExtractFileExt(FileName))='.m3u8' then
+        for i:=0 to Playlist.Count-1 do FList.Add(UTF8Encode(Playlist[i].FullURL))
+      else for i:=0 to Playlist.Count-1 do FList.Add(Playlist[i].FullURL);
+      if not WideFileExists(FileName) then begin
+        h:=WideFileCreate(FileName);
+        if GetLastError=0 then FN:=WideExtractShortPathName(FileName);
+        if h<0 then
+          FN:=WideExtractShortPathName(WideExtractFilePath(FileName))+WideExtractFileName(FileName)
+        else CloseHandle(h);
+      end
+      else begin
+        if WideFileIsReadOnly(FileName) then WideFileSetReadOnly(FileName,false);
+        FN:=WideExtractShortPathName(FileName);
+      end;
+      FList.SaveToFile(FN);
     end;
-    FList.SaveToFile(FileName);
   end;
 end;
 
