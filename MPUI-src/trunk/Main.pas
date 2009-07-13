@@ -726,8 +726,12 @@ begin
 end;
 
 procedure TMainForm.HandleLog(var msg:TMessage);
+var t:String;
 begin
-  HandleInputLine(String(msg.LParam));
+  SetLength(t,msg.LParam);
+  GlobalGetAtomName(msg.WParam,@t[1],msg.LParam+1);
+  GlobalDeleteAtom(msg.WParam);
+  HandleInputLine(t);
 end;
 
 procedure TMainForm.PassMsg(var msg:Tmessage);

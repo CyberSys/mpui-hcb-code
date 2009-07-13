@@ -1046,15 +1046,15 @@ begin
 end;
 
 procedure TProcessor.Process;
-var LastEOL,EOL,Len:integer; s:String;
+var LastEOL,EOL,Len:integer; S:String;
 begin
   Len:=length(Data);
   LastEOL:=0;
   for EOL:=1 to Len do
     if (EOL>LastEOL) AND (Data[EOL] in [#13,#10]) then begin
       //HandleInputLine(Copy(Data,LastEOL+1,EOL-(LastEOL+1)));
-      s:=Copy(Data,LastEOL+1,EOL-(LastEOL+1));
-      SendMessage(MainForm.Handle,$0402,integer(true),integer(@s[1]));
+      S:=Copy(Data,LastEOL+1,EOL-(LastEOL+1));
+      PostMessage(MainForm.Handle,$0402,GlobalAddAtom(@S[1]),Length(S));
       LastEOL:=EOL;
       if (LastEOL<Len) AND (Data[LastEOL+1]=#10) then inc(LastEOL);
     end;
@@ -1072,7 +1072,8 @@ begin
     if Terminated or (not ReadFile(hPipe,Buffer[0],BufSize,BytesRead,nil)) then break;
     Buffer[BytesRead]:=#0;
     Data:=Data+Buffer;
-    Synchronize(Process);
+    //Synchronize(Process);
+    Process;
   until BytesRead=0;
 end;
 
