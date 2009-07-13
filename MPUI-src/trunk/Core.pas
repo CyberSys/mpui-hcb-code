@@ -204,7 +204,6 @@ var ClientWaitThread:TClientWaitThread;
     ExitCode:DWORD;
     LastLine:string;
     LineRepeatCount:integer;
-    LastCacheFill:string;
 
 function ExpandName(const BasePath, FileName:WideString):WideString;
 begin
@@ -937,7 +936,7 @@ begin
   if Loadsub<>2 then Loadsub:=-1;
   ExplicitStop:=0; Dreset:=false;
   Firstrun:=false;
-  ResetStreamInfo; LastCacheFill:='';
+  ResetStreamInfo;
   ChkVideo:=true; ChkAudio:=true;
   ChkStartPlay:=true; HaveChapters:=false;
   StreamInfo.FileName:=DisplayURL;
@@ -1990,10 +1989,7 @@ begin
     if len<(r+7) then continue;
     p:=pos(CacheFill[i],Line);
     if (p=1) and (Line[r+7]='%') then begin
-      if Copy(Line,r+1,6)=LastCacheFill then exit;
       MainForm.LStatus.Caption:=Line;
-      if (Copy(OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1],1,r)=CacheFill[i]) then
-        OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1]:=Line;
       Sleep(0);  // "yield"
       exit;
     end;
@@ -2005,10 +2001,7 @@ begin
     if len<(r+6) then continue;
     p:=pos(GenIndex[i],Line);
     if (p=1) and (Line[r+6]='%') then begin
-      if Copy(Line,r+1,6)=LastCacheFill then exit;
       MainForm.LStatus.Caption:=Line;
-      if (Copy(OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1],1,r)=GenIndex[i]) then
-        OptionsForm.TheLog.Lines[OptionsForm.TheLog.Lines.Count-1]:=Line;
       Sleep(0);  // "yield"
       exit;
     end;

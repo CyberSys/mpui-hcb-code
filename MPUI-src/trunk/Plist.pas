@@ -571,7 +571,7 @@ begin
    end
    else begin
      str:=ExpandName(BasePath,str);
-     if WideFileExists(str) then AddFiles(str)
+     if (Pos('://',str)>1) or WideFileExists(str) then AddFiles(str)
      else exit;
    end;
    Result:=true;
