@@ -167,7 +167,8 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
 begin
   with StreamInfo do begin
     if not Visible then exit;
-    InfoBox.Items.Clear; ClipText:='';
+    InfoBox.Items.Clear;
+    ClipText:=''; MW:=0;
     if length(FileName)=0 then begin
       InfoBox.Items.Add(LOCstr_NoInfo);
       j:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_NoInfo)+20;
