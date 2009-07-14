@@ -1571,7 +1571,7 @@ begin
   index:=(Sender as TMenuItem).Parent.Parent.Tag;
   (Sender as TMenuItem).Checked:=True;
   if UseekC and (TID=index) then
-    SendCommand('seek_chapter '+IntToStr(CID)+' 1')
+    SendCommand('seek_chapter '+IntToStr(CID-1)+' 1')
   else begin
     TID:=index; Dreset:=true;
     Restart;
