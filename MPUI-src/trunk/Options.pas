@@ -190,11 +190,10 @@ type
     procedure SOsdfontClick(Sender: TObject);
     procedure BSsfClick(Sender: TObject);
     procedure BFontClick(Sender: TObject);
-    procedure TAboutShow(Sender: TObject);
-    procedure TLogShow(Sender: TObject);
-    procedure CommandKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
     procedure CommandKeyPress(Sender: TObject; var Key: Char);
+    procedure CommandKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure TabChange(Sender: TObject);
   private
     { Private declarations }
     HelpFile:WideString;
@@ -208,11 +207,13 @@ type
     procedure LoadValues;
     procedure AddLine(const Line:Widestring);
   end;
-  
+
   PDSEnumCallback = function(lpGuid:PGUID; lpcstrDescription,lpcstrModule:PChar; lpContext:pointer):LongBool; stdcall;
 
 procedure LoadDsLibrary;
 procedure UnLoadDsLibrary;
+function GetProductVersion(const FileName:WideString):WideString;
+function GetFileVersion(const FileName:WideString):WideString;
 
 var
   OptionsForm: TOptionsForm; IsDsLoaded:THandle=0;
@@ -280,6 +281,7 @@ procedure TOptionsForm.Localize;
 var i:integer;
 begin
   with MainForm do begin
+    MTitle.Caption:=LOCstr_Title;
     LAspect.Caption:=MAspect.Caption;
     CAspect.Items[0]:=MAutoAspect.Caption;
     LDeinterlace.Caption:=MDeinterlace.Caption;
@@ -301,7 +303,7 @@ end;
 
 procedure TOptionsForm.FormShow(Sender: TObject);
 begin
-  LoadValues; Changed:=false;
+  LoadValues; TabChange(nil); Changed:=false;
   if ML then HelpFile:=WideExtractFileDir(MplayerLocation)+'\man_page.html'
   else HelpFile:=HomeDir+'man_page.html';
   if not WideFileExists(HelpFile) then begin
@@ -995,12 +997,6 @@ begin
       1: ELyric.Text:=s;
     end;
   end;
-  {  if AddDirForm.Execute(false) then begin
-    case (Sender as TComponent).Tag of
-      0: ESsf.Text:=AddDirForm.DirView.SelectedFolder.PathName;
-      1: ELyric.Text:=AddDirForm.DirView.SelectedFolder.PathName;
-    end;
-  end;}
 end;
 
 procedure TOptionsForm.BFontClick(Sender: TObject);
@@ -1019,39 +1015,10 @@ begin
   end;
 end;
 
-procedure TOptionsForm.TAboutShow(Sender: TObject);
-begin
-  MTitle.Caption:=LOCstr_Title;
-  if ML then VersionMPlayer.Caption:=GetProductVersion(MplayerLocation)
-  else VersionMPlayer.Caption:=GetProductVersion(HomeDir+'mplayer.exe');
-  VersionMPUI.Caption:=GetFileVersion(WideParamStr(0));
-end;
-
-procedure TOptionsForm.TLogShow(Sender: TObject);
-begin
- TheLog.Perform(EM_LINESCROLL,0,32767); Command.Focused;
-end;
-
 procedure TOptionsForm.AddLine(const Line:Widestring);
 begin
   TheLog.Lines.Add(Line);
   if Visible then TheLog.Perform(EM_LINESCROLL,0,32767);
-end;
-
-procedure TOptionsForm.CommandKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  if (Key=VK_UP) AND (HistoryPos>0) then begin
-    dec(HistoryPos);
-    Command.Text:=History[HistoryPos];
-  end;
-  if (Key=VK_DOWN) AND (HistoryPos<History.Count) then begin
-    inc(HistoryPos);
-    if HistoryPos>=History.Count
-      then Command.Text:=''
-      else Command.Text:=History[HistoryPos];
-  end;
-  if Key=VK_F12 then Close;
 end;
 
 procedure TOptionsForm.CommandKeyPress(Sender: TObject; var Key: Char);
@@ -1063,6 +1030,35 @@ begin
     History.Add(Command.Text);
     HistoryPos:=History.Count;
     Command.Text:='';
+  end;
+end;
+
+procedure TOptionsForm.CommandKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=VK_UP) AND (HistoryPos>0) then begin
+    dec(HistoryPos);
+    Command.Text:=History[HistoryPos];
+    Command.SelStart:=Command.GetTextLen;
+  end;
+  if (Key=VK_DOWN) AND (HistoryPos<History.Count) then begin
+    inc(HistoryPos);
+    if HistoryPos>=History.Count then Command.Text:=''
+    else Command.Text:=History[HistoryPos];
+    Command.SelStart:=Command.GetTextLen;
+  end;
+  if Key=VK_F12 then Close;
+end;
+
+procedure TOptionsForm.TabChange(Sender: TObject);
+begin
+  case Tab.TabIndex of
+    4: begin Command.SetFocus; TheLog.Perform(EM_LINESCROLL,0,32767); end;
+    6: begin 
+         if ML then VersionMPlayer.Caption:=GetProductVersion(MplayerLocation)
+         else VersionMPlayer.Caption:=GetProductVersion(HomeDir+'mplayer.exe');
+         VersionMPUI.Caption:=GetFileVersion(WideParamStr(0));
+       end;
   end;
 end;
 
