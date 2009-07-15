@@ -116,9 +116,33 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
   end;
 
   procedure AddItem(Key,Value:WideString);
-  var d:integer;
+  var d,t,w:integer; rec:TSize;
+  const Lset=[WChar('.'),WChar('('),WChar('['),WChar('{')];
+  const Rset=[WChar(' '),WChar(','),WChar('_'),WChar('-'),
+              WChar(')'),WChar(']'),WChar('}')];
   begin
     Key:=Key+':';
+    ClipText:=ClipText+Key+^I+Value+^M^J;
+    j:=TabOffset+20+WideCanvasTextWidth(InfoBox.Canvas,Value);
+    if j>MW then MW:=j;
+    repeat
+      w:=length(value);
+      GetTextExtentExPointW(InfoBox.Canvas.Handle,@Value[1],w,InfoBox.Width-TabOffset-10,@d,nil,rec);
+      if d<w then begin
+        if Value[d+1] in Rset then t:=d+1
+        else if Value[d] in Lset then t:=d-1
+        else t:=d;
+        InfoBox.Items.Add(Key+^I+copy(Value,1,t));
+        Value:=copy(Value,t+1,w);
+        Key:='';
+      end
+      else begin
+        InfoBox.Items.Add(Key+^I+Value);
+        break;
+      end;
+    until False;
+
+{    Key:=Key+':';
     ClipText:=ClipText+Key+^I+Value+^M^J;
     j:=TabOffset+20+WideCanvasTextWidth(InfoBox.Canvas,Value);
     if j>MW then MW:=j;
@@ -126,8 +150,11 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
       for d:=1 to length(Value) do begin
         j:=WideCanvasTextWidth(InfoBox.Canvas,copy(Value,1,d));
         if j>(InfoBox.Width-TabOffset-10) then begin
-          InfoBox.Items.Add(Key+^I+copy(Value,1,d-1));
-          Value:=copy(Value,d,length(Value));
+          if Value[d] in Rset then t:=d+1
+          else if Value[d-1] in Lset then t:=d-1
+          else t:=d;
+          InfoBox.Items.Add(Key+^I+copy(Value,1,t-1));
+          Value:=copy(Value,t,length(Value));
           Key:=''; break;
         end;
       end;
@@ -135,7 +162,8 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
         InfoBox.Items.Add(Key+^I+Value);
         break;
       end;
-    until False;
+    until False; }
+
   end;
 
   procedure AddHeader(var Flag:boolean; const Caption:WideString);

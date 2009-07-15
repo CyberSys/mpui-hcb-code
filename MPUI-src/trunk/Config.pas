@@ -39,13 +39,13 @@ implementation
 uses SysUtils, TntSysUtils, INIFiles, Windows;
 
 procedure Load(FileName:WideString; Mode:integer);
-var INI:TINIFile;
+var INI:TMemIniFile;
 begin
   if not WideFileExists(FileName) then begin
     FileName:=AppdataDir+WideExtractFileName(FileName);
     if not WideFileExists(FileName) then exit;
   end;
-  INI:=TINIFile.Create(WideExtractShortPathName(FileName));
+  INI:=TMemIniFile.Create(WideExtractShortPathName(FileName));
   with INI do begin
     case mode of
       0: begin
@@ -154,7 +154,7 @@ begin
 end;
 
 procedure Save(FileName:WideString; Mode:integer);
-var INI:TINIFile; h:integer;
+var INI:TMemIniFile; h:integer;
 begin
   if NoAccess>0 then exit;
   if (NoAccess>0) or (not WideFileExists(FileName)) then
@@ -171,7 +171,7 @@ begin
     FileName:=WideExtractShortPathName(FileName);
   end;
 
-  INI:=TINIFile.Create(FileName);
+  INI:=TMemIniFile.Create(FileName);
   with INI do try
     case mode of
       0: begin
@@ -280,6 +280,7 @@ begin
            WriteInteger(SectionName,'CHeight',Core.NH);
          end;
     end;
+    INI.UpdateFile;
   finally
     Free;
   end;
