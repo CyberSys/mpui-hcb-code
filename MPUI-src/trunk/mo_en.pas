@@ -382,6 +382,7 @@ begin
     TFdel.Caption:='Delete';
     TFSet.Caption:='Associate';
     TOther.Caption:='Other';
+    CDs.Caption:='Show logo when play audio';
   end;
   with PlaylistForm do begin
     Caption:='Playlist';

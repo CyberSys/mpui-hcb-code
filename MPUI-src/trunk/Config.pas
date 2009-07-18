@@ -117,6 +117,7 @@ begin
            Core.AutoPlay:=ReadBool(SectionName,'AutoPlay',Core.AutoPlay);
            Core.uof:=ReadBool(SectionName,'UseOSDfont',Core.uof);
            Core.GUI:=ReadBool(SectionName,'GUI',Core.GUI);
+           Core.DS:=ReadBool(SectionName,'DSize',Core.DS);
            Core.RS:=ReadBool(SectionName,'RSize',Core.RS);
            Core.RP:=ReadBool(SectionName,'RPostion',Core.RP);
            Core.SP:=ReadBool(SectionName,'SPause',Core.SP);
@@ -251,8 +252,6 @@ begin
            WriteBool  (SectionName,'GUI',Core.GUI);
            WriteBool  (SectionName,'FilterDrop',Core.FilterDrop);
            WriteBool  (SectionName,'Scroll',Core.PScroll);
-           WriteBool  (SectionName,'RSize',Core.RS);
-           WriteBool  (SectionName,'RPostion',Core.RP);
            WriteBool  (SectionName,'SPause',Core.SP);
            WriteBool  (SectionName,'DTime',Core.CT);
            WriteString(SectionName,'Params',Core.Params);
@@ -275,7 +274,12 @@ begin
            WriteInteger(SectionName,'OnTop',Core.OnTop);
            WriteBool   (SectionName,'UseUni',Core.UseUni); WriteString(SectionName,'fileAss',Core.Fass);
          end;
-      2: WriteBool  (SectionName,'instance',Core.oneM);
+      2: begin
+           WriteBool  (SectionName,'instance',Core.oneM);
+           WriteBool  (SectionName,'RSize',Core.RS);
+           WriteBool  (SectionName,'RPostion',Core.RP);
+           WriteBool  (SectionName,'DSize',Core.ds);
+         end;
       3: begin
            WriteInteger(SectionName,'CWidth',Core.NW);
            WriteInteger(SectionName,'CHeight',Core.NH);

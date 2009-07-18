@@ -382,6 +382,7 @@ begin
     TFdel.Caption:=UTF8Decode('刪除');
     TFSet.Caption:=UTF8Decode('關聯');
     TOther.Caption:=UTF8Decode('其他');
+    CDs.Caption:=UTF8Decode('播放音頻時顯示logo');
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('播放清單');

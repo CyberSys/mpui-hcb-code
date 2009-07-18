@@ -379,6 +379,7 @@ begin
     TFdel.Caption:=UTF8Decode('删除');
     TFSet.Caption:=UTF8Decode('关联');
     TOther.Caption:=UTF8Decode('其他');
+    CDs.Caption:=UTF8Decode('播放音频时显示logo')
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('播放列表');

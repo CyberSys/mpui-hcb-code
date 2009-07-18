@@ -117,9 +117,9 @@ object OptionsForm: TOptionsForm
         Caption = 'Language'
       end
       object CLanguage: TTntComboBox
-        Left = 256
+        Left = 120
         Top = 5
-        Width = 287
+        Width = 177
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -400,7 +400,7 @@ object OptionsForm: TOptionsForm
         Top = 176
         Width = 290
         Height = 17
-        Caption = 'start MPUI with last size'
+        Caption = 'Start MPUI with last size'
         ParentShowHint = False
         ShowHint = False
         TabOrder = 27
@@ -432,10 +432,21 @@ object OptionsForm: TOptionsForm
         Top = 200
         Width = 290
         Height = 17
-        Caption = 'start MPUI with last postion'
+        Caption = 'Start MPUI with last postion'
         ParentShowHint = False
         ShowHint = False
         TabOrder = 30
+      end
+      object CDs: TTntCheckBox
+        Left = 318
+        Top = 176
+        Width = 229
+        Height = 17
+        Anchors = [akTop, akRight]
+        Caption = 'Show logo when play audio'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 31
       end
     end
     object TVideo: TTntTabSheet

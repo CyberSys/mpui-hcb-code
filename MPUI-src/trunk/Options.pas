@@ -171,6 +171,7 @@ type
     TFdel: TTntButton;
     TBa: TTntButton;
     TBn: TTntButton;
+    CDs: TTntCheckBox;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -388,6 +389,7 @@ begin
   EMplayerLocation.Enabled:=ML;
   BMplayer.Enabled:=ML;
   CWid.Checked:=Wid;
+  CDs.Checked:=Ds;
   CRS.Checked:=RS;
   CSP.Checked:=SP;
   CRP.Checked:=RP;
@@ -745,6 +747,7 @@ begin
     ActivateLocale(DefaultLocale);
   end;
   if WideDirectoryExists(ELyric.Text) then LyricDir:=ELyric.Text;
+  DS:=CDs.Checked;
   RP:=CRP.Checked;
   RS:=CRS.Checked;
   SP:=CSP.Checked;

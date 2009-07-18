@@ -25,7 +25,7 @@ const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
 const PauseInfo:array[0..1]of WideString=('=  PAUSE  =','= 暂停 =');
 const CacheFill:array[0..4]of WideString=('Cache fill:','缓存填充:','缓冲填充:','緩存填充:','緩沖填充:');
 const GenIndex:array[0..2]of WideString=('Generating Index:','正在生成索引:','正在生成索引:');
-
+const defaultHeight=330;
 const szdllCount=2;
 const szdll:array[0..szdllCount]of WideString=('7zxa.dll','7za.dll','7z.dll');
 
@@ -118,7 +118,7 @@ var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
     LastPos,SecondPos,OSDLevel,MSecPos:integer;
 var Volume,MWC,CP:integer;
-    tEnd,Mute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
+    ds,tEnd,Mute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
     DTFormat:string;
     FormatSet:TFormatSettings;
     ExplicitStop,Rot,DefaultFontIndex:integer;
@@ -1745,23 +1745,29 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     with MainForm do begin
       if ChkVideo and (StreamInfo.Video.Codec='') then begin
+        HaveVideo:=false; ChkVideo:=false;
         if LastHaveVideo then begin
-          OPanel.Visible:=false;
+          LastHaveVideo:=false; MFunc:=0;
+          MWheelControl.Items[0].Checked:=true;
+          MPWheelControl.Items[0].Checked:=true;
+          if not ds then OPanel.Visible:=false;
           if not (OptionsForm.Visible or EqualizerForm.Visible) then Enabled:=true;
           if MFullscreen.Checked then SetFullscreen(false);
           if MCompact.Checked  or MMaxW.Checked then SetCompact(false);
           Mctrl.Checked:=false; Hide_menu.Checked:=false; MPCtrl.Checked:=true;
           CPanel.Visible:=true; MenuBar.Visible:=true;
           UpdateMenuEV(false);
-          SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX));
+          if not ds then SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX));
           r:=Left+((Width-Constraints.MinWidth) DIV 2);
-          i:=Top+((Height-Constraints.MinHeight) DIV 2);
-          SetBounds(r,i,Constraints.MinWidth,Constraints.MinHeight);
-          LastHaveVideo:=false; MFunc:=0;
-          MWheelControl.Items[0].Checked:=true;
-          MPWheelControl.Items[0].Checked:=true;
+          if ds then begin
+            i:=Top+((Height-defaultHeight) DIV 2);
+            SetBounds(r,i,Constraints.MinWidth,defaultHeight);
+          end
+          else begin
+            i:=Top+((Height-Constraints.MinHeight) DIV 2);
+            SetBounds(r,i,Constraints.MinWidth,Constraints.MinHeight);
+          end;
         end;
-        HaveVideo:=false; ChkVideo:=false;
       end;
     end;
   end;
@@ -1845,7 +1851,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
 
       if Wid then begin
         if not LastHaveVideo then begin
-          OPanel.Visible:=true;
+          OPanel.Visible:=true; LastHaveVideo:=true;
           SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
           if RS and (EW<>0) and (EH<>0) then begin
             j:=Width-OPanel.Width+EW; p:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+EH;
@@ -1869,11 +1875,10 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
             MSize100.Checked:=true;
           end;
         end;
-        LastHaveVideo:=true;
       end
       else begin
         if LastHaveVideo then begin
-          OPanel.Visible:=false;
+          OPanel.Visible:=false; LastHaveVideo:=false;
           if not (OptionsForm.Visible or EqualizerForm.Visible) then Enabled:=true;
           if MFullscreen.Checked then SetFullscreen(false);
           if MCompact.Checked or MMaxW.Checked then SetCompact(false);
@@ -1889,7 +1894,6 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           MWheelControl.Items[0].Checked:=true;
           MPWheelControl.Items[0].Checked:=true;
         end;
-        LastHaveVideo:=false;
       end;
       UpdateMenuEV(true); MOsdfont.Visible:=uof;
       MRmMenu.Visible:=Dnav; MRnMenu.Visible:=Dnav;
@@ -2314,7 +2318,7 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; EW:=0; EH:=0; EL:=-1; ET:=-1; RS:=false; RP:=false; SP:=true;
-  CT:=true; IL:=-1; IT:=-1; fass:='';
+  CT:=true; IL:=-1; IT:=-1; fass:=''; ds:=false;
   ResetStreamInfo;
 end.
 

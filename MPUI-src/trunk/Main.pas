@@ -528,12 +528,27 @@ begin
   end; }
   UpdateVolSlider;
   if RP and (EL<>-1) then Left:=EL
-  else Left:=(screen.Width-Width) DIV 2;
+  else begin
+    if ds and RS then Width:=EW;
+    Left:=(screen.Width-Width) DIV 2;
+  end;
   if RP and (ET<>-1) then Top:=ET
   else begin
-    if Wid and Win32PlatformIsUnicode then
-      Top:=(screen.Height-Height) Div 2
-    else Top:=screen.WorkAreaHeight-Constraints.MinHeight;
+    if Wid and Win32PlatformIsUnicode then begin
+      if ds then begin
+        SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
+        Opanel.Visible:=true; Logo.Visible:=true;
+        if RS then begin
+          Top:=(screen.Height-EH) Div 2; Height:=EH;
+        end
+        else begin
+          Top:=(screen.Height-Height-defaultHeight) Div 2;
+          Height:=defaultHeight;
+        end;
+      end
+      else Top:=(screen.Height-Height) Div 2;
+    end
+    else Top:=screen.WorkAreaHeight-Height;
   end;
 
   if RFScr then begin
@@ -1207,7 +1222,7 @@ end;
 procedure TMainForm.FixSize;
 var SX,SY,NX,NY:integer;
 begin
-  if Opanel.Visible then begin
+  if LastHaveVideo then begin
     EW:=Opanel.Width; EH:=Opanel.Height;
   end;
   if (NativeWidth=0) OR (NativeHeight=0)

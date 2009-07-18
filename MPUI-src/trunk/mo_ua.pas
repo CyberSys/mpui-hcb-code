@@ -96,7 +96,7 @@ begin
     MSimpleDeint.Caption := UTF8Decode('Просте');
     MAdaptiveDeint.Caption := UTF8Decode('Адаптивне');
     MOptions.Caption := UTF8Decode('Налаштування ...');
-    MLanguage.Caption := UTF8Decode('Мова програми (Language)');
+    MLanguage.Caption := UTF8Decode('Мова програми');
     MStreamInfo.Caption:= UTF8Decode('Показати інформацію про кліп');
     MShowOutput.Caption := UTF8Decode('Показати журнал MPlayer');
     MHelp.Caption := UTF8Decode('Допомога');
