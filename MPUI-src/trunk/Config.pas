@@ -143,6 +143,7 @@ begin
            Core.PScroll:=ReadBool(SectionName,'Scroll',Core.PScroll);
            Core.LyricF:=ReadString(SectionName,'LyricFont',Core.LyricF);
            Core.LyricS:=ReadInteger(SectionName,'LyricSize',Core.LyricS);
+           Core.Fass:=ReadString(SectionName,'fileAss',Core.Fass);
            MainForm.MOnTop.Items[Core.OnTop].Checked:=true;
            MainForm.MUUni.Checked:=Core.UseUni;
            MainForm.UpdateMenuCheck;
@@ -262,8 +263,8 @@ begin
            Core.EL:=MainForm.Left+((MainForm.Width-MainForm.Constraints.MinWidth) DIV 2);
            Core.ET:=MainForm.Top+((MainForm.Height-MainForm.Constraints.MinHeight) DIV 2);
            if Core.EL<0 then Core.EL:=0; if Core.ET<0 then Core.ET:=0;
-           WriteInteger(SectionName,'InfoLeft',InfoForm.Left);
-           WriteInteger(SectionName,'InfoTop',InfoForm.Top);
+           WriteInteger(SectionName,'InfoLeft',IL);
+           WriteInteger(SectionName,'InfoTop',IT);
            WriteInteger(SectionName,'LastLeft',Core.EL);
            WriteInteger(SectionName,'LastTop',Core.ET);
            WriteInteger(SectionName,'LastWidth',Core.EW);
@@ -272,13 +273,14 @@ begin
            WriteInteger(SectionName,'Ending',Core.Ep);
            WriteInteger(SectionName,'Volume',Core.Volume);
            WriteInteger(SectionName,'OnTop',Core.OnTop);
-           WriteBool   (SectionName,'UseUni',Core.UseUni);
+           WriteBool   (SectionName,'UseUni',Core.UseUni); WriteString(SectionName,'fileAss',Core.Fass);
          end;
       2: WriteBool  (SectionName,'instance',Core.oneM);
       3: begin
            WriteInteger(SectionName,'CWidth',Core.NW);
            WriteInteger(SectionName,'CHeight',Core.NH);
          end;
+      4: WriteString(SectionName,'fileAss',Core.Fass);
     end;
     INI.UpdateFile;
   finally

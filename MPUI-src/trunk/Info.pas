@@ -86,7 +86,7 @@ end;
 
 procedure TInfoForm.UpdateInfo(calcoff:boolean);
 var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
-    i,j:integer; s:WideString;
+    i,j,c:integer; s:WideString;
   procedure calcOffset;
   var w,a:integer; KeySet:TTntStringList;
   begin
@@ -133,7 +133,7 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
         else if Value[d] in Lset then t:=d-1
         else t:=d;
         InfoBox.Items.Add(Key+^I+copy(Value,1,t));
-        Value:=copy(Value,t+1,w);
+        delete(Value,1,t);
         Key:='';
       end
       else begin
@@ -154,7 +154,7 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
           else if Value[d-1] in Lset then t:=d-1
           else t:=d;
           InfoBox.Items.Add(Key+^I+copy(Value,1,t-1));
-          Value:=copy(Value,t,length(Value));
+          Value:=copy(Value,t,MaxInt);
           Key:=''; break;
         end;
       end;
@@ -196,7 +196,7 @@ begin
   with StreamInfo do begin
     if not Visible then exit;
     InfoBox.Items.Clear;
-    ClipText:=''; MW:=0;
+    ClipText:=''; MW:=0; c:=-1;
     if length(FileName)=0 then begin
       InfoBox.Items.Add(LOCstr_NoInfo);
       j:=WideCanvasTextWidth(InfoBox.Canvas,LOCstr_NoInfo)+20;
@@ -208,9 +208,15 @@ begin
     AddItem(LOCstr_InfoFileName,FileName);
     if length(FileFormat)>0 then AddItem(LOCstr_InfoFileFormat,FileFormat);
     if length(PlaybackTime)>0 then AddItem(LOCstr_InfoPlaybackTime,PlaybackTime);
-    for i:=0 to 9 do
-      with ClipInfo[i] do
-        if (length(Key)>0) AND (length(Value)>0) then T(Key, Value);
+    for i:=0 to 9 do begin
+      with ClipInfo[i] do begin
+        if (length(Key)>0) AND (length(Value)>0) then begin
+          if Pos('Comment',Key)<>1 then T(Key, Value)
+          else c:=i;
+        end;
+      end;
+    end;
+    if c>-1 then T(ClipInfo[c].Key, ClipInfo[c].Value);
     if length(Video.Decoder)>0 then V(LOCstr_InfoDecoder, Video.Decoder);
     if length(Video.Codec)>0 then V(LOCstr_InfoCodec, Video.Codec);
     if Video.Bitrate<>0 then V(LOCstr_InfoBitrate, IntToStr(Video.Bitrate DIV 1000)+' kbps');
@@ -260,14 +266,14 @@ begin
       Font.Color:=clBtnText;
       Font.Style:=Font.Style+[fsBold];
       FillRect(Rect);
-      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,copy(s,2,length(s)));
+      WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,copy(s,2,MaxInt));
       exit;
     end;
     p:=Pos(^I,s);
     if p>0 then begin
       FillRect(Rect);
       WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,copy(s,1,p-1));
-      t:=copy(s,p+1,length(s));
+      t:=copy(s,p+1,MaxInt);
       WideCanvasTextOut(InfoBox.Canvas,Rect.Left+TabOffset,Rect.Top+1,t);
     end
     else WideCanvasTextOut(InfoBox.Canvas,Rect.Left+2,Rect.Top+1,s);
@@ -276,7 +282,7 @@ end;
 
 procedure TInfoForm.FormDestroy(Sender: TObject);
 begin
-  Docked:=False;
+  Docked:=False; IL:=left; IT:=Top;
 end;
 
 procedure TInfoForm.FormMove(var msg:TMessage);

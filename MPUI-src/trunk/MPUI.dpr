@@ -90,10 +90,10 @@ begin
     Application.Initialize;
     TntApplication.Title := 'MPUI';
     Application.CreateForm(TMainForm, MainForm);
-    Application.CreateForm(TOptionsForm, OptionsForm);
     Application.CreateForm(TPlaylistForm, PlaylistForm);
     Application.CreateForm(TInfoForm, InfoForm);
     Application.CreateForm(TEqualizerForm, EqualizerForm);
+    Application.CreateForm(TOptionsForm, OptionsForm);
     Application.Run;
     ReleaseMutex(hAppMutex);
   end;

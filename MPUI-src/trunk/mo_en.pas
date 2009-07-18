@@ -376,6 +376,12 @@ begin
     LTCL.Caption:='Text Color';
     LBCL.Caption:='Background';
     LHCL.Caption:='Hightlight';
+    TBa.Caption:='Select All';
+    TBn.Caption:='None';
+    TFadd.Caption:='Add';
+    TFdel.Caption:='Delete';
+    TFSet.Caption:='Associate';
+    TOther.Caption:='Other';
   end;
   with PlaylistForm do begin
     Caption:='Playlist';

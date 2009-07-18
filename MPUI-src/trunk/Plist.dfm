@@ -2,7 +2,7 @@ object PlaylistForm: TPlaylistForm
   Left = 437
   Top = 267
   Width = 365
-  Height = 260
+  Height = 250
   BorderIcons = [biSystemMenu]
   Caption = 'PlaylistForm'
   Color = clBtnFace
@@ -24,14 +24,14 @@ object PlaylistForm: TPlaylistForm
   OnShow = FormShow
   DesignSize = (
     357
-    233)
+    223)
   PixelsPerInch = 96
   TextHeight = 13
   object TntPageControl1: TTntPageControl
     Left = -5
     Top = 0
-    Width = 370
-    Height = 263
+    Width = 368
+    Height = 232
     ActivePage = TntTabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
@@ -39,11 +39,11 @@ object PlaylistForm: TPlaylistForm
       Caption = 'PlayList'
       ImageIndex = 16
       DesignSize = (
-        362
-        235)
+        360
+        204)
       object CShuffle: TTntSpeedButton
         Left = 200
-        Top = 2
+        Top = 1
         Width = 23
         Height = 22
         Hint = 'Shuffle'
@@ -59,26 +59,9 @@ object PlaylistForm: TPlaylistForm
         ShowHint = True
         OnClick = CShuffleClick
       end
-      object CLoop: TTntSpeedButton
-        Left = 224
-        Top = 2
-        Width = 23
-        Height = 22
-        Hint = 'Repeat All'
-        AllowAllUp = True
-        GroupIndex = 2
-        Glyph.Data = {
-          76000000424D76000000000000003E00000028000000100000000E0000000100
-          01000000000038000000C30E0000C30E00000200000000000000FFFFFF000000
-          00000000000031CE000039CE000039CE00000000000010040000380400005404
-          0000100400001004000010040000100400001FFC000000000000}
-        ParentShowHint = False
-        ShowHint = True
-        OnClick = CLoopClick
-      end
       object COneLoop: TTntSpeedButton
         Left = 248
-        Top = 2
+        Top = 1
         Width = 23
         Height = 22
         Hint = 'Repeat Current'
@@ -93,14 +76,47 @@ object PlaylistForm: TPlaylistForm
         ShowHint = True
         OnClick = COneLoopClick
       end
-      object BPlay: TBitBtn
-        Left = 4
-        Top = 2
+      object CLoop: TTntSpeedButton
+        Left = 224
+        Top = 1
+        Width = 23
+        Height = 22
+        Hint = 'Repeat All'
+        AllowAllUp = True
+        GroupIndex = 2
+        Glyph.Data = {
+          76000000424D76000000000000003E00000028000000100000000E0000000100
+          01000000000038000000C30E0000C30E00000200000000000000FFFFFF000000
+          00000000000031CE000039CE000039CE00000000000010040000380400005404
+          0000100400001004000010040000100400001FFC000000000000}
+        ParentShowHint = False
+        ShowHint = True
+        OnClick = CLoopClick
+      end
+      object BSave: TTntBitBtn
+        Left = 288
+        Top = 1
         Width = 23
         Height = 22
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 7
+        TabOrder = 0
+        OnClick = BSaveClick
+        Glyph.Data = {
+          7E000000424D7E000000000000003E0000002800000010000000100000000100
+          01000000000040000000C30E0000C30E00000200000000000000FFFFFF000000
+          0000000000003FFE00004FCA00004FCA00004FCA00004FFA0000400200005FFA
+          0000500A0000500A0000500A0000500A0000500E0000500A00007FFE00000000
+          0000}
+      end
+      object BPlay: TBitBtn
+        Left = 4
+        Top = 1
+        Width = 23
+        Height = 22
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 8
         OnClick = BPlayClick
         Glyph.Data = {
           72000000424D72000000000000003E000000280000000D0000000D0000000100
@@ -108,47 +124,15 @@ object PlaylistForm: TPlaylistForm
           FF00FFF800009FF8000087F8000081F800008078000080180000800800008018
           00008078000081F8000087F800009FF80000FFF80000}
       end
-      object BAdd: TTntBitBtn
-        Left = 38
-        Top = 2
-        Width = 23
-        Height = 22
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 4
-        OnClick = BAddClick
-        Glyph.Data = {
-          7E000000424D7E000000000000003E0000002800000010000000100000000100
-          01000000000040000000C30E0000C30E00000200000000000000FFFFFF000000
-          0000000000003FE00000202000002FA00000202000002FA00000202000002FB8
-          0000203800002FB8000021FF000011FF00000FFF000000380000003800000038
-          0000}
-      end
-      object BAddDir: TTntBitBtn
-        Left = 62
-        Top = 2
-        Width = 23
-        Height = 22
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-        OnClick = BAddDirClick
-        Glyph.Data = {
-          86000000424D86000000000000003E0000002800000014000000120000000100
-          01000000000048000000C30E0000C30E00000200000000000000FFFFFF000000
-          0000000000007FF000006008000050040000480200004401000043FF80004010
-          00004017000047F7000038070000003FE000003FE000003FE000000700000007
-          00000007000000000000}
-      end
       object BMoveUp: TTntBitBtn
         Tag = 1
         Left = 92
-        Top = 2
+        Top = 1
         Width = 23
         Height = 22
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 6
+        TabOrder = 2
         OnClick = BMoveClick
         Glyph.Data = {
           7E000000424D7E000000000000003E000000280000000E000000100000000100
@@ -159,12 +143,12 @@ object PlaylistForm: TPlaylistForm
       end
       object BMoveDown: TTntBitBtn
         Left = 116
-        Top = 2
+        Top = 1
         Width = 23
         Height = 22
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 2
+        TabOrder = 3
         OnClick = BMoveClick
         Glyph.Data = {
           7E000000424D7E000000000000003E000000280000000E000000100000000100
@@ -175,12 +159,12 @@ object PlaylistForm: TPlaylistForm
       end
       object BDelete: TTntBitBtn
         Left = 146
-        Top = 2
+        Top = 1
         Width = 23
         Height = 22
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 3
+        TabOrder = 4
         OnClick = BDeleteClick
         Glyph.Data = {
           7A000000424D7A000000000000003E000000280000000F0000000F0000000100
@@ -188,43 +172,14 @@ object PlaylistForm: TPlaylistForm
           000000000000200000007000000078080000181000001C3000000E60000006C0
           00000380000007C000000E6000003C300000781800007004000000000000}
       end
-      object BSave: TTntBitBtn
-        Left = 288
-        Top = 2
+      object BClear: TTntBitBtn
+        Left = 170
+        Top = 1
         Width = 23
         Height = 22
         ParentShowHint = False
         ShowHint = True
         TabOrder = 5
-        OnClick = BSaveClick
-        Glyph.Data = {
-          7E000000424D7E000000000000003E0000002800000010000000100000000100
-          01000000000040000000C30E0000C30E00000200000000000000FFFFFF000000
-          0000000000003FFE00004FCA00004FCA00004FCA00004FFA0000400200005FFA
-          0000500A0000500A0000500A0000500A0000500E0000500A00007FFE00000000
-          0000}
-      end
-      object PlaylistBox: TTntListBox
-        Left = 0
-        Top = 28
-        Width = 358
-        Height = 182
-        Style = lbVirtualOwnerDraw
-        Anchors = [akLeft, akTop, akRight, akBottom]
-        ItemHeight = 16
-        MultiSelect = True
-        TabOrder = 0
-        OnDblClick = BPlayClick
-        OnDrawItem = PlaylistBoxDrawItem
-      end
-      object BClear: TTntBitBtn
-        Left = 170
-        Top = 2
-        Width = 23
-        Height = 22
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 8
         OnClick = BClearClick
         Glyph.Data = {
           6A000000424D6A000000000000003E00000028000000110000000B0000000100
@@ -232,34 +187,117 @@ object PlaylistForm: TPlaylistForm
           00003FE000002030000020380000202C00003FE60000183300000C198000060C
           8000030780000183800000FF8000}
       end
+      object BAddDir: TTntBitBtn
+        Left = 62
+        Top = 1
+        Width = 23
+        Height = 22
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 6
+        OnClick = BAddDirClick
+        Glyph.Data = {
+          86000000424D86000000000000003E0000002800000014000000120000000100
+          01000000000048000000C30E0000C30E00000200000000000000FFFFFF000000
+          0000000000007FF000006008000050040000480200004401000043FF80004010
+          00004017000047F7000038070000003FE000003FE000003FE000000700000007
+          00000007000000000000}
+      end
+      object BAdd: TTntBitBtn
+        Left = 38
+        Top = 1
+        Width = 23
+        Height = 22
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 7
+        OnClick = BAddClick
+        Glyph.Data = {
+          7E000000424D7E000000000000003E0000002800000010000000100000000100
+          01000000000040000000C30E0000C30E00000200000000000000FFFFFF000000
+          0000000000003FE00000202000002FA00000202000002FA00000202000002FB8
+          0000203800002FB8000021FF000011FF00000FFF000000380000003800000038
+          0000}
+      end
+      object PlaylistBox: TTntListBox
+        Left = 0
+        Top = 26
+        Width = 360
+        Height = 175
+        Style = lbVirtualOwnerDraw
+        Anchors = [akLeft, akTop, akRight, akBottom]
+        ItemHeight = 16
+        MultiSelect = True
+        TabOrder = 1
+        OnDblClick = BPlayClick
+        OnDrawItem = PlaylistBoxDrawItem
+      end
     end
     object TntTabSheet2: TTntTabSheet
       Caption = 'Lyric'
       ImageIndex = 24
       DesignSize = (
-        362
-        235)
-      object TMLyric: TTntListBox
-        Left = 0
-        Top = 24
-        Width = 358
-        Height = 185
-        Style = lbVirtualOwnerDraw
-        Anchors = [akLeft, akTop, akRight, akBottom]
-        ItemHeight = 16
-        PopupMenu = TntCP
-        TabOrder = 0
-        OnDrawItem = TMLyricDrawItem
-        OnEnter = TMLyricEnter
+        360
+        204)
+      object LScroll: TTntCheckBox
+        Left = 240
+        Top = 2
+        Width = 122
+        Height = 17
+        Anchors = [akLeft, akTop, akRight]
+        Caption = 'Smooth scroll'
+        ParentShowHint = False
+        ShowHint = False
+        TabOrder = 6
+        OnClick = LScrollClick
       end
-      object CLyricF: TComboBox
-        Left = 2
+      object PLBC: TTntPanel
+        Left = 208
         Top = 0
-        Width = 102
+        Width = 30
         Height = 21
-        ItemHeight = 0
+        Cursor = crHandPoint
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        BorderWidth = 1
+        Color = clWindow
+        ParentBackground = False
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 1
-        OnChange = CLyricFChange
+        OnClick = PLBCClick
+      end
+      object PLHC: TTntPanel
+        Left = 176
+        Top = 0
+        Width = 30
+        Height = 21
+        Cursor = crHandPoint
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        BorderWidth = 1
+        Color = clRed
+        ParentBackground = False
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+        OnClick = PLHCClick
+      end
+      object PLTC: TTntPanel
+        Left = 144
+        Top = 0
+        Width = 30
+        Height = 21
+        Cursor = crHandPoint
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        BorderWidth = 1
+        Color = clWindowText
+        ParentBackground = False
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 3
+        OnClick = PLTCClick
       end
       object CLyricS: TComboBox
         Left = 106
@@ -267,7 +305,7 @@ object PlaylistForm: TPlaylistForm
         Width = 34
         Height = 21
         ItemHeight = 13
-        TabOrder = 2
+        TabOrder = 4
         OnChange = CLyricSChange
         Items.Strings = (
           '8'
@@ -287,65 +325,27 @@ object PlaylistForm: TPlaylistForm
           '48'
           '72')
       end
-      object PLTC: TTntPanel
-        Left = 144
+      object CLyricF: TComboBox
+        Left = 2
         Top = 0
-        Width = 30
+        Width = 102
         Height = 21
-        Cursor = crHandPoint
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        BorderWidth = 1
-        Color = clWindowText
-        ParentBackground = False
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 3
-        OnClick = PLTCClick
-      end
-      object PLHC: TTntPanel
-        Left = 176
-        Top = 0
-        Width = 30
-        Height = 21
-        Cursor = crHandPoint
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        BorderWidth = 1
-        Color = clRed
-        ParentBackground = False
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 4
-        OnClick = PLHCClick
-      end
-      object PLBC: TTntPanel
-        Left = 208
-        Top = 0
-        Width = 30
-        Height = 21
-        Cursor = crHandPoint
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        BorderWidth = 1
-        Color = clWindow
-        ParentBackground = False
-        ParentShowHint = False
-        ShowHint = True
+        ItemHeight = 0
         TabOrder = 5
-        OnClick = PLBCClick
+        OnChange = CLyricFChange
       end
-      object LScroll: TTntCheckBox
-        Left = 242
-        Top = 2
-        Width = 124
-        Height = 17
-        Anchors = [akLeft, akTop, akRight]
-        Caption = 'Smooth scroll'
-        ParentShowHint = False
-        ShowHint = False
-        TabOrder = 6
-        OnClick = LScrollClick
+      object TMLyric: TTntListBox
+        Left = 0
+        Top = 21
+        Width = 360
+        Height = 185
+        Style = lbVirtualOwnerDraw
+        Anchors = [akLeft, akTop, akRight, akBottom]
+        ItemHeight = 16
+        PopupMenu = TntCP
+        TabOrder = 0
+        OnDrawItem = TMLyricDrawItem
+        OnEnter = TMLyricEnter
       end
     end
   end

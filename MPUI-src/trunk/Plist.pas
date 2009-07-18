@@ -581,7 +581,7 @@ var r:integer;
 begin
   r:=pos(b,s);
   while r>0 do begin
-    s:=copy(s,r+length(b),length(s));
+    s:=copy(s,r+length(b),MaxInt);
     r:=pos(b,s);
     if e<>'' then AddToPls(copy(s,1,pos(e,s)-1))
     else begin
@@ -604,7 +604,7 @@ begin
       {m3u} 0: if s[1]<>'#' then AddToPls(s);
       {asx} 1: HandleStr('<Param Name = "SourceURL" Value = "','"');
       {wpl} 2: HandleStr('<media src="','"');
-      {pls} 3: if s[1]='F' then AddToPls(copy(s,pos('=',s)+1,length(s)));
+      {pls} 3: if s[1]='F' then AddToPls(copy(s,pos('=',s)+1,MaxInt));
      {ttpl} 4: HandleStr('<item file="','"');
       {rmp} 5: HandleStr('<FILENAME>','</FILENAME>');
      {xspf} 6: HandleStr('<location>','</location>');
@@ -762,7 +762,7 @@ begin
     until false;
     if NoTag or (LyricStringsW=nil) then continue;
     inc(Lyricindex); s:=Trim(s);
-    LyricStringsW.Add(s); LyricStringsW.SaveToFile(s);
+    LyricStringsW.Add(s);
     i:=length(s);
     if i>sMaxLen then begin
       sMaxLen:=i; MaxLenLyricW:=s;

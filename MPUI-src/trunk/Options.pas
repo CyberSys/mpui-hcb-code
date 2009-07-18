@@ -24,7 +24,7 @@ uses
   Windows, TntWindows, Messages, SysUtils, TntSysUtils, Variants, Classes, Graphics, Controls,
   Forms,TntForms, Dialogs, StdCtrls, ShellAPI, ComCtrls, Tabs, TabNotBk, ExtCtrls, TntSystem,
   TntExtCtrls, TntComCtrls, TntStdCtrls, TntFileCtrl, ImgList, TntRegistry, TntClasses,
-  jpeg;
+  jpeg, CheckLst, TntCheckLst, ShlObj;
 
 type
   TOptionsForm = class(TTntForm)
@@ -163,6 +163,14 @@ type
     Command: TTntEdit;
     CRP: TTntCheckBox;
     CTime: TTntCheckBox;
+    TOther: TTntTabSheet;
+    TFass: TCheckListBox;
+    TFadd: TTntButton;
+    TEAss: TTntEdit;
+    TFSet: TTntButton;
+    TFdel: TTntButton;
+    TBa: TTntButton;
+    TBn: TTntButton;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -194,12 +202,19 @@ type
     procedure CommandKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure TabChange(Sender: TObject);
+    procedure TFaddClick(Sender: TObject);
+    procedure TFdelClick(Sender: TObject);
+    procedure TBaClick(Sender: TObject);
+    procedure TBnClick(Sender: TObject);
+    procedure TFSetClick(Sender: TObject);
   private
     { Private declarations }
     HelpFile:WideString;
     Changed,oML:boolean;
     History:TTntStringList;
     HistoryPos:integer;
+    procedure GetFass;
+    procedure SetFass;
   public
     { Public declarations }
     procedure Localize;
@@ -330,6 +345,28 @@ begin
   end;
 end;
 
+procedure TOptionsForm.GetFass;
+var i:integer;
+begin
+  if fass='' then exit;
+  TFass.Items.CommaText:=fass;
+  for i:=0 to TFass.Count-1 do begin
+    TFass.Checked[i]:=TFass.Items[i][1]<>'0';
+    TFass.Items[i]:=Tnt_WideLowerCase(copy(TFass.Items[i],2,MaxInt));
+  end;
+end;
+
+procedure TOptionsForm.SetFass;
+var i:integer;
+begin
+  fass:='';
+  for i:=0 to TFass.Count-1 do begin
+    if TFass.Checked[i] then fass:=fass+',1'+TFass.Items[i]
+    else fass:=fass+',0'+TFass.Items[i];
+  end;
+  delete(fass,1,1);
+end;
+
 procedure TOptionsForm.LoadValues;
 var i:integer; s,h,j,k:Widestring;
 begin
@@ -427,6 +464,7 @@ begin
   BOsdfont.Enabled:=uof;
   Cone.Checked:=oneM;
   CGUI.Checked:=GUI;
+  GetFass;
 
   if (CSubfont.ItemIndex<0) and (COsdfont.ItemIndex<0) then begin
     PShow.Caption:='';
@@ -782,8 +820,8 @@ begin
   DefaultFont:=TFont.Create; DefaultFont.Handle:=GetStockObject(DEFAULT_GUI_FONT);
   FontPaths:=TTntStringList.Create; a:=TTntStringList.Create;
   reg:=TTntRegistry.Create;  DefaultFontIndex:=-1;
-  if Win32PlatformIsUnicode then s:='SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts'
-  else s:='SOFTWARE\Microsoft\Windows\CurrentVersion\Fonts';
+  if Win32PlatformIsUnicode then s:='\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts'
+  else s:='\SOFTWARE\Microsoft\Windows\CurrentVersion\Fonts';
   with reg do begin
     try
       RootKey := HKEY_LOCAL_MACHINE;
@@ -798,7 +836,7 @@ begin
             while(j>1) do begin
               CSubfont.Items.Add(copy(sn,1,j-1)); FontPaths.Add(SystemDir+'Fonts\'+sp);
               if CSubfont.Items[CSubfont.Items.Count-1]=DefaultFont.Name then DefaultFontIndex:=CSubfont.Items.Count-1;
-              sn:=copy(sn,j+3,length(sn));
+              sn:=copy(sn,j+3,MaxInt);
               j:=pos(' & ',sn);
             end;
             CSubfont.Items.Add(sn); FontPaths.Add(SystemDir+'Fonts\'+sp);
@@ -1060,6 +1098,76 @@ begin
          VersionMPUI.Caption:=GetFileVersion(WideParamStr(0));
        end;
   end;
+end;
+
+procedure TOptionsForm.TFaddClick(Sender: TObject);
+var p:integer;
+begin
+  TEAss.Text:=Trim(TEAss.Text);
+  if TEAss.Text='' then exit;
+  p:=pos('.',TEAss.Text);
+  while p>0 do begin
+    if length(TEAss.Text)>1 then TEAss.Text:=copy(TEAss.Text,p+1,MaxInt)
+    else exit;
+    p:=pos('.',TEAss.Text);
+  end;
+  TFass.Items.Add(TEAss.Text);
+  TEAss.Text:='';
+end;
+
+procedure TOptionsForm.TFdelClick(Sender: TObject);
+begin
+  if TFass.ItemIndex<>-1 then TFass.Items.Delete(TFass.ItemIndex);
+end;
+
+procedure TOptionsForm.TBaClick(Sender: TObject);
+var i:integer;
+begin
+  if TFass.Count<1 then exit;
+  for i:=0 to TFass.Count-1 do TFass.Checked[i]:=true;
+end;
+
+procedure TOptionsForm.TBnClick(Sender: TObject);
+var i:integer;
+begin
+  if TFass.Count<1 then exit;
+  for i:=0 to TFass.Count-1 do TFass.Checked[i]:=false;
+end;
+
+procedure TOptionsForm.TFSetClick(Sender: TObject);
+var reg:TTntRegistry; i:integer;
+begin
+  if TFass.Count<1 then exit;
+  reg:=TTntRegistry.Create;
+  with reg do begin
+    try
+      for i:=0 to TFass.Count-1 do begin
+        if TFass.Checked[i] then begin
+          RootKey := HKEY_CLASSES_ROOT;
+          if OpenKey('\MPUI-hcb.'+TFass.Items[i],true) then
+            WriteString('','MPlayer file(.'+TFass.Items[i]+')');
+          if OpenKey('\MPUI-hcb.'+TFass.Items[i]+'\DefaultIcon',true) then
+            WriteString('',WideExpandFileName(WideParamStr(0))+',0');
+          if OpenKey('\MPUI-hcb.'+TFass.Items[i]+'\shell\open\command',true) then
+            WriteString('','"'+WideExpandFileName(WideParamStr(0))+'" "%1"');
+          if OpenKey('\.'+TFass.Items[i],true) then
+            WriteString('','MPUI-hcb.'+TFass.Items[i]);
+          RootKey := HKEY_CURRENT_USER;
+          if OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.'+TFass.Items[i],true) then
+            WriteString('Progid','MPUI-hcb.'+TFass.Items[i]);
+        end
+        else begin
+          RootKey := HKEY_CLASSES_ROOT;
+          DeleteKey('\MPUI-hcb.'+TFass.Items[i]);
+        end;
+      end;
+      CloseKey;
+      SHChangeNotify(SHCNE_ASSOCCHANGED,SHCNF_IDLIST,nil,nil);
+    finally
+      Free;
+    end;
+  end;
+  SetFass; Save(HomeDir+DefaultFileName,4);
 end;
 
 end.

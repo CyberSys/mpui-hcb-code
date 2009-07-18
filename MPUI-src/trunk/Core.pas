@@ -89,7 +89,7 @@ var Win9xWarnLevel:TWin9xWarnLevel;
 var HomeDir,SystemDir,TempDir,AppdataDir:WideString;
 var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     ArcPW,TmpPW,DisplayURL,AudioFile,MaxLenLyricW:WideString;
-    Duration,LyricF:String;
+    Duration,LyricF,fass:String;
     substring,afChain,Vobfile,ShotDir,LyricDir,LyricURL:wideString;
     subfont,osdfont,Ccap,Acap,DemuxerName:WideString;
     MplayerLocation,WadspL,AsyncV,CacheV:widestring;
@@ -574,7 +574,9 @@ begin
 
   FirstChance:=true; afCount:=0; afChain:='';
   ClientWaitThread:=TClientWaitThread.Create(true);
+  ClientWaitThread.FreeOnTerminate:=true;;
   Processor:=TProcessor.Create(true);
+  Processor.FreeOnTerminate:=true;;
   if ML then CmdLine:=EscapeParam(ExpandName(HomeDir,MplayerLocation))
   else CmdLine:=EscapeParam(HomeDir+'mplayer.exe');
   if not GUI then CmdLine:=CmdLine+' -nogui -noconsolecontrols';
@@ -1069,7 +1071,7 @@ begin
   Data:='';
   repeat
     BytesRead:=0;
-    if Terminated or (not ReadFile(hPipe,Buffer[0],BufSize,BytesRead,nil)) then break;
+    if Processor.Terminated or (not ReadFile(hPipe,Buffer[0],BufSize,BytesRead,nil)) then break;
     Buffer[BytesRead]:=#0;
     Data:=Data+Buffer;
     //Synchronize(Process);
@@ -1213,7 +1215,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           SubMenu_Add(MainForm.MSubtitle,i,SubID,MainForm.MSubtitleClick);
           VobsubCount:=i+1;
         end;
-        SubMenu_SetNameLang(MainForm.MSubtitle,i,copy(s,p+6,length(s)));
+        SubMenu_SetNameLang(MainForm.MSubtitle,i,copy(s,p+6,MaxInt));
         Result:=true;
       end;
     end;
@@ -1228,7 +1230,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if (r=0) AND (i>0) AND (i<8191) then begin
         for a:=1 to i do begin
           if FirstOpen then begin
-            s:='DVD-'+IntToStr(a)+Copy(DisplayURL,Pos(' <-- ',DisplayURL),length(DisplayURL));
+            s:='DVD-'+IntToStr(a)+Copy(DisplayURL,Pos(' <-- ',DisplayURL),MaxInt);
             if playlist.FindItem('',s)<0 then begin
               with Entry do begin
                 State:=psNotPlayed;
@@ -1349,11 +1351,11 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     if Dnav then begin
       i:=Pos(', CHAPTERS: ',Line);
       e:= (len>26) and (Copy(Line,1,6)='TITLE ') and (i>0);
-      if e then s:=Copy(Line,i+12,Length(Line));
+      if e then s:=Copy(Line,i+12,MaxInt);
     end
     else begin
       e:= (len>10) and (Copy(Line,1,10)='CHAPTERS: ');
-      s:=Copy(Line,11,length(Line));
+      s:=Copy(Line,11,MaxInt);
     end;
     if e then begin
       i:=pos(',',s); ts:='00:00:00';
@@ -1374,7 +1376,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
         else
           MainForm.MDVDT.Items[r].Items[0].Items[j].Caption:=IntToStr(MainForm.MDVDT.Items[r].Items[0].Items[j].Tag)+' ('+ds+')';
         //MainForm.MDVDT.Items[r].Items[0].Items[j].Caption:=IntToStr(MainForm.MDVDT.Items[r].Items[0].Items[j].Tag)+' ('+copy(s,1,i-1)+')';
-        ts:=ds; s:=copy(s,i+1,length(s)); i:=pos(',',s);
+        ts:=ds; s:=copy(s,i+1,MaxInt); i:=pos(',',s);
       end;
       Result:=true; HaveChapters:=true;
     end;
@@ -1384,9 +1386,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   var Entry:TPlaylistEntry;
   begin
     if Dnav and (len>27) and (Copy(Line,1,27)='DVDNAV, switched to title: ') then begin
-      Val(Copy(Line,28,length(Line)),i,r);
+      Val(Copy(Line,28,MaxInt),i,r);
       if (r=0) and (i<>TID) then begin
-        s:='DVD-'+IntToStr(i)+Copy(DisplayURL,Pos(' <-- ',DisplayURL),length(DisplayURL));
+        s:='DVD-'+IntToStr(i)+Copy(DisplayURL,Pos(' <-- ',DisplayURL),MaxInt);
         i:=playlist.FindItem('',s);
         if SecondPos=0 then begin
           if i<0 then begin
@@ -1453,14 +1455,14 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>7) and (Copy(Line,1,7)='ID_VID_') then begin
-      s:=Copy(Line,8,length(Line));
+      s:=Copy(Line,8,MaxInt);
       p:=Pos('_NAME=',s);
       if p<=0 then exit;
       Val(Copy(s,1,p-1),i,r);
       if (r=0) AND (i>=0) AND (i<8191) then begin
         if CheckMenu(MainForm.MVideo,i)<0 then
           SubMenu_Add(MainForm.MVideo,i,VideoID,MainForm.MVideoClick);
-        SubMenu_SetNameLang(MainForm.MVideo,i,copy(s,p+6,length(s)));
+        SubMenu_SetNameLang(MainForm.MVideo,i,copy(s,p+6,MaxInt));
         Result:=true;
       end;
     end;
@@ -1491,7 +1493,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if (r=0) AND (i>=0) AND (i<8191) then begin
         if CheckMenu(MainForm.MAudio,i)<0 then
           SubMenu_Add(MainForm.MAudio,i,AudioID,MainForm.MAudioClick);
-        SubMenu_SetNameLang(MainForm.MAudio,i,copy(s,p+6,length(s)));
+        SubMenu_SetNameLang(MainForm.MAudio,i,copy(s,p+6,MaxInt));
         Result:=true;
       end;
     end;
@@ -1526,7 +1528,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           SubMenu_Add(MainForm.MSubtitle,VobsubCount+i,SubID,MainForm.MSubtitleClick);
           IntersubCount:=i+1;
         end;
-        SubMenu_SetNameLang(MainForm.MSubtitle,VobsubCount+i,copy(s,p+6,length(s)));
+        SubMenu_SetNameLang(MainForm.MSubtitle,VobsubCount+i,copy(s,p+6,MaxInt));
         Result:=true;
       end;
     end;
@@ -1550,7 +1552,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       end;
     end;
     if (len>21) and (Copy(Line,1,21)='ID_FILE_SUB_FILENAME=') then begin
-      s:=copy(Line,22,length(Line));
+      s:=copy(Line,22,MaxInt);
       SubMenu_SetNameLang(MainForm.MSubtitle,MainForm.MSubtitle.Count-1,s);
       case Loadsub of
         1: begin
@@ -1647,9 +1649,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       Result:=(p>24);
       if Result then begin
         if Copy(Line,9,4)='vide' then
-          StreamInfo.Video.Decoder:=Widestring(Copy(Line,p+2,length(Line)))
+          StreamInfo.Video.Decoder:=Widestring(Copy(Line,p+2,MaxInt))
         else if Copy(Line,9,4)='audi' then
-          StreamInfo.Audio.Decoder:=Widestring(Copy(Line,p+2,length(Line)))
+          StreamInfo.Audio.Decoder:=Widestring(Copy(Line,p+2,MaxInt))
           else Result:=false;
         end;
        exit;
@@ -1661,9 +1663,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       Result:=(p>17);
       if Result then begin
         if Copy(Line,5,2)='สำ' then
-          StreamInfo.Video.Decoder:=Widestring(Copy(Line,p+2,length(Line)))
+          StreamInfo.Video.Decoder:=Widestring(Copy(Line,p+2,MaxInt))
         else if Copy(Line,5,2)='า๔' then
-          StreamInfo.Audio.Decoder:=Widestring(Copy(Line,p+2,length(Line)))
+          StreamInfo.Audio.Decoder:=Widestring(Copy(Line,p+2,MaxInt))
           else Result:=false;
         end;
       end;
@@ -2205,7 +2207,7 @@ begin
   // check for generic ID_ pattern
   if (len>3) and (Copy(Line,1,3)='ID_') then begin
     p:=Pos('=',Line);
-    HandleIDLine(Copy(Line,4,p-4),widestring(Trim(Copy(Line,p+1,length(Line)))));
+    HandleIDLine(Copy(Line,4,p-4),widestring(Trim(Copy(Line,p+1,MaxInt))));
   end;
 
 end;
@@ -2256,7 +2258,7 @@ begin
     else if (Copy(ID,1,14)='CLIP_INFO_NAME') AND (length(ID)=15) then begin
       r:=Ord(ID[15])-Ord('0');
       if (r>=0) AND (r<=9) then begin
-        if length(Content)>0 then Tnt_CharUpperW(PWideChar(Content[1]));
+        if length(Content)>0 then Content[1]:=WChar(Tnt_CharUpperW(PWChar(Content[1])));
         ClipInfo[r].Key:=Content;
       end;
     end
@@ -2312,7 +2314,7 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; EW:=0; EH:=0; EL:=-1; ET:=-1; RS:=false; RP:=false; SP:=true;
-  CT:=true; IL:=-1; IT:=-1;
+  CT:=true; IL:=-1; IT:=-1; fass:='';
   ResetStreamInfo;
 end.
 

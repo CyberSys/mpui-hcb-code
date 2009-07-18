@@ -373,6 +373,12 @@ begin
     LTCL.Caption:=UTF8Decode('文字');
     LBCL.Caption:=UTF8Decode('背景');
     LHCL.Caption:=UTF8Decode('高亮');
+    TBa.Caption:=UTF8Decode('全选');
+    TBn.Caption:=UTF8Decode('无');
+    TFadd.Caption:=UTF8Decode('添加');
+    TFdel.Caption:=UTF8Decode('删除');
+    TFSet.Caption:=UTF8Decode('关联');
+    TOther.Caption:=UTF8Decode('其他');
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('播放列表');
