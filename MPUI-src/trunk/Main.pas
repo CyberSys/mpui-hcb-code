@@ -529,7 +529,7 @@ begin
   UpdateVolSlider;
   if RP and (EL<>-1) then Left:=EL
   else begin
-    if ds and RS then Width:=EW;
+    if Wid and Win32PlatformIsUnicode and ds and RS then Width:=EW;
     Left:=(screen.Width-Width) DIV 2;
   end;
   if RP and (ET<>-1) then Top:=ET
@@ -883,7 +883,7 @@ if MVideos.Visible then begin
       {+=} 187:   begin HandleCommand('sub_scale +0.1'); FSize:=FSize+0.1;
                     if FSize>10 then FSize:=10;
                   end;
-      {-_} 189:   begin HandleCommand('sub_scale -0.1'); FSize:=FSize-0.1;
+      {_-} 189:   begin HandleCommand('sub_scale -0.1'); FSize:=FSize-0.1;
                     if FSize<0.1 then FSize:=0.1;
                   end;
     end;

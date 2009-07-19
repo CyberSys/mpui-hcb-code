@@ -172,6 +172,7 @@ type
     TBa: TTntButton;
     TBn: TTntButton;
     CDs: TTntCheckBox;
+    HKey: TTntListView;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -208,12 +209,16 @@ type
     procedure TBaClick(Sender: TObject);
     procedure TBnClick(Sender: TObject);
     procedure TFSetClick(Sender: TObject);
+    procedure HKeyDblClick(Sender: TObject);
+    procedure HKeyKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure HKeyClick(Sender: TObject);
   private
     { Private declarations }
-    HelpFile:WideString;
-    Changed,oML:boolean;
+    HelpFile,tCap:WideString;
+    Changed,oML,Ikey:boolean;
     History:TTntStringList;
-    HistoryPos:integer;
+    HistoryPos,sIndex:integer;
     procedure GetFass;
     procedure SetFass;
   public
@@ -230,6 +235,8 @@ procedure LoadDsLibrary;
 procedure UnLoadDsLibrary;
 function GetProductVersion(const FileName:WideString):WideString;
 function GetFileVersion(const FileName:WideString):WideString;
+function ShiftToStr(const Shift:TShiftState):String;
+function KeyToStr(const Key:Word):String;
 
 var
   OptionsForm: TOptionsForm; IsDsLoaded:THandle=0;
@@ -859,10 +866,10 @@ begin
   end;
   if osdfont='' then osdfont:=subfont;
   if not FileExists(CheckSubfont(subfont)) then subfont:=HomeDir+'mplayer\subfont.ttf';
-  if not FileExists(CheckSubfont(osdfont)) then osdfont:=HomeDir+'mplayer\subfont.ttf'; 
+  if not FileExists(CheckSubfont(osdfont)) then osdfont:=HomeDir+'mplayer\subfont.ttf';
 end;
 begin
-  initFontList;
+  initFontList; Ikey:=false;
   Tab.TabIndex:=0; History:=TTntStringList.Create;
   if IsDsLoaded=0 then LoadDsLibrary;
   if IsDsLoaded<>0 then DirectSoundEnumerate(EnumFunc,@CAudioDev);
@@ -1100,6 +1107,7 @@ begin
          else VersionMPlayer.Caption:=GetProductVersion(HomeDir+'mplayer.exe');
          VersionMPUI.Caption:=GetFileVersion(WideParamStr(0));
        end;
+    7: if IKey then begin HKey.Items[sIndex].Caption:=tCap; IKey:=false; end;
   end;
 end;
 
@@ -1155,9 +1163,11 @@ begin
             WriteString('','"'+WideExpandFileName(WideParamStr(0))+'" "%1"');
           if OpenKey('\.'+TFass.Items[i],true) then
             WriteString('','MPUI-hcb.'+TFass.Items[i]);
-          RootKey := HKEY_CURRENT_USER;
-          if OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.'+TFass.Items[i],true) then
-            WriteString('Progid','MPUI-hcb.'+TFass.Items[i]);
+          if Win32PlatformIsUnicode then begin
+            RootKey := HKEY_CURRENT_USER;
+            if OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.'+TFass.Items[i],true) then
+              WriteString('Progid','MPUI-hcb.'+TFass.Items[i]);
+          end;
         end
         else begin
           RootKey := HKEY_CLASSES_ROOT;
@@ -1171,6 +1181,75 @@ begin
     end;
   end;
   SetFass; Save(HomeDir+DefaultFileName,4);
+end;
+
+procedure HkToShiftKey(const Hk:integer; var Shift:TShiftState; var Key:Word);
+begin
+  Key:=Hk and $FFFF;
+  Shift:=TShiftState(Byte((Hk and $FF0000) shr 16));
+end;
+
+function ShiftKeyToHk(const Shift:TShiftState; const Key:Word):integer;
+begin
+  Result:=(Byte(Shift) shl 16)+Key;
+end;
+
+function ShiftToStr(const Shift:TShiftState):String;
+begin
+  Result:='';
+  if ssCtrl in Shift then Result:='Ctrl + ';
+  if ssAlt in Shift then Result:=Result+'Alt + ';
+  if ssShift in Shift then Result:=Result+'Shift + ';
+end;
+
+function KeyToStr(const Key: Word):String;
+var ScanCode:integer;
+begin
+  Result:='';
+  ScanCode:=MapVirtualKey(key,0);
+  if key in [$21..$28,$2D,$2E,$5D] then ScanCode:=ScanCode or $100;
+  SetLength(Result,MAX_PATH-1);
+  GetKeyNameText(ScanCode shl 16,PChar(Result),MAX_PATH);
+end;
+
+procedure TOptionsForm.HKeyDblClick(Sender: TObject);
+begin
+  if IKey or (HKey.ItemIndex<0) then exit;
+  sIndex:=HKey.ItemIndex; IKey:=true;
+  tCap:=HKey.Selected.Caption;
+  HKey.Selected.Caption:='Please input';
+end;
+
+procedure TOptionsForm.HKeyKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var t:TListItem; i:integer;
+begin
+  if not IKey then exit;
+  if HKey.ItemIndex<0 then begin
+    HKey.ItemIndex:=sIndex;
+    Key:=0; exit;
+  end;
+  if Key=VK_ESCAPE then begin
+    HKey.Items[sIndex].Caption:=tCap;
+    Key:=0; exit;
+  end;
+  if Key in [$10..$12] then begin Key:=0; exit; end; //ctrl,shift,alt key
+  i:=ShiftKeyToHk(Shift,Key);
+  t:=HKey.FindData(sIndex,Pointer(i),false,true);
+  if t<>nil then begin
+    HKey.Items[sIndex].Caption:=tCap;
+    ShowMessage('Shortcut already exists in "'+t.SubItems.Strings[0]+'"');
+  end
+  else begin
+    HKey.Items[sIndex].Caption:=ShiftToStr(Shift)+KeyToStr(Key);
+    HKey.Items[sIndex].Data:=Pointer(i);
+  end;
+  Key:=0; IKey:=false;
+end;
+
+procedure TOptionsForm.HKeyClick(Sender: TObject);
+begin
+  if IKey then HKey.ItemIndex:=sIndex;
 end;
 
 end.

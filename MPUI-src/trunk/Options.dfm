@@ -1,6 +1,6 @@
 object OptionsForm: TOptionsForm
-  Left = 284
-  Top = 167
+  Left = 445
+  Top = 163
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'OptionsForm'
@@ -99,7 +99,7 @@ object OptionsForm: TOptionsForm
     Top = 6
     Width = 555
     Height = 342
-    ActivePage = TSystem
+    ActivePage = TOther
     Anchors = [akLeft, akTop, akRight, akBottom]
     Images = ImageList1
     TabOrder = 5
@@ -152,7 +152,7 @@ object OptionsForm: TOptionsForm
       end
       object EMplayerLocation: TTntEdit
         Left = 192
-        Top = 268
+        Top = 261
         Width = 322
         Height = 21
         Anchors = [akLeft, akRight, akBottom]
@@ -160,7 +160,7 @@ object OptionsForm: TOptionsForm
       end
       object BMplayer: TTntButton
         Left = 515
-        Top = 268
+        Top = 261
         Width = 28
         Height = 21
         Anchors = [akRight, akBottom]
@@ -169,11 +169,10 @@ object OptionsForm: TOptionsForm
         OnClick = BMplayerClick
       end
       object CWid: TTntCheckBox
-        Left = 283
-        Top = 294
-        Width = 330
+        Left = 280
+        Top = 288
+        Width = 547
         Height = 17
-        Anchors = [akLeft, akRight, akBottom]
         Caption = 'Use WID'
         TabOrder = 5
       end
@@ -210,7 +209,7 @@ object OptionsForm: TOptionsForm
       end
       object RCMplayer: TTntRadioButton
         Left = 4
-        Top = 293
+        Top = 286
         Width = 269
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -220,7 +219,7 @@ object OptionsForm: TOptionsForm
       end
       object RMplayer: TTntRadioButton
         Left = 4
-        Top = 271
+        Top = 264
         Width = 181
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -328,7 +327,7 @@ object OptionsForm: TOptionsForm
       end
       object SSF: TTntStaticText
         Left = 8
-        Top = 249
+        Top = 242
         Width = 92
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -337,7 +336,7 @@ object OptionsForm: TOptionsForm
       end
       object BSsf: TTntButton
         Left = 515
-        Top = 243
+        Top = 236
         Width = 28
         Height = 21
         Anchors = [akRight, akBottom]
@@ -347,7 +346,7 @@ object OptionsForm: TOptionsForm
       end
       object ESsf: TTntEdit
         Left = 192
-        Top = 244
+        Top = 237
         Width = 322
         Height = 21
         Anchors = [akLeft, akRight, akBottom]
@@ -801,7 +800,7 @@ object OptionsForm: TOptionsForm
       end
       object EWadsp: TTntEdit
         Left = 4
-        Top = 288
+        Top = 281
         Width = 510
         Height = 21
         Anchors = [akLeft, akRight, akBottom]
@@ -809,7 +808,7 @@ object OptionsForm: TOptionsForm
       end
       object BWadsp: TTntButton
         Left = 515
-        Top = 288
+        Top = 281
         Width = 28
         Height = 21
         Anchors = [akRight, akBottom]
@@ -819,7 +818,7 @@ object OptionsForm: TOptionsForm
       end
       object CWadsp: TTntCheckBox
         Left = 4
-        Top = 266
+        Top = 259
         Width = 546
         Height = 17
         Anchors = [akLeft, akRight, akBottom]
@@ -831,7 +830,7 @@ object OptionsForm: TOptionsForm
       end
       object TLyric: TTntGroupBox
         Left = 1
-        Top = 145
+        Top = 138
         Width = 544
         Height = 116
         Anchors = [akLeft, akRight, akBottom]
@@ -980,7 +979,7 @@ object OptionsForm: TOptionsForm
       end
       object CUni: TTntCheckBox
         Left = 313
-        Top = 172
+        Top = 165
         Width = 236
         Height = 17
         Anchors = [akRight, akBottom]
@@ -991,7 +990,7 @@ object OptionsForm: TOptionsForm
       end
       object CUtf: TTntCheckBox
         Left = 4
-        Top = 172
+        Top = 165
         Width = 241
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -1018,7 +1017,7 @@ object OptionsForm: TOptionsForm
       end
       object SFsize: TTntStaticText
         Left = 4
-        Top = 249
+        Top = 242
         Width = 57
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -1027,7 +1026,7 @@ object OptionsForm: TOptionsForm
       end
       object SFB: TTntStaticText
         Left = 4
-        Top = 271
+        Top = 264
         Width = 77
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -1036,7 +1035,7 @@ object OptionsForm: TOptionsForm
       end
       object SFol: TTntStaticText
         Left = 4
-        Top = 293
+        Top = 286
         Width = 106
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -1057,7 +1056,7 @@ object OptionsForm: TOptionsForm
         Left = 8
         Top = 78
         Width = 532
-        Height = 91
+        Height = 84
         Anchors = [akLeft, akTop, akRight, akBottom]
         BevelOuter = bvNone
         Font.Charset = DEFAULT_CHARSET
@@ -1090,7 +1089,7 @@ object OptionsForm: TOptionsForm
       end
       object SFontColor: TTntStaticText
         Left = 4
-        Top = 222
+        Top = 215
         Width = 52
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -1099,7 +1098,7 @@ object OptionsForm: TOptionsForm
       end
       object SOutline: TTntStaticText
         Left = 282
-        Top = 222
+        Top = 215
         Width = 64
         Height = 17
         Alignment = taRightJustify
@@ -1109,7 +1108,7 @@ object OptionsForm: TOptionsForm
       end
       object PTc: TPanel
         Left = 133
-        Top = 217
+        Top = 210
         Width = 60
         Height = 25
         Cursor = crHandPoint
@@ -1124,7 +1123,7 @@ object OptionsForm: TOptionsForm
       end
       object POc: TPanel
         Left = 431
-        Top = 217
+        Top = 210
         Width = 60
         Height = 25
         Cursor = crHandPoint
@@ -1139,7 +1138,7 @@ object OptionsForm: TOptionsForm
       end
       object CAss: TTntCheckBox
         Left = 4
-        Top = 196
+        Top = 189
         Width = 245
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -1151,7 +1150,7 @@ object OptionsForm: TOptionsForm
       end
       object CEfont: TTntCheckBox
         Left = 313
-        Top = 196
+        Top = 189
         Width = 236
         Height = 17
         Anchors = [akRight, akBottom]
@@ -1294,7 +1293,7 @@ object OptionsForm: TOptionsForm
       end
       object TFsize: TTrackBar
         Left = 232
-        Top = 247
+        Top = 240
         Width = 281
         Height = 20
         Anchors = [akLeft, akRight, akBottom]
@@ -1309,7 +1308,7 @@ object OptionsForm: TOptionsForm
       end
       object TFB: TTrackBar
         Left = 232
-        Top = 269
+        Top = 262
         Width = 281
         Height = 20
         Anchors = [akLeft, akRight, akBottom]
@@ -1324,7 +1323,7 @@ object OptionsForm: TOptionsForm
       end
       object TFol: TTrackBar
         Left = 232
-        Top = 291
+        Top = 284
         Width = 281
         Height = 20
         Anchors = [akLeft, akRight, akBottom]
@@ -1339,7 +1338,7 @@ object OptionsForm: TOptionsForm
       end
       object SFsP: TTntStaticText
         Left = 512
-        Top = 249
+        Top = 242
         Width = 31
         Height = 17
         Anchors = [akRight, akBottom]
@@ -1348,7 +1347,7 @@ object OptionsForm: TOptionsForm
       end
       object SFBl: TTntStaticText
         Left = 512
-        Top = 270
+        Top = 263
         Width = 20
         Height = 17
         Anchors = [akRight, akBottom]
@@ -1357,7 +1356,7 @@ object OptionsForm: TOptionsForm
       end
       object SFo: TTntStaticText
         Left = 512
-        Top = 292
+        Top = 285
         Width = 20
         Height = 17
         Anchors = [akRight, akBottom]
@@ -1375,7 +1374,7 @@ object OptionsForm: TOptionsForm
         Left = 2
         Top = 2
         Width = 542
-        Height = 281
+        Height = 274
         Anchors = [akLeft, akTop, akRight, akBottom]
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1389,7 +1388,7 @@ object OptionsForm: TOptionsForm
       end
       object Command: TTntEdit
         Left = 2
-        Top = 289
+        Top = 282
         Width = 542
         Height = 21
         Anchors = [akLeft, akRight, akBottom]
@@ -1408,7 +1407,7 @@ object OptionsForm: TOptionsForm
         Left = 2
         Top = 2
         Width = 542
-        Height = 308
+        Height = 301
         Cursor = crArrow
         Anchors = [akLeft, akTop, akRight, akBottom]
         ReadOnly = True
@@ -1521,7 +1520,7 @@ object OptionsForm: TOptionsForm
         Left = 4
         Top = 134
         Width = 538
-        Height = 175
+        Height = 168
         Cursor = crArrow
         Anchors = [akLeft, akTop, akRight, akBottom]
         BevelInner = bvNone
@@ -2375,195 +2374,18 @@ object OptionsForm: TOptionsForm
         Top = 4
         Width = 161
         Height = 183
-        ItemHeight = 13
-        Items.Strings = (
-          'aac'
-          'ac3'
-          'acc'
-          'act'
-          'aif'
-          'aifc'
-          'aiff'
-          'amf'
-          'amr'
-          'amv'
-          'ape'
-          'as'
-          'asf'
-          'asx'
-          'a52'
-          'apl'
-          'au'
-          'avi'
-          'avs'
-          'bik'
-          'cmf'
-          'cmn'
-          'cpk'
-          'cue'
-          'd2v'
-          'dat'
-          'drc'
-          'dsm'
-          'dsv'
-          'dsa'
-          'dss'
-          'dts'
-          'dts'
-          'wav'
-          'dv'
-          'dvr-ms'
-          'divx'
-          'evo'
-          'far'
-          'fla'
-          'flac'
-          'flc'
-          'fli'
-          'flic'
-          'flm'
-          'flv'
-          'grf'
-          'hdmov'
-          'img'
-          'iso'
-          'ivf'
-          'it'
-          'itz'
-          'jsv'
-          'kar'
-          'm1a'
-          'm2a'
-          'm2p'
-          'm2ts'
-          'm1v'
-          'm2v'
-          'm3u'
-          'm3u8'
-          'm4a'
-          'm4b'
-          'm4p'
-          'm4v'
-          'mac'
-          'mdz'
-          'mid'
-          'midi'
-          'miz'
-          'mjf'
-          'mka'
-          'mkv'
-          'mod'
-          'mov'
-          'mp1'
-          'mp2'
-          'mp2v'
-          'mp3'
-          'mp3pro'
-          'mp4'
-          'mp5'
-          'mpa'
-          'mpc'
-          'mpcpl'
-          'mpe'
-          'mpeg'
-          'mpg'
-          'mpga'
-          'mp+'
-          'mpp'
-          'mtm'
-          'mpv'
-          'mpv2'
-          'mqv'
-          'mts'
-          'nrg'
-          'nsa'
-          'nst'
-          'nsv'
-          'nuv'
-          'ogg'
-          'ogm'
-          'okt'
-          'pls'
-          'pmp'
-          'pmp2'
-          'pss'
-          'ptm'
-          'pva'
-          'qt'
-          'ra'
-          'ram'
-          'ratdvd'
-          'rm'
-          'rmi'
-          'rmj'
-          'rmm'
-          'rmp'
-          'rms'
-          'rmvb'
-          'rmx'
-          'rnx'
-          'roq'
-          'rp'
-          'rpm'
-          'rt'
-          'rv'
-          'realpix'
-          's3m'
-          's3z'
-          'scm'
-          'sdp'
-          'smil'
-          'smk'
-          'smpl'
-          'snd'
-          'stm'
-          'stz'
-          'swf'
-          'tp'
-          'tpr'
-          'ts'
-          'tta'
-          'ttpl'
-          'ult'
-          'umx'
-          'vcd'
-          'vfw'
-          'vg2'
-          'vid'
-          'vivo'
-          'vob'
-          'voc'
-          'vp3'
-          'vp4'
-          'vp5'
-          'vp6'
-          'vp7'
-          'vqf'
-          'wav'
-          'wax'
-          'wm'
-          'wma'
-          'wmp'
-          'wmv'
-          'wmx'
-          'wpl'
-          'wv'
-          'wvx'
-          'xm'
-          'xmz'
-          'xspf'
-          '26l'
-          '264'
-          '3g2'
-          '3gp'
-          '3gpp'
-          '3gp2'
-          '669')
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ItemHeight = 16
+        ParentFont = False
         TabOrder = 0
       end
       object TFadd: TTntButton
         Left = 3
-        Top = 251
+        Top = 244
         Width = 75
         Height = 25
         Anchors = [akLeft, akBottom]
@@ -2573,7 +2395,7 @@ object OptionsForm: TOptionsForm
       end
       object TEAss: TTntEdit
         Left = 4
-        Top = 223
+        Top = 216
         Width = 163
         Height = 21
         Anchors = [akLeft, akBottom]
@@ -2581,7 +2403,7 @@ object OptionsForm: TOptionsForm
       end
       object TFSet: TTntButton
         Left = 47
-        Top = 283
+        Top = 276
         Width = 75
         Height = 25
         Anchors = [akLeft, akBottom]
@@ -2591,7 +2413,7 @@ object OptionsForm: TOptionsForm
       end
       object TFdel: TTntButton
         Left = 91
-        Top = 251
+        Top = 244
         Width = 75
         Height = 25
         Anchors = [akLeft, akBottom]
@@ -2601,7 +2423,7 @@ object OptionsForm: TOptionsForm
       end
       object TBa: TTntButton
         Left = 3
-        Top = 193
+        Top = 186
         Width = 75
         Height = 25
         Anchors = [akLeft, akBottom]
@@ -2611,13 +2433,197 @@ object OptionsForm: TOptionsForm
       end
       object TBn: TTntButton
         Left = 91
-        Top = 193
+        Top = 186
         Width = 75
         Height = 25
         Anchors = [akLeft, akBottom]
         Caption = 'None'
         TabOrder = 6
         OnClick = TBnClick
+      end
+      object HKey: TTntListView
+        Left = 176
+        Top = 4
+        Width = 369
+        Height = 245
+        Columns = <
+          item
+            Caption = 'Shortcut'
+            Width = 120
+          end
+          item
+            Caption = 'Action'
+            Width = 150
+          end
+          item
+            Caption = 'command'
+            Width = 100
+          end>
+        ColumnClick = False
+        GridLines = True
+        HideSelection = False
+        Items.Data = {
+          211300006800000000000000FFFFFFFFFFFFFFFF020000000000000007437472
+          6C2B555018696E63726561736520686569676874206F6620766964656F000000
+          0000FFFFFFFFFFFFFFFF0200000000000000094374726C2B446F776E18646563
+          726561736520686569676874206F6620766964656F0000000000FFFFFFFFFFFF
+          FFFF0200000000000000094374726C2B4C656674176465637265617465207769
+          647468206F6620766964656F0000000000FFFFFFFFFFFFFFFF02000000000000
+          000A4374726C2B526967687417696E637265617365207769647468206F662076
+          6964656F0000000000FFFFFFFFFFFFFFFF0200000000000000064374726C2B3D
+          107A6F6F6D20696E207375627469746C650E7375625F7363616C65202B302E31
+          00000000FFFFFFFFFFFFFFFF0200000000000000064374726C2B2D117A6F6F6D
+          206F7574207375627469746C650E7375625F7363616C65202D302E3100000000
+          FFFFFFFFFFFFFFFF020000000000000005416C742B330B437573746F6D207369
+          7A650000000000FFFFFFFFFFFFFFFF020000000000000005416C742B60094861
+          6C662073697A650000000000FFFFFFFFFFFFFFFF020000000000000005416C74
+          2B310D4F726967696E616C2073697A650000000000FFFFFFFFFFFFFFFF020000
+          000000000005416C742B320B446F75626C652073697A650000000000FFFFFFFF
+          FFFFFFFF02000000000000000753686966742B410A4E65787420416E676C6500
+          00000000FFFFFFFFFFFFFFFF02000000000000000753686966742B4509457175
+          616C697A65720000000000FFFFFFFFFFFFFFFF02000000000000000753686966
+          742B600B5265736574205363616C650000000000FFFFFFFFFFFFFFFF02000000
+          000000000753686966742B530D73657175656E63652073686F740000000000FF
+          FFFFFFFFFFFFFF02000000000000000753686966742B5A0E5265736574205375
+          6264656C61790000000000FFFFFFFFFFFFFFFF0200000000000000012D156465
+          63726561736520617564696F2064656C61792010617564696F5F64656C617920
+          2D302E3100000000FFFFFFFFFFFFFFFF0200000000000000012B14696E637265
+          61736520617564696F2064656C617910617564696F5F64656C6179202B302E31
+          00000000FFFFFFFFFFFFFFFF0200000000000000014F0A746F67676C65204F53
+          440000000000FFFFFFFFFFFFFFFF020000000000000001600F52657365742045
+          7175616C697A65720000000000FFFFFFFFFFFFFFFF0200000000000000012712
+          746F67676C65206465696E7465726C6163650000000000FFFFFFFFFFFFFFFF02
+          0000000000000001450D7A6F6F6D20696E20766964656F0000000000FFFFFFFF
+          FFFFFFFF020000000000000001570E7A6F6F6D206F757420766964656F000000
+          0000FFFFFFFFFFFFFFFF0200000000000000013111646563726561736520636F
+          6E74726173740B636F6E7472617374202D3300000000FFFFFFFFFFFFFFFF0200
+          000000000000013211696E63726561736520636F6E74726173740B636F6E7472
+          617374202B3300000000FFFFFFFFFFFFFFFF0200000000000000013313646563
+          7265617365206272696768746E6573730D6272696768746E657373202D330000
+          0000FFFFFFFFFFFFFFFF0200000000000000013414696E637265617365206272
+          696768746E657373200D6272696768746E657373202B3300000000FFFFFFFFFF
+          FFFFFF020000000000000001350C64656372656173652068756506687565202D
+          3300000000FFFFFFFFFFFFFFFF020000000000000001360C696E637265617365
+          2068756506687565202B3300000000FFFFFFFFFFFFFFFF020000000000000001
+          371364656372656173652073617475726174696F6E0D73617475726174696F6E
+          202D3300000000FFFFFFFFFFFFFFFF0200000000000000013813696E63726561
+          73652073617475726174696F6E0D73617475726174696F6E202B3300000000FF
+          FFFFFFFFFFFFFF020000000000000001390F646563726561736520766F6C756D
+          650000000000FFFFFFFFFFFFFFFF020000000000000001300F696E6372656173
+          6520766F6C756D650000000000FFFFFFFFFFFFFFFF0200000000000000064465
+          6C6574650E64656372656173652067616D6D610867616D6D61202D3300000000
+          FFFFFFFFFFFFFFFF020000000000000006496E736572740E696E637265617365
+          2067616D6D610867616D6D61202B3300000000FFFFFFFFFFFFFFFF0200000000
+          00000001440A64726F70206672616D650000000000FFFFFFFFFFFFFFFF020000
+          000000000001460A66756C6C53637265656E0000000000FFFFFFFFFFFFFFFF02
+          0000000000000001430D73756220616C69676E6D656E740000000000FFFFFFFF
+          FFFFFFFF0200000000000000015414696E6372656173652073756220706F7374
+          696F6E0A7375625F706F73202B3200000000FFFFFFFFFFFFFFFF020000000000
+          000001521464656372656173652073756220706F7374696F6E0A7375625F706F
+          73202D3200000000FFFFFFFFFFFFFFFF0200000000000000015615746F67676C
+          6520737562207669736962696C6974790000000000FFFFFFFFFFFFFFFF020000
+          000000000001530B53686F742053637265656E0C73637265656E73686F742030
+          00000000FFFFFFFFFFFFFFFF0200000000000000015911737562207374657020
+          6261636B776F72640B7375625F73746570202B3100000000FFFFFFFFFFFFFFFF
+          0200000000000000015510737562207374657020666F72776F72640B7375625F
+          73746570202B3100000000FFFFFFFFFFFFFFFF0200000000000000015A136465
+          637265617365207375622064656C6179200E7375625F64656C6179202D302E31
+          00000000FFFFFFFFFFFFFFFF0200000000000000015812696E63726561736520
+          7375622064656C61790E7375625F64656C6179202B302E3100000000FFFFFFFF
+          FFFFFFFF020000000000000001470B4456446E6176206D656E750000000000FF
+          FFFFFFFFFFFFFF020000000000000001480D4456446E61762073656C65637400
+          00000000FFFFFFFFFFFFFFFF02000000000000000149094456446E6176205550
+          0000000000FFFFFFFFFFFFFFFF0200000000000000014B0B4456446E61762044
+          6F776E0000000000FFFFFFFFFFFFFFFF0200000000000000014A0B4456446E61
+          76204C6566740000000000FFFFFFFFFFFFFFFF0200000000000000014C0C4456
+          446E61762052696768740000000000FFFFFFFFFFFFFFFF020000000000000001
+          3B0B4456446E617620707265760000000000FFFFFFFFFFFFFFFF020000000000
+          00000246320B4B656570206173706563740000000000FFFFFFFFFFFFFFFF0200
+          0000000000000246330D48696465206D656E75206261720000000000FFFFFFFF
+          FFFFFFFF0200000000000000024634124869646520636F6E74726F6C2070616E
+          656C0000000000FFFFFFFFFFFFFFFF02000000000000000246350C436F6D7061
+          6374206D6F64650000000000FFFFFFFFFFFFFFFF020000000000000003546162
+          1C546F67676C65204D656E7520616E6420436F6E74726F6C50616E656C000000
+          0000FFFFFFFFFFFFFFFF020000000000000005456E7465720D4D6178696D697A
+          6520766965770000000000FFFFFFFFFFFFFFFF0200000000000000064374726C
+          2B4F0A4F70656E2066696C65730000000000FFFFFFFFFFFFFFFF020000000000
+          0000064374726C2B4C084F70656E2055524C0000000000FFFFFFFFFFFFFFFF02
+          00000000000000064374726C2B5705436C6F73650000000000FFFFFFFFFFFFFF
+          FF00000000000000000000000000FFFFFFFFFFFFFFFF02000000000000000643
+          74726C2B530453746F700000000000FFFFFFFFFFFFFFFF020000000000000006
+          4374726C2B600D52657365742062616C616E63650000000000FFFFFFFFFFFFFF
+          FF0200000000000000064374726C2B5104517569740000000000FFFFFFFFFFFF
+          FFFF0200000000000000064374726C2B440E4F70656E206469726563746F7279
+          0000000000FFFFFFFFFFFFFFFF02000000000000000E4374726C2B4261636B53
+          7061636511526573657420617564696F2064656C61790000000000FFFFFFFFFF
+          FFFFFF020000000000000006416C742B463404517569740000000000FFFFFFFF
+          FFFFFFFF02000000000000000753686966742B440653746572656F0000000000
+          FFFFFFFFFFFFFFFF02000000000000000753686966742B4C0C6C656674206368
+          616E6E656C0000000000FFFFFFFFFFFFFFFF0200000000000000075368696674
+          2B520D5269676874206368616E6E656C0000000000FFFFFFFFFFFFFFFF020000
+          00000000000753686966742B4D0D4D69786564206368616E6E656C0000000000
+          FFFFFFFFFFFFFFFF0200000000000000044C6566740F4261636B776172642031
+          3020736563087365656B202D313000000000FFFFFFFFFFFFFFFF000000000000
+          00000000000000FFFFFFFFFFFFFFFF02000000000000000552696768740E466F
+          727761726420313020736563087365656B202B313000000000FFFFFFFFFFFFFF
+          FF02000000000000000255500D466F72776172642031206D696E087365656B20
+          2B363000000000FFFFFFFFFFFFFFFF020000000000000004446F776E0E426163
+          6B776172642031206D696E087365656B202D363000000000FFFFFFFFFFFFFFFF
+          020000000000000007506167652055500E466F7277617264203130206D696E09
+          7365656B202B36303000000000FFFFFFFFFFFFFFFF0200000000000000095061
+          676520446F776E0F4261636B77617264203130206D696E097365656B202D3630
+          3000000000FFFFFFFFFFFFFFFF020000000000000004486F6D650F4368617074
+          657220666F72776172640F7365656B5F63686170746572202B3100000000FFFF
+          FFFFFFFFFFFF020000000000000003456E641043686170746572206261636B77
+          6172640F7365656B5F63686170746572202D3100000000FFFFFFFFFFFFFFFF02
+          00000000000000094261636B53706163650B5265736574207370656564000000
+          0000FFFFFFFFFFFFFFFF0200000000000000012D0E6465637265617365207370
+          6565640F73706565645F6D756C7420302E393100000000FFFFFFFFFFFFFFFF02
+          00000000000000012B0E696E6372656173652073706565640E73706565645F6D
+          756C7420312E3100000000FFFFFFFFFFFFFFFF0200000000000000014D044D75
+          74650000000000FFFFFFFFFFFFFFFF0200000000000000014E0B4E6578742061
+          73706563740000000000FFFFFFFFFFFFFFFF020000000000000001420D4E6578
+          74207375627469746C650000000000FFFFFFFFFFFFFFFF020000000000000001
+          51104E65787420766964656F20747261636B0000000000FFFFFFFFFFFFFFFF02
+          0000000000000001500C4E6578742070726F6772616D0000000000FFFFFFFFFF
+          FFFFFF0200000000000000012C0962616C616E6365202D0C62616C616E636520
+          2D302E3100000000FFFFFFFFFFFFFFFF0200000000000000012E0962616C616E
+          6365202B0C62616C616E6365202B302E3100000000FFFFFFFFFFFFFFFF020000
+          00000000000141104E65787420617564696F20747261636B0000000000FFFFFF
+          FFFFFFFFFF02000000000000000246310A4E657874204F6E746F700000000000
+          FFFFFFFFFFFFFFFF02000000000000000246390D53686F7720506C61796C6973
+          740000000000FFFFFFFFFFFFFFFF0200000000000000034631300C53686F7720
+          4F7074696F6E730000000000FFFFFFFFFFFFFFFF020000000000000003463131
+          0F53686F77206D6564696120696E666F0000000000FFFFFFFFFFFFFFFF020000
+          0000000000034631320853686F77206C6F670000000000FFFFFFFFFFFFFFFF02
+          00000000000000015B0A53657420696E74726F200000000000FFFFFFFFFFFFFF
+          FF0200000000000000015D0753657420656E640000000000FFFFFFFFFFFFFFFF
+          0200000000000000015C11536B697020496E74726F20456E64696E6700000000
+          00FFFFFFFFFFFFFFFF0200000000000000012F0A4672616D6520737465700000
+          000000FFFFFFFFFFFFFFFF020000000000000005537061636505506175736505
+          706175736500000000FFFFFFFFFFFFFFFF020000000000000002463709507265
+          762066696C650000000000FFFFFFFFFFFFFFFF0200000000000000024638094E
+          6578742066696C6500FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FF}
+        ReadOnly = True
+        RowSelect = True
+        TabOrder = 7
+        ViewStyle = vsReport
+        OnClick = HKeyClick
+        OnDblClick = HKeyDblClick
+        OnKeyDown = HKeyKeyDown
       end
     end
   end
