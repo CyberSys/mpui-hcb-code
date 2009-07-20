@@ -619,7 +619,7 @@ begin
     Playlist.Changed;
     if Playlist.Count>0 then Application.OnIdle:=OpenDroppedFile;
   end;
-  DragAcceptFiles(Handle,true);
+  DragAcceptFiles(Handle,true); 
 end;
 
 procedure TMainForm.FormHide(Sender: TObject);
@@ -855,6 +855,7 @@ var i,j:integer;
     SendCommand('get_time_length');
   end;
 begin
+OptionsForm.translateHotKey(Shift,Key);
 if MVideos.Visible then begin
   if Key=VK_ESCAPE then begin
     if MFullscreen.Checked then Key:=Ord('F')
@@ -1129,7 +1130,8 @@ end;
 procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-   if HaveVideo then begin
+  OptionsForm.translateHotKey(Shift,Key);
+  if HaveVideo then begin
     case Key of
       Ord('1'),VK_NUMPAD1,Ord('2'),VK_NUMPAD2:   begin CBHSA:=1; SendCommand('get_property contrast'); end;
       Ord('3'),VK_NUMPAD3,Ord('4'),VK_NUMPAD4:   begin CBHSA:=1; SendCommand('get_property brightness'); end;

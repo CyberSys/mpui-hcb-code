@@ -1458,19 +1458,16 @@ object MainForm: TMainForm
       object MOpenFile: TTntMenuItem
         Caption = 'Open file'
         ImageIndex = 51
-        ShortCut = 16463
         OnClick = MOpenFileClick
       end
       object MOpenDir: TTntMenuItem
         Caption = 'Open Directory'
         ImageIndex = 0
-        ShortCut = 16452
         OnClick = MOpenDirClick
       end
       object MOpenURL: TTntMenuItem
         Caption = 'Open URL'
         ImageIndex = 1
-        ShortCut = 16460
         OnClick = MOpenURLClick
       end
       object MOpenDrive: TTntMenuItem

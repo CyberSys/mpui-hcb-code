@@ -74,6 +74,7 @@ var LOCstr_Title:WideString;
     AnyFilter:WideString;
     FontFilter:WideString;
     LyricFilter:WideString;
+    IKeyHint,IKeyerror:WideString;
 
 var LOCstr_NoInfo:WideString;
     LOCstr_InfoFileName:WideString;
@@ -246,4 +247,6 @@ begin
   OSD_Reset_Prompt:='Reset';
   OSD_AudioDelay_Prompt:='Audio Delay';
   OSD_SubDelay_Prompt:='Subtitle Delay';
+  IKeyHint:='Please press hotkey';
+  IKeyerror:=' ,Shortcut already exists';
 end.

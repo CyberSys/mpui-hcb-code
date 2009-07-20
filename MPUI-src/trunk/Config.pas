@@ -144,7 +144,8 @@ begin
            Core.PScroll:=ReadBool(SectionName,'Scroll',Core.PScroll);
            Core.LyricF:=ReadString(SectionName,'LyricFont',Core.LyricF);
            Core.LyricS:=ReadInteger(SectionName,'LyricSize',Core.LyricS);
-           Core.Fass:=ReadString(SectionName,'fileAss',Core.Fass);
+           Core.HKS:=ReadString(SectionName,'HotKey',Core.DefaultHKS);
+           Core.Fass:=ReadString(SectionName,'fileAss',Core.DefaultFass);
            MainForm.MOnTop.Items[Core.OnTop].Checked:=true;
            MainForm.MUUni.Checked:=Core.UseUni;
            MainForm.UpdateMenuCheck;
@@ -272,13 +273,14 @@ begin
            WriteInteger(SectionName,'Ending',Core.Ep);
            WriteInteger(SectionName,'Volume',Core.Volume);
            WriteInteger(SectionName,'OnTop',Core.OnTop);
-           WriteBool   (SectionName,'UseUni',Core.UseUni); WriteString(SectionName,'fileAss',Core.Fass);
+           WriteBool   (SectionName,'UseUni',Core.UseUni);
          end;
       2: begin
            WriteBool  (SectionName,'instance',Core.oneM);
            WriteBool  (SectionName,'RSize',Core.RS);
            WriteBool  (SectionName,'RPostion',Core.RP);
            WriteBool  (SectionName,'DSize',Core.ds);
+           WriteString(SectionName,'HotKey',Core.HKS);
          end;
       3: begin
            WriteInteger(SectionName,'CWidth',Core.NW);
