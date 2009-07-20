@@ -1221,6 +1221,7 @@ begin
   if key in [$21..$28,$2D,$2E,$5D] then ScanCode:=ScanCode or $100;
   SetLength(Result,MAX_PATH-1);
   GetKeyNameText(ScanCode shl 16,PChar(Result),MAX_PATH);
+  delete(Result,pos(#0,Result),MAX_PATH);
 end;
 
 procedure TOptionsForm.HKDblClick(Sender: TObject);
@@ -1249,7 +1250,7 @@ begin
   t:=HK.FindData(sIndex,Pointer(i),false,true);
   if t<>nil then begin
     HK.Items[sIndex].Caption:=tCap;
-    ShowMessage(t.SubItems.Strings[0]+' ,['+t.Caption+'] '+IKeyerror);
+    ShowMessage('"'+t.SubItems.Strings[0]+'" ,['+t.Caption+'] '+IKeyerror);
   end
   else begin
     HK.Items[sIndex].Caption:=ShiftToStr(Shift)+KeyToStr(Key);
