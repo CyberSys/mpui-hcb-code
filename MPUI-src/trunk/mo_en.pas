@@ -20,7 +20,7 @@
 unit mo_en;
 interface
 implementation
-uses Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
+uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -90,6 +90,8 @@ begin
         LOCstr_OpenURL_Caption:='Play URL';
         LOCstr_OpenURL_Prompt:='Which URL do you want to play?';
       MOpenDrive.Caption:='Play Media CD';
+      MRFile.Caption:='Recent files';
+      MFClear.Caption:='Clear list';
       MLoadLyric.Caption:='Load Lyric File';
       MLoadSub.Caption:='Load Subtitle...';
       MOsdfont.Caption:='OSD Font...';
@@ -384,6 +386,10 @@ begin
     TOther.Caption:='Other';
     CDs.Caption:='Always show video interface';
     RHK.Caption:='Reset HotKey';
+    HK.Columns[0].Caption:='HotKey';
+    HK.Columns[1].Caption:='Action';
+    TUnit.Caption:='seconds';
+    TseekL.Caption:='Seek jump';
 
     HK.Items[0].SubItems.Strings[0]:='Increase height of video';
     HK.Items[1].SubItems.Strings[0]:='Decrease height of video';
@@ -456,8 +462,8 @@ begin
     HK.Items[68].SubItems.Strings[0]:=MainForm.MLchannels.Caption;
     HK.Items[69].SubItems.Strings[0]:=MainForm.MRchannels.Caption;
     HK.Items[70].SubItems.Strings[0]:=MainForm.MMix.Caption;
-    HK.Items[71].SubItems.Strings[0]:=MainForm.MSeekR10.Caption;
-    HK.Items[72].SubItems.Strings[0]:=MainForm.MSeekF10.Caption;
+    HK.Items[71].SubItems.Strings[0]:='Forward '+IntToStr(seekLen)+' seconds';
+    HK.Items[72].SubItems.Strings[0]:='Rewind '+IntToStr(seekLen)+' seconds';
     HK.Items[73].SubItems.Strings[0]:=MainForm.MSeekF60.Caption;
     HK.Items[74].SubItems.Strings[0]:=MainForm.MSeekR60.Caption;
     HK.Items[75].SubItems.Strings[0]:=MainForm.MSeekF600.Caption;

@@ -20,7 +20,7 @@
 unit mo_zh_tw;
 interface
 implementation
-uses Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
+uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -90,6 +90,8 @@ begin
         LOCstr_OpenURL_Caption:=UTF8Decode('播放網址');
         LOCstr_OpenURL_Prompt:=UTF8Decode('請輸入您想播放的網址');
       MOpenDrive.Caption:=UTF8Decode('播放 鐳射光碟');
+      MRFile.Caption:=UTF8Decode('最近打開的檔案');
+      MFClear.Caption:=UTF8Decode('清除列表');
       MLoadLyric.Caption:=UTF8Decode('載入歌詞');
       MLoadSub.Caption:=UTF8Decode('載入字幕...');
       MSubfont.Caption:=UTF8Decode('字幕字體...');
@@ -383,6 +385,10 @@ begin
     TFSet.Caption:=UTF8Decode('關聯');
     TOther.Caption:=UTF8Decode('其他');
     RHK.Caption:=UTF8Decode('重置 快捷鍵');
+    HK.Columns[0].Caption:=UTF8Decode('快捷鍵');
+    HK.Columns[1].Caption:=UTF8Decode('操作');
+    TUnit.Caption:=UTF8Decode('秒');
+    TseekL.Caption:=UTF8Decode('搜索 跳躍');
     
     CDs.Caption:=UTF8Decode('總是顯示視頻界面');
     HK.Items[0].SubItems.Strings[0]:=UTF8Decode('增加視頻高度');
@@ -456,14 +462,14 @@ begin
     HK.Items[68].SubItems.Strings[0]:=MainForm.MLchannels.Caption;
     HK.Items[69].SubItems.Strings[0]:=MainForm.MRchannels.Caption;
     HK.Items[70].SubItems.Strings[0]:=MainForm.MMix.Caption;
-    HK.Items[71].SubItems.Strings[0]:=MainForm.MSeekR10.Caption;
-    HK.Items[72].SubItems.Strings[0]:=MainForm.MSeekF10.Caption;
+    HK.Items[71].SubItems.Strings[0]:=UTF8Decode('向前 '+IntToStr(seekLen)+'秒');
+    HK.Items[72].SubItems.Strings[0]:=UTF8Decode('向後 '+IntToStr(seekLen)+'秒');
     HK.Items[73].SubItems.Strings[0]:=MainForm.MSeekF60.Caption;
     HK.Items[74].SubItems.Strings[0]:=MainForm.MSeekR60.Caption;
     HK.Items[75].SubItems.Strings[0]:=MainForm.MSeekF600.Caption;
     HK.Items[76].SubItems.Strings[0]:=MainForm.MSeekR600.Caption;
     HK.Items[77].SubItems.Strings[0]:=UTF8Decode('前進一個章節');
-    HK.Items[78].SubItems.Strings[0]:=UTF8Decode('后退一個章節');
+    HK.Items[78].SubItems.Strings[0]:=UTF8Decode('後退一個章節');
     HK.Items[79].SubItems.Strings[0]:=UTF8Decode('重置 速度');
     HK.Items[80].SubItems.Strings[0]:=UTF8Decode('減速');
     HK.Items[81].SubItems.Strings[0]:=UTF8Decode('加速');

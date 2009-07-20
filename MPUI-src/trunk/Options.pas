@@ -174,6 +174,9 @@ type
     CDs: TTntCheckBox;
     HK: TTntListView;
     RHK: TTntButton;
+    Eseek: TTntEdit;
+    TseekL: TTntLabel;
+    TUnit: TTntLabel;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -478,6 +481,7 @@ begin
   BOsdfont.Enabled:=uof;
   Cone.Checked:=oneM;
   CGUI.Checked:=GUI;
+  Eseek.Text:=IntToStr(seekLen);
   GetFass;
 
   if (CSubfont.ItemIndex<0) and (COsdfont.ItemIndex<0) then begin
@@ -764,6 +768,7 @@ begin
   RS:=CRS.Checked;
   SP:=CSP.Checked;
   CT:=CTime.Checked;
+  seekLen:=StrToIntdef(Eseek.Text,10);
   vsync:=CVSync.Checked;
   UseekC:=CUseekC.Checked;
   oneM:=Cone.Checked;

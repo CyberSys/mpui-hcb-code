@@ -20,7 +20,7 @@
 unit mo_cn;
 interface
 implementation
-uses Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
+uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
 
 procedure Activate;
 begin
@@ -90,6 +90,8 @@ begin
         LOCstr_OpenURL_Caption:=UTF8Decode('打开 URL');
         LOCstr_OpenURL_Prompt:=UTF8Decode('你想要打开的 URL 是？');
       MOpenDrive.Caption:=UTF8Decode('播放 光盘');
+      MRFile.Caption:=UTF8Decode('最近打开的文件');
+      MFClear.Caption:=UTF8Decode('清除列表');
       MLoadLyric.Caption:=UTF8Decode('载入歌词');
       MLoadSub.Caption:=UTF8Decode('载入字幕...');
       MSubfont.Caption:=UTF8Decode('字幕字体...');
@@ -381,6 +383,10 @@ begin
     TOther.Caption:=UTF8Decode('其他');
     CDs.Caption:=UTF8Decode('总是显示视频界面');
     RHK.Caption:=UTF8Decode('重置 快捷键');
+    HK.Columns[0].Caption:=UTF8Decode('快捷键');
+    HK.Columns[1].Caption:=UTF8Decode('操作');
+    TUnit.Caption:=UTF8Decode('秒');
+    TseekL.Caption:=UTF8Decode('搜索 跳跃');
     
     HK.Items[0].SubItems.Strings[0]:=UTF8Decode('增加视频高度');
     HK.Items[1].SubItems.Strings[0]:=UTF8Decode('减小视频高度');
@@ -453,8 +459,8 @@ begin
     HK.Items[68].SubItems.Strings[0]:=MainForm.MLchannels.Caption;
     HK.Items[69].SubItems.Strings[0]:=MainForm.MRchannels.Caption;
     HK.Items[70].SubItems.Strings[0]:=MainForm.MMix.Caption;
-    HK.Items[71].SubItems.Strings[0]:=MainForm.MSeekR10.Caption;
-    HK.Items[72].SubItems.Strings[0]:=MainForm.MSeekF10.Caption;
+    HK.Items[71].SubItems.Strings[0]:=UTF8Decode('向前 '+IntToStr(seekLen)+'秒');
+    HK.Items[72].SubItems.Strings[0]:=UTF8Decode('向后 '+IntToStr(seekLen)+'秒');
     HK.Items[73].SubItems.Strings[0]:=MainForm.MSeekF60.Caption;
     HK.Items[74].SubItems.Strings[0]:=MainForm.MSeekR60.Caption;
     HK.Items[75].SubItems.Strings[0]:=MainForm.MSeekF600.Caption;

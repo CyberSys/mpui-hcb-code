@@ -25,7 +25,7 @@ const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
 const PauseInfo:array[0..1]of WideString=('=  PAUSE  =','= 暂停 =');
 const CacheFill:array[0..4]of WideString=('Cache fill:','缓存填充:','缓冲填充:','緩存填充:','緩沖填充:');
 const GenIndex:array[0..2]of WideString=('Generating Index:','正在生成索引:','正在生成索引:');
-const defaultHeight=330;
+const defaultHeight=330; RFileMax=10;
 const szdllCount=2;
 const szdll:array[0..szdllCount]of WideString=('7zxa.dll','7za.dll','7z.dll');
 
@@ -139,7 +139,7 @@ var AudioOut,AudioDev,Postproc,Deinterlace,Aspect:integer;
 var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
     LastPos,SecondPos,OSDLevel,MSecPos:integer;
-var Volume,MWC,CP:integer;
+var Volume,MWC,CP,seekLen:integer;
     ds,tEnd,Mute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
     DTFormat:string;
     FormatSet:TFormatSettings;
@@ -2337,8 +2337,8 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; EW:=0; EH:=0; EL:=-1; ET:=-1; RS:=false; RP:=false; SP:=true;
-  CT:=true; IL:=-1; IT:=-1; ds:=false; ResetStreamInfo;
-  fass:=DefaultFass; HKS:=DefaultHKS;
-
+  CT:=true; IL:=-1; IT:=-1; ds:=false; fass:=DefaultFass; HKS:=DefaultHKS;
+  seekLen:=10; ResetStreamInfo;
+  
 end.
 

@@ -18,9 +18,9 @@
 }
 unit Config;
 interface
-uses Core, Main, Locale, info;
+uses Core, Main, Locale, info, Menus,TntMenus;
 
-const DefaultFileName='MPUI.ini';
+const DefaultFileName='MPUI-hcb.ini';
       SectionName='MPUI';
 
 var DefaultLocale:integer=AutoLocale;
@@ -39,13 +39,13 @@ implementation
 uses SysUtils, TntSysUtils, INIFiles, Windows;
 
 procedure Load(FileName:WideString; Mode:integer);
-var INI:TMemIniFile;
+var INI:TMemIniFile; t:TTntMenuItem; s:widestring; i:integer;
 begin
   if not WideFileExists(FileName) then begin
     FileName:=AppdataDir+WideExtractFileName(FileName);
     if not WideFileExists(FileName) then exit;
   end;
-  INI:=TMemIniFile.Create(WideExtractShortPathName(FileName));
+  INI:=TMemIniFile.Create(WideExtractShortPathName(FileName)); s:='';
   with INI do begin
     case mode of
       0: begin
@@ -144,8 +144,23 @@ begin
            Core.PScroll:=ReadBool(SectionName,'Scroll',Core.PScroll);
            Core.LyricF:=ReadString(SectionName,'LyricFont',Core.LyricF);
            Core.LyricS:=ReadInteger(SectionName,'LyricSize',Core.LyricS);
+           Core.seekLen:=ReadInteger(SectionName,'seekLen',Core.seekLen);
            Core.HKS:=ReadString(SectionName,'HotKey',Core.DefaultHKS);
            Core.Fass:=ReadString(SectionName,'fileAss',Core.DefaultFass);
+           for i:=0 to RFileMax-1 do begin
+             s:=ReadString(SectionName,'RF'+IntToStr(i),s);
+             if s<>'' then begin
+               t:=TTntMenuItem.Create(MainForm.MRFile);
+               if WideFileExists(s) then begin
+                 s:=GetLongPath(s);t.Caption:=WideExtractFileName(s);
+               end
+               else t.Caption:=s;
+               t.Hint:=s;
+               t.OnClick:=MainForm.MRFClick;
+               MainForm.MRFile.Insert(2,t);
+               MainForm.MRFile.Visible:=true;
+             end;
+           end;
            MainForm.MOnTop.Items[Core.OnTop].Checked:=true;
            MainForm.MUUni.Checked:=Core.UseUni;
            MainForm.UpdateMenuCheck;
@@ -273,7 +288,13 @@ begin
            WriteInteger(SectionName,'Ending',Core.Ep);
            WriteInteger(SectionName,'Volume',Core.Volume);
            WriteInteger(SectionName,'OnTop',Core.OnTop);
+           WriteInteger(SectionName,'seekLen',Core.seekLen);
            WriteBool   (SectionName,'UseUni',Core.UseUni);
+           for h:=2 to MainForm.MRFile.Count-1 do begin
+             if WideFileExists(MainForm.MRFile.Items[h].Hint) then
+               WriteString(SectionName,'RF'+IntToStr(h-3),WideExtractShortPathName(MainForm.MRFile.Items[h].Hint))
+             else WriteString(SectionName,'RF'+IntToStr(h-3),MainForm.MRFile.Items[h].Hint);
+           end;
          end;
       2: begin
            WriteBool  (SectionName,'instance',Core.oneM);

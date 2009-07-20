@@ -1478,6 +1478,20 @@ object MainForm: TMainForm
       object N33: TTntMenuItem
         Caption = '-'
       end
+      object MRFile: TTntMenuItem
+        Caption = 'Recent files'
+        Visible = False
+        object MFClear: TTntMenuItem
+          Caption = 'Clear list'
+          OnClick = MFClearClick
+        end
+        object N37: TTntMenuItem
+          Caption = '-'
+        end
+      end
+      object N36: TTntMenuItem
+        Caption = '-'
+      end
       object MLoadlyric: TTntMenuItem
         Caption = 'Load LyricFile'
         OnClick = MLoadlyricClick

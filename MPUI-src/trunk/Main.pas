@@ -296,6 +296,10 @@ type
     MSubScale2: TTntMenuItem;
     MSCS: TTntMenuItem;
     N35: TTntMenuItem;
+    MRFile: TTntMenuItem;
+    N36: TTntMenuItem;
+    MFClear: TTntMenuItem;
+    N37: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -324,6 +328,7 @@ type
     procedure MDVDCClick(Sender: TObject);
     procedure MDVDAClick(Sender: TObject);
     procedure MVCDTClick(Sender: TObject);
+    procedure MRFClick(Sender: TObject);
     procedure MAudiochannelsClick(Sender: TObject);
     procedure MSpeedClick(Sender: TObject);
     procedure MVideoClick(Sender: TObject);
@@ -406,6 +411,7 @@ type
     procedure MUUniClick(Sender: TObject);
     procedure MSubScale2Click(Sender: TObject);
     procedure MSCSClick(Sender: TObject);
+    procedure MFClearClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -420,6 +426,7 @@ type
     procedure FormGetMinMaxInfo(var msg:TMessage); message WM_GETMINMAXINFO;
     procedure FormMove(var msg:TMessage); message WM_MOVE;
     procedure FormWantSpecialKey(var msg:TCMWantSpecialKey); message CM_WANTSPECIALKEY;
+    procedure UpdateMRF;
   public
     { Public declarations }
     procedure FixSize;
@@ -786,6 +793,7 @@ begin
   UpdateCaption;
   FirstOpen:=true;
   Start;
+  UpdateMRF;
 end;
 
 procedure TMainForm.BPlayClick(Sender: TObject);
@@ -1065,8 +1073,8 @@ else begin
     end
     else begin
       case Key of
-        VK_RIGHT:   HandleSeekCommand('seek +10');
-        VK_LEFT:    HandleSeekCommand('seek -10');
+        VK_RIGHT:   HandleSeekCommand('seek +'+IntToStr(seekLen));
+        VK_LEFT:    HandleSeekCommand('seek -'+IntToStr(seekLen));
         VK_UP:      HandleSeekCommand('seek +60');
         VK_DOWN:    HandleSeekCommand('seek -60');
         VK_PRIOR:   HandleSeekCommand('seek +600');
@@ -1577,6 +1585,27 @@ begin
   SubID:=(Sender as TMenuItem).Tag;
   SendCommand('sub_select '+IntToStr(SubID));
   (Sender as TMenuItem).Checked:=True;
+end;
+
+procedure TMainForm.MRFClick(Sender: TObject);
+begin
+  PClear:=true;
+  Playlist.AddFiles((Sender as TTntMenuItem).Hint);
+  Playlist.Changed;
+  UpdateParams;
+  NextFile(0,psPlaying);
+end;
+
+procedure TMainForm.UpdateMRF;
+var t:TTntMenuItem;
+begin
+  if MRFile.Items[2].Hint=MediaURL then exit;
+  if MRFile.Count=(RFileMax+2) then MRFile.Delete(RFileMax+1);
+  t:=TTntMenuItem.Create(MRFile);
+  t.Caption:=DisplayURL; t.Hint:=MediaURL;
+  t.OnClick:=MRFClick;
+  MRFile.Insert(2,t);
+  MRFile.Visible:=true;
 end;
 
 procedure TMainForm.MDVDCClick(Sender: TObject);
@@ -3069,6 +3098,13 @@ procedure TMainForm.MSCSClick(Sender: TObject);
 begin
   NW:=OPanel.Width; NH:=OPanel.Height;
   Config.Save(HomeDir+DefaultFileName,3);
+end;
+
+procedure TMainForm.MFClearClick(Sender: TObject);
+var i:integer;
+begin
+  for i:=MRFile.Count-1 downto 2 do MRFile.delete(i);
+  MRFile.Visible:=false;
 end;
 
 end.
