@@ -1587,6 +1587,13 @@ begin
   (Sender as TMenuItem).Checked:=True;
 end;
 
+procedure TMainForm.MFClearClick(Sender: TObject);
+var i:integer;
+begin
+  for i:=MRFile.Count-1 downto 2 do MRFile.delete(i);
+  MRFile.Visible:=false;
+end;
+
 procedure TMainForm.MRFClick(Sender: TObject);
 begin
   PClear:=true;
@@ -1599,7 +1606,7 @@ end;
 procedure TMainForm.UpdateMRF;
 var t:TTntMenuItem;
 begin
-  if MRFile.Items[2].Hint=MediaURL then exit;
+  if (MRfile.Count>2) and (MRFile.Items[2].Hint=MediaURL) then exit;
   if MRFile.Count=(RFileMax+2) then MRFile.Delete(RFileMax+1);
   t:=TTntMenuItem.Create(MRFile);
   t.Caption:=DisplayURL; t.Hint:=MediaURL;
@@ -3098,13 +3105,6 @@ procedure TMainForm.MSCSClick(Sender: TObject);
 begin
   NW:=OPanel.Width; NH:=OPanel.Height;
   Config.Save(HomeDir+DefaultFileName,3);
-end;
-
-procedure TMainForm.MFClearClick(Sender: TObject);
-var i:integer;
-begin
-  for i:=MRFile.Count-1 downto 2 do MRFile.delete(i);
-  MRFile.Visible:=false;
 end;
 
 end.

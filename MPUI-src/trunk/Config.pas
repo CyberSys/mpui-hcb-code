@@ -152,12 +152,12 @@ begin
              if s<>'' then begin
                t:=TTntMenuItem.Create(MainForm.MRFile);
                if WideFileExists(s) then begin
-                 s:=GetLongPath(s);t.Caption:=WideExtractFileName(s);
+                 s:=GetLongPath(s); t.Caption:=WideExtractFileName(s);
                end
                else t.Caption:=s;
                t.Hint:=s;
                t.OnClick:=MainForm.MRFClick;
-               MainForm.MRFile.Insert(2,t);
+               MainForm.MRFile.add(t);
                MainForm.MRFile.Visible:=true;
              end;
            end;
@@ -290,10 +290,10 @@ begin
            WriteInteger(SectionName,'OnTop',Core.OnTop);
            WriteInteger(SectionName,'seekLen',Core.seekLen);
            WriteBool   (SectionName,'UseUni',Core.UseUni);
-           for h:=2 to MainForm.MRFile.Count-1 do begin
+           for h:=MainForm.MRFile.Count-1 downto 2 do begin
              if WideFileExists(MainForm.MRFile.Items[h].Hint) then
-               WriteString(SectionName,'RF'+IntToStr(h-3),WideExtractShortPathName(MainForm.MRFile.Items[h].Hint))
-             else WriteString(SectionName,'RF'+IntToStr(h-3),MainForm.MRFile.Items[h].Hint);
+               WriteString(SectionName,'RF'+IntToStr(h-2),WideExtractShortPathName(MainForm.MRFile.Items[h].Hint))
+             else WriteString(SectionName,'RF'+IntToStr(h-2),MainForm.MRFile.Items[h].Hint);
            end;
          end;
       2: begin

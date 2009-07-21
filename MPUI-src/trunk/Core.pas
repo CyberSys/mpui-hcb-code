@@ -593,7 +593,7 @@ begin
 
   FirstChance:=true; afCount:=0; afChain:='';
   ClientWaitThread:=TClientWaitThread.Create(true);
-  ClientWaitThread.FreeOnTerminate:=true;;
+  ClientWaitThread.FreeOnTerminate:=true;
   Processor:=TProcessor.Create(true);
   Processor.FreeOnTerminate:=true;;
   if ML then CmdLine:=EscapeParam(ExpandName(HomeDir,MplayerLocation))

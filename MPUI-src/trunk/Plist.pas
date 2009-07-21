@@ -339,7 +339,7 @@ end;
 
 procedure TPlaylist.Clear;
 begin
-  SetLength(Data,0);
+  SetLength(Data,0); CurPlay:=-1;
 end;
 
 procedure TLyric.ClearLyric;
@@ -475,7 +475,7 @@ begin
   if Count=0 then begin Result:=-1; CurPlay:=-1; exit; end
   else Result:=CurPlay;
   if Result<0 then Result:=0
-  else Data[Result].State:=ExitState;  // mark State of current track
+  else if Result<Count then Data[Result].State:=ExitState;  // mark State of current track
   if OneLoop and AutoNext then exit;
   AutoNext:=true;
   if Shuffle and (not OneLoop) then begin // ***** SHUFFLE MODE *****
@@ -532,7 +532,8 @@ begin
   if (Count=0) AND (not Running) then MainForm.BPlay.Enabled:=false;
   //if CurPlay<0 then CurPlay:=0;
   MainForm.BPrev.Enabled:=(CurPlay>0);
-  MainForm.BNext.Enabled:=(CurPlay+1<Playlist.Count);
+  if CurPlay<0 then MainForm.BNext.Enabled:=(1<Playlist.Count)
+  else MainForm.BNext.Enabled:=(CurPlay+1<Playlist.Count);
 end;
 
 procedure TPlaylist.MoveSelectedUp;
@@ -960,7 +961,7 @@ begin
   else exit;
   //ForceStop;
   MainForm.UpdateParams;
-  if CurPlay>-1 then Playlist.Data[CurPlay].State:=psSkipped;
+  if (CurPlay>-1) and (CurPlay<Playlist.Count) then Playlist.Data[CurPlay].State:=psSkipped;
   MainForm.BPrev.Enabled:=(Index>0);
   MainForm.BNext.Enabled:=(Index+1<Playlist.Count);
   Playlist.NowPlaying(Index); CurPlay:=Index;
