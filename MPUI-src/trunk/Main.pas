@@ -925,7 +925,7 @@ if MVideos.Visible then begin
                          Adelay:=Adelay+0.1; HandleCommand('audio_delay +0.100');
                        end;
           Ord('O'):   begin
-                        if OSDLevel<>1 then OSDLevel:=1
+                        if OSDLevel<>DefaultOSDLevel then OSDLevel:=DefaultOSDLevel
                         else OSDLevel:=3;
                         HandleCommand('osd '+IntToStr(OSDLevel));
                         MOSD.Items[OSDLevel].Checked:=true;

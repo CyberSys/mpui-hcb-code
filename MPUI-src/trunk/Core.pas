@@ -25,7 +25,7 @@ const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
 const PauseInfo:array[0..1]of WideString=('=  PAUSE  =','= 暂停 =');
 const CacheFill:array[0..4]of WideString=('Cache fill:','缓存填充:','缓冲填充:','緩存填充:','緩沖填充:');
 const GenIndex:array[0..2]of WideString=('Generating Index:','正在生成索引:','正在生成索引:');
-const defaultHeight=330; RFileMax=10;
+const defaultHeight=330; RFileMax=10; DefaultOSDLevel=0;
 const szdllCount=2;
 const szdll:array[0..szdllCount]of WideString=('7zxa.dll','7za.dll','7z.dll');
 
@@ -2317,7 +2317,7 @@ end;
 begin
   DecimalSeparator:='.'; Wadsp:=false; GUI:=false; HaveMsg:=false; Uni:=false;
   MFunc:=0; ETime:=false; InSubDir:=true; ML:=false; Pri:=true; HaveLyric:=0;
-  AudiochannelsID:=0; OSDLevel:=0; Ch:=0; Wid:=true; Fd:=false; oneM:=true;
+  AudiochannelsID:=0; OSDLevel:=DefaultOSDLevel; Ch:=0; Wid:=true; Fd:=false; oneM:=true;
   Deinterlace:=0; Aspect:=0; Postproc:=0; IntersubCount:=0; UpdatePW:=false;
   AudioOut:=2; AudioDev:=0; Expand:=0; SPDIF:=false; DirHIdx:=0; DirHSub:=0;
   ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=false; Fol:=2;
