@@ -1236,7 +1236,7 @@ procedure TOptionsForm.HKKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 var t:TListItem; i:integer;
 begin
-  if not IKey then exit;
+  if not IKey then begin Key:=0; exit; end;
   if HK.ItemIndex<0 then begin
     HK.ItemIndex:=sIndex;
     Key:=0; exit;
