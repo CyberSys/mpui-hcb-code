@@ -366,7 +366,7 @@ object OptionsForm: TOptionsForm
       end
       object CGUI: TTntCheckBox
         Left = 318
-        Top = 176
+        Top = 8
         Width = 229
         Height = 17
         Anchors = [akTop, akRight]
