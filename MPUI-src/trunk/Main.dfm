@@ -1502,7 +1502,6 @@ object MainForm: TMainForm
       object MClose: TTntMenuItem
         Caption = 'Close'
         ImageIndex = 3
-        ShortCut = 16471
         OnClick = MCloseClick
       end
       object N1: TTntMenuItem
@@ -1512,7 +1511,6 @@ object MainForm: TMainForm
         Tag = 81
         Caption = 'Quit'
         ImageIndex = 4
-        ShortCut = 16465
         OnClick = MQuitClick
       end
     end
@@ -1524,7 +1522,6 @@ object MainForm: TMainForm
         GroupIndex = 1
         ImageIndex = 6
         RadioItem = True
-        ShortCut = 32960
         Visible = False
         OnClick = MSizeClick
       end
@@ -1534,7 +1531,6 @@ object MainForm: TMainForm
         GroupIndex = 1
         ImageIndex = 7
         RadioItem = True
-        ShortCut = 32817
         Visible = False
         OnClick = MSizeClick
       end
@@ -1543,7 +1539,6 @@ object MainForm: TMainForm
         GroupIndex = 1
         ImageIndex = 8
         RadioItem = True
-        ShortCut = 32818
         Visible = False
         OnClick = MSizeClick
       end
@@ -1552,7 +1547,6 @@ object MainForm: TMainForm
         GroupIndex = 1
         ImageIndex = 5
         RadioItem = True
-        ShortCut = 32819
         Visible = False
         OnClick = MSizeClick
       end
@@ -1608,7 +1602,6 @@ object MainForm: TMainForm
         Caption = 'Fullscreen'
         GroupIndex = 1
         ImageIndex = 9
-        ShortCut = 70
         Visible = False
         OnClick = SimulateKey
       end
@@ -1617,7 +1610,6 @@ object MainForm: TMainForm
         Caption = 'Maximize Windows'
         GroupIndex = 1
         ImageIndex = 52
-        ShortCut = 13
         Visible = False
         OnClick = SimulateKey
       end
@@ -1650,7 +1642,6 @@ object MainForm: TMainForm
         Checked = True
         GroupIndex = 1
         ImageIndex = 25
-        ShortCut = 113
         Visible = False
         OnClick = MKaspectClick
       end
@@ -1663,7 +1654,6 @@ object MainForm: TMainForm
         Caption = 'Hide_menu'
         GroupIndex = 1
         ImageIndex = 53
-        ShortCut = 114
         Visible = False
         OnClick = Hide_menuClick
       end
@@ -1671,7 +1661,6 @@ object MainForm: TMainForm
         Caption = 'Mctrl'
         GroupIndex = 1
         ImageIndex = 43
-        ShortCut = 115
         Visible = False
         OnClick = MctrlClick
       end
@@ -1680,7 +1669,6 @@ object MainForm: TMainForm
         Caption = 'Compact'
         GroupIndex = 1
         ImageIndex = 40
-        ShortCut = 116
         Visible = False
         OnClick = SimulateKey
       end
@@ -1691,20 +1679,17 @@ object MainForm: TMainForm
       object MPlay: TTntMenuItem
         Caption = 'Play'
         ImageIndex = 12
-        ShortCut = 32
         OnClick = BPlayClick
       end
       object MPause: TTntMenuItem
         Caption = 'Pause'
         ImageIndex = 13
-        ShortCut = 111
         OnClick = BPauseClick
       end
       object MStop: TTntMenuItem
         Caption = 'Stop'
         GroupIndex = 169
         ImageIndex = 41
-        ShortCut = 16467
         OnClick = BStopClick
       end
       object N2: TTntMenuItem
@@ -1716,7 +1701,6 @@ object MainForm: TMainForm
         Caption = 'Previous'
         GroupIndex = 169
         ImageIndex = 14
-        ShortCut = 118
         OnClick = BPrevNextClick
       end
       object MNext: TTntMenuItem
@@ -1724,14 +1708,12 @@ object MainForm: TMainForm
         Caption = 'Next'
         GroupIndex = 169
         ImageIndex = 15
-        ShortCut = 119
         OnClick = BPrevNextClick
       end
       object MShowPlaylist: TTntMenuItem
         Caption = 'Show playlist'
         GroupIndex = 169
         ImageIndex = 16
-        ShortCut = 120
         OnClick = MShowPlaylistClick
       end
       object N28: TTntMenuItem
@@ -1787,7 +1769,6 @@ object MainForm: TMainForm
           Checked = True
           GroupIndex = 54
           RadioItem = True
-          ShortCut = 8
           OnClick = MSpeedClick
         end
         object M2X: TTntMenuItem
@@ -1825,18 +1806,15 @@ object MainForm: TMainForm
         ImageIndex = 50
         object MIntro: TTntMenuItem
           Caption = 'Set Intro'
-          ShortCut = 219
           OnClick = MIntroClick
         end
         object MEnd: TTntMenuItem
           Caption = 'Set Ending'
-          ShortCut = 221
           OnClick = MEndClick
         end
         object MSIE: TTntMenuItem
           Caption = 'Skip Intro Ending'
           ImageIndex = 50
-          ShortCut = 220
           OnClick = MSIEClick
         end
       end
@@ -1849,7 +1827,6 @@ object MainForm: TMainForm
         Caption = 'Forward 10s'
         GroupIndex = 169
         ImageIndex = 17
-        ShortCut = 39
         OnClick = SimulateKey
       end
       object MSeekR10: TTntMenuItem
@@ -1857,7 +1834,6 @@ object MainForm: TMainForm
         Caption = 'Backward 10s'
         GroupIndex = 169
         ImageIndex = 18
-        ShortCut = 37
         OnClick = SimulateKey
       end
       object MSeekF60: TTntMenuItem
@@ -1865,7 +1841,6 @@ object MainForm: TMainForm
         Caption = 'Forward 1min'
         GroupIndex = 169
         ImageIndex = 19
-        ShortCut = 38
         OnClick = SimulateKey
       end
       object MSeekR60: TTntMenuItem
@@ -1873,7 +1848,6 @@ object MainForm: TMainForm
         Caption = 'Backward 1min'
         GroupIndex = 169
         ImageIndex = 20
-        ShortCut = 40
         OnClick = SimulateKey
       end
       object MSeekF600: TTntMenuItem
@@ -1881,7 +1855,6 @@ object MainForm: TMainForm
         Caption = 'Forward 10min'
         GroupIndex = 169
         ImageIndex = 21
-        ShortCut = 33
         OnClick = SimulateKey
       end
       object MSeekR600: TTntMenuItem
@@ -1889,7 +1862,6 @@ object MainForm: TMainForm
         Caption = 'Backward 10min'
         GroupIndex = 169
         ImageIndex = 22
-        ShortCut = 34
         OnClick = SimulateKey
       end
     end
@@ -1918,13 +1890,11 @@ object MainForm: TMainForm
         object MRmMenu: TTntMenuItem
           Tag = -2
           Caption = 'Return to main menu'
-          ShortCut = 71
           OnClick = SimulateKey
         end
         object MRnMenu: TTntMenuItem
           Tag = -1
           Caption = 'Return to nearest menu'
-          ShortCut = 186
           OnClick = SimulateKey
         end
         object N18: TTntMenuItem
@@ -1955,7 +1925,6 @@ object MainForm: TMainForm
         Caption = 'Equalizer'
         GroupIndex = 169
         ImageIndex = 26
-        ShortCut = 8261
         OnClick = MEqualizerClick
       end
       object MSEqualizer: TTntMenuItem
@@ -1973,13 +1942,11 @@ object MainForm: TMainForm
         object MScale1: TTntMenuItem
           Tag = 69
           Caption = 'Zoom+'
-          ShortCut = 69
           OnClick = SimulateKey
         end
         object MScale2: TTntMenuItem
           Tag = 87
           Caption = 'Zoom-'
-          ShortCut = 87
           OnClick = SimulateKey
         end
         object N25: TTntMenuItem
@@ -1987,7 +1954,6 @@ object MainForm: TMainForm
         end
         object MScale0: TTntMenuItem
           Caption = 'Reset'
-          ShortCut = 8384
           OnClick = MScale0Click
         end
       end
@@ -2207,7 +2173,6 @@ object MainForm: TMainForm
         Tag = 83
         Caption = 'ScreenShot'
         GroupIndex = 169
-        ShortCut = 83
         OnClick = SimulateKey
       end
     end
@@ -2257,7 +2222,6 @@ object MainForm: TMainForm
           Checked = True
           GroupIndex = 88
           RadioItem = True
-          ShortCut = 8260
           OnClick = MAudiochannelsClick
         end
         object MLchannels: TTntMenuItem
@@ -2265,7 +2229,6 @@ object MainForm: TMainForm
           Caption = 'Lchannels'
           GroupIndex = 88
           RadioItem = True
-          ShortCut = 8268
           OnClick = MAudiochannelsClick
         end
         object MRchannels: TTntMenuItem
@@ -2273,7 +2236,6 @@ object MainForm: TMainForm
           Caption = 'Rchannels'
           GroupIndex = 88
           RadioItem = True
-          ShortCut = 8274
           OnClick = MAudiochannelsClick
         end
         object MMix: TTntMenuItem
@@ -2281,7 +2243,6 @@ object MainForm: TMainForm
           Caption = 'Mix Stereo'
           GroupIndex = 88
           RadioItem = True
-          ShortCut = 8269
           OnClick = MAudiochannelsClick
         end
         object N14: TTntMenuItem
@@ -2292,14 +2253,12 @@ object MainForm: TMainForm
           Tag = 188
           Caption = 'Balance-'
           GroupIndex = 88
-          ShortCut = 188
           OnClick = SimulateKey
         end
         object MPan0: TTntMenuItem
           Tag = 190
           Caption = 'Balance+'
           GroupIndex = 88
-          ShortCut = 190
           OnClick = SimulateKey
         end
         object N26: TTntMenuItem
@@ -2310,7 +2269,6 @@ object MainForm: TMainForm
           Tag = 16576
           Caption = 'Reset balance'
           GroupIndex = 88
-          ShortCut = 16576
           OnClick = MPanClick
         end
       end
@@ -2332,7 +2290,6 @@ object MainForm: TMainForm
         end
         object MAudioDelay2: TTntMenuItem
           Caption = 'Reset Audio Delay'
-          ShortCut = 16392
           OnClick = MAudioDelay2Click
         end
       end
@@ -2359,7 +2316,6 @@ object MainForm: TMainForm
         Caption = 'Mute'
         GroupIndex = 169
         ImageIndex = 39
-        ShortCut = 77
         OnClick = BMuteClick
       end
     end
@@ -2405,13 +2361,11 @@ object MainForm: TMainForm
         object MSubDelay0: TTntMenuItem
           Tag = 88
           Caption = 'Delay +'
-          ShortCut = 88
           OnClick = SimulateKey
         end
         object MSubDelay1: TTntMenuItem
           Tag = 90
           Caption = 'Delay -'
-          ShortCut = 90
           OnClick = SimulateKey
         end
         object N31: TTntMenuItem
@@ -2419,7 +2373,6 @@ object MainForm: TMainForm
         end
         object MSubDelay2: TTntMenuItem
           Caption = 'Reset Subtitle Delay'
-          ShortCut = 8282
           OnClick = MSubDelay2Click
         end
       end
@@ -2429,13 +2382,11 @@ object MainForm: TMainForm
         object MSubStep0: TTntMenuItem
           Tag = 89
           Caption = 'Previous'
-          ShortCut = 89
           OnClick = SimulateKey
         end
         object MSubStep1: TTntMenuItem
           Tag = 85
           Caption = 'Next'
-          ShortCut = 85
           OnClick = SimulateKey
         end
       end
@@ -2444,12 +2395,10 @@ object MainForm: TMainForm
         GroupIndex = 169
         object MSubScale0: TTntMenuItem
           Caption = 'Scale+'
-          ShortCut = 16571
           OnClick = SimulateKey
         end
         object MSubScale1: TTntMenuItem
           Caption = 'Scale-'
-          ShortCut = 16573
           OnClick = SimulateKey
         end
         object N21: TTntMenuItem
@@ -2479,7 +2428,6 @@ object MainForm: TMainForm
         Checked = True
         GroupIndex = 169
         ImageIndex = 24
-        ShortCut = 86
         OnClick = SimulateKey
       end
     end
@@ -2491,7 +2439,6 @@ object MainForm: TMainForm
         Caption = 'Options'
         GroupIndex = 169
         ImageIndex = 34
-        ShortCut = 121
         OnClick = MOptionsClick
       end
       object MWheelControl: TTntMenuItem
@@ -2536,14 +2483,12 @@ object MainForm: TMainForm
         Caption = 'Stream info'
         GroupIndex = 169
         ImageIndex = 10
-        ShortCut = 122
         OnClick = MStreamInfoClick
       end
       object MShowOutput: TTntMenuItem
         Caption = 'Show output'
         GroupIndex = 169
         ImageIndex = 36
-        ShortCut = 123
         OnClick = MShowOutputClick
       end
     end
