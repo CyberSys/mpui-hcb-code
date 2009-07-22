@@ -1167,7 +1167,7 @@ begin
         if TFass.Checked[i] then begin
           RootKey := HKEY_CLASSES_ROOT;
           if OpenKey('\MPUI-hcb.'+TFass.Items[i],true) then
-            WriteString('','MPlayer file(.'+TFass.Items[i]+')');
+            WriteString('','MPlayer file (.'+TFass.Items[i]+')');
           if OpenKey('\MPUI-hcb.'+TFass.Items[i]+'\DefaultIcon',true) then
             WriteString('',WideExpandFileName(WideParamStr(0))+',0');
           if OpenKey('\MPUI-hcb.'+TFass.Items[i]+'\shell\open\command',true) then
@@ -1236,23 +1236,24 @@ procedure TOptionsForm.HKKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 var t:TListItem; i:integer;
 begin
-  if not IKey then begin Key:=0; exit; end;
-  if HK.ItemIndex<0 then begin
-    HK.ItemIndex:=sIndex;
-    Key:=0; exit;
-  end;
-  if Key=VK_ESCAPE then begin
+  if IKey and (Key=VK_ESCAPE) then begin
     HK.Items[sIndex].Caption:=tCap;
     Key:=0; IKey:=false; exit;
   end;
   if Key in [$10..$12] then begin Key:=0; exit; end; //ctrl,shift,alt key
   i:=ShiftKeyToHk(Shift,Key);
-  t:=HK.FindData(sIndex,Pointer(i),false,true);
+  if IKey then t:=HK.FindData(sIndex,Pointer(i),false,true)
+  else t:=HK.FindData(0,Pointer(i),true,false);
   if t<>nil then begin
-    HK.Items[sIndex].Caption:=tCap;
-    ShowMessage('"'+t.SubItems.Strings[0]+'" ,['+t.Caption+'] '+IKeyerror);
+    if IKey then begin
+      HK.Items[sIndex].Caption:=tCap;
+      ShowMessage('"'+t.SubItems.Strings[0]+'" ,['+t.Caption+'] '+IKeyerror);
+    end
+    else begin
+      t.Selected:=true; t.MakeVisible(false);
+    end;
   end
-  else begin
+  else if IKey then begin
     HK.Items[sIndex].Caption:=ShiftToStr(Shift)+KeyToStr(Key);
     HK.Items[sIndex].Data:=Pointer(i);
   end;

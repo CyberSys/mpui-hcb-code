@@ -25,7 +25,7 @@ const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
 const PauseInfo:array[0..1]of WideString=('=  PAUSE  =','= 暂停 =');
 const CacheFill:array[0..4]of WideString=('Cache fill:','缓存填充:','缓冲填充:','緩存填充:','緩沖填充:');
 const GenIndex:array[0..2]of WideString=('Generating Index:','正在生成索引:','正在生成索引:');
-const defaultHeight=330; RFileMax=10; DefaultOSDLevel=0;
+const defaultHeight=340; RFileMax=10; DefaultOSDLevel=0;
 const szdllCount=2;
 const szdll:array[0..szdllCount]of WideString=('7zxa.dll','7za.dll','7z.dll');
 
@@ -1872,47 +1872,47 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
         if not LastHaveVideo then begin
           OPanel.Visible:=true; LastHaveVideo:=true;
           SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
-          if RS and (EW<>0) and (EH<>0) then begin
-            j:=Width-OPanel.Width+EW; p:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+EH;
-          end
-          else begin
-            j:=Width-OPanel.Width+NativeWidth;
-            p:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+NativeHeight;
-          end;
-          r:=Left-((j-Constraints.MinWidth) DIV 2);
-          i:=Top-((p-Constraints.MinHeight) DIV 2);
-          if RS and (EW<>0) and (EH<>0) then begin
-            if r<0 then r:=0; if i<0 then i:=0;
-            if j>Screen.Width then begin j:=Screen.Width; end;
-            if p>Screen.WorkAreaHeight then begin p:=Screen.WorkAreaHeight; end;
-            if (r+j)>Screen.Width then r:=Screen.Width-j;
-            if (i+p)>Screen.WorkAreaHeight then i:=Screen.WorkAreaHeight-p;
-            SetBounds(r,i,j,p);
-          end
-          else begin
-            SetBounds(r,i,j,p);
-            MSize100.Checked:=true;
+          if not ds then begin
+            if RS and (EW<>0) and (EH<>0) then begin
+              j:=Width-OPanel.Width+EW; p:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+EH;
+            end
+            else begin
+              j:=Width-OPanel.Width+NativeWidth;
+              p:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+NativeHeight;
+            end;
+            r:=Left-((j-Constraints.MinWidth) DIV 2);
+            i:=Top-((p-Constraints.MinHeight) DIV 2);
+            if RS and (EW<>0) and (EH<>0) then begin
+              if r<0 then r:=0; if i<0 then i:=0;
+              if j>Screen.Width then begin j:=Screen.Width; end;
+              if p>Screen.WorkAreaHeight then begin p:=Screen.WorkAreaHeight; end;
+              if (r+j)>Screen.Width then r:=Screen.Width-j;
+              if (i+p)>Screen.WorkAreaHeight then i:=Screen.WorkAreaHeight-p;
+              SetBounds(r,i,j,p);
+            end
+            else begin
+              SetBounds(r,i,j,p);
+              MSize100.Checked:=true;
+            end;
           end;
         end;
       end
-      else begin
-        if LastHaveVideo then begin
-          OPanel.Visible:=false; LastHaveVideo:=false;
-          if not (OptionsForm.Visible or EqualizerForm.Visible) then Enabled:=true;
-          if MFullscreen.Checked then SetFullscreen(false);
-          if MCompact.Checked or MMaxW.Checked then SetCompact(false);
-          Mctrl.Checked:=false; Hide_menu.Checked:=false; MPCtrl.Checked:=true;
-          CPanel.Visible:=true; MenuBar.Visible:=true;
-          SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX));
-          r:=Left+((Width-Constraints.MinWidth) DIV 2);
-          i:=screen.WorkAreaHeight-Constraints.MinHeight;
-          SetBounds(r,i,Constraints.MinWidth,Constraints.MinHeight);
-          PlaylistForm.Left:=Left-PlaylistForm.Width;
-          PlaylistForm.Top:=Top+Height-PlaylistForm.Height;
-          MFunc:=0;
-          MWheelControl.Items[0].Checked:=true;
-          MPWheelControl.Items[0].Checked:=true;
-        end;
+      else if LastHaveVideo then begin
+        OPanel.Visible:=false; LastHaveVideo:=false;
+        if not (OptionsForm.Visible or EqualizerForm.Visible) then Enabled:=true;
+        if MFullscreen.Checked then SetFullscreen(false);
+        if MCompact.Checked or MMaxW.Checked then SetCompact(false);
+        Mctrl.Checked:=false; Hide_menu.Checked:=false; MPCtrl.Checked:=true;
+        CPanel.Visible:=true; MenuBar.Visible:=true;
+        SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX));
+        r:=Left+((Width-Constraints.MinWidth) DIV 2);
+        i:=screen.WorkAreaHeight-Constraints.MinHeight;
+        SetBounds(r,i,Constraints.MinWidth,Constraints.MinHeight);
+        PlaylistForm.Left:=Left-PlaylistForm.Width;
+        PlaylistForm.Top:=Top+Height-PlaylistForm.Height;
+        MFunc:=0;
+        MWheelControl.Items[0].Checked:=true;
+        MPWheelControl.Items[0].Checked:=true;
       end;
       UpdateMenuEV(true); MOsdfont.Visible:=uof;
       MRmMenu.Visible:=Dnav; MRnMenu.Visible:=Dnav;

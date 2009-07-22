@@ -45,7 +45,7 @@ begin
     FileName:=AppdataDir+WideExtractFileName(FileName);
     if not WideFileExists(FileName) then exit;
   end;
-  INI:=TMemIniFile.Create(WideExtractShortPathName(FileName)); s:='';
+  INI:=TMemIniFile.Create(WideExtractShortPathName(FileName));
   with INI do begin
     case mode of
       0: begin
@@ -148,6 +148,7 @@ begin
            Core.HKS:=ReadString(SectionName,'HotKey',Core.DefaultHKS);
            Core.Fass:=ReadString(SectionName,'fileAss',Core.DefaultFass);
            for i:=0 to RFileMax-1 do begin
+             s:='';
              s:=ReadString(SectionName,'RF'+IntToStr(i),s);
              if s<>'' then begin
                t:=TTntMenuItem.Create(MainForm.MRFile);

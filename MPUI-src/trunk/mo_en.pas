@@ -220,45 +220,24 @@ begin
      MKeyHelp.Caption:='Keyboard help ...';
      MAbout.Caption:='About ...';
   end;
-  OptionsForm.BClose.Caption:='Close';
-  OptionsForm.HelpText.Text:=UTF8Decode(
-'Space'^I'Play/Pause'^I'T/R'^I'Adjust subtitle position'^M^J+
-'Left'^I'Rewind 10 seconds'^I'Y/U'^I'Adjust subtitle step'^M^J+
-'Right'^I'Forward 10 seconds Z/X'^I'Adjust subtitle delay'^M^J+
-'Up'^I'Forward 1 minute'^I'C'^I'Adjust subtitle alignment'^M^J+
-'Down'^I'Rewind 1 minute'^I'B'^I'Switch subtitle language'^M^J+
-'PgUp'^I'Forward 10 minutes'^I'V'^I'Toggle subtitle visibility'^M^J+
-'PgDn'^I'Rewind 10 minutes'^I'A'^I'switch audio'^M^J+
-'Home'^I'Forward 1 chapter'^I'End'^I'Rewind 1 chapter'^M^J+
-'O'^I'Toggle OSD'^I'F5'^I'Toggle compact mode'^M^J+
-'S'^I'Screen shot'^I'Shift+S'^I'Start/stop screenshot eachframe'^M^J+
-'N'^I'switch aspect ratio'^I'F1'^I'Cycle toggle on top mode'^M^J+
-'Q'^I'switch video'^I',/.'^I'Adjust balance'^M^J+
-'D'^I'Toggle framedrop'^I'M'^I'Toggle mute'^M^J+
-'G/H/;'^I'DVDnav menu/select/nearest menu'^I'÷,9/*,0'^I'Adjust volume'^M^J+
-'-/+'^I'Adjust audio delay'^I'I/K'^I'DVD nav up/down'^M^J+
-'1/2'^I'Adjust brightness'^I'J/L'^I'DVD nav left/right'^M^J+
-'3/4'^I'Adjust contrast'^I'Back'^I'Reset speed to normal'^M^J+
-'5/6'^I'Adjust hue'^I'-/='^I'Adjust playback speed'^M^J+
-'7/8'^I'Adjust saturation'^I'F/DblClick'^I'Toggle fullscreen'^M^J+
-'Enter'^I'Maximize windows'^I'Ins/Del'^I'Adjust gamma'^M^J+
-'[/]'^I'Set Intro/Ending'^I'\'^I'Toggle Skip Intro/Ending'^M^J+
-'P'^I'switch program'^I'LMB click StatusBar Timer'^I'Toggle Time'^M^J+
-'W/E'^I'Scale video'^I'MMB'^I'Toggle Wheel function'^M^J+
-'Ctrl+-/='^I'Scale subtitle'^I'Ctrl+LMB drag subtitle'^I'Scale subtitle'^M^J+
-'Ctrl+Wheel '^I'Seek'^I'LMB click video'^I'Play/Pause'^M^J+
-''''^I'Deinterlace(if adaptive deinterlace)'^I'/'^I'Frame step'^M^J+
-'Shift+A'^I'Toggle Angle'^I'M/RMB click SeekBar Slider'^I'Set Intro/Ending'^M^J+
-'Tab'^I'Toggle Menu and ControlPanel'^M^J+
+  with OptionsForm do begin
+    BClose.Caption:='Close';
+    HelpText.Text:=UTF8Decode(
+'÷/*'^I'Adjust volume'^M^J+
+'DblClick'^I'Toggle fullscreen'^M^J+
+'LMB click StatusBar Timer'^I'Toggle Time'^M^J+
+'MMB'^I'Toggle Wheel function'^M^J+
+'Ctrl+LMB drag subtitle'^I'Scale subtitle'^M^J+
+'Ctrl+Wheel '^I'Seek'^M^J+
+'LMB click video'^I'Play/Pause'^M^J+
+'M/RMB click SeekBar Slider'^I'Set Intro/Ending'^M^J+
 'LMB drag video'^I'Adjust window position'^M^J+
 'LMB drag subtitle'^I'Adjust subtitle position'^M^J+
-'Ctrl+Left/Right/Up/Down'^I'Adjust aspect ratio'^M^J+
 'Ctrl+LMB drag video'^I'Adjust aspect ratio'^M^J+
 'Shift+LMB drag video'^I'Scale video,Adjust volume or size'^M^J+
-'`'^I'Reset brightness,contrast,hue,saturation,gamma'^M^J+
 'Alt+LMB drag video'^I'Adjust brightness,contrast,hue,saturation,gamma'^M^J+
 'While drag,release or press different function key invoke different function');
-  with OptionsForm do begin
+
     THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:='About';
     LVersionMPUI.Caption:='MPUI-hcb version:';
@@ -390,7 +369,8 @@ begin
     HK.Columns[1].Caption:='Action';
     TUnit.Caption:='seconds';
     TseekL.Caption:='Seek jump';
-
+    HK.Hint:='Press hotKey to search related entry.'^M^J+
+             'Double clik entry to modify hotKey.';
     HK.Items[0].SubItems.Strings[0]:='Increase height of video';
     HK.Items[1].SubItems.Strings[0]:='Decrease height of video';
     HK.Items[2].SubItems.Strings[0]:='Decrease width of video';
@@ -410,7 +390,7 @@ begin
     HK.Items[16].SubItems.Strings[0]:='Increase audio delay';
     HK.Items[17].SubItems.Strings[0]:='Toggle OSD';
     HK.Items[18].SubItems.Strings[0]:='Reset video equalizer';
-    HK.Items[19].SubItems.Strings[0]:='Toggle deinterlace';
+    HK.Items[19].SubItems.Strings[0]:='Toggle deinterlace(if use adaptive mode)';
     HK.Items[20].SubItems.Strings[0]:='Zoom in video';
     HK.Items[21].SubItems.Strings[0]:='Zoom out video';
     HK.Items[22].SubItems.Strings[0]:='Decrease contrast';
@@ -428,12 +408,12 @@ begin
     HK.Items[34].SubItems.Strings[0]:='Drop frame';
     HK.Items[35].SubItems.Strings[0]:=MainForm.BFullscreen.Hint;
     HK.Items[36].SubItems.Strings[0]:='Toggle subtitle alignment';
-    HK.Items[37].SubItems.Strings[0]:='Increase subtitle postion';
-    HK.Items[38].SubItems.Strings[0]:='Decrease subtitle postion';
+    HK.Items[37].SubItems.Strings[0]:='Move up subtitle';
+    HK.Items[38].SubItems.Strings[0]:='Move down subtitle';
     HK.Items[39].SubItems.Strings[0]:=MainForm.MShowSub.Caption;
     HK.Items[40].SubItems.Strings[0]:=MainForm.MShot.Caption;
-    HK.Items[41].SubItems.Strings[0]:='subtitle step backward';
-    HK.Items[42].SubItems.Strings[0]:='subtitle step forward';
+    HK.Items[41].SubItems.Strings[0]:='Rewind subtitle step';
+    HK.Items[42].SubItems.Strings[0]:='Forward subtitle step';
     HK.Items[43].SubItems.Strings[0]:='Decrease subtitle delay';
     HK.Items[44].SubItems.Strings[0]:='Increase subtitle delay';
     HK.Items[45].SubItems.Strings[0]:='DVDnav - Menu';

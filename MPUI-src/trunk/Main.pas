@@ -536,7 +536,7 @@ begin
   UpdateVolSlider;
   if RP and (EL<>-1) then Left:=EL
   else begin
-    if Wid and Win32PlatformIsUnicode and ds and RS then Width:=EW;
+    if Wid and Win32PlatformIsUnicode and ds and RS then Width:=Width-OPanel.Width+EW;
     Left:=(screen.Width-Width) DIV 2;
   end;
   if RP and (ET<>-1) then Top:=ET
@@ -546,10 +546,11 @@ begin
         SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
         Opanel.Visible:=true; Logo.Visible:=true;
         if RS then begin
-          Top:=(screen.Height-EH) Div 2; Height:=EH;
+          Height:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+EH;
+          Top:=(screen.Height-Height) Div 2;
         end
         else begin
-          Top:=(screen.Height-Height-defaultHeight) Div 2;
+          Top:=(screen.Height-defaultHeight) Div 2 -60;
           Height:=defaultHeight;
         end;
       end
@@ -1232,7 +1233,7 @@ end;
 procedure TMainForm.FixSize;
 var SX,SY,NX,NY:integer;
 begin
-  if LastHaveVideo then begin
+  if LastHaveVideo or ds then begin
     EW:=Opanel.Width; EH:=Opanel.Height;
   end;
   if (NativeWidth=0) OR (NativeHeight=0)
@@ -1290,8 +1291,8 @@ end;
 
 procedure TMainForm.SetupPlay;
 begin
-  Logo.Visible:=false;
-  LEscape.Visible:=not(HaveVideo) AND MFullscreen.Checked;
+  Logo.Visible:=not HaveVideo;
+  LEscape.Visible:=Logo.Visible AND MFullscreen.Checked;
   IPanel.Visible:=HaveVideo and Wid;
   Seeking:=false; LTime.Cursor:=crHandPoint;
   LTime.Font.Size:=14; LTime.Top:=-2;
@@ -2261,7 +2262,7 @@ procedure TMainForm.UpdateCaption;
 begin
   if length(DisplayURL)<>0
     then Caption:=DisplayURL+' - '+LOCstr_Title
-    else Caption:=LOCstr_Title;
+    else Caption:='MPUI-hcb '+LOCstr_Title;
 end;
 
 

@@ -222,41 +222,19 @@ begin
   end;
   OptionsForm.BClose.Caption:=UTF8Decode('关闭');
   OptionsForm.HelpText.Text:=UTF8Decode(
-'快捷键:'^M^J+
-'Space'^I'播放/暂停'^I'T/R'^I'调节字幕在屏位置'^M^J+
-'Right'^I'前进10 秒'^I'Y/U'^I'调节字幕语句'^M^J+
-'Left'^I'后退10秒'^I'Z/X'^I'调节字幕延迟'^M^J+
-'Up'^I'前进1分钟'^I'C'^I'调节字幕对齐方式'^M^J+
-'Down'^I'后退1分钟'^I'B'^I'循环可用的字幕'^M^J+
-'PgUp'^I'前进10分钟'^I'V'^I'显示/隐藏字幕'^M^J+
-'PgDn'^I'后退10分钟'^I'A'^I'切换 音轨'^M^J+
-'Home'^I'前进1个MKV章节'^I'End'^I'后退1个MKV章节'^M^J+
-'O'^I'切换OSD '^I'Tab'^I'切换菜单和控制面板'^M^J+
-'N'^I'切换纵横比'^I'Ctrl+方向键'^I'调节视频宽高比'^M^J+
-'F1'^I'循环置顶模式'^I'F或双击左键'^I'切换全屏'^M^J+
-'F5'^I'切换精简模式'^I'Alt+1~3'^I'调节视频尺寸'^M^J+
-'Q'^I'切换 视频轨'^I',/.'^I'调节声道左右平衡'^M^J+
-'D'^I'切换丢帧模式'^I'M'^I'静音'^M^J+
-'-/+'^I'调节音频延迟'^I'-/='^I'调节播放速度'^M^J+
-'1/2'^I'调节亮度'^I'Back'^I'恢复正常播放速度'^M^J+
-'3/4'^I'调节对比'^I'G/H/;'^I'DVD的菜单/选择钮/最近的菜单'^M^J+
-'5/6'^I'调节色调'^I'I/K'^I'DVD的向上/向下钮'^M^J+
-'7/8'^I'调节饱和'^I'J/L'^I'DVD的向左/向右钮'^M^J+
-'÷,9/*,0'^I'调节音量'^I'W/E'^I'缩放 视频'^M^J+
-'Enter'^I'最大化窗口'^I'Ins/Del'^I'调节Gamma'^M^J+
-'S'^I'截取单帧画面'^I'Shift+S'^I'开始/停止 截取每帧画面'^M^J+
-'[/]'^I'设置片头/片尾'^I'\'^I'启用/停止 跳过片头、片尾'^M^J+
-'P'^I'循环可用的节目'^I'Ctrl+左键拖曳'^I'调节视频宽高比'^M^J+
-'Ctrl+-/='^I'缩放 字幕'^I'Ctrl+左键拖曳字幕'^I'缩放 字幕'^M^J+
-'中键'^I'切换滚轮功能'^I'Ctrl+滚轮'^I'前进/后退 媒体'^M^J+
-'左键 单击'^I'播放/暂停'^I'左键拖曳'^I'调节窗体位置'^M^J+
-'/'^I'帧进'^I^I''''^I'反交错(自适应反交错时有效)'^M^J+
+'双击左键'^I'切换全屏'^M^J+
+'÷/*'^I'调节音量'^M^J+
+'Ctrl+左键拖曳'^I'调节视频宽高比'^M^J+
+'Ctrl+左键拖曳字幕'^I'缩放 字幕'^M^J+
+'中键'^I'切换滚轮功能'^M^J+
+'Ctrl+滚轮'^I'前进/后退 媒体'^M^J+
+'左键 单击'^I'播放/暂停'^M^J+
+'左键拖曳'^I'调节窗体位置'^M^J+
 'Alt+左键拖曳'^I'调节亮度、对比、色调、饱和、伽玛'^M^J+
 'Shift+左键拖曳'^I'缩放视频，调节音量、窗体尺寸'^M^J+
-'左键拖曳字幕'^I'调节字幕在屏位置'^I'Shift+A'^I'切换 视角'^M^J+
+'左键拖曳字幕'^I'调节字幕在屏位置'^M^J+
 '左键 单击状态栏时间'^I'切换时间显示模式'^M^J+
 '中键/右键 单击进度条滑块'^I'设置片头/片尾'^M^J+
-'`'^I'恢复亮度、对比、色调、饱和、伽玛 到默认值'^M^J+
 '在拖曳时，松开、按下不同的功能键和起始拖曳方向决定不同的功能'
   );
   with OptionsForm do begin
@@ -387,7 +365,7 @@ begin
     HK.Columns[1].Caption:=UTF8Decode('操作');
     TUnit.Caption:=UTF8Decode('秒');
     TseekL.Caption:=UTF8Decode('搜索 跳跃');
-    
+    HK.Hint:=UTF8Decode('按下快捷键去查找对应的记录，双击记录去修改快捷键');
     HK.Items[0].SubItems.Strings[0]:=UTF8Decode('增加视频高度');
     HK.Items[1].SubItems.Strings[0]:=UTF8Decode('减小视频高度');
     HK.Items[2].SubItems.Strings[0]:=UTF8Decode('增加视频宽度');
@@ -407,7 +385,7 @@ begin
     HK.Items[16].SubItems.Strings[0]:=UTF8Decode('增加音频延迟');
     HK.Items[17].SubItems.Strings[0]:=UTF8Decode('切换 OSD');
     HK.Items[18].SubItems.Strings[0]:=UTF8Decode('重置 视频均衡器');
-    HK.Items[19].SubItems.Strings[0]:=UTF8Decode('切换反交错');
+    HK.Items[19].SubItems.Strings[0]:=UTF8Decode('切换反交错(自适应反交错时有效)');
     HK.Items[20].SubItems.Strings[0]:=UTF8Decode('放大视频');
     HK.Items[21].SubItems.Strings[0]:=UTF8Decode('缩小视频');
     HK.Items[22].SubItems.Strings[0]:=UTF8Decode('减小对比');
@@ -433,13 +411,13 @@ begin
     HK.Items[42].SubItems.Strings[0]:=UTF8Decode('下一句字幕');
     HK.Items[43].SubItems.Strings[0]:=UTF8Decode('减小字幕延迟');
     HK.Items[44].SubItems.Strings[0]:=UTF8Decode('增加字幕延迟');
-    HK.Items[45].SubItems.Strings[0]:='DVD菜单 - '+MainForm.MRmMenu.Caption;
+    HK.Items[45].SubItems.Strings[0]:=UTF8Decode('DVD菜单 - ')+MainForm.MRmMenu.Caption;
     HK.Items[46].SubItems.Strings[0]:=UTF8Decode('DVD菜单 - 选择');
     HK.Items[47].SubItems.Strings[0]:=UTF8Decode('DVD菜单 - 向上');
     HK.Items[48].SubItems.Strings[0]:=UTF8Decode('DVD菜单 - 向下');
     HK.Items[49].SubItems.Strings[0]:=UTF8Decode('DVD菜单 - 向左');
     HK.Items[50].SubItems.Strings[0]:=UTF8Decode('DVD菜单 - 向右');
-    HK.Items[51].SubItems.Strings[0]:='DVD菜单 - '+MainForm.MRnMenu.Caption;
+    HK.Items[51].SubItems.Strings[0]:=UTF8Decode('DVD菜单 - ')+MainForm.MRnMenu.Caption;
     HK.Items[52].SubItems.Strings[0]:=MainForm.MKaspect.Caption;
     HK.Items[53].SubItems.Strings[0]:=MainForm.Hide_menu.Caption;
     HK.Items[54].SubItems.Strings[0]:=MainForm.Mctrl.Caption;
