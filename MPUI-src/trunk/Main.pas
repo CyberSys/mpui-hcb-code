@@ -25,7 +25,7 @@ uses
   Forms, TntForms, Dialogs, TntDialogs, ComCtrls, TntComCtrls, Buttons, TntButtons,
   ExtCtrls,TntExtCtrls, Menus,TntMenus, StdCtrls, TntStdCtrls,ShellAPI, AppEvnts,
   Math, ImgList, TntClipBrd, ToolWin, jpeg, Controls, MultiMon, TntSystem,
-  TntFileCtrl, Core, plist;
+  TntFileCtrl, INIFiles, Core, plist;
 
 const
     ES_SYSTEM_REQUIRED  = $01;
@@ -1588,9 +1588,24 @@ begin
 end;
 
 procedure TMainForm.MFClearClick(Sender: TObject);
-var i:integer;
+var i:integer; INI:TMemIniFile; FileName:WideString;
 begin
-  for i:=MRFile.Count-1 downto 2 do MRFile.delete(i);
+  if NoAccess>0 then exit; FileName:=HomeDir+DefaultFileName;
+  if (NoAccess>0) or (not WideFileExists(FileName)) then begin
+    FileName:=AppdataDir+DefaultFileName;
+    if not WideFileExists(FileName) then exit;
+  end;
+  if WideFileIsReadOnly(FileName) then WideFileSetReadOnly(FileName,false);
+  FileName:=WideExtractShortPathName(FileName);
+  INI:=TMemIniFile.Create(FileName);
+  try
+    for i:=MRFile.Count-1 downto 2 do begin
+      MRFile.delete(i); INI.DeleteKey(SectionName,'RF'+IntToStr(i-2));
+    end;
+    INI.UpdateFile;
+  finally
+    INI.Free;
+  end;
   MRFile.Visible:=false;
 end;
 
