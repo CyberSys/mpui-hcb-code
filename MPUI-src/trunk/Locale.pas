@@ -187,7 +187,7 @@ begin
       end;
     end;
   end;
-  TntApplication.Title:='MPUI-hcb 'LOCstr_Title;
+  TntApplication.Title:='MPUI-hcb '+LOCstr_Title;
   MainForm.UpdateCaption;
 end;
 
