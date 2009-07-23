@@ -1579,7 +1579,6 @@ object MainForm: TMainForm
         object MDefaultOSD: TTntMenuItem
           Tag = 1
           Caption = 'Default'
-          Checked = True
           RadioItem = True
           OnClick = MOSDClick
         end
@@ -2655,7 +2654,6 @@ object MainForm: TMainForm
       object MPDefaultOSD: TTntMenuItem
         Tag = 1
         Caption = 'Default'
-        Checked = True
         GroupIndex = 93
         RadioItem = True
         OnClick = MOSDClick

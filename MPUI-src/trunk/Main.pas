@@ -546,7 +546,7 @@ begin
   Init_MOpenDrive; Init_MLanguage; 
   with Logo do ControlStyle:=ControlStyle+[csOpaque];
   with IPanel do ControlStyle:=ControlStyle+[csOpaque];
-
+  MOSD.Items[OSDLevel].Checked:=true; OSDMenu.Items[OSDLevel].Checked:=true;
   if OnTop=1 then SetWindowPos(Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
 //  SystemParametersInfo(SPI_GETSCREENSAVEACTIVE,0,@ScreenSaverActive, 0);
 //  SystemParametersInfo(SPI_SETSCREENSAVEACTIVE,0,nil, 0);
