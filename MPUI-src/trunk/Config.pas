@@ -20,7 +20,7 @@ unit Config;
 interface
 uses Core, Main, Locale, info, Menus,TntMenus;
 
-const DefaultFileName='MPUI-hcb.ini';
+const DefaultFileName='MPUI.ini';
       SectionName='MPUI';
 
 var DefaultLocale:integer=AutoLocale;
@@ -117,17 +117,8 @@ begin
            Core.AutoPlay:=ReadBool(SectionName,'AutoPlay',Core.AutoPlay);
            Core.uof:=ReadBool(SectionName,'UseOSDfont',Core.uof);
            Core.GUI:=ReadBool(SectionName,'GUI',Core.GUI);
-           Core.DS:=ReadBool(SectionName,'DSize',Core.DS);
-           Core.RS:=ReadBool(SectionName,'RSize',Core.RS);
-           Core.RP:=ReadBool(SectionName,'RPostion',Core.RP);
            Core.SP:=ReadBool(SectionName,'SPause',Core.SP);
            Core.CT:=ReadBool(SectionName,'DTime',Core.CT);
-           Core.IL:=ReadInteger(SectionName,'InfoLeft',Core.IL);
-           Core.IT:=ReadInteger(SectionName,'InfoTop',Core.IT);
-           Core.EL:=ReadInteger(SectionName,'LastLeft',Core.EL);
-           Core.ET:=ReadInteger(SectionName,'LastTop',Core.ET);
-           Core.EW:=ReadInteger(SectionName,'LastWidth',Core.EW);
-           Core.EH:=ReadInteger(SectionName,'LastHeight',Core.EH);
            Core.InterW:=ReadInteger(SectionName,'IPanelWidth',Core.InterW);
            Core.InterH:=ReadInteger(SectionName,'IPanelHeight',Core.InterH);
            Core.NW:=ReadInteger(SectionName,'CWidth',Core.NW);
@@ -276,15 +267,6 @@ begin
       1: begin
            WriteInteger(SectionName,'IPanelWidth',Core.InterW);
            WriteInteger(SectionName,'IPanelHeight',Core.InterH);
-           Core.EL:=MainForm.Left+((MainForm.Width-MainForm.Constraints.MinWidth) DIV 2);
-           Core.ET:=MainForm.Top+((MainForm.Height-MainForm.Constraints.MinHeight) DIV 2);
-           if Core.EL<0 then Core.EL:=0; if Core.ET<0 then Core.ET:=0;
-           WriteInteger(SectionName,'InfoLeft',IL);
-           WriteInteger(SectionName,'InfoTop',IT);
-           WriteInteger(SectionName,'LastLeft',Core.EL);
-           WriteInteger(SectionName,'LastTop',Core.ET);
-           WriteInteger(SectionName,'LastWidth',Core.EW);
-           WriteInteger(SectionName,'LastHeight',Core.EH);
            WriteInteger(SectionName,'Intro',Core.Bp);
            WriteInteger(SectionName,'Ending',Core.Ep);
            WriteInteger(SectionName,'Volume',Core.Volume);
@@ -299,9 +281,6 @@ begin
          end;
       2: begin
            WriteBool  (SectionName,'instance',Core.oneM);
-           WriteBool  (SectionName,'RSize',Core.RS);
-           WriteBool  (SectionName,'RPostion',Core.RP);
-           WriteBool  (SectionName,'DSize',Core.ds);
            WriteString(SectionName,'HotKey',Core.HKS);
          end;
       3: begin

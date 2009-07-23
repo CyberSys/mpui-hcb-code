@@ -330,13 +330,13 @@ object PlaylistForm: TPlaylistForm
         Top = 0
         Width = 102
         Height = 21
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 5
         OnChange = CLyricFChange
       end
       object TMLyric: TTntListBox
         Left = 0
-        Top = 21
+        Top = 23
         Width = 360
         Height = 185
         Style = lbVirtualOwnerDraw

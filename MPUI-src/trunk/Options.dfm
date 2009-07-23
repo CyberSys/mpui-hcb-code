@@ -4,7 +4,7 @@ object OptionsForm: TOptionsForm
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'OptionsForm'
-  ClientHeight = 424
+  ClientHeight = 405
   ClientWidth = 565
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,12 +19,12 @@ object OptionsForm: TOptionsForm
   OnShow = FormShow
   DesignSize = (
     565
-    424)
+    405)
   PixelsPerInch = 96
   TextHeight = 13
   object LParams: TTntLabel
     Left = 6
-    Top = 350
+    Top = 331
     Width = 55
     Height = 13
     Anchors = [akLeft, akBottom]
@@ -32,7 +32,7 @@ object OptionsForm: TOptionsForm
   end
   object LHelp: TTntLabel
     Left = 537
-    Top = 350
+    Top = 331
     Width = 21
     Height = 13
     Cursor = crHandPoint
@@ -49,7 +49,7 @@ object OptionsForm: TOptionsForm
   end
   object BOK: TTntButton
     Left = 9
-    Top = 394
+    Top = 375
     Width = 75
     Height = 25
     Anchors = [akLeft, akBottom]
@@ -59,7 +59,7 @@ object OptionsForm: TOptionsForm
   end
   object BApply: TTntButton
     Left = 163
-    Top = 394
+    Top = 375
     Width = 75
     Height = 25
     Anchors = [akLeft, akBottom]
@@ -69,7 +69,7 @@ object OptionsForm: TOptionsForm
   end
   object BSave: TTntButton
     Left = 322
-    Top = 394
+    Top = 375
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -79,7 +79,7 @@ object OptionsForm: TOptionsForm
   end
   object BClose: TTntButton
     Left = 482
-    Top = 394
+    Top = 375
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -89,7 +89,7 @@ object OptionsForm: TOptionsForm
   end
   object EParams: TTntEdit
     Left = 6
-    Top = 366
+    Top = 347
     Width = 555
     Height = 21
     Anchors = [akLeft, akRight, akBottom]
@@ -99,23 +99,36 @@ object OptionsForm: TOptionsForm
     Left = 5
     Top = 6
     Width = 555
-    Height = 342
+    Height = 323
     ActivePage = TSystem
     Anchors = [akLeft, akTop, akRight, akBottom]
-    Images = ImageList1
     TabOrder = 5
     OnChange = TabChange
     object TSystem: TTntTabSheet
       Caption = 'System'
       DesignSize = (
         547
-        313)
+        294)
       object LLanguage: TTntLabel
         Left = 8
         Top = 9
         Width = 47
         Height = 13
         Caption = 'Language'
+      end
+      object TseekL: TTntLabel
+        Left = 319
+        Top = 203
+        Width = 49
+        Height = 13
+        Caption = 'Seek jump'
+      end
+      object TUnit: TTntLabel
+        Left = 464
+        Top = 203
+        Width = 6
+        Height = 13
+        Caption = 'S'
       end
       object CLanguage: TTntComboBox
         Left = 120
@@ -153,7 +166,7 @@ object OptionsForm: TOptionsForm
       end
       object EMplayerLocation: TTntEdit
         Left = 192
-        Top = 269
+        Top = 247
         Width = 322
         Height = 21
         Anchors = [akLeft, akRight, akBottom]
@@ -161,7 +174,7 @@ object OptionsForm: TOptionsForm
       end
       object BMplayer: TTntButton
         Left = 515
-        Top = 269
+        Top = 247
         Width = 28
         Height = 21
         Anchors = [akRight, akBottom]
@@ -171,7 +184,7 @@ object OptionsForm: TOptionsForm
       end
       object CWid: TTntCheckBox
         Left = 283
-        Top = 295
+        Top = 273
         Width = 330
         Height = 17
         Anchors = [akLeft, akRight, akBottom]
@@ -211,7 +224,7 @@ object OptionsForm: TOptionsForm
       end
       object RCMplayer: TTntRadioButton
         Left = 4
-        Top = 295
+        Top = 273
         Width = 269
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -221,7 +234,7 @@ object OptionsForm: TOptionsForm
       end
       object RMplayer: TTntRadioButton
         Left = 4
-        Top = 272
+        Top = 250
         Width = 181
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -319,7 +332,7 @@ object OptionsForm: TOptionsForm
       end
       object CISub: TTntCheckBox
         Left = 12
-        Top = 224
+        Top = 200
         Width = 290
         Height = 17
         Caption = 'Include Subtitles on Screenshot'
@@ -329,7 +342,7 @@ object OptionsForm: TOptionsForm
       end
       object SSF: TTntStaticText
         Left = 8
-        Top = 250
+        Top = 228
         Width = 92
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -338,7 +351,7 @@ object OptionsForm: TOptionsForm
       end
       object BSsf: TTntButton
         Left = 515
-        Top = 244
+        Top = 222
         Width = 28
         Height = 21
         Anchors = [akRight, akBottom]
@@ -348,7 +361,7 @@ object OptionsForm: TOptionsForm
       end
       object ESsf: TTntEdit
         Left = 192
-        Top = 245
+        Top = 223
         Width = 322
         Height = 21
         Anchors = [akLeft, akRight, akBottom]
@@ -387,7 +400,7 @@ object OptionsForm: TOptionsForm
       end
       object CFilter: TTntCheckBox
         Left = 318
-        Top = 224
+        Top = 176
         Width = 229
         Height = 17
         Anchors = [akTop, akRight]
@@ -395,16 +408,6 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 26
-      end
-      object CRS: TTntCheckBox
-        Left = 12
-        Top = 176
-        Width = 290
-        Height = 17
-        Caption = 'Start MPUI with last size'
-        ParentShowHint = False
-        ShowHint = False
-        TabOrder = 27
       end
       object CSP: TTntCheckBox
         Left = 318
@@ -415,39 +418,25 @@ object OptionsForm: TOptionsForm
         Caption = 'Click video to pause'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 28
+        TabOrder = 27
       end
       object CTime: TTntCheckBox
-        Left = 318
-        Top = 200
+        Left = 12
+        Top = 176
         Width = 229
         Height = 17
         Anchors = [akTop, akRight]
         Caption = 'Display OS Time in status bar'
         ParentShowHint = False
         ShowHint = True
+        TabOrder = 28
+      end
+      object Eseek: TTntEdit
+        Left = 408
+        Top = 195
+        Width = 49
+        Height = 21
         TabOrder = 29
-      end
-      object CRP: TTntCheckBox
-        Left = 12
-        Top = 200
-        Width = 290
-        Height = 17
-        Caption = 'Start MPUI with last postion'
-        ParentShowHint = False
-        ShowHint = False
-        TabOrder = 30
-      end
-      object CDs: TTntCheckBox
-        Left = 318
-        Top = 176
-        Width = 229
-        Height = 17
-        Anchors = [akTop, akRight]
-        Caption = 'Show logo when play audio'
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 31
       end
     end
     object TVideo: TTntTabSheet
@@ -455,7 +444,7 @@ object OptionsForm: TOptionsForm
       ImageIndex = 1
       DesignSize = (
         547
-        313)
+        294)
       object LPostproc: TTntLabel
         Left = 10
         Top = 104
@@ -706,7 +695,7 @@ object OptionsForm: TOptionsForm
       ImageIndex = 2
       DesignSize = (
         547
-        313)
+        294)
       object LAudioOut: TTntLabel
         Left = 10
         Top = 8
@@ -767,7 +756,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 1
       end
       object CSPDIF: TTntCheckBox
@@ -802,7 +791,7 @@ object OptionsForm: TOptionsForm
       end
       object EWadsp: TTntEdit
         Left = 4
-        Top = 287
+        Top = 269
         Width = 510
         Height = 21
         Anchors = [akLeft, akRight, akBottom]
@@ -810,7 +799,7 @@ object OptionsForm: TOptionsForm
       end
       object BWadsp: TTntButton
         Left = 515
-        Top = 287
+        Top = 269
         Width = 28
         Height = 21
         Anchors = [akRight, akBottom]
@@ -820,7 +809,7 @@ object OptionsForm: TOptionsForm
       end
       object CWadsp: TTntCheckBox
         Left = 4
-        Top = 265
+        Top = 247
         Width = 546
         Height = 17
         Anchors = [akLeft, akRight, akBottom]
@@ -832,18 +821,18 @@ object OptionsForm: TOptionsForm
       end
       object TLyric: TTntGroupBox
         Left = 1
-        Top = 144
+        Top = 127
         Width = 544
-        Height = 116
+        Height = 110
         Anchors = [akLeft, akRight, akBottom]
         Caption = 'Lyric'
         TabOrder = 10
         DesignSize = (
           544
-          116)
+          110)
         object LTCL: TTntLabel
           Left = 46
-          Top = 57
+          Top = 51
           Width = 48
           Height = 13
           Alignment = taRightJustify
@@ -852,7 +841,7 @@ object OptionsForm: TOptionsForm
         end
         object LHCL: TTntLabel
           Left = 226
-          Top = 57
+          Top = 51
           Width = 39
           Height = 13
           Alignment = taRightJustify
@@ -861,7 +850,7 @@ object OptionsForm: TOptionsForm
         end
         object LBCL: TTntLabel
           Left = 399
-          Top = 57
+          Top = 51
           Width = 38
           Height = 13
           Alignment = taRightJustify
@@ -870,7 +859,7 @@ object OptionsForm: TOptionsForm
         end
         object SLyric: TTntLabel
           Left = 8
-          Top = 90
+          Top = 84
           Width = 55
           Height = 13
           Anchors = [akLeft, akBottom]
@@ -878,7 +867,7 @@ object OptionsForm: TOptionsForm
         end
         object PLTC: TPanel
           Left = 120
-          Top = 52
+          Top = 46
           Width = 36
           Height = 25
           Cursor = crHandPoint
@@ -893,7 +882,7 @@ object OptionsForm: TOptionsForm
         end
         object PLBC: TPanel
           Left = 484
-          Top = 52
+          Top = 46
           Width = 36
           Height = 25
           Cursor = crHandPoint
@@ -908,7 +897,7 @@ object OptionsForm: TOptionsForm
         end
         object PLHC: TPanel
           Left = 286
-          Top = 52
+          Top = 46
           Width = 36
           Height = 25
           Cursor = crHandPoint
@@ -923,7 +912,7 @@ object OptionsForm: TOptionsForm
         end
         object ELyric: TTntEdit
           Left = 176
-          Top = 86
+          Top = 80
           Width = 334
           Height = 21
           Anchors = [akLeft, akRight, akBottom]
@@ -932,7 +921,7 @@ object OptionsForm: TOptionsForm
         object BLyric: TTntButton
           Tag = 1
           Left = 511
-          Top = 86
+          Top = 80
           Width = 28
           Height = 21
           Anchors = [akRight, akBottom]
@@ -942,7 +931,7 @@ object OptionsForm: TOptionsForm
         end
         object LScroll: TTntCheckBox
           Left = 8
-          Top = 26
+          Top = 20
           Width = 368
           Height = 17
           Anchors = [akLeft, akRight, akBottom]
@@ -953,7 +942,7 @@ object OptionsForm: TOptionsForm
         end
         object BFont: TButton
           Left = 378
-          Top = 21
+          Top = 15
           Width = 161
           Height = 25
           Anchors = [akRight, akBottom]
@@ -968,7 +957,7 @@ object OptionsForm: TOptionsForm
       ImageIndex = 5
       DesignSize = (
         547
-        313)
+        294)
       object BSubfont: TTntButton
         Left = 514
         Top = 32
@@ -981,7 +970,7 @@ object OptionsForm: TOptionsForm
       end
       object CUni: TTntCheckBox
         Left = 313
-        Top = 171
+        Top = 154
         Width = 236
         Height = 17
         Anchors = [akRight, akBottom]
@@ -992,7 +981,7 @@ object OptionsForm: TOptionsForm
       end
       object CUtf: TTntCheckBox
         Left = 4
-        Top = 171
+        Top = 154
         Width = 241
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -1019,7 +1008,7 @@ object OptionsForm: TOptionsForm
       end
       object SFsize: TTntStaticText
         Left = 4
-        Top = 248
+        Top = 231
         Width = 57
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -1028,7 +1017,7 @@ object OptionsForm: TOptionsForm
       end
       object SFB: TTntStaticText
         Left = 4
-        Top = 270
+        Top = 253
         Width = 77
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -1037,7 +1026,7 @@ object OptionsForm: TOptionsForm
       end
       object SFol: TTntStaticText
         Left = 4
-        Top = 292
+        Top = 274
         Width = 106
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -1050,7 +1039,7 @@ object OptionsForm: TOptionsForm
         Width = 274
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 15
         OnChange = FontChange
       end
@@ -1058,7 +1047,7 @@ object OptionsForm: TOptionsForm
         Left = 8
         Top = 78
         Width = 532
-        Height = 90
+        Height = 74
         Anchors = [akLeft, akTop, akRight, akBottom]
         BevelOuter = bvNone
         Font.Charset = DEFAULT_CHARSET
@@ -1075,7 +1064,7 @@ object OptionsForm: TOptionsForm
         Width = 274
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 17
         OnChange = FontChange
       end
@@ -1091,7 +1080,7 @@ object OptionsForm: TOptionsForm
       end
       object SFontColor: TTntStaticText
         Left = 4
-        Top = 221
+        Top = 204
         Width = 52
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -1100,7 +1089,7 @@ object OptionsForm: TOptionsForm
       end
       object SOutline: TTntStaticText
         Left = 282
-        Top = 221
+        Top = 204
         Width = 64
         Height = 17
         Alignment = taRightJustify
@@ -1110,7 +1099,7 @@ object OptionsForm: TOptionsForm
       end
       object PTc: TPanel
         Left = 133
-        Top = 216
+        Top = 199
         Width = 60
         Height = 25
         Cursor = crHandPoint
@@ -1125,7 +1114,7 @@ object OptionsForm: TOptionsForm
       end
       object POc: TPanel
         Left = 431
-        Top = 216
+        Top = 199
         Width = 60
         Height = 25
         Cursor = crHandPoint
@@ -1140,7 +1129,7 @@ object OptionsForm: TOptionsForm
       end
       object CAss: TTntCheckBox
         Left = 4
-        Top = 195
+        Top = 178
         Width = 245
         Height = 17
         Anchors = [akLeft, akBottom]
@@ -1152,7 +1141,7 @@ object OptionsForm: TOptionsForm
       end
       object CEfont: TTntCheckBox
         Left = 313
-        Top = 195
+        Top = 178
         Width = 236
         Height = 17
         Anchors = [akRight, akBottom]
@@ -1295,7 +1284,7 @@ object OptionsForm: TOptionsForm
       end
       object TFsize: TTrackBar
         Left = 232
-        Top = 246
+        Top = 229
         Width = 281
         Height = 20
         Anchors = [akLeft, akRight, akBottom]
@@ -1310,7 +1299,7 @@ object OptionsForm: TOptionsForm
       end
       object TFB: TTrackBar
         Left = 232
-        Top = 268
+        Top = 251
         Width = 281
         Height = 20
         Anchors = [akLeft, akRight, akBottom]
@@ -1325,7 +1314,7 @@ object OptionsForm: TOptionsForm
       end
       object TFol: TTrackBar
         Left = 232
-        Top = 290
+        Top = 273
         Width = 281
         Height = 20
         Anchors = [akLeft, akRight, akBottom]
@@ -1340,7 +1329,7 @@ object OptionsForm: TOptionsForm
       end
       object SFsP: TTntStaticText
         Left = 512
-        Top = 248
+        Top = 231
         Width = 31
         Height = 17
         Anchors = [akRight, akBottom]
@@ -1349,7 +1338,7 @@ object OptionsForm: TOptionsForm
       end
       object SFBl: TTntStaticText
         Left = 512
-        Top = 269
+        Top = 252
         Width = 20
         Height = 17
         Anchors = [akRight, akBottom]
@@ -1358,7 +1347,7 @@ object OptionsForm: TOptionsForm
       end
       object SFo: TTntStaticText
         Left = 512
-        Top = 291
+        Top = 274
         Width = 20
         Height = 17
         Anchors = [akRight, akBottom]
@@ -1371,12 +1360,12 @@ object OptionsForm: TOptionsForm
       ImageIndex = 6
       DesignSize = (
         547
-        313)
+        295)
       object TheLog: TTntMemo
         Left = 2
         Top = 2
         Width = 542
-        Height = 280
+        Height = 262
         Anchors = [akLeft, akTop, akRight, akBottom]
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1390,7 +1379,7 @@ object OptionsForm: TOptionsForm
       end
       object Command: TTntEdit
         Left = 2
-        Top = 288
+        Top = 270
         Width = 542
         Height = 21
         Anchors = [akLeft, akRight, akBottom]
@@ -1404,12 +1393,12 @@ object OptionsForm: TOptionsForm
       ImageIndex = 4
       DesignSize = (
         547
-        313)
+        295)
       object HelpText: TTntMemo
         Left = 2
         Top = 2
         Width = 542
-        Height = 309
+        Height = 289
         Cursor = crArrow
         Anchors = [akLeft, akTop, akRight, akBottom]
         ReadOnly = True
@@ -1424,7 +1413,7 @@ object OptionsForm: TOptionsForm
       ImageIndex = 3
       DesignSize = (
         547
-        313)
+        295)
       object LURL: TLabel
         Left = 8
         Top = 118
@@ -1522,7 +1511,7 @@ object OptionsForm: TOptionsForm
         Left = 4
         Top = 134
         Width = 538
-        Height = 176
+        Height = 156
         Cursor = crArrow
         Anchors = [akLeft, akTop, akRight, akBottom]
         BevelInner = bvNone
@@ -2370,27 +2359,12 @@ object OptionsForm: TOptionsForm
       Caption = 'Other'
       DesignSize = (
         547
-        313)
-      object TseekL: TTntLabel
-        Left = 263
-        Top = 291
-        Width = 49
-        Height = 13
-        Alignment = taRightJustify
-        Caption = 'Seek jump'
-      end
-      object TUnit: TTntLabel
-        Left = 376
-        Top = 291
-        Width = 6
-        Height = 13
-        Caption = 'S'
-      end
+        295)
       object TFass: TCheckListBox
         Left = 4
         Top = 4
-        Width = 161
-        Height = 185
+        Width = 163
+        Height = 170
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
@@ -2402,7 +2376,7 @@ object OptionsForm: TOptionsForm
       end
       object TFadd: TTntButton
         Left = 3
-        Top = 252
+        Top = 236
         Width = 75
         Height = 25
         Anchors = [akLeft, akBottom]
@@ -2412,7 +2386,7 @@ object OptionsForm: TOptionsForm
       end
       object TEAss: TTntEdit
         Left = 4
-        Top = 224
+        Top = 208
         Width = 163
         Height = 21
         Anchors = [akLeft, akBottom]
@@ -2420,7 +2394,7 @@ object OptionsForm: TOptionsForm
       end
       object TFSet: TTntButton
         Left = 47
-        Top = 284
+        Top = 267
         Width = 75
         Height = 25
         Anchors = [akLeft, akBottom]
@@ -2430,7 +2404,7 @@ object OptionsForm: TOptionsForm
       end
       object TFdel: TTntButton
         Left = 91
-        Top = 252
+        Top = 236
         Width = 75
         Height = 25
         Anchors = [akLeft, akBottom]
@@ -2440,7 +2414,7 @@ object OptionsForm: TOptionsForm
       end
       object TBa: TTntButton
         Left = 3
-        Top = 194
+        Top = 178
         Width = 75
         Height = 25
         Anchors = [akLeft, akBottom]
@@ -2450,7 +2424,7 @@ object OptionsForm: TOptionsForm
       end
       object TBn: TTntButton
         Left = 91
-        Top = 194
+        Top = 178
         Width = 75
         Height = 25
         Anchors = [akLeft, akBottom]
@@ -2462,7 +2436,7 @@ object OptionsForm: TOptionsForm
         Left = 172
         Top = 4
         Width = 372
-        Height = 273
+        Height = 255
         Columns = <
           item
             Caption = 'Shortcut'
@@ -2619,21 +2593,13 @@ object OptionsForm: TOptionsForm
       end
       object RHK: TTntButton
         Left = 448
-        Top = 284
+        Top = 265
         Width = 94
         Height = 25
         Anchors = [akLeft, akBottom]
         Caption = 'Reset HotKey'
         TabOrder = 8
         OnClick = RHKClick
-      end
-      object Eseek: TTntEdit
-        Left = 320
-        Top = 287
-        Width = 49
-        Height = 21
-        Anchors = [akLeft, akBottom]
-        TabOrder = 9
       end
     end
   end
@@ -2659,221 +2625,6 @@ object OptionsForm: TOptionsForm
     Options = [cdFullOpen, cdAnyColor]
     Left = 218
     Top = 363
-  end
-  object ImageList1: TImageList
-    Left = 128
-    Top = 360
-    Bitmap = {
-      494C010107000900040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
-      0000000000003600000028000000400000003000000001001000000000000018
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      000000000000000000000000000000000000424D3E000000000000003E000000
-      2800000040000000300000000100010000000000800100000000000000000000
-      000000000000000000000000FFFFFF0000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000FFFFF1FFFFFF0000FFFFFE7FE0010000
-      FE7FFF1FFFFF0000FE7FFFAF80070000FFFFFC77FFFF0000FE7FE3FBE0010000
-      FE7FDFFDFFFF0000FE7FB21680070000FF3F7FFEFFFF0000FF9F6122E0010000
-      FF9F7FFEFFFF0000F99F648680070000F81FBFFDFFFF0000FC3FDFFBE0010000
-      FFFFE3C7FFFF0000FFFFFC3FFFFF0000F03FAAAAFFFDFFFFE3DFD555FFFBFFFF
-      D1EFFFFFFC77FFFFA0E78000F9BFFC3F41C38000F3DEFE7F63839FFCE9D9FE7F
-      5F839FFC90EFFE7F37C39FFC90EFFE7F23339FFC90EFFE7F83879FFC90EFFC7F
-      C2839FFCE9D9FFFFE0D18000F3DEFE7FF0308000F9BFFE7FFFF1FFFFFC77FFFF
-      FFF3AAAAFFFBFFFFFFF7FFFFFFFDFFFF00000000000000000000000000000000
-      000000000000}
   end
   object FontDialog1: TFontDialog
     Font.Charset = DEFAULT_CHARSET

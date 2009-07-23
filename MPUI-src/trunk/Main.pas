@@ -204,7 +204,6 @@ type
     MSIE: TTntMenuItem;
     BSkip: TTntSpeedButton;
     BackBar: TTntPanel;
-    Imagery: TImageList;
     MPWheelControl: TTntMenuItem;
     MPVol: TTntMenuItem;
     MPSize: TTntMenuItem;
@@ -522,7 +521,7 @@ begin
   HideMouseAt:=0; UpdateSeekBarAt:=0; PlayMsgAt:=0;
   WantFullscreen:=false; WantCompact:=false;
   Constraints.MinWidth:=Width; Constraints.MinHeight:=Height;
-  if Win32PlatformIsXP then MainForm.Imagery.Clear;
+ // if Win32PlatformIsXP then MainForm.Imagery.Clear;
   Load(HomeDir+'autorun.inf',0); Load(HomeDir+DefaultFileName,0);
   if not WideFileExists(MplayerLocation) then MplayerLocation:=HomeDir+'mplayer.exe';
   if subcode='' then subcode:='CP'+IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT)); //AnsiCodePage
@@ -534,31 +533,10 @@ begin
     subcode:='CP'+IntToStr(i);
   end; }
   UpdateVolSlider;
-  if RP and (EL<>-1) then Left:=EL
-  else begin
-    if Wid and Win32PlatformIsUnicode and ds and RS then Width:=Width-OPanel.Width+EW;
-    Left:=(screen.Width-Width) DIV 2;
-  end;
-  if RP and (ET<>-1) then Top:=ET
-  else begin
-    if Wid and Win32PlatformIsUnicode then begin
-      if ds then begin
-        SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
-        Opanel.Visible:=true; Logo.Visible:=true;
-        if RS then begin
-          Height:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+EH;
-          Top:=(screen.Height-Height) Div 2;
-        end
-        else begin
-          Top:=(screen.Height-defaultHeight) Div 2 -60;
-          Height:=defaultHeight;
-        end;
-      end
-      else Top:=(screen.Height-Height) Div 2;
-    end
-    else Top:=screen.WorkAreaHeight-Height;
-  end;
-
+  Left:=(screen.Width-Width) DIV 2;
+  if Wid and Win32PlatformIsUnicode then
+    Top:=(screen.Height-Height) Div 2
+  else Top:=screen.WorkAreaHeight-Height;
   if RFScr then begin
       OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
   end
@@ -627,7 +605,7 @@ begin
     Playlist.Changed;
     if Playlist.Count>0 then Application.OnIdle:=OpenDroppedFile;
   end;
-  DragAcceptFiles(Handle,true); 
+  DragAcceptFiles(Handle,true);
 end;
 
 procedure TMainForm.FormHide(Sender: TObject);
@@ -1233,9 +1211,6 @@ end;
 procedure TMainForm.FixSize;
 var SX,SY,NX,NY:integer;
 begin
-  if LastHaveVideo or ds then begin
-    EW:=Opanel.Width; EH:=Opanel.Height;
-  end;
   if (NativeWidth=0) OR (NativeHeight=0)
     OR (not MKaspect.Checked) then exit;
 
@@ -1291,8 +1266,8 @@ end;
 
 procedure TMainForm.SetupPlay;
 begin
-  Logo.Visible:=not HaveVideo;
-  LEscape.Visible:=Logo.Visible AND MFullscreen.Checked;
+  Logo.Visible:=false;
+  LEscape.Visible:=(not HaveVideo) AND MFullscreen.Checked;
   IPanel.Visible:=HaveVideo and Wid;
   Seeking:=false; LTime.Cursor:=crHandPoint;
   LTime.Font.Size:=14; LTime.Top:=-2;

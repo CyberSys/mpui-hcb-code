@@ -25,7 +25,7 @@ const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
 const PauseInfo:array[0..1]of WideString=('=  PAUSE  =','= ‘›Õ£ =');
 const CacheFill:array[0..4]of WideString=('Cache fill:','ª∫¥ÊÃÓ≥‰:','ª∫≥ÂÃÓ≥‰:','æè¥ÊÃÓ≥‰:','æèõ_ÃÓ≥‰:');
 const GenIndex:array[0..2]of WideString=('Generating Index:','’˝‘⁄…˙≥…À˜“˝:','’˝‘⁄…˙≥…À˜“˝:');
-const defaultHeight=340; RFileMax=10; DefaultOSDLevel=0;
+const RFileMax=10; DefaultOSDLevel=0;
 const szdllCount=2;
 const szdll:array[0..szdllCount]of WideString=('7zxa.dll','7za.dll','7z.dll');
 
@@ -118,7 +118,7 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     MAspect,subcode,MaxLenLyricA,VideoOut:string;
     FirstOpen,PClear,Fd,Async,Cache,uof,oneM,FilterDrop:boolean;
     Wid,Dreset,UpdateSkipBar,Pri,HaveChapters,HaveMsg:boolean;
-    CT,RP,RS,SP,AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
+    CT,SP,AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
     ControlledResize,ni,nobps,Dnav,lavf,UseekC,vsync:boolean;
     Flip,Mirror,Yuy2,Eq2,LastEq2,Dda,LastDda,Wadsp:boolean;
@@ -131,7 +131,7 @@ var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
     AudiochannelsID,CurLyric,NextLyric,LyricCount:integer;
     VobsubCount,VobFileCount:integer;
     CurrentSubCount,OnTop,VobAndInterSubCount,IntersubCount:integer;
-    IL,IT,EL,ET,EW,EH,InterW,InterH,NW,NH,OldX,OldY,Scale,LastScale:integer;
+    InterW,InterH,NW,NH,OldX,OldY,Scale,LastScale:integer;
     MFunc,CBHSA,bri,briD,contr,contrD,hu,huD,sat,satD,gam,gamD:integer;
 var AudioOut,AudioDev,Postproc,Deinterlace,Aspect:integer;
     ReIndex,SoftVol,RFScr,dbbuf,nfc,Firstrun,Volnorm,Dr:boolean;
@@ -140,7 +140,7 @@ var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
     LastPos,SecondPos,OSDLevel,MSecPos:integer;
 var Volume,MWC,CP,seekLen:integer;
-    ds,tEnd,Mute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
+    tEnd,Mute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
     DTFormat:string;
     FormatSet:TFormatSettings;
     ExplicitStop,Rot,DefaultFontIndex:integer;
@@ -1769,23 +1769,17 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           LastHaveVideo:=false; MFunc:=0;
           MWheelControl.Items[0].Checked:=true;
           MPWheelControl.Items[0].Checked:=true;
-          if not ds then OPanel.Visible:=false;
+          OPanel.Visible:=false;
           if not (OptionsForm.Visible or EqualizerForm.Visible) then Enabled:=true;
           if MFullscreen.Checked then SetFullscreen(false);
           if MCompact.Checked  or MMaxW.Checked then SetCompact(false);
           Mctrl.Checked:=false; Hide_menu.Checked:=false; MPCtrl.Checked:=true;
           CPanel.Visible:=true; MenuBar.Visible:=true;
           UpdateMenuEV(false);
-          if not ds then SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX));
+          SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX));
           r:=Left+((Width-Constraints.MinWidth) DIV 2);
-          if ds then begin
-            i:=Top+((Height-defaultHeight) DIV 2);
-            SetBounds(r,i,Constraints.MinWidth,defaultHeight);
-          end
-          else begin
-            i:=Top+((Height-Constraints.MinHeight) DIV 2);
-            SetBounds(r,i,Constraints.MinWidth,Constraints.MinHeight);
-          end;
+          i:=Top+((Height-Constraints.MinHeight) DIV 2);
+          SetBounds(r,i,Constraints.MinWidth,Constraints.MinHeight);
         end;
       end;
     end;
@@ -1872,47 +1866,31 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
         if not LastHaveVideo then begin
           OPanel.Visible:=true; LastHaveVideo:=true;
           SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
-          if not ds then begin
-            if RS and (EW<>0) and (EH<>0) then begin
-              j:=Width-OPanel.Width+EW; p:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+EH;
-            end
-            else begin
-              j:=Width-OPanel.Width+NativeWidth;
-              p:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+NativeHeight;
-            end;
-            r:=Left-((j-Constraints.MinWidth) DIV 2);
-            i:=Top-((p-Constraints.MinHeight) DIV 2);
-            if RS and (EW<>0) and (EH<>0) then begin
-              if r<0 then r:=0; if i<0 then i:=0;
-              if j>Screen.Width then begin j:=Screen.Width; end;
-              if p>Screen.WorkAreaHeight then begin p:=Screen.WorkAreaHeight; end;
-              if (r+j)>Screen.Width then r:=Screen.Width-j;
-              if (i+p)>Screen.WorkAreaHeight then i:=Screen.WorkAreaHeight-p;
-              SetBounds(r,i,j,p);
-            end
-            else begin
-              SetBounds(r,i,j,p);
-              MSize100.Checked:=true;
-            end;
-          end;
+          j:=Width-OPanel.Width+NativeWidth;
+          p:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+NativeHeight;
+          r:=Left-((j-Constraints.MinWidth) DIV 2);
+          i:=Top-((p-Constraints.MinHeight) DIV 2);
+          SetBounds(r,i,j,p); MSize100.Checked:=true;
         end;
       end
-      else if LastHaveVideo then begin
-        OPanel.Visible:=false; LastHaveVideo:=false;
-        if not (OptionsForm.Visible or EqualizerForm.Visible) then Enabled:=true;
-        if MFullscreen.Checked then SetFullscreen(false);
-        if MCompact.Checked or MMaxW.Checked then SetCompact(false);
-        Mctrl.Checked:=false; Hide_menu.Checked:=false; MPCtrl.Checked:=true;
-        CPanel.Visible:=true; MenuBar.Visible:=true;
-        SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX));
-        r:=Left+((Width-Constraints.MinWidth) DIV 2);
-        i:=screen.WorkAreaHeight-Constraints.MinHeight;
-        SetBounds(r,i,Constraints.MinWidth,Constraints.MinHeight);
-        PlaylistForm.Left:=Left-PlaylistForm.Width;
-        PlaylistForm.Top:=Top+Height-PlaylistForm.Height;
-        MFunc:=0;
-        MWheelControl.Items[0].Checked:=true;
-        MPWheelControl.Items[0].Checked:=true;
+      else begin
+        if LastHaveVideo then begin
+          OPanel.Visible:=false; LastHaveVideo:=false;
+          if not (OptionsForm.Visible or EqualizerForm.Visible) then Enabled:=true;
+          if MFullscreen.Checked then SetFullscreen(false);
+          if MCompact.Checked or MMaxW.Checked then SetCompact(false);
+          Mctrl.Checked:=false; Hide_menu.Checked:=false; MPCtrl.Checked:=true;
+          CPanel.Visible:=true; MenuBar.Visible:=true;
+          SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX));
+          r:=Left+((Width-Constraints.MinWidth) DIV 2);
+          i:=screen.WorkAreaHeight-Constraints.MinHeight;
+          SetBounds(r,i,Constraints.MinWidth,Constraints.MinHeight);
+          PlaylistForm.Left:=Left-PlaylistForm.Width;
+          PlaylistForm.Top:=Top+Height-PlaylistForm.Height;
+          MFunc:=0;
+          MWheelControl.Items[0].Checked:=true;
+          MPWheelControl.Items[0].Checked:=true;
+        end;
       end;
       UpdateMenuEV(true); MOsdfont.Visible:=uof;
       MRmMenu.Visible:=Dnav; MRnMenu.Visible:=Dnav;
@@ -2336,9 +2314,7 @@ begin
   LTextColor:=clWindowText; LBGColor:=clWindow; LHGColor:=$93; ClientProcess:=0;
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
-  NW:=0; NH:=0; EW:=0; EH:=0; EL:=-1; ET:=-1; RS:=false; RP:=false; SP:=true;
-  CT:=true; IL:=-1; IT:=-1; ds:=false; fass:=DefaultFass; HKS:=DefaultHKS;
-  seekLen:=10; ResetStreamInfo;
-  
+  NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10; 
+  ResetStreamInfo;
 end.
 
