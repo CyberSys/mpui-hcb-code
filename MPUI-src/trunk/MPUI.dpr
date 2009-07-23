@@ -84,7 +84,7 @@ begin
   end
   else begin
     Application.Initialize;
-    TntApplication.Title := 'MPUI';
+    TntApplication.Title := 'MPUI-hcb';
     Application.CreateForm(TMainForm, MainForm);
     Application.CreateForm(TPlaylistForm, PlaylistForm);
     Application.CreateForm(TInfoForm, InfoForm);
@@ -117,7 +117,7 @@ begin
       CloseHandle(hAppMutex); exit;
     end;
   end;
-  TntApplication.Title := 'MPUI';
+  TntApplication.Title := 'MPUI-hcb';
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TLogForm, LogForm);
   Application.CreateForm(THelpForm, HelpForm);
