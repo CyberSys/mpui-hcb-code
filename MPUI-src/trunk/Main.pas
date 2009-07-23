@@ -842,7 +842,7 @@ var i,j:integer;
     SendCommand('get_time_length');
   end;
 begin
-OptionsForm.translateHotKey(Shift,Key);
+OptionsForm.HotKeyToOldKey(Shift,Key);
 if MVideos.Visible then begin
   if Key=VK_ESCAPE then begin
     if MFullscreen.Checked then Key:=Ord('F')
@@ -1117,7 +1117,7 @@ end;
 procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  OptionsForm.translateHotKey(Shift,Key);
+  OptionsForm.HotKeyToOldKey(Shift,Key);
   if HaveVideo then begin
     case Key of
       Ord('1'),VK_NUMPAD1,Ord('2'),VK_NUMPAD2:   begin CBHSA:=1; SendCommand('get_property contrast'); end;
@@ -1391,7 +1391,7 @@ begin
   else if Sender=MRmMenu then Key:=81 //g
   else if Sender=MSubScale0 then begin Key:=187; Shift:=[ssCtrl]; end //-_
   else if Sender=MSubScale1 then begin Key:=189; Shift:=[ssCtrl]; end //+=
-  else Key:=(Sender as TComponent).Tag;
+  else Key:=(Sender as TComponent).Tag; OptionsForm.OldKeyToHotKey(Shift,Key);
   FormKeyDown(Sender,Key,Shift);
 end;
 

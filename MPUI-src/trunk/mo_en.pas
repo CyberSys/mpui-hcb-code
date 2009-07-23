@@ -456,7 +456,7 @@ begin
     HK.Items[85].SubItems.Strings[0]:='Next video track';
     HK.Items[86].SubItems.Strings[0]:='Next program';
     HK.Items[87].SubItems.Strings[0]:=MainForm.MPan0.Caption;
-    HK.Items[88].SubItems.Strings[0]:=MainForm.MPan0.Caption;
+    HK.Items[88].SubItems.Strings[0]:=MainForm.MPan1.Caption;
     HK.Items[89].SubItems.Strings[0]:='Next audio track';
     HK.Items[90].SubItems.Strings[0]:='Toggle OnTop';
     HK.Items[91].SubItems.Strings[0]:=MainForm.MShowPlaylist.Caption;

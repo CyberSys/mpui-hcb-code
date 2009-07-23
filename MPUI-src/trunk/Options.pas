@@ -233,7 +233,8 @@ type
     procedure ApplyValues;
     procedure LoadValues;
     procedure AddLine(const Line:Widestring);
-    procedure translateHotKey(var Shift:TShiftState; var Key:Word);
+    procedure HotKeyToOldKey(var Shift:TShiftState; var Key:Word);
+    procedure OldKeyToHotKey(var Shift:TShiftState; var Key:Word);
   end;
 
   PDSEnumCallback = function(lpGuid:PGUID; lpcstrDescription,lpcstrModule:PChar; lpContext:pointer):LongBool; stdcall;
@@ -1255,11 +1256,22 @@ begin
   if IKey then HK.ItemIndex:=sIndex;
 end;
 
-procedure TOptionsForm.translateHotKey(var Shift:TShiftState; var Key:Word);
+procedure TOptionsForm.HotKeyToOldKey(var Shift:TShiftState; var Key:Word);
 var t:TListItem;
 begin
   t:=HK.FindData(0,Pointer(ShiftKeyToHk(Shift,Key)),true,false);
   if t<>nil then HkToShiftKey(DefaultHotKey[t.Index],Shift,Key);
+end;
+
+procedure TOptionsForm.OldKeyToHotKey(var Shift:TShiftState; var Key:Word);
+var i,OldKey:integer;
+begin
+  OldKey:=ShiftKeyToHk(Shift,Key);
+  for i:=Low(DefaultHotKey) to High(DefaultHotKey) do 
+    if DefaultHotKey[i]=OldKey then begin
+      HkToShiftKey(Integer(HK.Items[i].Data),Shift,Key);
+      exit;
+    end;
 end;
 
 procedure TOptionsForm.FormDestroy(Sender: TObject);
