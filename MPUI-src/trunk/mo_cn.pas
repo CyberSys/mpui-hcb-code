@@ -365,8 +365,8 @@ begin
     HK.Hint:=UTF8Decode('按下快捷键去查找对应的记录，双击记录去修改快捷键');
     HK.Items[0].SubItems.Strings[0]:=UTF8Decode('增加视频高度');
     HK.Items[1].SubItems.Strings[0]:=UTF8Decode('减小视频高度');
-    HK.Items[2].SubItems.Strings[0]:=UTF8Decode('增加视频宽度');
-    HK.Items[3].SubItems.Strings[0]:=UTF8Decode('减小视频宽度');
+    HK.Items[2].SubItems.Strings[0]:=UTF8Decode('减小视频宽度');
+    HK.Items[3].SubItems.Strings[0]:=UTF8Decode('增加视频宽度');
     HK.Items[4].SubItems.Strings[0]:=UTF8Decode('放大字幕');
     HK.Items[5].SubItems.Strings[0]:=UTF8Decode('缩小字幕');
     HK.Items[6].SubItems.Strings[0]:=UTF8Decode('自定义尺寸');
@@ -378,7 +378,7 @@ begin
     HK.Items[12].SubItems.Strings[0]:=UTF8Decode('重置缩放');
     HK.Items[13].SubItems.Strings[0]:=UTF8Decode('开始/停止 截取每帧画面');
     HK.Items[14].SubItems.Strings[0]:=MainForm.MSubDelay2.Caption;
-    HK.Items[15].SubItems.Strings[0]:=UTF8Decode('减小增加音频延迟');
+    HK.Items[15].SubItems.Strings[0]:=UTF8Decode('减小音频延迟');
     HK.Items[16].SubItems.Strings[0]:=UTF8Decode('增加音频延迟');
     HK.Items[17].SubItems.Strings[0]:=UTF8Decode('切换 OSD');
     HK.Items[18].SubItems.Strings[0]:=UTF8Decode('重置 视频均衡器');
@@ -434,8 +434,8 @@ begin
     HK.Items[68].SubItems.Strings[0]:=MainForm.MLchannels.Caption;
     HK.Items[69].SubItems.Strings[0]:=MainForm.MRchannels.Caption;
     HK.Items[70].SubItems.Strings[0]:=MainForm.MMix.Caption;
-    HK.Items[71].SubItems.Strings[0]:=UTF8Decode('向前 '+IntToStr(seekLen)+'秒');
-    HK.Items[72].SubItems.Strings[0]:=UTF8Decode('向后 '+IntToStr(seekLen)+'秒');
+    HK.Items[71].SubItems.Strings[0]:=UTF8Decode('向后 '+IntToStr(seekLen)+'秒');
+    HK.Items[72].SubItems.Strings[0]:=UTF8Decode('向前 '+IntToStr(seekLen)+'秒');
     HK.Items[73].SubItems.Strings[0]:=MainForm.MSeekF60.Caption;
     HK.Items[74].SubItems.Strings[0]:=MainForm.MSeekR60.Caption;
     HK.Items[75].SubItems.Strings[0]:=MainForm.MSeekF600.Caption;
@@ -450,7 +450,7 @@ begin
     HK.Items[84].SubItems.Strings[0]:=UTF8Decode('切换字幕');
     HK.Items[85].SubItems.Strings[0]:=UTF8Decode('切换视频轨');
     HK.Items[86].SubItems.Strings[0]:=UTF8Decode('切换节目');
-    HK.Items[87].SubItems.Strings[0]:=MainForm.MPan0.Caption;
+    HK.Items[87].SubItems.Strings[0]:=MainForm.MPan1.Caption;
     HK.Items[88].SubItems.Strings[0]:=MainForm.MPan0.Caption;
     HK.Items[89].SubItems.Strings[0]:=UTF8Decode('切换音轨');
     HK.Items[90].SubItems.Strings[0]:=UTF8Decode('切换 置顶');

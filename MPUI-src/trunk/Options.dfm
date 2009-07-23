@@ -108,7 +108,7 @@ object OptionsForm: TOptionsForm
       Caption = 'System'
       DesignSize = (
         547
-        294)
+        295)
       object LLanguage: TTntLabel
         Left = 8
         Top = 9
@@ -444,7 +444,7 @@ object OptionsForm: TOptionsForm
       ImageIndex = 1
       DesignSize = (
         547
-        294)
+        295)
       object LPostproc: TTntLabel
         Left = 10
         Top = 104
@@ -695,7 +695,7 @@ object OptionsForm: TOptionsForm
       ImageIndex = 2
       DesignSize = (
         547
-        294)
+        295)
       object LAudioOut: TTntLabel
         Left = 10
         Top = 8
@@ -957,7 +957,7 @@ object OptionsForm: TOptionsForm
       ImageIndex = 5
       DesignSize = (
         547
-        294)
+        295)
       object BSubfont: TTntButton
         Left = 514
         Top = 32

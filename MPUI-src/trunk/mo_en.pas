@@ -439,8 +439,8 @@ begin
     HK.Items[68].SubItems.Strings[0]:=MainForm.MLchannels.Caption;
     HK.Items[69].SubItems.Strings[0]:=MainForm.MRchannels.Caption;
     HK.Items[70].SubItems.Strings[0]:=MainForm.MMix.Caption;
-    HK.Items[71].SubItems.Strings[0]:='Forward '+IntToStr(seekLen)+' seconds';
-    HK.Items[72].SubItems.Strings[0]:='Rewind '+IntToStr(seekLen)+' seconds';
+    HK.Items[71].SubItems.Strings[0]:='Rewind '+IntToStr(seekLen)+' seconds';
+    HK.Items[72].SubItems.Strings[0]:='Forward '+IntToStr(seekLen)+' seconds';
     HK.Items[73].SubItems.Strings[0]:=MainForm.MSeekF60.Caption;
     HK.Items[74].SubItems.Strings[0]:=MainForm.MSeekR60.Caption;
     HK.Items[75].SubItems.Strings[0]:=MainForm.MSeekF600.Caption;
@@ -455,8 +455,8 @@ begin
     HK.Items[84].SubItems.Strings[0]:='Next subtitle';
     HK.Items[85].SubItems.Strings[0]:='Next video track';
     HK.Items[86].SubItems.Strings[0]:='Next program';
-    HK.Items[87].SubItems.Strings[0]:=MainForm.MPan0.Caption;
-    HK.Items[88].SubItems.Strings[0]:=MainForm.MPan1.Caption;
+    HK.Items[87].SubItems.Strings[0]:=MainForm.MPan1.Caption;
+    HK.Items[88].SubItems.Strings[0]:=MainForm.MPan0.Caption;
     HK.Items[89].SubItems.Strings[0]:='Next audio track';
     HK.Items[90].SubItems.Strings[0]:='Toggle OnTop';
     HK.Items[91].SubItems.Strings[0]:=MainForm.MShowPlaylist.Caption;
