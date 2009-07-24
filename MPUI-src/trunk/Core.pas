@@ -1955,9 +1955,9 @@ begin
           if (p=0) and (Bp>p) and (Bp<TotalTime) then begin
             if Status=sPaused then SendCommand('seek '+IntToStr(Bp))
             else begin
-              SendCommand('mute 1');
+              SendCommand('set_property mute 1');
               SendCommand('seek '+IntToStr(Bp));
-              SendCommand('mute 0');
+              SendCommand('set_property mute 0');
             end;
           end;
           if (EP>0) and (SecondPos=Ep) then begin
@@ -1981,7 +1981,7 @@ begin
     if Status=sPlaying then begin
       Status:=sPaused; MainForm.BPause.Down:=true;
       MainForm.BPlay.Down:=false; MainForm.UpdateStatus;
-      SendCommand('mute 1');
+      SendCommand('set_property mute 1');
     end;
     exit;
   end;

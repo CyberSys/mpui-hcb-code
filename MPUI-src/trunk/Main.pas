@@ -794,7 +794,7 @@ begin
   if Status=sPaused then begin
     BPause.Down:=false; BPlay.Down:=true;
     Status:=sPlaying; UpdateStatus;
-    SendCommand('mute 0');
+    SendCommand('set_property mute 0');
   end;
 end;
 
@@ -834,9 +834,9 @@ var i,j:integer;
     if not Win32PlatformIsUnicode then exit;
     if Status=sPaused then SendCommand(Command)
     else begin 
-      SendCommand('mute 1');
+      SendCommand('set_property mute 1');
       SendCommand(Command);
-      SendCommand('mute 0');
+      SendCommand('set_property mute 0');
     end;
     if HaveChapters then Sendcommand('get_property chapter');
     SendCommand('get_time_length');
@@ -1344,9 +1344,9 @@ begin
   else SendCommand('seek '+IntToStr(LastPos)+' 2');}
   if Status=sPaused then SendCommand('seek '+IntToStr(LastPos-SecondPos))
   else begin
-    SendCommand('mute 1');
+    SendCommand('set_property mute 1');
     SendCommand('seek '+IntToStr(LastPos-SecondPos));
-    SendCommand('mute 0');
+    SendCommand('set_property mute 0');
   end;
   if HaveVideo then SendCommand('osd_show_text '+IntToStr(100*LastPos DIV TotalTime)+'%');
   Seeking:=false; SeekBarSlider.ShowHint:=true;
@@ -1374,9 +1374,9 @@ begin
   else SendCommand('seek '+IntToStr(TotalTime*X DIV MaxPos)+' 2'); }
   if Status=sPaused then SendCommand('seek '+IntToStr((TotalTime*X DIV MaxPos)-SecondPos))
   else begin
-    SendCommand('mute 1');
+    SendCommand('set_property mute 1');
     SendCommand('seek '+IntToStr((TotalTime*X DIV MaxPos)-SecondPos));
-    SendCommand('mute 0');
+    SendCommand('set_property mute 0');
   end;
   if HaveVideo then SendCommand('osd_show_text '+IntToStr(100*X DIV MaxPos)+'%');
   SeekBarSlider.Left:=X; UpdateSeekBarAt:=GetTickCount()+500;
@@ -2290,9 +2290,9 @@ begin
   if ssCtrl in Shift then begin
     if Status=sPaused then SendCommand('seek '+IntToStr(WheelDelta DIV 20))
     else begin
-      SendCommand('mute 1');
+      SendCommand('set_property mute 1');
       SendCommand('seek '+IntToStr(WheelDelta DIV 20));
-      SendCommand('mute 0');
+      SendCommand('set_property mute 0');
     end;
   end
   else begin
@@ -2890,9 +2890,9 @@ begin
         if Bp>SecondPos then begin
           if Status=sPaused then SendCommand('seek '+IntToStr(Bp-SecondPos))
           else begin
-            SendCommand('mute 1');
+            SendCommand('set_property mute 1');
             SendCommand('seek '+IntToStr(Bp-SecondPos));
-            SendCommand('mute 0');
+            SendCommand('set_property mute 0');
           end;
         end;
         SkipBar.Left:=SeekBar.Left+SeekBar.Width*Bp DIV TotalTime;
