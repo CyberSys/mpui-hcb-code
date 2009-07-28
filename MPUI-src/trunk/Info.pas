@@ -76,6 +76,7 @@ end;
 procedure TInfoForm.FormCreate(Sender: TObject);
 begin
   ControlledMove:=True; Docked:=true;
+  if Core.RP then begin Left:=Core.IL; Top:=Core.IT; end;
 end;
 
 procedure TInfoForm.BCloseClick(Sender: TObject);
@@ -281,7 +282,7 @@ end;
 
 procedure TInfoForm.FormDestroy(Sender: TObject);
 begin
-  Docked:=False;
+  Docked:=False; IL:=left; IT:=Top;
 end;
 
 procedure TInfoForm.FormMove(var msg:TMessage);

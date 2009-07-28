@@ -246,12 +246,15 @@ begin
     BSave.Caption:=UTF8Decode('儲存');
     BClose.Caption:=UTF8Decode('關閉');
     TSystem.Caption:=UTF8Decode('系統');
+    TLog.Caption:=UTF8Decode('日誌');
     TVideo.Caption:=MainForm.MVideos.Caption;
     TAudio.Caption:=MainForm.MAudios.Caption;
     TSub.Caption:=MainForm.MSub.Caption;
     TAbout.Caption:=UTF8Decode('關於');
     THelp.Caption:=MainForm.MHelp.Caption;
     CSP.Caption:=UTF8Decode('單擊畫面暫停');
+    CRS.Caption:=UTF8Decode('啟動時使用上次的窗體大小');
+    CRP.Caption:=UTF8Decode('啟動時使用上次的窗體位置');
     CTime.Caption:=UTF8Decode('在状态栏显示系统时间');
     LAudioOut.Caption:=UTF8Decode('音效輸出驅動程式');
       CAudioOut.Items[0]:=UTF8Decode('(不解碼音效)');
@@ -365,6 +368,7 @@ begin
     HK.Columns[1].Caption:=UTF8Decode('操作');
     TUnit.Caption:=UTF8Decode('秒');
     TseekL.Caption:=UTF8Decode('搜索 跳躍');
+    CDs.Caption:=UTF8Decode('總是顯示視頻界面');
     
     HK.Hint:=UTF8Decode('按下快捷鍵去查找對應的記錄，雙擊記錄去修改快捷鍵');
     HK.Items[0].SubItems.Strings[0]:=UTF8Decode('增加視頻高度');

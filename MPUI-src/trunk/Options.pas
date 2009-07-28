@@ -155,10 +155,12 @@ type
     LVersionMPlayer: TTntLabel;
     VersionMPlayer: TTntLabel;
     FY: TTntLabel;
+    CRS: TTntCheckBox;
     CSP: TTntCheckBox;
     HCB: TTntLabel;
     TheLog: TTntMemo;
     Command: TTntEdit;
+    CRP: TTntCheckBox;
     CTime: TTntCheckBox;
     TOther: TTntTabSheet;
     TFass: TCheckListBox;
@@ -168,6 +170,7 @@ type
     TFdel: TTntButton;
     TBa: TTntButton;
     TBn: TTntButton;
+    CDs: TTntCheckBox;
     HK: TTntListView;
     RHK: TTntButton;
     TseekL: TTntLabel;
@@ -401,7 +404,10 @@ begin
   EMplayerLocation.Enabled:=ML;
   BMplayer.Enabled:=ML;
   CWid.Checked:=Wid;
+  CDs.Checked:=Ds;
+  CRS.Checked:=RS;
   CSP.Checked:=SP;
+  CRP.Checked:=RP;
   CTime.Checked:=CT;
   EMplayerLocation.Text:=MplayerLocation;
   CMAspect.Text:=MAspect;
@@ -757,6 +763,9 @@ begin
     ActivateLocale(DefaultLocale);
   end;
   if WideDirectoryExists(ELyric.Text) then LyricDir:=ELyric.Text;
+  DS:=CDs.Checked;
+  RP:=CRP.Checked;
+  RS:=CRS.Checked;
   SP:=CSP.Checked;
   CT:=CTime.Checked;
   seekLen:=StrToIntdef(Eseek.Text,10);

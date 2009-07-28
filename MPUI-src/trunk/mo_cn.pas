@@ -252,7 +252,9 @@ begin
     TAudio.Caption:=MainForm.MAudios.Caption;
     TSub.Caption:=MainForm.MSub.Caption;
     CSP.Caption:=UTF8Decode('单击画面暂停');
+    CRS.Caption:=UTF8Decode('启动时使用上次的窗体大小');
     CTime.Caption:=UTF8Decode('在状态栏显示系统时间');
+    CRP.Caption:=UTF8Decode('启动时使用上次的窗体位置');
     LAudioOut.Caption:=UTF8Decode('音频输出的驱动:');
       CAudioOut.Items[0]:=UTF8Decode('(不解码 音频)');
       CAudioOut.Items[1]:=UTF8Decode('(不播放 音频)');
@@ -347,6 +349,7 @@ begin
     SSF.Caption:=UTF8Decode('保存截图的目录');
     SLyric.Caption:=UTF8Decode('歌词目录:');
     TLyric.Caption:=UTF8Decode('歌词');
+    TLog.Caption:=UTF8Decode('日志');
     LScroll.Caption:=UTF8Decode('平滑滚动');
     LTCL.Caption:=UTF8Decode('文字');
     LBCL.Caption:=UTF8Decode('背景');
@@ -357,6 +360,7 @@ begin
     TFdel.Caption:=UTF8Decode('删除');
     TFSet.Caption:=UTF8Decode('关联');
     TOther.Caption:=UTF8Decode('其他');
+    CDs.Caption:=UTF8Decode('总是显示视频界面');
     RHK.Caption:=UTF8Decode('重置 快捷键');
     HK.Columns[0].Caption:=UTF8Decode('快捷键');
     HK.Columns[1].Caption:=UTF8Decode('操作');

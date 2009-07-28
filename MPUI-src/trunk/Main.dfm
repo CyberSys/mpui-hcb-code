@@ -853,10 +853,10 @@ object MainForm: TMainForm
       OnMouseUp = DisplayMouseUp
     end
     object IPanel: TTntPanel
-      Left = 192
-      Top = 8
-      Width = 145
-      Height = 105
+      Left = 0
+      Top = 0
+      Width = 357
+      Height = 4
       BevelOuter = bvNone
       Color = 1052688
       ParentBackground = False
@@ -2680,7 +2680,6 @@ object MainForm: TMainForm
       Tag = 81
       Caption = 'Quit'
       ImageIndex = 4
-      Visible = False
       OnClick = MQuitClick
     end
   end

@@ -533,15 +533,36 @@ begin
     subcode:='CP'+IntToStr(i);
   end; }
   UpdateVolSlider;
+  if Wid and Win32PlatformIsUnicode and ds and RS then Width:=Width-OPanel.Width+EW;
   Left:=(screen.Width-Width) DIV 2;
-  if Wid and Win32PlatformIsUnicode then
-    Top:=(screen.Height-Height) Div 2
+  if RP and (EL<>-1) then Left:=EL;
+  if Wid and Win32PlatformIsUnicode then begin
+    if ds then begin
+      SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
+      Opanel.Visible:=true; Logo.Visible:=true; MFullscreen.Visible:=true;
+      MCompact.Visible:=true; MPFullscreen.Visible:=true; MMaxW.Visible:=true;
+      Hide_menu.Visible:=true; Mctrl.Visible:=true; MPCtrl.Visible:=true; MPMaxW.Visible:=true;
+      MPCompact.Visible:=true; BFullscreen.Enabled:=true; BCompact.Enabled:=true;
+      if RS then begin
+        if EH=0 then EH:=defaultHeight;
+        Height:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+EH;
+        Top:=(screen.Height-Height) Div 2;
+      end
+      else begin
+        Top:=(screen.Height-defaultHeight) Div 2 -60;
+        Height:=defaultHeight;
+      end;
+    end
+    else Top:=(screen.Height-Height) Div 2;
+    if RP and (ET<>-1) then Top:=ET;
+  end
   else Top:=screen.WorkAreaHeight-Height;
+
   if RFScr then begin
-      OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
+    OPanel.PopupMenu:=nil; IPanel.PopupMenu:=nil;
   end
   else begin
-      OPanel.PopupMenu:=MPopup; IPanel.PopupMenu:=MPopup;
+    OPanel.PopupMenu:=MPopup; IPanel.PopupMenu:=MPopup;
   end;
   Init_MOpenDrive; Init_MLanguage; 
   with Logo do ControlStyle:=ControlStyle+[csOpaque];
@@ -949,14 +970,7 @@ if MVideos.Visible then begin
                        SendCommand('osd_show_property_text "'+OSD_Gamma_Prompt+':${gamma}"');
                      end;
           Ord('D'):   HandleCommand('frame_drop');
-          Ord('F'):   if Wid then begin
-                        case ViewMode of
-                          0: SetFullscreen(not(MFullscreen.Checked));
-                          1: SimulateKey(MCompact);
-                          2: SimulateKey(MMaxW);
-                        end;
-                      end
-                      else HandleCommand('vo_fullscreen');
+
           Ord('C'):   if MSubtitle.Count>0 then HandleCommand('sub_alignment');
           Ord('T'):   if (MSubtitle.Count>0) and (not Ass) then begin
                         HandleCommand('sub_pos +2'); subpos:=subpos+2;
@@ -991,33 +1005,7 @@ if MVideos.Visible then begin
           Ord('Q'):   NextVideo;
           Ord('P'):   if (DemuxerName='mpegts') or (DemuxerName='lavf') or (DemuxerName='lavfpref') then
                         HandleCommand('step_property switch_program');
-          VK_F2:      if Wid then MKaspectClick(nil);
-          VK_F3:      if Wid then Hide_menuClick(nil);
-          VK_F4:      if Wid then MctrlClick(nil);
-          VK_F5:      if Wid then begin
-                        MCompact.Checked:=not MCompact.Checked;
-                        BCompact.Down:=MCompact.Checked;
-                        MPCompact.Checked:=MCompact.Checked;
-                        if MCompact.Checked and MMaxW.Checked then begin
-                          MMaxW.Checked:=false; MPMaxW.Checked:=false;
-                          SetWindowLong(Handle,GWL_STYLE,(WS_THICKFRAME OR WS_VISIBLE) AND (NOT WS_DLGFRAME));
-                          SetBounds(Left-3,Top-3,Width+6,Height+6); MFunc:=1;
-                          MWheelControl.Items[1].Checked:=true;
-                          MPWheelControl.Items[1].Checked:=true;
-                        end
-                        else
-                          SetCompact(MCompact.Checked);
-                      end;
-             VK_TAB:  if Wid then MPCtrlClick(nil);
-          VK_RETURN:  if Wid then begin
-                        if MCompact.Checked then begin
-                          SetCompact(false); BCompact.Down:=false;
-                          MCompact.Checked:=false; MPCompact.Checked:=false;
-                        end;
-                        MMaxW.Checked:=not MMaxW.Checked;
-                        SetCompact(MMaxW.Checked);
-                        MPMaxW.Checked:=MMaxW.Checked;
-                      end;
+
         end;
       end;
     end;
@@ -1107,6 +1095,45 @@ else begin
         VK_MEDIA_STOP:  if BStop.Enabled then BStopClick(nil);
         VK_MEDIA_PREV_TRACK,VK_F7: if BPrev.Enabled then BPrevNextClick(BPrev);
         VK_MEDIA_NEXT_TRACK,VK_F8: if BNext.Enabled then BPrevNextClick(BNext);
+      end;
+      if MVideos.Visible or ds then begin
+        case Key of
+          Ord('F'):   if Wid then begin
+                        case ViewMode of
+                          0: SetFullscreen(not(MFullscreen.Checked));
+                          1: SimulateKey(MCompact);
+                          2: SimulateKey(MMaxW);
+                        end;
+                      end
+                      else HandleCommand('vo_fullscreen');
+          VK_F2:      if Wid then MKaspectClick(nil);
+          VK_F3:      if Wid then Hide_menuClick(nil);
+          VK_F4:      if Wid then MctrlClick(nil);
+          VK_F5:      if Wid then begin
+                        MCompact.Checked:=not MCompact.Checked;
+                        BCompact.Down:=MCompact.Checked;
+                        MPCompact.Checked:=MCompact.Checked;
+                        if MCompact.Checked and MMaxW.Checked then begin
+                          MMaxW.Checked:=false; MPMaxW.Checked:=false;
+                          SetWindowLong(Handle,GWL_STYLE,(WS_THICKFRAME OR WS_VISIBLE) AND (NOT WS_DLGFRAME));
+                          SetBounds(Left-3,Top-3,Width+6,Height+6); MFunc:=1;
+                          MWheelControl.Items[1].Checked:=true;
+                          MPWheelControl.Items[1].Checked:=true;
+                        end
+                        else
+                          SetCompact(MCompact.Checked);
+                      end;
+             VK_TAB:  if Wid then MPCtrlClick(nil);
+          VK_RETURN:  if Wid then begin
+                        if MCompact.Checked then begin
+                          SetCompact(false); BCompact.Down:=false;
+                          MCompact.Checked:=false; MPCompact.Checked:=false;
+                        end;
+                        MMaxW.Checked:=not MMaxW.Checked;
+                        SetCompact(MMaxW.Checked);
+                        MPMaxW.Checked:=MMaxW.Checked;
+                      end;
+        end;
       end;
     end;
   end;
@@ -1211,6 +1238,9 @@ end;
 procedure TMainForm.FixSize;
 var SX,SY,NX,NY:integer;
 begin
+  if (not FirstShow) and (LastHaveVideo or ds) then begin
+    EW:=Opanel.Width; EH:=Opanel.Height;
+  end;
   if (NativeWidth=0) OR (NativeHeight=0)
     OR (not MKaspect.Checked) then exit;
 
@@ -1266,8 +1296,8 @@ end;
 
 procedure TMainForm.SetupPlay;
 begin
-  Logo.Visible:=false;
-  LEscape.Visible:=(not HaveVideo) AND MFullscreen.Checked;
+  Logo.Visible:=not HaveVideo;
+  LEscape.Visible:=Logo.Visible AND MFullscreen.Checked;
   IPanel.Visible:=HaveVideo and Wid;
   Seeking:=false; LTime.Cursor:=crHandPoint;
   LTime.Font.Size:=14; LTime.Top:=-2;
@@ -2299,15 +2329,16 @@ begin
     case MFunc of
       0: SetVolumeRel(WheelDelta DIV 40);
       1: if MFullscreen.Checked then SetVolumeRel(WheelDelta DIV 40)
-         else if (NativeWidth<>0) then begin
+         else if ds or (NativeWidth<>0) then begin
            if ((OPanel.Width=Screen.Width) AND (Height=Screen.WorkAreaHeight+Width-OPanel.Width) AND (WheelDelta>0)) OR
-              ((Height=Constraints.MinWidth*NativeHeight DIV NativeWidth) AND (WheelDelta<0)) OR
               MFullscreen.Checked then exit;
+           if ds then begin if Height=Constraints.MinWidth then exit; end
+           else if (Height=Constraints.MinWidth*NativeHeight DIV NativeWidth) AND (WheelDelta<0) then exit;
            if WindowState=wsMaximized then
              SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_MAXIMIZE));
            i:=Width; j:=Height; WheelRolled:=true;
            Height:=j+WheelDelta DIV 2; if j<>0 then Width:=Height*i DIV j;
-           if Width=Constraints.MinWidth then Height:=Constraints.MinWidth*NativeHeight DIV NativeWidth;
+           if (not ds) and (Width=Constraints.MinWidth) then Height:=Constraints.MinWidth*NativeHeight DIV NativeWidth;
            Left:=Left-(Width-i) DIV 2; Top:=Top-(Height-j) DIV 2;
            if Left<((OPanel.Width-Width) DIV 2) then Left:=(OPanel.Width-Width) DIV 2;
            if Top<((OPanel.Width-Width) DIV 2) then Top:=(OPanel.Width-Width) DIV 2;
@@ -2678,15 +2709,15 @@ end;
 procedure TMainForm.UpdateMenuEV(Mode:boolean);
 begin
   MVideos.Visible:=Mode; MSub.Visible:=Mode; MPWheelControl.Visible:=Mode;
-  N12.Visible:=Mode and Wid; MPFullscreen.Visible:=Mode; N3.Visible:=Mode;
+  N12.Visible:=Mode and Wid; MPFullscreen.Visible:=(Mode and Wid) or ds; N3.Visible:=Mode;
   MPExpand.Visible:=Mode; OSDMenu.Visible:=Mode; MWheelControl.Visible:=Mode and Wid;
-  MOSD.Visible:=Mode; MFullscreen.Visible:=Mode and Wid; MSCS.Visible:=Mode and Wid;
+  MOSD.Visible:=Mode; MFullscreen.Visible:=(Mode and Wid) or ds; MSCS.Visible:=Mode and Wid;
   N35.Visible:=Mode and Wid; MSizeAny.Visible:=Mode and Wid; MSize50.Visible:=Mode and Wid;
   MSize200.Visible:=Mode and Wid; MSize100.Visible:=Mode and Wid;
-  MCompact.Visible:=Mode and Wid; Hide_menu.Visible:=Mode and Wid;
-  Mctrl.Visible:=Mode and Wid; MKaspect.Visible:=Mode and Wid;
-  MPCtrl.Visible:=Mode; MPCompact.Visible:=Mode; MPQuit.Visible:=Mode;
-  MMaxW.Visible:=Mode and Wid; MPMaxW.Visible:=Mode;
+  MCompact.Visible:=(Mode and Wid) or ds; Hide_menu.Visible:=(Mode and Wid) or ds;
+  Mctrl.Visible:=(Mode and Wid) or ds; MKaspect.Visible:=Mode and Wid;
+  MPCtrl.Visible:=(Mode and Wid) or ds; MPCompact.Visible:=(Mode and Wid) or ds;
+  MMaxW.Visible:=(Mode and Wid) or ds; MPMaxW.Visible:=(Mode and Wid) or ds;
 
   BFullscreen.Enabled:=Mode and Wid; BCompact.Enabled:=Mode and Wid;
 end;

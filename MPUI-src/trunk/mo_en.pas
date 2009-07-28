@@ -252,7 +252,9 @@ begin
     TAudio.Caption:='Audio';
     TSub.Caption:='Subtitle';
     CSP.Caption:='Click video to pause';
+    CRS.Caption:='start MPUI with last size';
     CTime.Caption:='Display OS time in status bar';
+    CRP.Caption:='start MPUI with last postion';
     LAudioOut.Caption:='Sound output driver';
       CAudioOut.Items[0]:='(don''t decode sound)';
       CAudioOut.Items[1]:='(don''t play sound)';
@@ -361,6 +363,7 @@ begin
     TFdel.Caption:='Delete';
     TFSet.Caption:='Associate';
     TOther.Caption:='Other';
+    CDs.Caption:='Always show video interface';
     RHK.Caption:='Reset HotKey';
     HK.Columns[0].Caption:='HotKey';
     HK.Columns[1].Caption:='Action';
