@@ -2157,6 +2157,8 @@ begin
     end;
     exit;
   end;
+  // check Failed to set property (hidden from log)
+  if (len>22) and (Copy(Line,1,22)='Failed to set property') then exit;
   // check Failed to get value of property (hidden from log)
   if (len>31) and (Copy(Line,1,31)='Failed to get value of property') then begin
     if Copy(Line,34,8)='contrast' then begin
