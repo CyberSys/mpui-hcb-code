@@ -26,7 +26,6 @@ uses Windows,Locale,Main,Options;
 procedure Activate;
 begin
   with MainForm do begin
-    LOCstr_Title:=UTF8Decode('MPlayer pro Windows');
     BFullscreen.Hint:=UTF8Decode('Celá obrazovka');
     OSDMenu.Caption:=UTF8Decode('Nastavit OSD Mód');
       MNoOSD.Caption:=UTF8Decode('Žádný OSD');

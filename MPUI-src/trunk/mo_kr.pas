@@ -26,7 +26,6 @@ uses Windows, Locale, Main, Options, plist, info;
 procedure Activate;
 begin
   with MainForm do begin
-    LOCstr_Title:=UTF8Decode('MPlayer');
       LOCstr_Status_Opening:=UTF8Decode('여는 중 ...');
       LOCstr_Status_Closing:=UTF8Decode('닫는 중 ...');
       LOCstr_Status_Playing:=UTF8Decode('재생');

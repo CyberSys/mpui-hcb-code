@@ -28,7 +28,6 @@ procedure Activate;
 begin
   with MainForm do
   begin
-    LOCstr_Title := UTF8Decode('MPlayer for Windows');
     BFullscreen.Hint := UTF8Decode('Зміна режиму: На повний екран');
     LOCstr_Status_Opening:=UTF8Decode('Відкриття ...');  //додано
     LOCstr_Status_Closing:=UTF8Decode('Закриття ...');  //додано

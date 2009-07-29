@@ -857,6 +857,7 @@ object MainForm: TMainForm
       Top = 0
       Width = 357
       Height = 4
+      Align = alClient
       BevelOuter = bvNone
       Color = 1052688
       ParentBackground = False

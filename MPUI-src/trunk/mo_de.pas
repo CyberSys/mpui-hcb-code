@@ -25,7 +25,6 @@ uses Windows,Locale,Main,Options,plist,Info;
 procedure Activate;
 begin
   with MainForm do begin
-    LOCstr_Title:=UTF8Decode('MPlayer für Windows');
       LOCstr_Status_Opening:=UTF8Decode('Öffne ...');
       LOCstr_Status_Closing:=UTF8Decode('Schließe ...');
       LOCstr_Status_Playing:=UTF8Decode('Wiedergabe');

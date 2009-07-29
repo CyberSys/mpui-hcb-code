@@ -25,7 +25,6 @@ uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
 procedure Activate;
 begin
   with MainForm do begin
-    LOCstr_Title:=UTF8Decode('MPlayer for Windows');
       LOCstr_Status_Opening:=UTF8Decode('正在開啟 ...');
       LOCstr_Status_Closing:=UTF8Decode('正在關閉 ...');
       LOCstr_Status_Playing:=UTF8Decode('播放中');

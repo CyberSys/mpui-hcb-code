@@ -533,16 +533,19 @@ begin
     subcode:='CP'+IntToStr(i);
   end; }
   UpdateVolSlider;
-  if Wid and Win32PlatformIsUnicode and ds and RS then Width:=Width-OPanel.Width+EW;
+  if Wid and Win32PlatformIsUnicode and ds then begin
+    SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
+    Opanel.Visible:=true; Logo.Visible:=true; MFullscreen.Visible:=true;
+    MCompact.Visible:=true; MPFullscreen.Visible:=true; MMaxW.Visible:=true;
+    Hide_menu.Visible:=true; Mctrl.Visible:=true; MPCtrl.Visible:=true; MPMaxW.Visible:=true;
+    MPCompact.Visible:=true; BFullscreen.Enabled:=true; BCompact.Enabled:=true;
+    if EW=0 then EW:=OPanel.Width;
+    if RS then Width:=Width-OPanel.Width+EW;
+  end;
   Left:=(screen.Width-Width) DIV 2;
   if RP and (EL<>-1) then Left:=EL;
   if Wid and Win32PlatformIsUnicode then begin
     if ds then begin
-      SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
-      Opanel.Visible:=true; Logo.Visible:=true; MFullscreen.Visible:=true;
-      MCompact.Visible:=true; MPFullscreen.Visible:=true; MMaxW.Visible:=true;
-      Hide_menu.Visible:=true; Mctrl.Visible:=true; MPCtrl.Visible:=true; MPMaxW.Visible:=true;
-      MPCompact.Visible:=true; BFullscreen.Enabled:=true; BCompact.Enabled:=true;
       if RS then begin
         if EH=0 then EH:=defaultHeight;
         Height:=MWC+MenuBar.Height+CPanel.Height+Width-OPanel.Width+EH;
@@ -1241,8 +1244,12 @@ begin
   if (not FirstShow) and (LastHaveVideo or ds) then begin
     EW:=Opanel.Width; EH:=Opanel.Height;
   end;
+
   if (NativeWidth=0) OR (NativeHeight=0)
-    OR (not MKaspect.Checked) then exit;
+    OR (not MKaspect.Checked) then begin
+    IPanel.Align:=alClient; exit;
+  end
+  else IPanel.Align:=alNone;
 
   SX:=OPanel.Width; SY:=OPanel.Height;
   NY:=SY; NX:=NativeWidth*SY DIV NativeHeight;
@@ -1528,9 +1535,7 @@ end;
 
 procedure TMainForm.MCloseClick(Sender: TObject);
 begin
-  MediaURL:=''; DisplayURL:='';
-  Stop;
-  BPlay.Enabled:=false;
+  CloseMedia
 end;
 
 procedure TMainForm.MSpeedClick(Sender: TObject);
@@ -2136,7 +2141,7 @@ end;
 procedure TMainForm.NextFile(Direction:integer; ExitState:TPlaybackState);
 var Index:integer;
 begin
-  //ForceStop;
+  ForceStop;
   Index:=Playlist.GetNext(ExitState,Direction);
   if Index<0 then begin
     if AutoQuit then Close;
@@ -2200,7 +2205,7 @@ end;
 
 procedure TMainForm.BStopClick(Sender: TObject);
 begin
-  BMute.Enabled:=false; CBHSA:=0;
+  CBHSA:=0;
   SetLastPos;
   Stop;
   //Playlist.GetNext(psSkipped,0);
@@ -2267,7 +2272,7 @@ procedure TMainForm.UpdateCaption;
 begin
   if length(DisplayURL)<>0
     then Caption:=DisplayURL+' - '+LOCstr_Title
-    else Caption:='MPUI-hcb '+LOCstr_Title;
+    else Caption:=LOCstr_Title;
 end;
 
 
@@ -2530,7 +2535,7 @@ begin
     OldX:=p.X; OldY:=p.Y;
   end;
 
-  if (not Running) then exit;
+  if not Running then exit;
   if IPanel.Width<1 then IPanel.Width:=1;
   if IPanel.Height<1 then IPanel.Height:=1;
   i:=(OY-IPanel.Top)*100 DIV IPanel.Height;
@@ -2855,8 +2860,6 @@ end;
 procedure TMainForm.MKaspectClick(Sender: TObject);
 begin
   MKaspect.Checked:=not MKaspect.Checked;
-  if MKaspect.Checked then IPanel.Align:=alNone
-  else IPanel.Align:=alClient;
   FixSize;
 end;
 

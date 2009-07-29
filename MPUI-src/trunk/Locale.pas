@@ -187,14 +187,14 @@ begin
       end;
     end;
   end;
-  TntApplication.Title:='MPUI-hcb '+LOCstr_Title;
+  TntApplication.Title:=LOCstr_Title;
   MainForm.UpdateCaption;
 end;
 
 begin
   SetLength(Locales,0);
   CurrentLocale:=NoLocale;
-  LOCstr_Title:='MPlayer for Windows';
+  LOCstr_Title:='MPUI-hcb';
   LOCstr_OpenURL_Caption:='URL';
   LOCstr_OpenURL_Prompt:='URL?';
   LOCstr_AutoLocale:='auto';

@@ -125,13 +125,13 @@ Locale=1033
 CodePage=1252
 [Version Info Keys]
 CompanyName=
-FileDescription=[MPUI-hcb] Windows frontend for MPlayer
+FileDescription=MPUI-hcb (A windows frontend for MPlayer)
 FileVersion=1.1.10.33
 InternalName=MPUI-hcb
 LegalCopyright=(C) 2006 - 2009 Huang chen bin
 LegalTrademarks=
 OriginalFilename=MPUI.dpr
-ProductName=MPUI-hcb: a Windows frontend for MPlayer
+ProductName=MPUI-hcb
 ProductVersion=1.1
 Comments=
 [HistoryLists\hlUnitAliases]

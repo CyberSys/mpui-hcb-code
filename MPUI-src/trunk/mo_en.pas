@@ -25,7 +25,6 @@ uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
 procedure Activate;
 begin
   with MainForm do begin
-    LOCstr_Title:='MPlayer for Windows';
       LOCstr_Status_Opening:='Opening ...';
       LOCstr_Status_Closing:='Closing ...';
       LOCstr_Status_Playing:='Playing';

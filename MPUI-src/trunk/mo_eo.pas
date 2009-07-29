@@ -26,7 +26,6 @@ uses Windows,Locale,Main,Options,plist,Info;
 procedure Activate;
 begin
   with MainForm do begin
-    LOCstr_Title:=UTF8Decode('MPlayer por Vindozo');
       LOCstr_Status_Opening:=UTF8Decode('malfermi ...');
       LOCstr_Status_Closing:=UTF8Decode('fermi ...');
       LOCstr_Status_Playing:=UTF8Decode('ludigo');

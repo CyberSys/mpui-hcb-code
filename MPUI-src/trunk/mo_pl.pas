@@ -30,7 +30,6 @@ uses Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
 procedure Activate;
 begin
   with MainForm do begin
-    LOCstr_Title:=UTF8Decode('MPlayer dla Windows');
       LOCstr_Status_Opening:=UTF8Decode('Otwieranie...');
       LOCstr_Status_Closing:=UTF8Decode('Zamykanie...');
       LOCstr_Status_Playing:=UTF8Decode('Odtwarzanie');

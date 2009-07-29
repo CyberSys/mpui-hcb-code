@@ -26,7 +26,6 @@ uses Windows,Locale,Main,Options,plist;
 procedure Activate;
 begin
   with MainForm do begin
-    LOCstr_Title:=UTF8Decode('MPlayer Windowsra');
       LOCstr_Status_Opening:=UTF8Decode('Megnyitás ...');
       LOCstr_Status_Closing:=UTF8Decode('Bezárás ...');
       LOCstr_Status_Playing:=UTF8Decode('Lejátszás');

@@ -787,7 +787,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 1
       end
       object CSPDIF: TTntCheckBox
@@ -1070,7 +1070,7 @@ object OptionsForm: TOptionsForm
         Width = 274
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 15
         OnChange = FontChange
       end
@@ -1095,7 +1095,7 @@ object OptionsForm: TOptionsForm
         Width = 274
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 17
         OnChange = FontChange
       end
@@ -2424,9 +2424,9 @@ object OptionsForm: TOptionsForm
         TabOrder = 2
       end
       object TFSet: TTntButton
-        Left = 47
+        Left = 3
         Top = 311
-        Width = 75
+        Width = 164
         Height = 25
         Anchors = [akLeft, akBottom]
         Caption = 'Associate'
