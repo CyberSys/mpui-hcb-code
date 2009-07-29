@@ -1106,7 +1106,6 @@ begin
     else Command.Text:=History[HistoryPos];
     Command.SelStart:=Command.GetTextLen;
   end;
-  if Key=VK_F12 then Close;
 end;
 
 procedure TOptionsForm.TabChange(Sender: TObject);
