@@ -939,7 +939,7 @@ begin
 '                    ║  ╱◥████◣ ╭⌒╮  MPUI       ║'^M^J+
 '    ╭= = = = = = = ┤ ︱田︱田田| ╰--------------   ├= = = = = = = ╮'^M^J+
 '    ║               ║ ╬=╬=╬=╬=╬=╬=╬=╬=╬=╬=╬=╬=╬=╬=╬  ║               ║'^M^J+
-'    ║               ║ http://mpui-hcb.sf.net          ║               ║'^M^J+
+'    ║               ║ http://mpui-hcb.sf.net         ║               ║'^M^J+
 '    ║              ╰= = = = = = = = = = = = = = = = ╯              ║'^M^J+
 '    ║                                    zｚＺ ^﹋  ﹏               ║'^M^J+
 '   ╱◥███◣^^╪   携起手来,共创美好未来      ●●╮                  ║'^M^J+
