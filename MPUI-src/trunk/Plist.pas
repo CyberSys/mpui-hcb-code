@@ -959,7 +959,7 @@ begin
     end;
   end
   else exit;
-  ForceStop;
+  //ForceStop;
   MainForm.UpdateParams;
   if (CurPlay>-1) and (CurPlay<Playlist.Count) then Playlist.Data[CurPlay].State:=psSkipped;
   MainForm.BPrev.Enabled:=(Index>0);

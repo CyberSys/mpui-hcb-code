@@ -22,6 +22,7 @@ uses Windows, TntWindows, SysUtils, TntSysUtils, TntSystem, Classes, Forms, Menu
      Controls,Graphics, Dialogs, MultiMon, ShlObj, TntClasses;
 
 const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
+const PauseCMD:array[0..1]of WideString=('pause','frame_step');
 const PauseInfo:array[0..1]of WideString=('=  PAUSE  =','= 暂停 =');
 const CacheFill:array[0..4]of WideString=('Cache fill:','缓存填充:','缓冲填充:','緩存填充:','緩沖填充:');
 const GenIndex:array[0..2]of WideString=('Generating Index:','正在生成索引:','正在生成索引:');
@@ -1120,8 +1121,9 @@ begin
   if FirstChance then begin
     SendCommand('quit');
     FirstChance:=false;
-  end
-  else
+    if WaitForSingleObject(ClientProcess,1000)<>WAIT_TIMEOUT then exit;
+  end;
+  //else
     Terminate;
 end;
 
@@ -1167,7 +1169,8 @@ procedure SendCommand(Command:String);
 var Dummy:cardinal;
 begin
   if (not Running) OR (not Win32PlatformIsUnicode) then exit;
-  if Status=sPaused then Command:='pausing_keep '+Command+#10
+  if (Status=sPaused) and (CheckInfo(PauseCMD,Command)>-1) then
+    Command:='pausing_keep '+Command+#10
   else Command:=Command+#10;
   WriteFile(WritePipe,Command[1],length(Command),Dummy,nil);
 end;

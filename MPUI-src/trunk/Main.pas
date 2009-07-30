@@ -2141,7 +2141,7 @@ end;
 procedure TMainForm.NextFile(Direction:integer; ExitState:TPlaybackState);
 var Index:integer;
 begin
-  ForceStop;
+  //ForceStop;
   Index:=Playlist.GetNext(ExitState,Direction);
   if Index<0 then begin
     if AutoQuit then Close;

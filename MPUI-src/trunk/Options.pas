@@ -1085,7 +1085,7 @@ begin
   if not Running then exit;
   if Key=^M then begin
     TheLog.Lines.Add(WideString('> ')+Command.Text);
-    SendCommand(UTF8Encode(Command.Text));
+    SendCommand(UTF8Encode(Tnt_WideLowerCase(Command.Text)));
     History.Add(Command.Text);
     HistoryPos:=History.Count;
     Command.Text:='';
@@ -1098,13 +1098,13 @@ begin
   if (Key=VK_UP) AND (HistoryPos>0) then begin
     dec(HistoryPos);
     Command.Text:=History[HistoryPos];
-    Command.SelStart:=Command.GetTextLen;
+    Command.SelStart:=MaxInt;
   end;
   if (Key=VK_DOWN) AND (HistoryPos<History.Count) then begin
     inc(HistoryPos);
     if HistoryPos>=History.Count then Command.Text:=''
     else Command.Text:=History[HistoryPos];
-    Command.SelStart:=Command.GetTextLen;
+    Command.SelStart:=MaxInt;
   end;
 end;
 
