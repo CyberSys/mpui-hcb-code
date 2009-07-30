@@ -1169,7 +1169,7 @@ procedure SendCommand(Command:String);
 var Dummy:cardinal;
 begin
   if (not Running) OR (not Win32PlatformIsUnicode) then exit;
-  if (Status=sPaused) and (CheckInfo(PauseCMD,Command)>-1) then
+  if (Status=sPaused) and (CheckInfo(PauseCMD,Command)<0) then
     Command:='pausing_keep '+Command+#10
   else Command:=Command+#10;
   WriteFile(WritePipe,Command[1],length(Command),Dummy,nil);
