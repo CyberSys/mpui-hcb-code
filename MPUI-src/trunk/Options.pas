@@ -176,6 +176,7 @@ type
     TseekL: TTntLabel;
     Eseek: TTntEdit;
     TUnit: TTntLabel;
+    nmsgm: TTntCheckBox;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -397,6 +398,7 @@ begin
   Double.Checked:=dbbuf;
   CVolnorm.Checked:=Volnorm;
   nfconf.Checked:=nfc;
+  nmsgm.Checked:=nmsg;
   CSubcp.Text:=subcode;
   oML:=ML;
   RMplayer.Checked:=ML;
@@ -555,6 +557,10 @@ begin
 
   if nfc<>nfconf.Checked then begin
     nfc:=nfconf.Checked; changed:=true;
+  end;
+
+  if nmsg<>nmsgm.Checked then begin
+    nmsg:=nmsgm.Checked; changed:=true;
   end;
 
   if subcode<>CSubcp.Text then begin

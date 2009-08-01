@@ -282,6 +282,9 @@ begin
                             '内存. 所以不能用于显存很少的显卡.');
     CVolnorm.Caption:=UTF8Decode('标准化音量');
     CVolnorm.Hint:=UTF8Decode('最大化文件的音量而不失真');
+    nMsgM.Caption:=UTF8Decode('使用nomsgmodule选项');
+    nMsgM.Hint:=UTF8Decode('不在每条控制台信息前添加模块名称。对于那些不支持-nomsgmodule选项的Mplayer，'^M^J+
+                           '可以取消勾选此项以避免错误');
     nFconf.Caption:=UTF8Decode('使用nofontconfig选项');
     nFconf.Hint:=UTF8Decode('对于那些不支持-nofontconfig选项的Mplayer，可以'^M^J+
                             '取消勾选此项以避免错误');

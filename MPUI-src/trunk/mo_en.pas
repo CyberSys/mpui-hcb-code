@@ -297,6 +297,8 @@ begin
                  'storing two frames in memory';
     CVolnorm.Caption:='Normalize volume';
     CVolnorm.Hint:='Maximizes the volume without distorting the sound';
+    nMsgM.Caption:='Use nomsgmodule option';
+    nMsgM.Hint:='Don''t prepend module name in front of each console message';
     nFconf.Caption:='Use nofontconfig option';
     nFconf.Hint:='For mplayer without ''-nofontconfig'' option, you can'^M^J+
                  'uncheck this box to ensure mplayer can be runed';

@@ -135,7 +135,7 @@ var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
     IL,IT,EL,ET,EW,EH,InterW,InterH,NW,NH,OldX,OldY,Scale,LastScale:integer;
     MFunc,CBHSA,bri,briD,contr,contrD,hu,huD,sat,satD,gam,gamD:integer;
 var AudioOut,AudioDev,Postproc,Deinterlace,Aspect:integer;
-    ReIndex,SoftVol,RFScr,dbbuf,nfc,Firstrun,Volnorm,Dr:boolean;
+    ReIndex,SoftVol,RFScr,dbbuf,nfc,nmsg,Firstrun,Volnorm,Dr:boolean;
     Loadsrt,LoadVob,Loadsub,Expand,TotalTime,TTime:integer;
 var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
@@ -601,7 +601,7 @@ begin
   if ML then CmdLine:=EscapeParam(ExpandName(HomeDir,MplayerLocation))
   else CmdLine:=EscapeParam(HomeDir+'mplayer.exe');
   if not GUI then CmdLine:=CmdLine+' -nogui -noconsolecontrols';
-  CmdLine:=CmdLine+' -slave -identify -noquiet -nofs -nomsgmodule -term-osd-esc "[Fenny8248] "'
+  CmdLine:=CmdLine+' -slave -identify -noquiet -nofs -term-osd-esc "[Fenny8248] "'
           +' -hr-mp3-seek -subalign 1 -spualign 1 -sub-fuzziness 1 -subfont-autoscale 2'
           +' -subfont-osd-scale 4.8 -subfont-text-scale '+FloatToStr(FSize)
           +' -subfont-outline '+FloatToStr(Fol)+' -subfont-blur '+FloatToStr(FB);
@@ -616,6 +616,7 @@ begin
   else SetPriorityClass(GetCurrentProcess,ABOVE_NORMAL_PRIORITY_CLASS);
 
   if (not CurMonitor.Primary) and (MonitorID>0) then CmdLine:=CmdLine+' -adapter '+IntToStr(MonitorID);
+  if nmsg then CmdLine:=CmdLine+' -nomsgmodule';
   if UseUni then CmdLine:=CmdLine+' -msgcharset noconv';
   if Fd then CmdLine:=CmdLine+' -framedrop';
   if ni then CmdLine:=CmdLine+' -ni';
@@ -2372,6 +2373,6 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10;
-  lastP1:=''; lastFN:=''; ResetStreamInfo;
+  lastP1:=''; lastFN:=''; nmsg:=true; ResetStreamInfo;
 end.
 

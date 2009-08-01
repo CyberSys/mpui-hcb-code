@@ -283,6 +283,9 @@ begin
                             '沖方式兩倍的內存. 所以不能用于顯存很少的顯卡.');
     CVolnorm.Caption:=UTF8Decode('標準化音量');
     CVolnorm.Hint:=UTF8Decode('最大化文件的音量而不失真');
+    nMsgM.Caption:=UTF8Decode('使用nomsgmodule選項');
+    nMsgM.Hint:=UTF8Decode('不在每條控制臺信息前添加模塊名稱。對于那些不支持-nomsgmodule選項的Mplayer，'^M^J+
+                           '可以取消勾選此項以避免錯誤');
     nFconf.Caption:=UTF8Decode('使用nofontconfig選項');
     nFconf.Hint:=UTF8Decode('對于那些不支持-nofontconfig選項的Mplayer，可以'^M^J+
                             '取消勾選此項以避免錯誤');

@@ -67,6 +67,7 @@ begin
            Core.dbbuf:=ReadBool(SectionName,'Double',Core.dbbuf);
            Core.Volnorm:=ReadBool(SectionName,'Volnorm',Core.Volnorm);
            Core.nfc:=ReadBool(SectionName,'nofontconfig',Core.nfc);
+           Core.nmsg:=ReadBool(SectionName,'nomsgmodule',Core.nmsg);
            Core.subfont:=ReadString(SectionName,'Subfont',Core.subfont);
            if WideFileExists(subfont) then subfont:=GetLongPath(subfont);
            Core.osdfont:=ReadString(SectionName,'OSDfont',Core.osdfont);
@@ -213,6 +214,7 @@ begin
            WriteBool  (SectionName,'Double',Core.dbbuf);
            WriteBool  (SectionName,'Volnorm',Core.Volnorm);
            WriteBool  (SectionName,'nofontconfig',Core.nfc);
+           WriteBool  (SectionName,'nomsgmodule',Core.nmsg);
            WriteString  (SectionName,'Subcode',Core.subcode);
            if WideFileExists(subfont) then
              WriteString  (SectionName,'Subfont',WideExtractShortPathName(subfont))

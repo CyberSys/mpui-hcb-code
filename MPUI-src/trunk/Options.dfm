@@ -131,9 +131,9 @@ object OptionsForm: TOptionsForm
         Caption = 'S'
       end
       object CLanguage: TTntComboBox
-        Left = 263
+        Left = 120
         Top = 5
-        Width = 281
+        Width = 177
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -468,6 +468,17 @@ object OptionsForm: TOptionsForm
         Width = 49
         Height = 21
         TabOrder = 29
+      end
+      object nmsgm: TTntCheckBox
+        Left = 318
+        Top = 8
+        Width = 229
+        Height = 17
+        Anchors = [akTop, akRight]
+        Caption = 'Use nomsgmodule option'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 33
       end
     end
     object TVideo: TTntTabSheet
