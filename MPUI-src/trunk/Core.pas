@@ -789,7 +789,8 @@ begin
         end;
       end;
       if not WideFileExists(MediaURL) then begin
-       MainForm.LStatus.Caption:=''; exit;
+        MainForm.LStatus.Caption:=''; Status:=sNone;
+        exit;
       end;
     end;
   end;
