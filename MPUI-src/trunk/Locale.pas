@@ -33,6 +33,7 @@ var LOCstr_Title:WideString;
     LOCstr_OpenURL_Caption:WideString;
     LOCstr_OpenURL_Prompt:WideString;
     LOCstr_SetPW_Caption:WideString;
+    LOCstr_VolAsk_Caption:WideString;
     LOCstr_NoSuport_OS_Prompt:WideString;
     LOCstr_Win9x_Prompt:WideString;
     LOCstr_Check_Mplayer_Prompt:WideString;
@@ -219,6 +220,7 @@ begin
   LOCstr_InfoAudioChannels:='NCH';
   LOCstr_Status_Error:='Unable to play media (Click for more info)';
   LOCstr_SetPW_Caption:='Please input a password to decrypt the following Archive';
+  LOCstr_VolAsk_Caption:='Please select last volume';
   LOCstr_NoSuport_OS_Prompt:='not executing MPlayer: invalid Operating System version';
   LOCstr_Win9x_Prompt:='MPUI will not run properly on Win9x systems. Continue anyway?';
   LOCstr_Check_Mplayer_Prompt:='Please check MPlayer.exe location.';

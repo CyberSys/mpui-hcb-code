@@ -32,6 +32,7 @@ begin
       LOCstr_Status_Stopped:='Stopped';
       LOCstr_Status_Error:='Unable to play media (Click for more info)';
       LOCstr_SetPW_Caption:='Please enter password of following Archive';
+      LOCstr_VolAsk_Caption:='Please select last volume';
       LOCstr_NoSuport_OS_Prompt:='not executing MPlayer: invalid Operating System version';
       LOCstr_Win9x_Prompt:='MPUI will not run properly on Win9x systems. Continue anyway?';
       LOCstr_Check_Mplayer_Prompt:='Please check MPlayer.exe location.';

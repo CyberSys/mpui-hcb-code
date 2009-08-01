@@ -578,7 +578,7 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  ForceStop; ClearTmpFiles(TempDir); 
+  procArc:=false; ForceStop; ClearTmpFiles(TempDir);
 //  SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, ScreenSaverActive, nil, 0);
   Config.Save(HomeDir+DefaultFileName,1);
   UnLoadRarLibrary; UnLoadZipLibrary; UnLoad7zLibrary;
@@ -2243,7 +2243,7 @@ begin
   ETime:=false; CBHSA:=0; Firstrun:=true; HaveAudio:=false; HaveVideo:=false;
   DirHIdx:=0; DirHSub:=0; Vobfile:=''; substring:=''; MShowSub.Checked:=true;
   AudioID:=-1; SubID:=-1; VideoID:=-1; CID:=1; AID:=1; CDID:=1; Dreset:=false;
-  subcount:=0; Lastsubcount:=0; VobsubCount:=0;
+  subcount:=0; Lastsubcount:=0; VobsubCount:=0; procArc:=false;
   LastPos:=0; SecondPos:=-1; TotalTime:=0; Duration:='0:00:00';
   SeekBarSlider.Left:=0; UpdateSkipBar:=SkipBar.Visible;
   if AudioFile<>''then begin AudioFile:=''; MUloadAudio.Visible:=false; end;

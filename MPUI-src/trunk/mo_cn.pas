@@ -32,6 +32,7 @@ begin
       LOCstr_Status_Stopped:=UTF8Decode('停止');
       LOCstr_Status_Error:=UTF8Decode('不能播放该文件 (点击这里查看更多的信息)');
       LOCstr_SetPW_Caption:=UTF8Decode('请输入下列文档的正确解压密码');
+      LOCstr_VolAsk_Caption:=UTF8Decode('请选择下一个分卷');
       LOCstr_NoSuport_OS_Prompt:=UTF8Decode('不能运行MPlayer: 不支持的操作系统版本');
       LOCstr_Win9x_Prompt:=UTF8Decode('MPUI不能正常的运行在Win9x系统下。继续吗?');
       LOCstr_Check_Mplayer_Prompt:=UTF8Decode('请检查MPlayer.exe的位置是否正确');

@@ -112,8 +112,8 @@ var Win9xWarnLevel:TWin9xWarnLevel;
 var HomeDir,SystemDir,TempDir,AppdataDir:WideString;
 var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     ArcPW,TmpPW,DisplayURL,AudioFile,MaxLenLyricW:WideString;
-    Duration,LyricF,fass,HKS:String;
-    substring,afChain,Vobfile,ShotDir,LyricDir,LyricURL:wideString;
+    Duration,LyricF,fass,HKS,lastP1:String;
+    substring,afChain,Vobfile,ShotDir,LyricDir,LyricURL,lastFN:WideString;
     subfont,osdfont,Ccap,Acap,DemuxerName:WideString;
     MplayerLocation,WadspL,AsyncV,CacheV:widestring;
     MAspect,subcode,MaxLenLyricA,VideoOut:string;
@@ -141,7 +141,7 @@ var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
     LastPos,SecondPos,OSDLevel,MSecPos:integer;
 var Volume,MWC,CP,seekLen:integer;
-    ds,tEnd,Mute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
+    ds,tEnd,procArc,Mute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
     DTFormat:string;
     FormatSet:TFormatSettings;
     ExplicitStop,Rot,DefaultFontIndex:integer;
@@ -709,7 +709,7 @@ begin
   end;
 
   if Firstrun then begin
-    ClearTmpFiles(TempDir); Lyric.ClearLyric;
+    ClearTmpFiles(TempDir); Lyric.ClearLyric; procArc:=true;
 
     if WideFileExists(LyricURL) then begin //拖放的歌词或用户指定的歌词
       TmpURL:=WideExtractFileName(MediaURL);
@@ -2370,7 +2370,7 @@ begin
   LTextColor:=clWindowText; LBGColor:=clWindow; LHGColor:=$93; ClientProcess:=0;
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
-  NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10; 
-  ResetStreamInfo;
+  NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10;
+  lastP1:=''; lastFN:=''; ResetStreamInfo;
 end.
 

@@ -54,7 +54,7 @@ const
   SZ_CANCELLED = 2;
   SZ_DLLERROR = 3;
   FNAME_MAX32	= 512;
-
+  FA_DIREC		 = $10;
   FA_ENCRYPTED = $40;
 
 type
@@ -99,7 +99,6 @@ type
 
   TZipCommand                = function (const hWnd: HWND; szCmdLine: PChar; szOutput: PChar; dwSize: DWORD): Integer; stdcall;
 	TZipGetRunning             = function : BOOL; stdcall;
-  TZipCheckArchive           = function( szFilename : PChar; iMode : integer ) : BOOL; stdcall;
 	TZipOpenArchive            = function( hwnd : HWND; szFileName : PChar; dwMode : DWORD ) : HARC; stdcall;
 	TZipCloseArchive           = function( harc : HARC ) : integer; stdcall;
 	TZipFindFirst              = function( harc : HARC; szFilename : PChar; var lpSubInfo : TZipINDIVIDUALINFO ) : integer; stdcall;
@@ -107,11 +106,7 @@ type
   TZipGetAttribute           = function( harc : HARC ) : integer; stdcall;
   // Callback func should return FALSE to cancel the archiving process, else TRUE
   TZipCallbackProc           = function( hWnd : HWND; uMsg, nState : UINT; var ExInfo : TZipEXTRACTINGINFOEX ) : BOOL; stdcall;
-
-  TZipSetOwnerWindow         = function( hwnd : HWND ) : BOOL; stdcall;
-	TZipClearOwnerWindow       = function : BOOL; stdcall;
   TZipSetOwnerWindowEx       = function( hwnd : HWND; CallbackProc : TZipCallbackProc ) : BOOL; stdcall;
-	TZipKillOwnerWindowEx      = function( hwnd : HWND ) : BOOL; stdcall;
 	TZipSetUnicodeMode         = function( bUnicode : BOOL ) : BOOL; stdcall;
 
 procedure LoadZipLibrary;
@@ -152,16 +147,12 @@ var
   Is7zLoaded: integer =0;
   _ZipCommand              : TZipCommand              = nil;
   ZipGetRunning            : TZipGetRunning           = nil;
-  ZipCheckArchive          : TZipCheckArchive         = nil;
   ZipOpenArchive           : TZipOpenArchive          = nil;
   ZipCloseArchive          : TZipCloseArchive         = nil;
   ZipFindFirst             : TZipFindFirst            = nil;
   ZipFindNext              : TZipFindNext             = nil;
   ZipGetAttribute          : TZipGetAttribute         = nil;
-  ZipSetOwnerWindow        : TZipSetOwnerWindow       = nil;
-  ZipClearOwnerWindow      : TZipClearOwnerWindow     = nil;
   ZipSetOwnerWindowEx      : TZipSetOwnerWindowEx     = nil;
-  ZipKillOwnerWindowEx     : TZipKillOwnerWindowEx    = nil;
   ZipSetUnicodeMode        : TZipSetUnicodeMode       = nil;
 
 implementation
@@ -195,16 +186,12 @@ begin
   if IsZipLoaded<>0 then begin
     _ZipCommand             := GetProcAddress( IsZipLoaded, 'SevenZip' );
     ZipGetRunning           := GetProcAddress( IsZipLoaded, 'SevenZipGetRunning' );
-    ZipCheckArchive         := GetProcAddress( IsZipLoaded, 'SevenZipCheckArchive' );
     ZipOpenArchive          := GetProcAddress( IsZipLoaded, 'SevenZipOpenArchive' );
     ZipCloseArchive         := GetProcAddress( IsZipLoaded, 'SevenZipCloseArchive' );
     ZipFindFirst            := GetProcAddress( IsZipLoaded, 'SevenZipFindFirst' );
     ZipFindNext             := GetProcAddress( IsZipLoaded, 'SevenZipFindNext' );
     ZipGetAttribute         := GetProcAddress( IsZipLoaded, 'SevenZipGetAttribute' );
-    ZipSetOwnerWindow       := GetProcAddress( IsZipLoaded, 'SevenZipSetOwnerWindow' );
-    ZipClearOwnerWindow     := GetProcAddress( IsZipLoaded, 'SevenZipClearOwnerWindow' );
     ZipSetOwnerWindowEx     := GetProcAddress( IsZipLoaded, 'SevenZipSetOwnerWindowEx' );
-    ZipKillOwnerWindowEx    := GetProcAddress( IsZipLoaded, 'SevenZipKillOwnerWindowEx' );
     ZipSetUnicodeMode       := GetProcAddress( IsZipLoaded, 'SevenZipSetUnicodeMode' );
   end;
 end;
@@ -217,10 +204,15 @@ begin
   end;
 end;
 
+function UnZIPCallback(hWnd:HWND; uMsg,nState:UINT; var ExInfo:TZipEXTRACTINGINFOEX):BOOL; stdcall;
+begin
+  Result:=procArc;
+end;
+
 function ZipCommand(hWnd:HWND; CommandLine:string; var CommandOutput:string; MaxCommandOutputLen:integer=32768):integer;
 begin
   SetLength(CommandOutput,MaxCommandOutputLen);
-  Result:=_ZipCommand(hWnd,PChar(CommandLine),PChar(CommandOutput),MaxCommandOutputLen-1);
+  Result:=_ZipCommand(hWnd,PChar(CommandLine),PChar(CommandOutput),MaxCommandOutputLen);
   CommandOutput:=string(PChar(CommandOutput));
 end;
 
@@ -268,7 +260,7 @@ end;
 
 function AddZipMovies(ArcName,PW:widestring; Add:boolean):integer;
 var hArc:integer; fileInfo:TZipINDIVIDUALINFO; k,i:widestring;
-    Entry:TPlaylistEntry; First:boolean;
+    Entry:TPlaylistEntry;
 begin
   Result:=0;
   if ZipGetRunning then begin
@@ -279,16 +271,14 @@ begin
     hArc:=ZipOpenArchive(0,PChar(UTF8Encode(ArcName)),0);
     if hArc=0 then begin Result:=-1; exit; end;
     if ZipFindFirst(hArc,'*',fileInfo)=0 then begin
-      k:=WideExtractFileName(ArcName); TmpPW:=PW; First:=true;
-      repeat
-        if CheckInfo(MediaType,Tnt_WideLowerCase(WideExtractFileExt(UTF8Decode(fileInfo.szFilename))))>ZipTypeCount then begin
+      k:=WideExtractFileName(ArcName); TmpPW:=PW;
+      //fileinfo.szAttribute[4]='G' 而不是'-'或#0时，文件是加密的
+      if ((ZipGetAttribute(hArc) and FA_ENCRYPTED)=FA_ENCRYPTED) and (PW='') then
+        WideInputQuery(LOCstr_SetPW_Caption,k,TmpPW);
+      repeat  //fileinfo.szAttribute[0]='-' 是目录
+        if ((ZipGetAttribute(hArc) and FA_DIREC)<>FA_DIREC) and
+          (CheckInfo(MediaType,Tnt_WideLowerCase(WideExtractFileExt(UTF8Decode(fileInfo.szFilename))))>ZipTypeCount) then begin
           inc(Result);
-          if First then begin
-            First:=false; //fileinfo.szAttribute[4]='G' 而不是'-'或#0时，文件是加密的
-            if ((ZipGetAttribute(hArc) and FA_ENCRYPTED)=FA_ENCRYPTED) and (PW='') then
-              WideInputQuery(LOCstr_SetPW_Caption,k,TmpPW);
-          end;
-
           if Add then begin
             i:=UTF8Decode(fileInfo.szFilename)+' <-- '+k;
             if playlist.FindItem('',i)<0 then begin
@@ -340,7 +330,7 @@ end;
 procedure ExtractZipMovie(ArcName,MovieName,PW:widestring);
 begin       
   ZipSetUnicodeMode(true);
-  ZipExtractArchive(0,UTF8Encode(ArcName),UTF8Encode(MovieName),false,UTF8Encode(PW),true,TempDir,false,nil);
+  ZipExtractArchive(0,UTF8Encode(ArcName),UTF8Encode(MovieName),false,UTF8Encode(PW),true,TempDir,false,UnZIPCallback);
 end;
 
 procedure Extract7zMovie(ArcName,MovieName,PW:widestring);
@@ -374,7 +364,7 @@ begin
       end;
       repeat
         if FName=Tnt_WideLowerCase(WideExtractFileName(UTF8Decode(fileInfo.szFilename))) then begin
-          if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,nil)<>0 then
+          if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,UnZIPCallback)<>0 then
             Break
           else begin
             LyricURL:=TempDir+UTF8Decode(fileInfo.szFilename);
@@ -466,7 +456,7 @@ begin
         if i>ZipTypeCount then begin
           if i<SubTypeCount-1 then begin
             FName:=TempDir+UTF8Decode(fileInfo.szFilename);
-            if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,nil)<>0 then
+            if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,UnZIPCallback)<>0 then
               Break
             else begin
               if (not IsWideStringMappableToAnsi(FName)) or (pos(',',FName)>0) then FName:=WideExtractShortPathName(FName);
@@ -482,7 +472,7 @@ begin
             if (DirHIdx+DirHSub=0) OR (HaveIdx+HaveSub=2) then begin
               FName:=WideExtractFileName(MediaURL);
               FName:=TempDir+copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL)));
-              if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,nil)<>0 then
+              if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,UnZIPCallback)<>0 then
                 Break
               else begin
                 if WideCopyFile(TempDir+UTF8Decode(fileInfo.szFilename),FName+FExt,false) then
@@ -494,7 +484,7 @@ begin
               if ((HaveIdx+DirHSub=2) and (FExt='.idx')) OR
                  ((DirHIdx+HaveSub=2) and (FExt='.sub')) then begin
                 FName:=copy(MediaURL,1,length(MediaURL)-length(WideExtractFileExt(MediaURL)));
-                if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,nil)<>0 then
+                if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,UnZIPCallback)<>0 then
                   Break
                 else begin
                   if WideCopyFile(TempDir+UTF8Decode(fileInfo.szFilename),FName+FExt,false) then
