@@ -195,13 +195,11 @@ function AddMovies(ArcName,PW:widestring; Add:boolean; ArcType:WideString):integ
 procedure ExtractMovie(ArcName,MovieName,PW,ArcType:WideString);
 procedure ExtractLyric(ArcName,PW,ArcType:WideString; Mode:integer);
 function ExtractSub(ArcName,PW,ArcType:WideString):WideString;
-procedure Terminate;
+procedure TerminateMP;
 procedure SendCommand(Command:String);
 procedure SendVolumeChangeCommand(Vol:integer);
 procedure ResetStreamInfo;
 function ExpandName(const BasePath, FileName:WideString):WideString;
-procedure HandleInputLine(Line:String);
-procedure HandleIDLine(ID:string; Content:WideString);
 
 implementation
 uses Main,config,plist,Info,UnRAR,Equalizer,Locale,Options,SevenZip;
@@ -225,6 +223,9 @@ var ClientWaitThread:TClientWaitThread;
     ExitCode:DWORD;
     LastLine:string;
     LineRepeatCount:integer;
+
+procedure HandleInputLine(Line:string); forward;
+procedure HandleIDLine(ID:string; Content:WideString); forward;
 
 function ExpandName(const BasePath, FileName:WideString):WideString;
 begin
@@ -1077,15 +1078,34 @@ begin
 end;
 
 procedure TProcessor.Process;
-var LastEOL,EOL,Len:integer; S:String;
+var LastEOL,EOL,Len,sLen:integer; s:String;
 begin
   Len:=length(Data);
   LastEOL:=0;
   for EOL:=1 to Len do
     if (EOL>LastEOL) AND (Data[EOL] in [#13,#10]) then begin
-     // HandleInputLine(Copy(Data,LastEOL+1,EOL-(LastEOL+1)));
-      S:=Copy(Data,LastEOL+1,EOL-(LastEOL+1));
-      PostMessage(MainForm.Handle,$0402,GlobalAddAtom(@S[1]),Length(S));
+      sLen:=EOL-(LastEOL+1);
+      if sLen>0 then begin
+        s:=Copy(Data,LastEOL+1,sLen);
+       //suppress repetitive lines
+        if s=LastLine then begin
+          inc(LineRepeatCount);
+          if LineRepeatCount=20 then begin
+            OptionsForm.AddLine('(last message repeated '+IntToStr(LineRepeatCount)+' times)');
+            ExplicitStop:=0; Status:=sOpening;
+            if FirstChance then begin
+              SendCommand('quit'); FirstChance:=false;
+              if WaitForSingleObject(ClientProcess,1000)=WAIT_TIMEOUT then TerminateMP;
+            end;
+          end;
+        end
+        else begin
+          if LineRepeatCount>0 then
+            OptionsForm.AddLine('(last message repeated '+IntToStr(LineRepeatCount)+' times)');
+          LineRepeatCount:=0; LastLine:=s;
+          HandleInputLine(s);
+        end;
+      end;
       LastEOL:=EOL;
       if (LastEOL<Len) AND (Data[LastEOL+1]=#10) then inc(LastEOL);
     end;
@@ -1097,10 +1117,10 @@ const BufSize=1024;
 var Buffer:array[0..BufSize]of char;
     BytesRead:cardinal;
 begin
-  Data:='';
+  Data:=''; LastLine:=''; LineRepeatCount:=0;
   repeat
     BytesRead:=0;
-    if not ReadFile(hPipe,Buffer[0],BufSize,BytesRead,nil) then break;
+    if Processor.Terminated or (not ReadFile(hPipe,Buffer[0],BufSize,BytesRead,nil)) then break;
     Buffer[BytesRead]:=#0;
     Data:=Data+Buffer;
     Synchronize(Process);
@@ -1125,10 +1145,10 @@ begin
     if WaitForSingleObject(ClientProcess,1000)<>WAIT_TIMEOUT then exit;
   end;
   //else
-    Terminate;
+    TerminateMP;
 end;
 
-procedure Terminate;
+procedure TerminateMP;
 begin
   if not Running then exit;
   TerminateProcess(ClientProcess,cardinal(-1));
@@ -1143,7 +1163,7 @@ begin
     FirstChance:=false;
     if WaitForSingleObject(ClientProcess,1000)<>WAIT_TIMEOUT then exit;
   end;
-  Terminate;
+  TerminateMP;
 end;
 
 procedure CloseMedia;
@@ -1163,7 +1183,7 @@ begin
     FirstChance:=false;
     if WaitForSingleObject(ClientProcess,1000)<>WAIT_TIMEOUT then exit;
   end;
-  Terminate;
+  TerminateMP;
 end;
 
 procedure SendCommand(Command:String);
@@ -2225,15 +2245,6 @@ begin
     if HaveChapters then TotalTime:=UpdateLen;
     exit;
   end;
-  //suppress repetitive lines
-  if (len>0) AND (Line=LastLine) then begin
-    inc(LineRepeatCount);
-    exit;
-  end;
-  if LineRepeatCount>0 then
-    OptionsForm.AddLine('(last message repeated '+IntToStr(LineRepeatCount)+' times)');
-  LastLine:=Line;
-  LineRepeatCount:=0;
   // add line to log and check for special patterns
   if UseUni then OptionsForm.AddLine(UTF8Decode(Line))
   else OptionsForm.AddLine(Line);

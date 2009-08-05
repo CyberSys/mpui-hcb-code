@@ -1472,8 +1472,8 @@ object MainForm: TMainForm
       end
       object MOpenDrive: TTntMenuItem
         Caption = 'Open drive'
-        Enabled = False
         ImageIndex = 2
+        Visible = False
       end
       object N33: TTntMenuItem
         Caption = '-'

@@ -460,7 +460,6 @@ type
     procedure UpdateMenuCheck;
     procedure CreateParams(var Params: TCreateParams); override;
     Procedure PassMsg(var msg: Tmessage); message $0401;
-    Procedure HandleLog(var msg: Tmessage); message $0402;
   end;
 
   PDDEnumCallbackEx=function(lpGuid:PGUID; lpDriverDescription,lpDriverName:PChar; lpContext:pointer; hm:HMONITOR):LongBool; stdcall;
@@ -748,15 +747,6 @@ procedure TMainForm.CreateParams(var Params: TCreateParams);
 begin
   inherited CreateParams(Params);
   Params.WinClassName:='fengying';
-end;
-
-procedure TMainForm.HandleLog(var msg:TMessage);
-var t:String;
-begin
-  SetLength(t,msg.LParam);
-  GlobalGetAtomName(msg.WParam,@t[1],msg.LParam+1);
-  GlobalDeleteAtom(msg.WParam);
-  HandleInputLine(t);
 end;
 
 procedure TMainForm.PassMsg(var msg:Tmessage);
@@ -1231,8 +1221,7 @@ begin
       and (GetTickCount>=HideMouseAt) then SetMousV(false);
     ///////////////////// }
     //无论鼠标为何种形状，当鼠标不是隐藏状态时都会去执行鼠标隐藏。当鼠标隐藏时不会执行拖曳字幕功能
-    if (MouseMode=0) and (OPanel.Cursor<>-1) and (IPanel.Cursor<>-1)
-      and (TickCount>=HideMouseAt) then SetMouseV(false);
+    if (MouseMode=0) and (IPanel.Cursor<>-1) and (TickCount>=HideMouseAt) then SetMouseV(false);
     ///////////////////
   end
   else if CT and (Status in [sNone,sStopped]) then LTime.Caption:=FormatDateTime(DTFormat,Now,FormatSet);
@@ -1811,9 +1800,9 @@ begin
           if MDrive=Tnt_WideLowerCase(Caption) then NoAccess:=2;
         end;
         MOpenDrive.Add(Item);
-        MOpenDrive.Enabled:=true;
       end;
     end;
+  if MOpenDrive.Count>0 then MOpenDrive.Visible:=true;
 end;
 
 procedure TMainForm.MOpenDriveClick(Sender: TObject);
@@ -2145,7 +2134,7 @@ begin
   Index:=Playlist.GetNext(ExitState,Direction);
   if Index<0 then begin
     if AutoQuit then Close;
-    if not Win32PlatformIsUnicode then Terminate else Stop;
+    if not Win32PlatformIsUnicode then TerminateMP else Stop;
     exit;
   end;
   Playlist.NowPlaying(Index);
@@ -2543,7 +2532,7 @@ begin
   if (MouseMode=0) and ((p.X<>OldX) or (p.Y<>OldY)) then begin
     OldX:=p.X; OldY:=p.Y;    //Hide Cursor
     if Dnav and (Sender=IPanel) then SendCommand('set_mouse_pos '+IntToStr(X*NativeWidth div IPanel.Width)+' '+IntToStr(Y*NativeHeight div IPanel.Height));
-    if (abs(i-SubPos)<=10) and (MSubtitle.Count>0) then begin
+    if (MSubtitle.Count>0) and (not Ass) and (abs(i-SubPos)<=10) then begin
       IPanel.Cursor:=crHandPoint; OPanel.Cursor:=crHandPoint;
       HideMouseAt:=GetTickCount+2000;
     end
@@ -2559,7 +2548,7 @@ begin
       if ass then SendCommand('sub_scale '+FloatToStr(FSize/3.2)+' 1')
       else SendCommand('sub_scale '+FloatToStr(FSize)+' 1');
     end
-    else if not Ass then begin       //Move Subtitle
+    else begin       //Move Subtitle
       SubPos:=i;
       if SubPos<0 then SubPos:=0; if SubPos>100 then SubPos:=100;
       SendCommand('sub_pos '+IntToStr(SubPos)+' 1');

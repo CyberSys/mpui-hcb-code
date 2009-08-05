@@ -774,6 +774,7 @@ begin
   RS:=CRS.Checked;
   SP:=CSP.Checked;
   CT:=CTime.Checked;
+  if not (CT or Running) then MainForm.LTime.Caption:='';
   seekLen:=StrToIntdef(Eseek.Text,10);
   vsync:=CVSync.Checked;
   UseekC:=CUseekC.Checked;
