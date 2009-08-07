@@ -1990,8 +1990,10 @@ begin
       L:=FS_PX; T:=FS_PY; W:=FS_SX; H:=FS_SY; 
     end
     else begin
-      L:=Left; W:=Width; T:=Top-MWC-MenuBar.Height+OPanel.Top;
-      H:=MWC+MenuBar.Height+OPanel.Height+CPanel.Height+Width-OPanel.Width;
+      L:=Left; W:=Width; T:=Top-(MWC+MenuBar.Height-OPanel.Top);
+      if not Mctrl.Checked then H:=Height+MWC+MenuBar.Height-OPanel.Top
+      else if not Hide_menu.Checked then H:=Height+MWC+MenuBar.Height-OPanel.Top+CPanel.Height
+      else H:=Height+MWC+MenuBar.Height+CPanel.Height;
 
       if L<0 then L:=0; if T<0 then T:=0;
       if W>Screen.Width then W:=Screen.Width;
