@@ -299,6 +299,7 @@ type
     N36: TTntMenuItem;
     MFClear: TTntMenuItem;
     N37: TTntMenuItem;
+    Imagery: TImageList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -1221,7 +1222,8 @@ begin
       and (GetTickCount>=HideMouseAt) then SetMousV(false);
     ///////////////////// }
     //无论鼠标为何种形状，当鼠标不是隐藏状态时都会去执行鼠标隐藏。当鼠标隐藏时不会执行拖曳字幕功能
-    if (MouseMode=0) and (IPanel.Cursor<>-1) and (TickCount>=HideMouseAt) then SetMouseV(false);
+    if (MouseMode=0) and (SecondPos>0) and (IPanel.Cursor<>-1)
+      and (TickCount>=HideMouseAt) then SetMouseV(false);
     ///////////////////
   end
   else if CT and (Status in [sNone,sStopped]) then LTime.Caption:=FormatDateTime(DTFormat,Now,FormatSet);
@@ -1414,7 +1416,7 @@ var Key:word; Shift:TShiftState;
 begin
   Shift:=[];
   if Sender=MRnMenu then Key:=186  //;
-  else if Sender=MRmMenu then Key:=81 //g
+  else if Sender=MRmMenu then Key:=71 //g
   else if Sender=MSubScale0 then begin Key:=187; Shift:=[ssCtrl]; end //-_
   else if Sender=MSubScale1 then begin Key:=189; Shift:=[ssCtrl]; end //+=
   else Key:=(Sender as TComponent).Tag; OptionsForm.OldKeyToHotKey(Shift,Key);
@@ -1890,7 +1892,7 @@ begin
 end;
 
 procedure TMainForm.SetFullscreen(Mode:boolean);
-var PX,PY,SX,SY:integer;// Pivot:TPoint; 
+var PX,PY,SX,SY:integer;
 begin
   MFullscreen.Checked:=Mode; BFullscreen.Down:=Mode;
   MPFullscreen.Checked:=Mode;
@@ -1913,8 +1915,6 @@ begin
     CPanel.Visible:=false; MenuBar.Visible:=false;
     mctrl.Checked:=true; hide_menu.Checked:=true;
     MPCtrl.Checked:=false;
-   // Pivot:=OPanel.ClientToScreen(Point(0,0));
-  //  PX:=FS_PX-Pivot.X; PY:=FS_PY-Pivot.Y;
     PX:=(OPanel.Width-Width) DIV 2;
     PY:=OPanel.Height-Height-PX;
     SX:=Screen.Width+Width-OPanel.Width;
@@ -1944,7 +1944,7 @@ begin
 end;
 
 procedure TMainForm.SetCompact(Mode:boolean);
-var MenuAndCaption,L,T,W,H:integer;
+var L,T,W,H:integer;
 begin
   if MFullscreen.Checked AND not(ControlledResize) then begin
     ControlledResize:=True; SetFullscreen(False);
@@ -1962,16 +1962,8 @@ begin
       W:=Screen.Width+Width-OPanel.Width; H:=Screen.WorkAreaHeight+Width-OPanel.Width;
     end
     else begin
-      if MenuBar.Visible then
-        MenuAndCaption:=MWC+MenuBar.Height
-      else
-        MenuAndCaption:=MWC;
-      L:=Left+IPanel.Left; T:=Top+MenuAndCaption+IPanel.Top;
-      W:=Width-2*IPanel.Left;
-      if CPanel.Visible then
-        H:=Height-MenuAndCaption-2*IPanel.Top-CPanel.Height
-      else
-        H:=Height-MenuAndCaption-2*IPanel.Top;
+      L:=Left+IPanel.Left; T:=Top+MWC+OPanel.Top+IPanel.Top;
+      W:=Width-2*IPanel.Left; H:=IPanel.Height+Width-OPanel.Width;
 
       if (W<Constraints.MinWidth) and (NativeWidth<>0) then begin
         W:=Constraints.MinWidth;
@@ -1998,15 +1990,8 @@ begin
       L:=FS_PX; T:=FS_PY; W:=FS_SX; H:=FS_SY; 
     end
     else begin
-      if MenuBar.Visible then
-        MenuAndCaption:=MWC
-      else
-        MenuAndCaption:=MWC+MenuBar.Height;
-      L:=Left; W:=Width; T:=Top-MenuAndCaption;
-      
-      if not Mctrl.Checked then H:=Height+MenuAndCaption
-      else if not Hide_menu.Checked then H:=Height+MenuAndCaption+CPanel.Height
-      else H:=Height+MWC+MenuBar.Height+CPanel.Height;
+      L:=Left; W:=Width; T:=Top-MWC-MenuBar.Height+OPanel.Top;
+      H:=MWC+MenuBar.Height+OPanel.Height+CPanel.Height+Width-OPanel.Width;
 
       if L<0 then L:=0; if T<0 then T:=0;
       if W>Screen.Width then W:=Screen.Width;
@@ -2260,7 +2245,7 @@ end;
 procedure TMainForm.UpdateCaption;
 begin
   if length(DisplayURL)<>0
-    then Caption:=DisplayURL+' - '+LOCstr_Title
+    then Caption:=DisplayURL
     else Caption:=LOCstr_Title;
 end;
 
@@ -2531,7 +2516,7 @@ begin
 
   if (MouseMode=0) and ((p.X<>OldX) or (p.Y<>OldY)) then begin
     OldX:=p.X; OldY:=p.Y;    //Hide Cursor
-    if Dnav and (Sender=IPanel) then SendCommand('set_mouse_pos '+IntToStr(X*NativeWidth div IPanel.Width)+' '+IntToStr(Y*NativeHeight div IPanel.Height));
+    if Dnav and (Sender=IPanel) and (SecondPos=0) then SendCommand('set_mouse_pos '+IntToStr(X*NativeWidth div IPanel.Width)+' '+IntToStr(Y*NativeHeight div IPanel.Height));
     if (MSubtitle.Count>0) and (not Ass) and (abs(i-SubPos)<=10) then begin
       IPanel.Cursor:=crHandPoint; OPanel.Cursor:=crHandPoint;
       HideMouseAt:=GetTickCount+2000;

@@ -19,7 +19,7 @@
 program MPUI;
 
 uses
-  Windows, Graphics, Forms, TntForms, TntSysUtils, TntSystem,
+  Windows, Forms, TntForms, TntSysUtils, TntSystem,
   Main in 'Main.pas' {MainForm},
   Core in 'Core.pas',
   Locale in 'Locale.pas',
@@ -59,7 +59,7 @@ uses
 {$R XPStyle.res}
 var hAppMutex:Thandle; Mf:hWnd; s:WideString; t:string; i,PCount:integer;
 begin
-  Graphics.DefFontData.Name:='Tahoma'; Init;
+  Init;
   hAppMutex:=CreateMutex(nil,false,PAnsiChar('fenny8248'));
   if oneM and (WaitForSingleObject(hAppMutex,10)=WAIT_TIMEOUT) then begin
     if Win32PlatformIsUnicode then Mf:=FindWindow('fengying.UnicodeClass',nil)

@@ -19,14 +19,14 @@
 unit Core;
 interface
 uses Windows, TntWindows, SysUtils, TntSysUtils, TntSystem, Classes, Forms, Menus,TntMenus, 
-     Controls,Graphics, Dialogs, MultiMon, ShlObj, TntClasses;
+     Controls, Graphics, Dialogs, MultiMon, ShlObj, TntClasses;
 
 const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
 const PauseCMD:array[0..1]of WideString=('pause','frame_step');
 const PauseInfo:array[0..1]of WideString=('=  PAUSE  =','= ÔÝÍ£ =');
 const CacheFill:array[0..4]of WideString=('Cache fill:','»º´æÌî³ä:','»º³åÌî³ä:','¾´æÌî³ä:','¾›_Ìî³ä:');
 const GenIndex:array[0..2]of WideString=('Generating Index:','ÕýÔÚÉú³ÉË÷Òý:','ÕýÔÚÉú³ÉË÷Òý:');
-const defaultHeight=340; RFileMax=10; DefaultOSDLevel=0;
+const defaultHeight=340; RFileMax=10; DefaultOSDLevel=0; stopTimeout=1000;
 const szdllCount=2;
 const szdll:array[0..szdllCount]of WideString=('7zxa.dll','7za.dll','7z.dll');
 
@@ -551,7 +551,7 @@ begin
   if Win32PlatformIsUnicode then Win9xWarnLevel:=wlAccept
   else Win9xWarnLevel:=wlWarn;
 
-  MWC:=GetSystemMetrics(SM_CYCAPTION);
+  MWC:=Windows.GetSystemMetrics(SM_CYCAPTION);
   GetLocaleFormatSettings(GetUserDefaultLCID,FormatSet);
   if Pos('ddd',FormatSet.ShortDateFormat)=0 then FormatSet.ShortDateFormat:='ddd '+FormatSet.ShortDateFormat;
   if Pos('ddd',FormatSet.LongDateFormat)=0 then FormatSet.LongDateFormat:='dddd '+FormatSet.LongDateFormat;
@@ -1078,34 +1078,13 @@ begin
 end;
 
 procedure TProcessor.Process;
-var LastEOL,EOL,Len,sLen:integer; s:String;
+var LastEOL,EOL,Len:integer;
 begin
   Len:=length(Data);
   LastEOL:=0;
   for EOL:=1 to Len do
     if (EOL>LastEOL) AND (Data[EOL] in [#13,#10]) then begin
-      sLen:=EOL-(LastEOL+1);
-      if sLen>0 then begin
-        s:=Copy(Data,LastEOL+1,sLen);
-       //suppress repetitive lines
-        if s=LastLine then begin
-          inc(LineRepeatCount);
-          if LineRepeatCount=20 then begin
-            OptionsForm.AddLine('(last message repeated '+IntToStr(LineRepeatCount)+' times)');
-            ExplicitStop:=0; Status:=sOpening;
-            if FirstChance then begin
-              SendCommand('quit'); FirstChance:=false;
-              if WaitForSingleObject(ClientProcess,1000)=WAIT_TIMEOUT then TerminateMP;
-            end;
-          end;
-        end
-        else begin
-          if LineRepeatCount>0 then
-            OptionsForm.AddLine('(last message repeated '+IntToStr(LineRepeatCount)+' times)');
-          LineRepeatCount:=0; LastLine:=s;
-          HandleInputLine(s);
-        end;
-      end;
+      HandleInputLine(Copy(Data,LastEOL+1,EOL-(LastEOL+1)));
       LastEOL:=EOL;
       if (LastEOL<Len) AND (Data[LastEOL+1]=#10) then inc(LastEOL);
     end;
@@ -1142,7 +1121,7 @@ begin
   if FirstChance then begin
     SendCommand('quit');
     FirstChance:=false;
-    if WaitForSingleObject(ClientProcess,1000)<>WAIT_TIMEOUT then exit;
+    if WaitForSingleObject(ClientProcess,stopTimeout)<>WAIT_TIMEOUT then exit;
   end;
   //else
     TerminateMP;
@@ -1161,7 +1140,7 @@ begin
   if FirstChance then begin
     SendCommand('quit');
     FirstChance:=false;
-    if WaitForSingleObject(ClientProcess,1000)<>WAIT_TIMEOUT then exit;
+    if WaitForSingleObject(ClientProcess,stopTimeout)<>WAIT_TIMEOUT then exit;
   end;
   TerminateMP;
 end;
@@ -1181,7 +1160,7 @@ begin
   if FirstChance then begin
     SendCommand('quit');
     FirstChance:=false;
-    if WaitForSingleObject(ClientProcess,1000)<>WAIT_TIMEOUT then exit;
+    if WaitForSingleObject(ClientProcess,stopTimeout)<>WAIT_TIMEOUT then exit;
   end;
   TerminateMP;
 end;
@@ -1189,7 +1168,7 @@ end;
 procedure SendCommand(Command:String);
 var Dummy:cardinal;
 begin
-  if (not Running) OR (not Win32PlatformIsUnicode) then exit;
+  if (not Running) OR (WritePipe=0) OR (not Win32PlatformIsUnicode) then exit;
   if (Status=sPaused) and (CheckInfo(PauseCMD,Command)<0) then
     Command:='pausing_keep '+Command+#10
   else Command:=Command+#10;
@@ -2245,6 +2224,23 @@ begin
     if HaveChapters then TotalTime:=UpdateLen;
     exit;
   end;
+  //suppress repetitive lines
+  if (len>0) AND (Line=LastLine) then begin
+    inc(LineRepeatCount);
+    if LineRepeatCount=20 then begin
+      OptionsForm.AddLine('(last message repeated '+IntToStr(LineRepeatCount)+' times)');
+      ExplicitStop:=0; Status:=sOpening;
+      if FirstChance then begin
+        SendCommand('quit'); FirstChance:=false;
+        if WaitForSingleObject(ClientProcess,stopTimeout)=WAIT_TIMEOUT then TerminateMP;
+      end;
+    end;
+    exit;
+  end;
+  if LineRepeatCount>0 then
+    OptionsForm.AddLine('(last message repeated '+IntToStr(LineRepeatCount)+' times)');
+  LastLine:=Line; LineRepeatCount:=0;
+
   // add line to log and check for special patterns
   if UseUni then OptionsForm.AddLine(UTF8Decode(Line))
   else OptionsForm.AddLine(Line);

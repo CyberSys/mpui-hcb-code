@@ -1450,6 +1450,7 @@ object MainForm: TMainForm
     end
   end
   object MainMenu: TTntMainMenu
+    Images = Imagery
     Left = 200
     Top = 56
     object OMFile: TTntMenuItem
@@ -2683,5 +2684,9 @@ object MainForm: TMainForm
       ImageIndex = 4
       OnClick = MQuitClick
     end
+  end
+  object Imagery: TImageList
+    Left = 312
+    Top = 8
   end
 end
