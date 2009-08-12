@@ -1222,7 +1222,7 @@ begin
       and (GetTickCount>=HideMouseAt) then SetMousV(false);
     ///////////////////// }
     //无论鼠标为何种形状，当鼠标不是隐藏状态时都会去执行鼠标隐藏。当鼠标隐藏时不会执行拖曳字幕功能
-    if (MouseMode=0) and (SecondPos>0) and (IPanel.Cursor<>-1)
+    if (MouseMode=0) and (not IsDMenu) and (IPanel.Cursor<>-1)
       and (TickCount>=HideMouseAt) then SetMouseV(false);
     ///////////////////
   end
@@ -1623,7 +1623,8 @@ end;
 procedure TMainForm.UpdateMRF;
 var t:TTntMenuItem;
 begin
-  if (MRfile.Count>2) and (MRFile.Items[2].Hint=MediaURL) then exit;
+  if (MRfile.Count>2) and (TTntMenuItem(MRFile.Items[2]).Hint=MediaURL) then exit;
+  if (Copy(MediaURL,1,12)=' -dvd-device') or (Copy(MediaURL,1,14)=' -cdrom-device') then exit;
   if MRFile.Count=(RFileMax+2) then MRFile.Delete(RFileMax+1);
   t:=TTntMenuItem.Create(MRFile);
   t.Caption:=DisplayURL; t.Hint:=MediaURL;
@@ -2219,7 +2220,7 @@ begin
   ETime:=false; CBHSA:=0; Firstrun:=true; HaveAudio:=false; HaveVideo:=false;
   DirHIdx:=0; DirHSub:=0; Vobfile:=''; substring:=''; MShowSub.Checked:=true;
   AudioID:=-1; SubID:=-1; VideoID:=-1; CID:=1; AID:=1; CDID:=1; Dreset:=false;
-  subcount:=0; Lastsubcount:=0; VobsubCount:=0; procArc:=false;
+  subcount:=0; Lastsubcount:=0; VobsubCount:=0; procArc:=false; IsDMenu:=false;
   LastPos:=0; SecondPos:=-1; TotalTime:=0; Duration:='0:00:00';
   SeekBarSlider.Left:=0; UpdateSkipBar:=SkipBar.Visible;
   if AudioFile<>''then begin AudioFile:=''; MUloadAudio.Visible:=false; end;
@@ -2238,7 +2239,7 @@ begin
   if AID>1 then begin
     if s<>'' then s:=Acap+IntToStr(AID)+'@'+s else s:=Acap+IntToStr(AID);
   end;
-  if s<>'' then LTime.Caption:='<'+s+'> '+LTime.Caption;
+  if s<>'' then LTime.Caption:='['+s+'] '+LTime.Caption;
   TntApplication.Title:=DisplayURL+' ['+LTime.Caption+']';
   if Mctrl.Checked then
     Caption:=TntApplication.Title+' - '+LOCstr_Title;
@@ -2418,7 +2419,7 @@ end;
 
 procedure TMainForm.DisplayDblClick(Sender: TObject);
 begin
-  if SP and Running and (not (Dnav and (SecondPos=0))) and (MouseMode>-1) then SendCommand('pause');
+  if SP and Running and (not (Dnav and IsDMenu)) and (MouseMode>-1) then SendCommand('pause');
   SimulateKey(MFullscreen);
 end;
 
@@ -2518,8 +2519,8 @@ begin
 
   if (MouseMode=0) and ((p.X<>OldX) or (p.Y<>OldY)) then begin
     OldX:=p.X; OldY:=p.Y;    //Hide Cursor
-    if Dnav and (Sender=IPanel) and (SecondPos=0) then SendCommand('set_mouse_pos '+IntToStr(X*NativeWidth div IPanel.Width)+' '+IntToStr(Y*NativeHeight div IPanel.Height));
-    if (MSubtitle.Count>0) and (not Ass) and (abs(i-SubPos)<=10) then begin
+    if Dnav and (Sender=IPanel) and IsDMenu then SendCommand('set_mouse_pos '+IntToStr(X*NativeWidth div IPanel.Width)+' '+IntToStr(Y*NativeHeight div IPanel.Height));
+    if (MSubtitle.Count>0) and (not Ass) and (not IsDMenu) and (abs(i-SubPos)<=10) then begin
       IPanel.Cursor:=crHandPoint; OPanel.Cursor:=crHandPoint;
       HideMouseAt:=GetTickCount+2000;
     end

@@ -121,12 +121,12 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     Wid,Dreset,UpdateSkipBar,Pri,HaveChapters,HaveMsg:boolean;
     CT,RP,RS,SP,AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
-    ControlledResize,ni,nobps,Dnav,lavf,UseekC,vsync:boolean;
+    ControlledResize,ni,nobps,Dnav,IsDMenu,lavf,UseekC,vsync:boolean;
     Flip,Mirror,Yuy2,Eq2,LastEq2,Dda,LastDda,Wadsp:boolean;
     WantFullscreen,WantCompact,AutoQuit,IsPause,IsDx:boolean;
 var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
     AudioID,MouseMode,SubPos,NoAccess:integer;
-    SubID,TID,CID,AID,VCDST,VCDET,CDID:integer;
+    SubID,TID,tmpTID,CID,AID,VCDST,VCDET,CDID:integer;
     subcount,Bp,Ep,CurrentLocale,afCount:integer;
     Lastsubcount,DirHIdx,DirHSub:integer;
     AudiochannelsID,CurLyric,NextLyric,LyricCount:integer;
@@ -915,7 +915,7 @@ begin
     end;
 
     if Firstrun then TID:=StrToIntDef(copy(DisplayURL,5,Pos(' <-- ',DisplayURL)-5),TID);
-    CmdLine:=CmdLine+IntToStr(TID);
+    CmdLine:=CmdLine+IntToStr(TID); tmpTID:=TID;
     if CID>1 then CmdLine:=CmdLine+' -chapter '+IntToStr(CID);
     if AID>1 then CmdLine:=CmdLine+' -dvdangle '+IntToStr(AID);
   end
@@ -1246,8 +1246,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           SubMenu_Add(MainForm.MSubtitle,i,SubID,MainForm.MSubtitleClick);
           VobsubCount:=i+1;
         end;
-        Result:=true;
       end;
+      Result:=true;
     end;
   end;
 
@@ -1265,8 +1265,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           VobsubCount:=i+1;
         end;
         SubMenu_SetNameLang(MainForm.MSubtitle,i,copy(s,p+6,MaxInt));
-        Result:=true;
       end;
+      Result:=true;
     end;
   end;
 
@@ -1302,8 +1302,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
             MainForm.MDVDT.Items[r].Add(t);
           end;
         end;
-        Result:=true;
       end;
+      Result:=true;
     end;
   end;
 
@@ -1334,8 +1334,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
                 SubMenu_Add(MainForm.MDVDT.Items[r].Items[0],k,1,MainForm.MDVDCClick);
             end;
           end;
-          Result:=true;
         end;
+        Result:=true;
       end;
     end;
   end;
@@ -1367,8 +1367,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
                 SubMenu_Add(MainForm.MDVDT.Items[r].Items[1],k,1,MainForm.MDVDAClick);
             end;
           end;
-          Result:=true;
         end;
+        Result:=true;
       end;
     end;
   end;
@@ -1387,8 +1387,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           r:=CheckMenu(MainForm.MDVDT,i);
           if r<0 then r:=SubMenu_Add(MainForm.MDVDT,i,TID,nil);
           MainForm.MDVDT.Items[r].Caption:=MainForm.MDVDT.Items[r].Caption+' ('+SecondsToTime(round(f))+')';
-          Result:=true;
         end;
+        Result:=true;
       end;
     end;
   end;
@@ -1434,35 +1434,43 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   function CheckDVDNavTL:boolean;
   var Entry:TPlaylistEntry;
   begin
+    Result:=false;
     if Dnav and (len>27) and (Copy(Line,1,27)='DVDNAV, switched to title: ') then begin
       Val(Copy(Line,28,MaxInt),i,r);
-      if (r=0) and (i<>TID) then begin
-        s:='DVD-'+IntToStr(i)+Copy(DisplayURL,Pos(' <-- ',DisplayURL),MaxInt);
-        i:=playlist.FindItem('',s);
-        if SecondPos=0 then begin
-          if i<0 then begin
-            Entry.State:=psNotPlayed; Entry.FullURL:=MediaURL;
-            Entry.DisplayURL:=s;
-            playlist.Add(Entry);
-            Playlist.Changed;
-            MainForm.UpdateParams;
-            MainForm.NextFile(1,psPlayed);
-          end
-          else begin
-            Playlist.SetState(CurPlay,psPlayed);
-            CurPlay:=i;
-            Playlist.NowPlaying(i);
-            MainForm.DoOpen(Playlist[i].FullURL,Playlist[i].DisplayURL);
-          end;
+      if r=0 then begin
+        if i<>TID then tmpTID:=i
+        else begin
+          Sendcommand('get_property chapter');
+          SendCommand('get_time_length');
         end;
-      end
-      else begin
-        Sendcommand('get_property chapter');
-        SendCommand('get_time_length');
+      end;
+      Result:=true; exit;
+    end;
+
+    if Dnav and (len>17) and (Copy(Line,1,17)='DVDNAV_TITLE_IS_M') then begin
+      s:=Copy(Line,18,MaxInt);
+      if s='ENU' then IsDMenu:=true
+      else if s='OVIE' then IsDMenu:=false;
+      if (not IsDMenu) and (SecondPos=0) and (tmpTID<>TID) then begin
+        s:='DVD-'+IntToStr(tmpTID)+Copy(DisplayURL,Pos(' <-- ',DisplayURL),MaxInt);
+        i:=playlist.FindItem('',s);
+        if i<0 then begin
+          Entry.State:=psNotPlayed; Entry.FullURL:=MediaURL;
+          Entry.DisplayURL:=s;
+          playlist.Add(Entry);
+          Playlist.Changed;
+          MainForm.UpdateParams;
+          MainForm.NextFile(1,psPlayed);
+        end
+        else begin
+          Playlist.SetState(CurPlay,psPlayed);
+          CurPlay:=i;
+          Playlist.NowPlaying(i);
+          MainForm.DoOpen(Playlist[i].FullURL,Playlist[i].DisplayURL);
+        end;
       end;
       Result:=true;
-    end
-    else Result:=false;
+    end;
   end;
 
   function CheckVCDT:boolean;
@@ -1471,19 +1479,17 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     Result:=false;
     if (len>19) and (Copy(Line,1,19)='ID_VCD_START_TRACK=') then begin
       Val(Copy(Line,20,9),i,r);
-      if (r=0) AND (i>=0) AND (i<8191) then begin
-        VCDST:=i;
-        Result:=true;
-      end;
+      if (r=0) AND (i>=0) AND (i<8191) then VCDST:=i;
+      Result:=true; exit;
     end;
 
     if (len>17) and (Copy(Line,1,17)='ID_VCD_END_TRACK=') then begin
       Val(Copy(Line,18,9),i,r);
       if (r=0) AND (i>=0) AND (i<8191) then begin
         for k:=VCDST to i-1 do
-        SubMenu_Add(MainForm.MVCDT,k,CDID,MainForm.MVCDTClick);
-        Result:=true;
+          SubMenu_Add(MainForm.MVCDT,k,CDID,MainForm.MVCDTClick);
       end;
+      Result:=true;
     end;
   end;
 
@@ -1492,11 +1498,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     Result:=false;
     if (len>12) and (Copy(Line,1,12)='ID_VIDEO_ID=') then begin
       Val(Copy(Line,13,9),i,r);
-      if (r=0) AND (i>=0) AND (i<8191) then begin
-        if CheckMenu(MainForm.MVideo,i)<0 then
-          SubMenu_Add(MainForm.MVideo,i,VideoID,MainForm.MVideoClick);
-        Result:=true;
-      end;
+      if (r=0) AND (i>=0) AND (i<8191) AND (CheckMenu(MainForm.MVideo,i)<0) then
+        SubMenu_Add(MainForm.MVideo,i,VideoID,MainForm.MVideoClick);
+      Result:=true;
     end;
   end;
 
@@ -1512,8 +1516,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
         if CheckMenu(MainForm.MVideo,i)<0 then
           SubMenu_Add(MainForm.MVideo,i,VideoID,MainForm.MVideoClick);
         SubMenu_SetNameLang(MainForm.MVideo,i,copy(s,p+6,MaxInt));
-        Result:=true;
       end;
+      Result:=true;
     end;
   end;
 
@@ -1522,11 +1526,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     Result:=false;
     if (len>12) and (Copy(Line,1,12)='ID_AUDIO_ID=') then begin
       Val(Copy(Line,13,9),i,r);
-      if (r=0) AND (i>=0) AND (i<8191) then begin
-        if CheckMenu(MainForm.MAudio,i)<0 then
-          SubMenu_Add(MainForm.MAudio,i,AudioID,MainForm.MAudioClick);
-        Result:=true;
-      end;
+      if (r=0) AND (i>=0) AND (i<8191) AND (CheckMenu(MainForm.MAudio,i)<0) then
+        SubMenu_Add(MainForm.MAudio,i,AudioID,MainForm.MAudioClick);
+      Result:=true;
     end;
   end;
 
@@ -1543,8 +1545,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
         if CheckMenu(MainForm.MAudio,i)<0 then
           SubMenu_Add(MainForm.MAudio,i,AudioID,MainForm.MAudioClick);
         SubMenu_SetNameLang(MainForm.MAudio,i,copy(s,p+6,MaxInt));
-        Result:=true;
       end;
+      Result:=true;
     end;
   end;
 
@@ -1558,8 +1560,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           SubMenu_Add(MainForm.MSubtitle,VobsubCount+i,SubID,MainForm.MSubtitleClick);
           IntersubCount:=i+1;
         end;
-        Result:=true;
       end;
+      Result:=true;
     end;
   end;
 
@@ -1578,8 +1580,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           IntersubCount:=i+1;
         end;
         SubMenu_SetNameLang(MainForm.MSubtitle,VobsubCount+i,copy(s,p+6,MaxInt));
-        Result:=true;
       end;
+      Result:=true;
     end;
   end;
 
@@ -1597,9 +1599,10 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
         else
           CurrentSubCount:=VobAndInterSubCount+i+1;
         SubMenu_Add(MainForm.MSubtitle,i+VobAndInterSubCount,SubID,MainForm.MSubtitleClick);
-        Result:=true;
       end;
+      Result:=true; exit;
     end;
+    
     if (len>21) and (Copy(Line,1,21)='ID_FILE_SUB_FILENAME=') then begin
       s:=copy(Line,22,MaxInt);
       SubMenu_SetNameLang(MainForm.MSubtitle,MainForm.MSubtitle.Count-1,s);
@@ -1616,6 +1619,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
              end;
            end;
       end;
+      Result:=true;
     end;
   end;
 
@@ -1645,7 +1649,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     end
     else begin //caption=startTime}
       if a=MainForm.MDVDT.Items[r].Items[0].Count-1 then begin
-        if (TTime>0) and (CID>1) then r:=TTime-TimeToSeconds(copy(s,i+1,8));
+        if TTime>0 then r:=TTime-TimeToSeconds(copy(s,i+1,8));
       end
       else begin
         k:=MainForm.MDVDT.Items[r].Items[0].Items[a+1].Caption;
@@ -1680,13 +1684,11 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     if Result then begin
       StreamInfo.FileFormat:=Widestring(Copy(Line,1,p-1));
       exit;
-     end;
+    end;
   //Chinese version
     p:=len-9;
     Result:=(p>0) AND (Copy(Line,p,10)='文件格式。') AND (Copy(Line,1,6)='检测到');
-    if Result then begin
-      StreamInfo.FileFormat:=Widestring(Copy(Line,7,p-7));
-    end;
+    if Result then StreamInfo.FileFormat:=Widestring(Copy(Line,7,p-7));
   end;
 
   function CheckDecoder:boolean;
@@ -1701,9 +1703,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           StreamInfo.Video.Decoder:=Widestring(Copy(Line,p+2,MaxInt))
         else if Copy(Line,9,4)='audi' then
           StreamInfo.Audio.Decoder:=Widestring(Copy(Line,p+2,MaxInt))
-          else Result:=false;
-        end;
-       exit;
+        else Result:=false;
+      end;
+      exit;
     end;
   //Chinese version
     Result:=(len>17) and (Copy(Line,1,4)='打开') AND (Copy(Line,7,11)='频解码器: [');
@@ -1715,9 +1717,9 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           StreamInfo.Video.Decoder:=Widestring(Copy(Line,p+2,MaxInt))
         else if Copy(Line,5,2)='音' then
           StreamInfo.Audio.Decoder:=Widestring(Copy(Line,p+2,MaxInt))
-          else Result:=false;
-        end;
+        else Result:=false;
       end;
+    end;
   end;
 
   function CheckCodec:boolean;
@@ -1729,11 +1731,11 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       Result:=(p>23);
       if Result then begin
         if Copy(Line,10,4)='vide' then
-          StreamInfo.Video.Codec:=Widestring(Copy(Line,p+2,length(Line)-p-2));
-        if Copy(Line,10,4)='audi' then
+          StreamInfo.Video.Codec:=Widestring(Copy(Line,p+2,length(Line)-p-2))
+        else if Copy(Line,10,4)='audi' then
           StreamInfo.Audio.Codec:=Widestring(Copy(Line,p+2,length(Line)-p-2))
-          else Result:=false;
-        end;
+        else Result:=false;
+      end;
       exit;
     end;
   //Chinese version
@@ -1743,10 +1745,10 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       Result:=(p>19);
       if Result then begin
         if Copy(Line,5,2)='视' then
-          StreamInfo.Video.Codec:=Widestring(Copy(Line,p+2,length(Line)-p-2));
-        if Copy(Line,5,2)='音' then
+          StreamInfo.Video.Codec:=Widestring(Copy(Line,p+2,length(Line)-p-2))
+        else if Copy(Line,5,2)='音' then
           StreamInfo.Audio.Codec:=Widestring(Copy(Line,p+2,length(Line)-p-2))
-          else Result:=false;
+        else Result:=false;
        end;
      end;
   end;
@@ -1754,7 +1756,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   function CheckICYInfo:boolean;
   begin
     Result:=False;
-    if (len<10) or (Copy(Line,1,10)<>'ICY Info: ') then exit;
+    if (len<10) or (Copy(Line,1,10)<>'ICY Info: ') then exit
+    else Result:=true;
     P:=Pos('StreamTitle=''',Line); if P<10 then exit;
     Delete(Line,1,P+12);
     P:=Pos(''';',Line); if P<1 then exit;
@@ -2213,7 +2216,7 @@ begin
   end;
   //check time length
   if (len>11) and (Copy(Line,1,11)='ANS_LENGTH=') then begin
-    Val(Copy(Line,12,length(Line)),f,r);
+    Val(Copy(Line,12,MaxInt),f,r);
     if r=0 then begin
       TotalTime:=abs(round(f)); TTime:=TotalTime;
       Duration:=SecondsToTime(TotalTime);

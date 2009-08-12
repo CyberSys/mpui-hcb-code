@@ -174,7 +174,7 @@ begin
 end;
 
 procedure Save(FileName:WideString; Mode:integer);
-var INI:TMemIniFile; h:integer;
+var INI:TMemIniFile; h:integer; s:WideString;
 begin
   if NoAccess>0 then exit;
   if (NoAccess>0) or (not WideFileExists(FileName)) then
@@ -299,9 +299,10 @@ begin
            WriteInteger(SectionName,'seekLen',Core.seekLen);
            WriteBool   (SectionName,'UseUni',Core.UseUni);
            for h:=MainForm.MRFile.Count-1 downto 2 do begin
-             if WideFileExists(MainForm.MRFile.Items[h].Hint) then
-               WriteString(SectionName,'RF'+IntToStr(h-2),WideExtractShortPathName(MainForm.MRFile.Items[h].Hint))
-             else WriteString(SectionName,'RF'+IntToStr(h-2),MainForm.MRFile.Items[h].Hint);
+             s:=TTntMenuItem(MainForm.MRFile.Items[h]).Hint;
+             if WideFileExists(s) then
+               WriteString(SectionName,'RF'+IntToStr(h-2),WideExtractShortPathName(s))
+             else WriteString(SectionName,'RF'+IntToStr(h-2),s);
            end;
          end;
       2: begin
