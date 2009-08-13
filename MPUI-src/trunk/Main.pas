@@ -1466,8 +1466,8 @@ end;
 procedure TMainForm.MSizeClick(Sender: TObject);
 begin
   if MFullscreen.Checked then SimulateKey(MFullscreen)
-  else if (Sender as TMenuItem).Checked then exit;
-  (Sender as TMenuItem).Checked:=True;
+  else if (Sender as TTntMenuItem).Checked then exit;
+  (Sender as TTntMenuItem).Checked:=True;
   VideoSizeChanged; 
 end;
 
@@ -1481,8 +1481,8 @@ end;
 
 procedure TMainForm.MOSDClick(Sender: TObject);
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  OSDLevel:=(Sender as TMenuItem).Tag;
+  if (Sender as TTntMenuItem).Checked then exit;
+  OSDLevel:=(Sender as TTntMenuItem).Tag;
   case OSDLevel of
     0: SendCommand('osd_show_text "OSD: '+OSD_Disable_Prompt+'"');
     1: SendCommand('osd_show_text "OSD: '+OSD_Enable_Prompt+'"');
@@ -1495,8 +1495,8 @@ end;
 
 procedure TMainForm.ToggleAlwaysOnTop(Sender: TObject);
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  OnTop:=(Sender as TMenuItem).Tag;
+  if (Sender as TTntMenuItem).Checked then exit;
+  OnTop:=(Sender as TTntMenuItem).Tag;
   case OnTop of
     0:  begin
           if not MFullscreen.Checked then begin
@@ -1521,7 +1521,7 @@ begin
         end
         else SetWindowPos(Handle,HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
   end;
-  (Sender as TMenuItem).Checked:=true;
+  (Sender as TTntMenuItem).Checked:=true;
 end;
 
 procedure TMainForm.MCloseClick(Sender: TObject);
@@ -1531,8 +1531,8 @@ end;
 
 procedure TMainForm.MSpeedClick(Sender: TObject);
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  case (Sender as TMenuItem).Tag of
+  if (Sender as TTntMenuItem).Checked then exit;
+  case (Sender as TTntMenuItem).Tag of
     0: begin Speed:= 0.125; SendCommand('speed_set 0.125'); end;
     1: begin Speed:= 0.25; SendCommand('speed_set 0.25'); end;
     2: begin Speed:= 0.5; SendCommand('speed_set 0.5'); end;
@@ -1543,26 +1543,26 @@ begin
     7: SendCommand('speed_set '+FloatToStr(Speed));
   end;
   if not Win32PlatformIsUnicode then Restart;
-  (Sender as TMenuItem).Checked:=True;
+  (Sender as TTntMenuItem).Checked:=True;
 end;
 
 procedure TMainForm.MVideoClick(Sender: TObject);
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  VideoID:=(Sender as TMenuItem).Tag;
+  if (Sender as TTntMenuItem).Checked then exit;
+  VideoID:=(Sender as TTntMenuItem).Tag;
   if (CheckInfo(VideoDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Restart
   else begin
     SendCommand('set_property switch_video '+IntToStr(VideoID));
     SendCommand('osd_show_text "'+OSD_VideoTrack_Prompt+': '+IntToStr(VideoID)+#34);
   end;
-  (Sender as TMenuItem).Checked:=True;
+  (Sender as TTntMenuItem).Checked:=True;
 end;
 
 procedure TMainForm.MAudioClick(Sender: TObject);
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  AudioID:=(Sender as TMenuItem).Tag;
+  if (Sender as TTntMenuItem).Checked then exit;
+  AudioID:=(Sender as TTntMenuItem).Tag;
   if (CheckInfo(AudioDemuxer,DemuxerName)<0) OR (not Win32PlatformIsUnicode) then
     Restart
   else begin
@@ -1570,23 +1570,23 @@ begin
     if HaveVideo then
       SendCommand('osd_show_text "'+OSD_AudioTrack_Prompt+': '+IntToStr(AudioID)+#34);
   end;
-  (Sender as TMenuItem).Checked:=True;
+  (Sender as TTntMenuItem).Checked:=True;
 end;
 
 procedure TMainForm.MAudiochannelsClick(Sender: TObject);
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  AudiochannelsID:=(Sender as TMenuItem).Tag;
+  if (Sender as TTntMenuItem).Checked then exit;
+  AudiochannelsID:=(Sender as TTntMenuItem).Tag;
   Restart;
-  (Sender as TMenuItem).Checked:=True;
+  (Sender as TTntMenuItem).Checked:=True;
 end;
 
 procedure TMainForm.MSubtitleClick(Sender: TObject);
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  SubID:=(Sender as TMenuItem).Tag;
+  if (Sender as TTntMenuItem).Checked then exit;
+  SubID:=(Sender as TTntMenuItem).Tag;
   SendCommand('sub_select '+IntToStr(SubID));
-  (Sender as TMenuItem).Checked:=True;
+  (Sender as TTntMenuItem).Checked:=True;
 end;
 
 procedure TMainForm.MFClearClick(Sender: TObject);
@@ -1634,14 +1634,15 @@ begin
 end;
 
 procedure TMainForm.MDVDCClick(Sender: TObject);
-var index:integer;
+var index,r:integer;
 begin
-  index:=CheckMenu((Sender as TMenuItem).Parent,CID);
-  (Sender as TMenuItem).Parent.Items[index].Checked:=false;
-  CID:=(Sender as TMenuItem).Tag;
-  index:=(Sender as TMenuItem).Parent.Parent.Tag;
-  (Sender as TMenuItem).Checked:=True;
-  if UseekC and (TID=index) then
+  r:=CheckMenu(MainForm.MDVDT,TID);
+  index:=CheckMenu(MainForm.MDVDT.Items[r].Items[0],CID);
+  MainForm.MDVDT.Items[r].Items[0].Items[index].Checked:=false;
+  CID:=(Sender as TTntMenuItem).Tag;
+  index:=(Sender as TTntMenuItem).Parent.Parent.Tag;
+  (Sender as TTntMenuItem).Checked:=True;
+  if UseekC and (TID=index) and Win32PlatformIsUnicode then
     SendCommand('seek_chapter '+IntToStr(CID-1)+' 1')
   else begin
     TID:=index; Dreset:=true;
@@ -1652,13 +1653,13 @@ end;
 procedure TMainForm.MDVDAClick(Sender: TObject);
 var index:integer;
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  index:=CheckMenu((Sender as TMenuItem).Parent,AID);
-  (Sender as TMenuItem).Parent.Items[index].Checked:=false;
-  AID:=(Sender as TMenuItem).Tag;
-  TID:=(Sender as TMenuItem).Parent.Parent.Tag;
-  (Sender as TMenuItem).Checked:=True;
-  if UseekC then
+  if (Sender as TTntMenuItem).Checked then exit;
+  if TID<>(Sender as TTntMenuItem).Parent.Parent.Tag then exit;
+  index:=CheckMenu((Sender as TTntMenuItem).Parent,AID);
+  (Sender as TTntMenuItem).Parent.Items[index].Checked:=false;
+  AID:=(Sender as TTntMenuItem).Tag;
+  (Sender as TTntMenuItem).Checked:=True;
+  if UseekC and Win32PlatformIsUnicode then
     SendCommand('switch_angle '+IntToStr(AID))
   else begin
     Dreset:=true; Restart;
@@ -1667,10 +1668,10 @@ end;
 
 procedure TMainForm.MVCDTClick(Sender: TObject);
 begin
-  CDID:=(Sender as TMenuItem).Tag;
+  CDID:=(Sender as TTntMenuItem).Tag;
   Dreset:=true;
   Restart;
-  (Sender as TMenuItem).Checked:=True;
+  (Sender as TTntMenuItem).Checked:=True;
 end;
 
 procedure TMainForm.UpdateMenus(Sender: TObject);
@@ -1705,17 +1706,17 @@ end;
 
 procedure TMainForm.MDeinterlaceClick(Sender: TObject);
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  Deinterlace:=(Sender as TMenuItem).Tag;
+  if (Sender as TTntMenuItem).Checked then exit;
+  Deinterlace:=(Sender as TTntMenuItem).Tag;
   Restart;
-  (Sender as TMenuItem).Checked:=true;
+  (Sender as TTntMenuItem).Checked:=true;
 end;
 
 procedure TMainForm.MAspectClick(Sender: TObject);
 begin
-  if (Sender as TMenuItem).Checked then exit;
+  if (Sender as TTntMenuItem).Checked then exit;
   MKaspect.Checked:=true;
-  Aspect:=(Sender as TMenuItem).Tag;
+  Aspect:=(Sender as TTntMenuItem).Tag;
   if (Expand=2) OR (not Win32PlatformIsUnicode) then Restart
   else begin
     CBHSA:=3;
@@ -1736,7 +1737,7 @@ begin
          end;
     end;
   end;
-  (Sender as TMenuItem).Checked:=true;
+  (Sender as TTntMenuItem).Checked:=true;
 end;
 
 procedure TMainForm.MOpenFileClick(Sender: TObject);
@@ -1811,7 +1812,7 @@ end;
 procedure TMainForm.MOpenDriveClick(Sender: TObject);
 begin
   PClear:=true;
-  Playlist.AddDirectory(char((Sender as TMenuItem).Tag)+':');
+  Playlist.AddDirectory(char((Sender as TTntMenuItem).Tag)+':');
   empty:=true;
   Playlist.Changed;
   UpdateParams; 
@@ -1854,7 +1855,7 @@ end;
 
 procedure TMainForm.MLanguageClick(Sender: TObject);
 begin
-  ActivateLocale((Sender as TMenuItem).Tag);
+  ActivateLocale((Sender as TTntMenuItem).Tag);
 end;
 
 procedure TMainForm.MOptionsClick(Sender: TObject);
@@ -2728,8 +2729,8 @@ end;
 
 procedure TMainForm.MExpandClick(Sender: TObject);
 begin
- if (Sender as TMenuItem).Checked then exit;
- Expand:=(Sender as TMenuItem).Tag;
+ if (Sender as TTntMenuItem).Checked then exit;
+ Expand:=(Sender as TTntMenuItem).Tag;
  Restart;
  MExpand.Items[Expand].Checked:=true;
  MPExpand.Items[Expand].Checked:=true;
@@ -2847,8 +2848,8 @@ end;
 
 procedure TMainForm.MWheelControlClick(Sender: TObject);
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  MFunc:=(Sender as TMenuItem).Tag;
+  if (Sender as TTntMenuItem).Checked then exit;
+  MFunc:=(Sender as TTntMenuItem).Tag;
   MWheelControl.Items[MFunc].Checked:=true;
   MPWheelControl.Items[MFunc].Checked:=true;
   case MFunc of
@@ -2940,8 +2941,8 @@ end;
 
 procedure TMainForm.MChannelsClick(Sender: TObject);
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  Ch:=(Sender as TMenuItem).Tag;
+  if (Sender as TTntMenuItem).Checked then exit;
+  Ch:=(Sender as TTntMenuItem).Tag;
   Restart; MChannels.Items[Ch].Checked:=true;
 end;
 
@@ -2959,8 +2960,8 @@ end;
 
 procedure TMainForm.MRotateClick(Sender: TObject);
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  Rot:=(Sender as TMenuItem).Tag;
+  if (Sender as TTntMenuItem).Checked then exit;
+  Rot:=(Sender as TTntMenuItem).Tag;
   Restart; MRotate.Items[Rot].Checked:=true;
 end;
 
@@ -3036,8 +3037,8 @@ end;
 
 procedure TMainForm.MPostprocClick(Sender: TObject);
 begin
- if (Sender as TMenuItem).Checked then exit;
- Postproc:=(Sender as TMenuItem).Tag;
+ if (Sender as TTntMenuItem).Checked then exit;
+ Postproc:=(Sender as TTntMenuItem).Tag;
  MPostproc.Items[Postproc].Checked:=true;
  Restart;
 end;

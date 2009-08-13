@@ -1309,8 +1309,8 @@ end;
 procedure TPlaylistForm.TntCPClick(Sender: TObject);
 var i,j,k:integer;
 begin
-  if (Sender as TMenuItem).Checked then exit;
-  CP:=(Sender as TMenuItem).Tag;
+  if (Sender as TTntMenuItem).Checked then exit;
+  CP:=(Sender as TTntMenuItem).Tag;
   for i:=0 to TntCP.Items.Count-1 do begin
     TntCP.Items[i].Checked:=false;
     for j:=0 to TntCP.Items[i].Count-1 do begin
@@ -1321,7 +1321,7 @@ begin
   end;
   UpdatePW:=True;
   if Visible then TMLyric.Invalidate;
-  (Sender as TMenuItem).Checked:=true;
+  (Sender as TTntMenuItem).Checked:=true;
 end;
 
 procedure TPlaylistForm.CLyricFChange(Sender: TObject);

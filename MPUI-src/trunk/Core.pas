@@ -1235,7 +1235,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>13) and (Copy(Line,1,13)='ID_VOBSUB_ID=') then begin
-      Val(Copy(Line,14,9),i,r);
+      Val(Copy(Line,14,MaxInt),i,r);
       if (r=0) AND (i>=0) AND (i<256) then begin
         if LoadVob=3 then begin
            LoadVob:=2; SubID:=0;
@@ -1255,7 +1255,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>8) and (Copy(Line,1,8)='ID_VSID_') then begin
-      s:=Copy(Line,9,21);
+      s:=Copy(Line,9,MaxInt);
       p:=Pos('_LANG=',s);
       if p<=0 then exit;
       Val(Copy(s,1,p-1),i,r);
@@ -1275,7 +1275,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>14) and (Copy(Line,1,14)='ID_DVD_TITLES=') then begin
-      Val(Copy(Line,15,9),i,r);
+      Val(Copy(Line,15,MaxInt),i,r);
       if (r=0) AND (i>0) AND (i<8191) then begin
         for a:=1 to i do begin
           if FirstOpen then begin
@@ -1312,12 +1312,12 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>13) and (Copy(Line,1,13)='ID_DVD_TITLE_') then begin
-      s:=Copy(Line,14,20);
+      s:=Copy(Line,14,MaxInt);
       p:=Pos('_CHAPTERS=',s);
       if p<=0 then exit;
       Val(Copy(s,1,p-1),i,r);
       if (r=0) AND (i>0) AND (i<8191) then begin
-        Val(Copy(s,p+10,8),j,r);
+        Val(Copy(s,p+10,MaxInt),j,r);
         if (r=0) AND (j>0) AND (j<8191) then begin
           for k:=1 to j do begin
             r:=CheckMenu(MainForm.MDVDT,i);
@@ -1345,12 +1345,12 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>13) and (Copy(Line,1,13)='ID_DVD_TITLE_') then begin
-      s:=Copy(Line,14,20);
+      s:=Copy(Line,14,MaxInt);
       p:=Pos('_ANGLES=',s);
       if p<=0 then exit;
       Val(Copy(s,1,p-1),i,r);
       if (r=0) AND (i>0) AND (i<8191) then begin
-        Val(Copy(s,p+8,8),j,r);
+        Val(Copy(s,p+8,MaxInt),j,r);
         if (r=0) AND (j>0) AND (j<8191) then begin
           for k:=1 to j do begin
             r:=CheckMenu(MainForm.MDVDT,i);
@@ -1377,12 +1377,12 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>13) and (Copy(Line,1,13)='ID_DVD_TITLE_') then begin
-      s:=Copy(Line,14,20);
+      s:=Copy(Line,14,MaxInt);
       p:=Pos('_LENGTH=',s);
       if p<=0 then exit;
       Val(Copy(s,1,p-1),i,r);
       if (r=0) AND (i>0) AND (i<8191) then begin
-        Val(Copy(s,p+8,10),f,r);
+        Val(Copy(s,p+8,MaxInt),f,r);
         if (r=0) AND (f>0) then begin
           r:=CheckMenu(MainForm.MDVDT,i);
           if r<0 then r:=SubMenu_Add(MainForm.MDVDT,i,TID,nil);
@@ -1439,10 +1439,8 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       Val(Copy(Line,28,MaxInt),i,r);
       if r=0 then begin
         if i<>TID then tmpTID:=i
-        else begin
-          Sendcommand('get_property chapter');
-          SendCommand('get_time_length');
-        end;
+        else SendCommand('get_time_length');
+        Sendcommand('get_property chapter');
       end;
       Result:=true; exit;
     end;
@@ -1454,17 +1452,19 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if (not IsDMenu) and (SecondPos=0) and (tmpTID<>TID) then begin
         s:='DVD-'+IntToStr(tmpTID)+Copy(DisplayURL,Pos(' <-- ',DisplayURL),MaxInt);
         i:=playlist.FindItem('',s);
+        j:=CID; MainForm.UpdateParams;
         if i<0 then begin
           Entry.State:=psNotPlayed; Entry.FullURL:=MediaURL;
           Entry.DisplayURL:=s;
           playlist.Add(Entry);
           Playlist.Changed;
-          MainForm.UpdateParams;
+          CID:=j; TID:=tmpTID;
           MainForm.NextFile(1,psPlayed);
         end
         else begin
           Playlist.SetState(CurPlay,psPlayed);
           CurPlay:=i;
+          CID:=j; TID:=tmpTID;
           Playlist.NowPlaying(i);
           MainForm.DoOpen(Playlist[i].FullURL,Playlist[i].DisplayURL);
         end;
@@ -1478,13 +1478,13 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>19) and (Copy(Line,1,19)='ID_VCD_START_TRACK=') then begin
-      Val(Copy(Line,20,9),i,r);
+      Val(Copy(Line,20,MaxInt),i,r);
       if (r=0) AND (i>=0) AND (i<8191) then VCDST:=i;
       Result:=true; exit;
     end;
 
     if (len>17) and (Copy(Line,1,17)='ID_VCD_END_TRACK=') then begin
-      Val(Copy(Line,18,9),i,r);
+      Val(Copy(Line,18,MaxInt),i,r);
       if (r=0) AND (i>=0) AND (i<8191) then begin
         for k:=VCDST to i-1 do
           SubMenu_Add(MainForm.MVCDT,k,CDID,MainForm.MVCDTClick);
@@ -1497,7 +1497,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>12) and (Copy(Line,1,12)='ID_VIDEO_ID=') then begin
-      Val(Copy(Line,13,9),i,r);
+      Val(Copy(Line,13,MaxInt),i,r);
       if (r=0) AND (i>=0) AND (i<8191) AND (CheckMenu(MainForm.MVideo,i)<0) then
         SubMenu_Add(MainForm.MVideo,i,VideoID,MainForm.MVideoClick);
       Result:=true;
@@ -1525,7 +1525,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>12) and (Copy(Line,1,12)='ID_AUDIO_ID=') then begin
-      Val(Copy(Line,13,9),i,r);
+      Val(Copy(Line,13,MaxInt),i,r);
       if (r=0) AND (i>=0) AND (i<8191) AND (CheckMenu(MainForm.MAudio,i)<0) then
         SubMenu_Add(MainForm.MAudio,i,AudioID,MainForm.MAudioClick);
       Result:=true;
@@ -1536,7 +1536,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>7) and (Copy(Line,1,7)='ID_AID_') then begin
-      s:=Copy(Line,8,length(Line));
+      s:=Copy(Line,8,MaxInt);
       p:=Pos('_NAME=',s);
       if p<=0 then p:=Pos('_LANG=',s);
       if p<=0 then exit;
@@ -1554,7 +1554,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>15) and (Copy(Line,1,15)='ID_SUBTITLE_ID=') then begin
-      Val(Copy(Line,16,9),i,r);
+      Val(Copy(Line,16,MaxInt),i,r);
       if (r=0) AND (i>=0) AND (i<8191) then begin
         if CheckMenu(MainForm.MSubtitle,VobsubCount+i)<0 then begin
           SubMenu_Add(MainForm.MSubtitle,VobsubCount+i,SubID,MainForm.MSubtitleClick);
@@ -1569,7 +1569,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>7) and (Copy(Line,1,7)='ID_SID_') then begin
-      s:=Copy(Line,8,length(Line));
+      s:=Copy(Line,8,MaxInt);
       p:=Pos('_NAME=',s);
       if p<=0 then p:=Pos('_LANG=',s);
       if p<=0 then exit;
@@ -1589,7 +1589,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=false;
     if (len>15) and (Copy(Line,1,15)='ID_FILE_SUB_ID=') then begin
-      Val(Copy(Line,16,9),i,r);
+      Val(Copy(Line,16,MaxInt),i,r);
       if (r=0) AND (i>=0) AND (i<8191) then begin
         VobAndInterSubCount:=IntersubCount+VobsubCount;
         if Loadsub=1 then begin
@@ -1666,7 +1666,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   begin
     Result:=(len>10) and (Copy(Line,1,10)='ID_LENGTH=');
     if Result then begin
-      Val(Copy(Line,11,10),f,r);
+      Val(Copy(Line,11,MaxInt),f,r);
       if r=0 then begin
         TotalTime:=abs(round(f)); TTime:=TotalTime;
         Duration:=SecondsToTime(TotalTime);
@@ -2070,7 +2070,7 @@ begin
 
   // check contrast (hidden from log)
   if (len>13) and (Copy(Line,1,13)='ANS_contrast=') then begin
-    Val(Copy(Line,14,4),i,r);
+    Val(Copy(Line,14,MaxInt),i,r);
     if (r=0) AND (i>=-100) AND (i<=100) then begin
       case CBHSA of
         0: begin contrD:=i;
@@ -2089,7 +2089,7 @@ begin
   end;
   // check brightness (hidden from log)
   if (len>15) and (Copy(Line,1,15)='ANS_brightness=') then begin
-    Val(Copy(Line,16,4),i,r);
+    Val(Copy(Line,16,MaxInt),i,r);
     if (r=0) AND (i>=-100) AND (i<=100) then begin
       case CBHSA of
         0: begin briD:=i;
@@ -2108,7 +2108,7 @@ begin
   end;
   // check hue (hidden from log)
   if (len>8) and (Copy(Line,1,8)='ANS_hue=') then begin
-    Val(Copy(Line,9,4),i,r);
+    Val(Copy(Line,9,MaxInt),i,r);
     if (r=0) AND (i>=-100) AND (i<=100) then begin
       case CBHSA of
         0: begin huD:=i;
@@ -2127,7 +2127,7 @@ begin
   end;
   // check saturation (hidden from log)
   if (len>15) and (Copy(Line,1,15)='ANS_saturation=') then begin
-    Val(Copy(Line,16,4),i,r);
+    Val(Copy(Line,16,MaxInt),i,r);
     if (r=0) AND (i>=-100) AND (i<=100) then begin
       case CBHSA of
         0: begin satD:=i;
@@ -2146,7 +2146,7 @@ begin
   end;
   // check gamma (hidden from log)
   if (len>10) and (Copy(Line,1,10)='ANS_gamma=') then begin
-    Val(Copy(Line,11,4),i,r);
+    Val(Copy(Line,11,MaxInt),i,r);
     if (r=0) AND (i>=-100) AND (i<=100) then begin
       case CBHSA of
         0: begin gamD:=i;
@@ -2197,7 +2197,7 @@ begin
   end;
   // check Chapter ID
   if (len>12) and (Copy(Line,1,12)='ANS_chapter=') then begin
-    Val(Copy(Line,13,length(Line)),i,r);
+    Val(Copy(Line,13,MaxInt),i,r);
     if (r=0) and (i>=0) then begin
       CID:=i+1;
       r:=CheckMenu(MainForm.MDVDT,TID);
@@ -2275,7 +2275,7 @@ begin
   // check for generic ID_ pattern
   if (len>3) and (Copy(Line,1,3)='ID_') then begin
     p:=Pos('=',Line);
-    HandleIDLine(Copy(Line,4,p-4),widestring(Trim(Copy(Line,p+1,MaxInt))));
+    HandleIDLine(Copy(Line,4,p-4),WideString(Trim(Copy(Line,p+1,MaxInt))));
   end;
 
 end;
