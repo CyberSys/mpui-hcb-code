@@ -1898,6 +1898,7 @@ object MainForm: TMainForm
           OnClick = SimulateKey
         end
         object N18: TTntMenuItem
+          Tag = -3
           Caption = '-'
           Visible = False
         end

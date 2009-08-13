@@ -121,7 +121,7 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     Wid,Dreset,UpdateSkipBar,Pri,HaveChapters,HaveMsg:boolean;
     CT,RP,RS,SP,AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
-    ControlledResize,ni,nobps,Dnav,IsDMenu,lavf,UseekC,vsync:boolean;
+    ControlledResize,ni,nobps,Dnav,IsDMenu,SMenu,lavf,UseekC,vsync:boolean;
     Flip,Mirror,Yuy2,Eq2,LastEq2,Dda,LastDda,Wadsp:boolean;
     WantFullscreen,WantCompact,AutoQuit,IsPause,IsDx:boolean;
 var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
@@ -200,6 +200,8 @@ procedure SendCommand(Command:String);
 procedure SendVolumeChangeCommand(Vol:integer);
 procedure ResetStreamInfo;
 function ExpandName(const BasePath, FileName:WideString):WideString;
+procedure HandleInputLine(Line:String);
+procedure HandleIDLine(ID:string; Content:WideString);
 
 implementation
 uses Main,config,plist,Info,UnRAR,Equalizer,Locale,Options,SevenZip;
@@ -223,9 +225,6 @@ var ClientWaitThread:TClientWaitThread;
     ExitCode:DWORD;
     LastLine:string;
     LineRepeatCount:integer;
-
-procedure HandleInputLine(Line:string); forward;
-procedure HandleIDLine(ID:string; Content:WideString); forward;
 
 function ExpandName(const BasePath, FileName:WideString):WideString;
 begin
@@ -914,8 +913,13 @@ begin
       CmdLine:=CmdLine+MediaURL+'://';
     end;
 
-    if Firstrun then TID:=StrToIntDef(copy(DisplayURL,5,Pos(' <-- ',DisplayURL)-5),TID);
-    CmdLine:=CmdLine+IntToStr(TID); tmpTID:=TID;
+    if Firstrun then begin
+      i:=StrToIntDef(copy(DisplayURL,5,Pos(' <-- ',DisplayURL)-5),TID);
+      if Dnav and SMenu and (i=1) then TID:=0
+      else TID:=i;
+    end;
+    tmpTID:=TID;
+    if TID>0 then CmdLine:=CmdLine+IntToStr(TID);
     if CID>1 then CmdLine:=CmdLine+' -chapter '+IntToStr(CID);
     if AID>1 then CmdLine:=CmdLine+' -dvdangle '+IntToStr(AID);
   end
@@ -1078,13 +1082,15 @@ begin
 end;
 
 procedure TProcessor.Process;
-var LastEOL,EOL,Len:integer;
+var LastEOL,EOL,Len:integer; S:String;
 begin
   Len:=length(Data);
   LastEOL:=0;
   for EOL:=1 to Len do
     if (EOL>LastEOL) AND (Data[EOL] in [#13,#10]) then begin
-      HandleInputLine(Copy(Data,LastEOL+1,EOL-(LastEOL+1)));
+      //HandleInputLine(Copy(Data,LastEOL+1,EOL-(LastEOL+1)));
+      S:=Copy(Data,LastEOL+1,EOL-(LastEOL+1));
+      PostMessage(MainForm.Handle,$0402,GlobalAddAtom(@S[1]),Length(S));
       LastEOL:=EOL;
       if (LastEOL<Len) AND (Data[LastEOL+1]=#10) then inc(LastEOL);
     end;
@@ -1102,7 +1108,8 @@ begin
     if Processor.Terminated or (not ReadFile(hPipe,Buffer[0],BufSize,BytesRead,nil)) then break;
     Buffer[BytesRead]:=#0;
     Data:=Data+Buffer;
-    Synchronize(Process);
+    //Synchronize(Process);
+    Process;
   until BytesRead=0;
 end;
 
@@ -1452,7 +1459,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
       if (not IsDMenu) and (SecondPos=0) and (tmpTID<>TID) then begin
         s:='DVD-'+IntToStr(tmpTID)+Copy(DisplayURL,Pos(' <-- ',DisplayURL),MaxInt);
         i:=playlist.FindItem('',s);
-        j:=CID; MainForm.UpdateParams;
+        j:=CID; MainForm.UpdateParams; SMenu:=false;
         if i<0 then begin
           Entry.State:=psNotPlayed; Entry.FullURL:=MediaURL;
           Entry.DisplayURL:=s;
@@ -1995,7 +2002,9 @@ begin
           if HaveChapters then Sendcommand('get_property chapter');
           SendCommand('get_time_length');
         end;
-        SecondPos:=p; MainForm.UpdateTime;
+        if IsDMenu then SecondPos:=0
+        else SecondPos:=p;
+        MainForm.UpdateTime;
         if HaveChapters and (SecondPos=TotalTime-1) then begin
           i:=CheckMenu(MainForm.MDVDT,TID);
           r:=CheckMenu(MainForm.MDVDT.Items[i].Items[0],CID);
@@ -2365,7 +2374,7 @@ begin
   AudiochannelsID:=0; OSDLevel:=DefaultOSDLevel; Ch:=0; Wid:=true; Fd:=false; oneM:=true;
   Deinterlace:=0; Aspect:=0; Postproc:=0; IntersubCount:=0; UpdatePW:=false;
   AudioOut:=2; AudioDev:=0; Expand:=0; SPDIF:=false; DirHIdx:=0; DirHSub:=0;
-  ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=false; Fol:=2;
+  ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=true; Fol:=2;
   dbbuf:=true; Dr:=false; Volnorm:=false; nfc:=true; InterW:=4; InterH:=3;
   Params:=''; OnTop:=0; UpdateSkipBar:=false; Async:=false; AsyncV:='100';
   Status:=sNone; Shuffle:=false; Loop:=false; OneLoop:=false; VideoOut:='Auto';
