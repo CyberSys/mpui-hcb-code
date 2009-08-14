@@ -427,6 +427,8 @@ type
     procedure FormMove(var msg:TMessage); message WM_MOVE;
     procedure FormWantSpecialKey(var msg:TCMWantSpecialKey); message CM_WANTSPECIALKEY;
     procedure UpdateMRF;
+    Procedure PassMsg(var msg: Tmessage); message $0401;
+    Procedure HandleLog(var msg: Tmessage); message $0402;
   public
     { Public declarations }
     procedure FixSize;
@@ -460,8 +462,6 @@ type
     procedure UpdateMenuEV(Mode:boolean);
     procedure UpdateMenuCheck;
     procedure CreateParams(var Params: TCreateParams); override;
-    Procedure PassMsg(var msg: Tmessage); message $0401;
-    Procedure HandleLog(var msg: Tmessage); message $0402;
   end;
 
   PDDEnumCallbackEx=function(lpGuid:PGUID; lpDriverDescription,lpDriverName:PChar; lpContext:pointer; hm:HMONITOR):LongBool; stdcall;
@@ -522,17 +522,8 @@ begin
   HideMouseAt:=0; UpdateSeekBarAt:=0; PlayMsgAt:=0;
   WantFullscreen:=false; WantCompact:=false;
   Constraints.MinWidth:=Width; Constraints.MinHeight:=Height;
- // if Win32PlatformIsXP then MainForm.Imagery.Clear;
   Load(HomeDir+'autorun.inf',0); Load(HomeDir+DefaultFileName,0);
-  if not WideFileExists(MplayerLocation) then MplayerLocation:=HomeDir+'mplayer.exe';
   if subcode='' then subcode:='CP'+IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT)); //AnsiCodePage
-  //OEM CodePage
-  {if subcode='' then begin   
-    GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_IDEFAULTCODEPAGE,Buf,6);
-    Val(Buf,i,e);
-    if e <> 0 then i:=GetOEMCP;
-    subcode:='CP'+IntToStr(i);
-  end; }
   UpdateVolSlider;
   if Wid and Win32PlatformIsUnicode and ds then begin
     SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_SIZEBOX OR WS_MAXIMIZEBOX);
@@ -755,8 +746,8 @@ procedure TMainForm.HandleLog(var msg:TMessage);
 var t:String;
 begin
   SetLength(t,msg.LParam);
-  GlobalGetAtomName(msg.WParam,@t[1],msg.LParam+1);
-  GlobalDeleteAtom(msg.WParam);
+  GetAtomName(msg.WParam,@t[1],msg.LParam+1);
+  DeleteAtom(msg.WParam);
   HandleInputLine(t);
 end;
 

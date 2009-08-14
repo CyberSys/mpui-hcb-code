@@ -25,13 +25,6 @@ const DefaultFileName='MPUI.ini';
 
 var DefaultLocale:integer=AutoLocale;
 
-const AudioOutMap:array[0..4]of WideString=('nosound','null','auto','win32','dsound');
-const PostprocMap:array[0..2]of WideString=('off','auto','max');
-const DeinterlaceMap:array[0..2]of WideString=('off','simple','adaptive');
-const AspectMap:array[0..10]of WideString=('auto','4:3','16:9','2.35:1','14:9','5:4','16:10','2.21:1','1:1','1.22:1','custom');
-const ChMap:array[0..2]of WideString=('2','4','6');
-const RotMap:array[0..2]of WideString=('0','90','-90');
-
 procedure Load(FileName:WideString; Mode:integer);
 procedure Save(FileName:WideString; Mode:integer);
 
@@ -39,7 +32,7 @@ implementation
 uses SysUtils, TntSysUtils, INIFiles, Windows;
 
 procedure Load(FileName:WideString; Mode:integer);
-var INI:TMemIniFile; t:TTntMenuItem; s:widestring; i:integer;
+var INI:TMemIniFile; t:TTntMenuItem; s:String; i:integer;
 begin
   if not WideFileExists(FileName) then begin
     FileName:=AppdataDir+WideExtractFileName(FileName);
@@ -50,15 +43,17 @@ begin
     case mode of
       0: begin
            DefaultLocale:=ReadInteger(SectionName,'Locale',DefaultLocale);
-           Core.AudioOut:=CheckInfo(AudioOutMap,ReadString(SectionName,'AudioOut',AudioOutMap[Core.AudioOut]));
+           Core.AudioOut:=ReadInteger(SectionName,'AudioOut',Core.AudioOut);
            Core.AudioDev:=ReadInteger(SectionName,'AudioDev',Core.AudioDev);
-           Core.Postproc:=CheckInfo(PostprocMap,ReadString(SectionName,'Postproc',PostprocMap[Core.Postproc]));
-           Core.Deinterlace:=CheckInfo(DeinterlaceMap,ReadString(SectionName,'Deinterlace',DeinterlaceMap[Core.Deinterlace]));
-           Core.Aspect:=CheckInfo(AspectMap,ReadString(SectionName,'Aspect',AspectMap[Core.Aspect]));
-           Core.Ch:=CheckInfo(ChMap,ReadString(SectionName,'Channels',ChMap[Core.Ch]));
-           Core.Rot:=CheckInfo(RotMap,ReadString(SectionName,'Rotate',RotMap[Core.Rot]));
-           Core.MAspect:=ReadString(SectionName,'MAspect',Core.MAspect);
-           Core.subcode:=ReadString(SectionName,'Subcode',Core.subcode);
+           Core.Postproc:=ReadInteger(SectionName,'Postproc',Core.Postproc);
+           Core.Deinterlace:=ReadInteger(SectionName,'Deinterlace',Core.Deinterlace);
+           Core.Aspect:=ReadInteger(SectionName,'Aspect',Core.Aspect);
+           Core.Ch:=ReadInteger(SectionName,'Channels',Core.Ch);
+           Core.Rot:=ReadInteger(SectionName,'Rotate',Core.Rot);
+           s:=ReadString(SectionName,'MAspect','');
+           if s<>'' then Core.MAspect:=s;
+           s:=ReadString(SectionName,'Subcode','');
+           if s<>'' then Core.subcode:=s;
            Core.ReIndex:=ReadBool(SectionName,'ReIndex',Core.ReIndex);
            Core.SoftVol:=ReadBool(SectionName,'SoftVol',Core.SoftVol);
            Core.RFScr:=ReadBool(SectionName,'MBRFullScreen',Core.RFScr);
@@ -68,23 +63,39 @@ begin
            Core.Volnorm:=ReadBool(SectionName,'Volnorm',Core.Volnorm);
            Core.nfc:=ReadBool(SectionName,'nofontconfig',Core.nfc);
            Core.nmsg:=ReadBool(SectionName,'nomsgmodule',Core.nmsg);
-           Core.subfont:=ReadString(SectionName,'Subfont',Core.subfont);
-           if WideFileExists(subfont) then subfont:=GetLongPath(subfont);
-           Core.osdfont:=ReadString(SectionName,'OSDfont',Core.osdfont);
-           if WideFileExists(osdfont) then subfont:=GetLongPath(osdfont);
-           Core.ShotDir:=ReadString(SectionName,'ShotDir',Core.ShotDir);
-           if WideDirectoryExists(ShotDir) then ShotDir:=GetLongPath(ShotDir);
-           Core.LyricDir:=ReadString(SectionName,'LyricDir',Core.LyricDir);
-           if WideDirectoryExists(LyricDir) then LyricDir:=GetLongPath(LyricDir);
+           s:=ReadString(SectionName,'Subfont','');
+           if s<>'' then begin
+             if WideFileExists(s) then Core.subfont:=GetLongPath(s)
+             else Core.subfont:=s;
+           end;
+           s:=ReadString(SectionName,'OSDfont','');
+           if s<>'' then begin
+             if WideFileExists(s) then osdfont:=GetLongPath(s)
+             else Core.osdfont:=s;
+           end;
+           s:=ReadString(SectionName,'ShotDir','');
+           if s<>'' then begin
+             if WideDirectoryExists(s) then ShotDir:=GetLongPath(ShotDir)
+             else Core.ShotDir:=s;
+           end;
+           s:=ReadString(SectionName,'LyricDir','');
+           if s<>'' then begin
+             if WideDirectoryExists(s) then LyricDir:=GetLongPath(s)
+             else if WideDirectoryExists(ExpandName(HomeDir,LyricDir)) then Core.LyricDir:=s;
+           end;
            Core.ML:=ReadBool(SectionName,'ML',Core.ML);
-           Core.MplayerLocation:=ReadString(SectionName,'MplayerLocation',Core.MplayerLocation);
-           if WideFileExists(MplayerLocation) then MplayerLocation:=GetLongPath(MplayerLocation);
+           s:=ReadString(SectionName,'MplayerLocation','');
+           if s<>'' then begin
+             if WideFileExists(s) then MplayerLocation:=GetLongPath(s)
+             else Core.MplayerLocation:=s;
+           end;
            Core.Wid:=ReadBool(SectionName,'Wid',Core.Wid);
            Core.Flip:=ReadBool(SectionName,'Flip',Core.Flip);
            Core.Mirror:=ReadBool(SectionName,'Mirror',Core.Mirror);
            Core.Eq2:=ReadBool(SectionName,'Eq2',Core.Eq2);
            Core.Yuy2:=ReadBool(SectionName,'Yuy2',Core.Yuy2);
-           Core.VideoOut:=ReadString(SectionName,'VideoOut',Core.VideoOut);
+           s:=ReadString(SectionName,'VideoOut','');
+           if s<>'' then Core.VideoOut:=s;
            Core.Dda:=Trim(LowerCase(Core.VideoOut))='directx:noaccel';
            Core.ni:=ReadBool(SectionName,'Ni',Core.ni);
            Core.nobps:=ReadBool(SectionName,'NoBPS',Core.nobps);
@@ -97,14 +108,19 @@ begin
            Core.Fol:=ReadFloat(SectionName,'Outline',Core.Fol);
            Core.FB:=ReadFloat(SectionName,'FontBlur',Core.FB);
            Core.Wadsp:=ReadBool(SectionName,'Wadsp',Core.Wadsp);
-           Core.WadspL:=ReadString(SectionName,'WadspL',Core.WadspL);
-           if WideFileExists(WadspL) then WadspL:=GetLongPath(WadspL);
+           s:=ReadString(SectionName,'WadspL','');
+           if s<>'' then begin
+             if WideFileExists(s) then WadspL:=GetLongPath(s)
+             else Core.WadspL:=s;
+           end;
            Core.lavf:=ReadBool(SectionName,'Lavf',Core.lavf);
            Core.Fd:=ReadBool(SectionName,'Framedrop',Core.Fd);
            Core.Async:=ReadBool(SectionName,'Autosync',Core.Async);
-           Core.AsyncV:=ReadString(SectionName,'AutosyncV',Core.AsyncV);
+           s:=ReadString(SectionName,'AutosyncV','');
+           if s<>'' then Core.AsyncV:=s;
            Core.Cache:=ReadBool(SectionName,'Cache',Core.Cache);
-           Core.CacheV:=ReadString(SectionName,'CacheV',Core.CacheV);
+           s:=ReadString(SectionName,'CacheV','');
+           if s<>'' then Core.CacheV:=s;
            Core.Pri:=ReadBool(SectionName,'Priority',Core.Pri);
            Core.Ass:=ReadBool(SectionName,'ASS',Core.Ass);
            Core.Efont:=ReadBool(SectionName,'EFont',Core.Efont);
@@ -114,7 +130,8 @@ begin
            Core.LTextColor:=ReadInteger(SectionName,'LyricTextColor',Core.LTextColor);
            Core.LbgColor:=ReadInteger(SectionName,'BGColor',Core.LbgColor);
            Core.LhgColor:=ReadInteger(SectionName,'HGColor',Core.LhgColor);
-           Core.Params:=ReadString(SectionName,'Params',Core.Params);
+           s:=ReadString(SectionName,'Params','');
+           if s<>'' then Core.Params:=s;
            Core.AutoPlay:=ReadBool(SectionName,'AutoPlay',Core.AutoPlay);
            Core.uof:=ReadBool(SectionName,'UseOSDfont',Core.uof);
            Core.GUI:=ReadBool(SectionName,'GUI',Core.GUI);
@@ -143,14 +160,16 @@ begin
            Core.AutoQuit:=ReadBool(SectionName,'AutoQuit',Core.AutoQuit);
            Core.WantCompact:=ReadBool(SectionName,'Compact',Core.WantCompact);
            Core.PScroll:=ReadBool(SectionName,'Scroll',Core.PScroll);
-           Core.LyricF:=ReadString(SectionName,'LyricFont',Core.LyricF);
+           s:=ReadString(SectionName,'LyricFont','');
+           if s<>'' then Core.LyricF:=s;
            Core.LyricS:=ReadInteger(SectionName,'LyricSize',Core.LyricS);
            Core.seekLen:=ReadInteger(SectionName,'seekLen',Core.seekLen);
-           Core.HKS:=ReadString(SectionName,'HotKey',Core.DefaultHKS);
-           Core.Fass:=ReadString(SectionName,'fileAss',Core.DefaultFass);
+           s:=ReadString(SectionName,'HotKey','');
+           if s<>'' then Core.HKS:=s;
+           s:=ReadString(SectionName,'fileAss','');
+           if s<>'' then Core.Fass:=s;
            for i:=0 to RFileMax-1 do begin
-             s:='';
-             s:=ReadString(SectionName,'RF'+IntToStr(i),s);
+             s:=ReadString(SectionName,'RF'+IntToStr(i),'');
              if s<>'' then begin
                t:=TTntMenuItem.Create(MainForm.MRFile);
                if WideFileExists(s) then begin
@@ -198,13 +217,13 @@ begin
            WriteInteger(SectionName,'LyricSize',Core.LyricS);
            WriteString(SectionName,'LyricFont',Core.LyricF);
            WriteInteger(SectionName,'Locale',DefaultLocale);
-           WriteString(SectionName,'AudioOut',AudioOutMap[Core.AudioOut]);
+           WriteInteger(SectionName,'AudioOut',Core.AudioOut);
            WriteInteger(SectionName,'AudioDev',Core.AudioDev);
-           WriteString(SectionName,'Postproc',PostprocMap[Core.Postproc]);
-           WriteString(SectionName,'Deinterlace',DeinterlaceMap[Core.Deinterlace]);
-           WriteString(SectionName,'Aspect',AspectMap[Core.Aspect]);
-           WriteString(SectionName,'Channels',ChMap[Core.Ch]);
-           WriteString(SectionName,'Rotate',RotMap[Core.Rot]);
+           WriteInteger(SectionName,'Postproc',Core.Postproc);
+           WriteInteger(SectionName,'Deinterlace',Core.Deinterlace);
+           WriteInteger(SectionName,'Aspect',Core.Aspect);
+           WriteInteger(SectionName,'Channels',Core.Ch);
+           WriteInteger(SectionName,'Rotate',Core.Rot);
            WriteString(SectionName,'MAspect',Core.MAspect);
            WriteBool  (SectionName,'ReIndex',Core.ReIndex);
            WriteBool  (SectionName,'SoftVol',Core.SoftVol);

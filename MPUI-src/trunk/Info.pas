@@ -116,42 +116,19 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
   end;
 
   procedure AddItem(Key,Value:WideString);
-  var d,t,w:integer; rec:TSize;
-  const Lset=[WChar('.'),WChar('('),WChar('['),WChar('{')];
-  const Rset=[WChar(' '),WChar(','),WChar('_'),WChar('-'),
-              WChar(')'),WChar(']'),WChar('}')];
+  var d,t,w:integer;
+  const Lset=['.','(','[','{']; Rset=[' ',',','_','-',')',']','}'];
   begin
     Key:=Key+':';
     ClipText:=ClipText+Key+^I+Value+^M^J;
     j:=TabOffset+20+WideCanvasTextWidth(InfoBox.Canvas,Value);
-    if j>MW then MW:=j;
+    if j>MW then MW:=j; w:=length(Value);
     repeat
-      w:=length(value);
-      GetTextExtentExPointW(InfoBox.Canvas.Handle,@Value[1],w,InfoBox.Width-TabOffset-10,@d,nil,rec);
-      if d<w then begin
-        if Value[d+1] in Rset then t:=d+1
-        else if Value[d] in Lset then t:=d-1
-        else t:=d;
-        InfoBox.Items.Add(Key+^I+copy(Value,1,t));
-        delete(Value,1,t);
-        Key:='';
-      end
-      else begin
-        InfoBox.Items.Add(Key+^I+Value);
-        break;
-      end;
-    until False;
-
-{    Key:=Key+':';
-    ClipText:=ClipText+Key+^I+Value+^M^J;
-    j:=TabOffset+20+WideCanvasTextWidth(InfoBox.Canvas,Value);
-    if j>MW then MW:=j;
-    repeat
-      for d:=1 to length(Value) do begin
+      for d:=1 to w do begin
         j:=WideCanvasTextWidth(InfoBox.Canvas,copy(Value,1,d));
-        if j>(InfoBox.Width-TabOffset-10) then begin
-          if Value[d] in Rset then t:=d+1
-          else if Value[d-1] in Lset then t:=d-1
+        if j>=(InfoBox.Width-TabOffset-10) then begin
+          if Char(Value[d]) in Rset then t:=d+1
+          else if Char(Value[d-1]) in Lset then t:=d-1
           else t:=d;
           InfoBox.Items.Add(Key+^I+copy(Value,1,t-1));
           Value:=copy(Value,t,MaxInt);
@@ -162,7 +139,7 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
         InfoBox.Items.Add(Key+^I+Value);
         break;
       end;
-    until False; }
+    until False; 
 
   end;
 

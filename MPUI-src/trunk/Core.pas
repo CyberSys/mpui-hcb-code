@@ -201,7 +201,6 @@ procedure SendVolumeChangeCommand(Vol:integer);
 procedure ResetStreamInfo;
 function ExpandName(const BasePath, FileName:WideString):WideString;
 procedure HandleInputLine(Line:String);
-procedure HandleIDLine(ID:string; Content:WideString);
 
 implementation
 uses Main,config,plist,Info,UnRAR,Equalizer,Locale,Options,SevenZip;
@@ -225,6 +224,8 @@ var ClientWaitThread:TClientWaitThread;
     ExitCode:DWORD;
     LastLine:string;
     LineRepeatCount:integer;
+
+procedure HandleIDLine(ID:string; Content:WideString); forward;
 
 function ExpandName(const BasePath, FileName:WideString):WideString;
 begin
@@ -365,10 +366,10 @@ var Len:integer;
 begin
   Result:='';
   if Win32PlatformIsUnicode then begin
-    Len:=GetEnvironmentVariableW(PWideChar(Name),nil,0);
+    Len:=GetEnvironmentVariableW(PWChar(Name),nil,0);
     if Len > 0 then begin
       SetLength(Result, Len - 1);
-      GetEnvironmentVariableW(PWideChar(Name),PWideChar(Result),Len);
+      GetEnvironmentVariableW(PWChar(Name),PWChar(Result),Len);
     end;
   end
   else Result:=WideString(GetEnvironmentVariable(string(Name)));
@@ -393,7 +394,7 @@ begin
   end
 end;
 
-function SplitLine(var Line:widestring):widestring;
+function SplitLine(var Line:WideString):WideString;
 var i:integer;
 begin
   i:=Pos(#32,Line);
@@ -545,7 +546,10 @@ begin
   if Win32PlatformIsVista then ShotDir:=GetShellPath(RFID_PERSONAL)
   else ShotDir:=GetFolderPath(CSIDL_PERSONAL);
   if ShotDir='' then ShotDir:=TempDir+'MPUISnap' else ShotDir:=WideIncludeTrailingPathDelimiter(ShotDir)+'MPUISnap';
+
   LyricDir:=ShotDir;
+  MplayerLocation:=HomeDir+'mplayer.exe';
+
   // check for Win9x
   if Win32PlatformIsUnicode then Win9xWarnLevel:=wlAccept
   else Win9xWarnLevel:=wlWarn;
@@ -1088,9 +1092,8 @@ begin
   LastEOL:=0;
   for EOL:=1 to Len do
     if (EOL>LastEOL) AND (Data[EOL] in [#13,#10]) then begin
-      //HandleInputLine(Copy(Data,LastEOL+1,EOL-(LastEOL+1)));
       S:=Copy(Data,LastEOL+1,EOL-(LastEOL+1));
-      PostMessage(MainForm.Handle,$0402,GlobalAddAtom(@S[1]),Length(S));
+      PostMessage(MainForm.Handle,$0402,AddAtom(@S[1]),Length(S));
       LastEOL:=EOL;
       if (LastEOL<Len) AND (Data[LastEOL+1]=#10) then inc(LastEOL);
     end;
@@ -1108,7 +1111,6 @@ begin
     if Processor.Terminated or (not ReadFile(hPipe,Buffer[0],BufSize,BytesRead,nil)) then break;
     Buffer[BytesRead]:=#0;
     Data:=Data+Buffer;
-    //Synchronize(Process);
     Process;
   until BytesRead=0;
 end;
@@ -1130,8 +1132,7 @@ begin
     FirstChance:=false;
     if WaitForSingleObject(ClientProcess,stopTimeout)<>WAIT_TIMEOUT then exit;
   end;
-  //else
-    TerminateMP;
+  TerminateMP;
 end;
 
 procedure TerminateMP;
@@ -2391,6 +2392,6 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10;
-  lastP1:=''; lastFN:=''; nmsg:=true; ResetStreamInfo;
+  lastP1:=''; lastFN:=''; nmsg:=true; Subcode:=''; ResetStreamInfo;
 end.
 
