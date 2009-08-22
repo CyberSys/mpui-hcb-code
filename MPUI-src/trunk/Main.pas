@@ -2243,8 +2243,7 @@ begin
   end;
   if s<>'' then LTime.Caption:='['+s+'] '+LTime.Caption;
   TntApplication.Title:=DisplayURL+' ['+LTime.Caption+']';
-  if Mctrl.Checked then
-    Caption:=TntApplication.Title+' - '+LOCstr_Title;
+  if Mctrl.Checked then Caption:=TntApplication.Title;
 end;
 
 procedure TMainForm.UpdateCaption;
