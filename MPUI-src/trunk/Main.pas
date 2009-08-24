@@ -1962,7 +1962,10 @@ begin
       MFunc:=0; MWheelControl.Items[0].Checked:=true;
       MPWheelControl.Items[0].Checked:=true;
       L:=(OPanel.Width-Width) DIV 2; T:=L;
-      W:=Screen.Width+Width-OPanel.Width; H:=Screen.WorkAreaHeight+Width-OPanel.Width;
+      W:=Screen.Width+Width-OPanel.Width;
+      if (OPanel.Width=Screen.Width) AND (Height=Screen.WorkAreaHeight+Width-OPanel.Width)
+      then H:=Height+1 //in this case, size don't change, SetBounds(L,T,W,H) will directly exit, so +1 to avoid this case.
+      else H:=Screen.WorkAreaHeight+Width-OPanel.Width;
     end
     else begin
       L:=Left+IPanel.Left; T:=Top+MWC+OPanel.Top+IPanel.Top;
