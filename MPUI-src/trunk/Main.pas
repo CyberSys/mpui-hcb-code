@@ -1166,8 +1166,7 @@ begin
   if (CPanel.Visible OR MenuBar.Visible) AND (not seeking)
     AND (not MPCtrl.Checked) then begin
     GetCursorPos(p);
-    if (P.X<Left) OR (P.X>(Left+Width)) OR
-      (P.Y<Top) OR (P.Y>(Top+Height)) then begin
+    if not PtInRect(BoundsRect,p) then begin
       SetCtrlV(false); SetMenuBarV(false);
     end;
   end;
@@ -1918,8 +1917,8 @@ begin
     CPanel.Visible:=false; MenuBar.Visible:=false;
     mctrl.Checked:=true; hide_menu.Checked:=true;
     MPCtrl.Checked:=false;
-    PX:=(OPanel.Width-Width) DIV 2;
-    PY:=OPanel.Height-Height-PX;
+    PX:=Left-OPanel.ClientOrigin.X;
+    PY:=Top-OPanel.ClientOrigin.Y;
     SX:=Screen.Width+Width-OPanel.Width;
     SY:=Screen.Height+Height-OPanel.Height;
     ControlledResize:=true;
@@ -2209,7 +2208,7 @@ begin
       else SetWindowPos(Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     end
     else begin
-      if HaveVideo and (not Wid) then SendCommand('pausing_keep set_property ontop 0')
+      if HaveVideo and (not Wid) then SendCommand('set_property ontop 0')
       else SetWindowPos(Handle,HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
     end;
     if Plist.PlaylistForm.Visible then SetWindowPos(Plist.PlaylistForm.Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
@@ -2461,7 +2460,7 @@ end;
 
 procedure TMainForm.DisplayMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
-var p:TPoint; OY,NOY,i:integer;
+var p:TPoint; OY,i:integer; t:boolean;
 procedure CheckDragD;
 begin
   if FirstDrag then begin
@@ -2477,40 +2476,25 @@ end;
 
 begin
   GetCursorPos(p);
-  if MCompact.Checked then begin
-    OY:=p.Y-(Top+OPanel.Top+OPanel.BevelWidth+(Width-ClientWidth) DIV 2);
-    NOY:=(Top+OPanel.Top+OPanel.Height-OPanel.BevelWidth+(Width-ClientWidth) DIV 2)-p.Y;
-  end
-  else begin
-    if MMaxW.Checked then begin
-      OY:=p.Y-(Top+OPanel.Top+OPanel.BevelWidth);
-      NOY:=(Top+OPanel.Top+OPanel.Height-OPanel.BevelWidth)-p.Y;
-    end
-    else begin
-      OY:=p.Y-(OPanel.Top+OPanel.BevelWidth+Top+MWC+(Width-ClientWidth) DIV 2);
-      NOY:=(OPanel.Top+OPanel.Height-OPanel.BevelWidth+Top+MWC+(Width-ClientWidth) DIV 2)-p.Y;
-    end;
-  end;
+  OY:=p.Y-OPanel.ClientOrigin.Y;
   if (not MPCtrl.Checked) and (MouseMode=0) then begin
-    if (MSubtitle.Count>0) and Running then begin
-      if (not CPanel.Visible) AND (OY>=(OPanel.Height-25)) then SetCtrlV(True);
-      if (not MenuBar.Visible) AND (NOY>=OPanel.Height-10) then SetMenuBarV(True);
-    end
+    if CPanel.Visible then t:=OY<OPanel.Height
     else begin
-      if (not CPanel.Visible) AND (OY>=(OPanel.Height-CPanel.Height)) then SetCtrlV(True);
-      if (not MenuBar.Visible) AND (NOY>=(OPanel.Height-MenuBar.Height)) then SetMenuBarV(True);
+      if (MSubtitle.Count>0) and Running then t:=OY>=(OPanel.Height-25)
+      else t:=OY>=(OPanel.Height-CPanel.Height);
     end;
-    if CPanel.Visible AND (OY<OPanel.Height) then SetCtrlV(false);
-    if MenuBar.Visible AND (NOY<OPanel.Height) then SetMenuBarV(false);
+    if t then SetCtrlV(not CPanel.Visible);
+
+    if MenuBar.Visible then t:=OY>0
+    else begin
+      if (MSubtitle.Count>0) and Running then t:=OY<=10
+      else t:=OY<=MenuBar.Height;
+    end;
+    if t then SetMenuBarV(not MenuBar.Visible);
   end;
 
   if abs(MouseMode)=1 then begin
     SetCursor(Screen.Cursors[crSizeAll]);
-    {ReleaseCapture;
-    SendMessage(Handle, WM_SYSCOMMAND, SC_MOVE+2, 0);
-    //Perform(WM_SYSCOMMAND,$F012,0);
-    //SC_MOVE = 61456; $F012 = 61458 =SC_MOVE+2
-    MouseMode:=0;}
     MouseMode:=-1; //在拖动时不进行单击、双击事件
     left:=left+p.X-OldX; Top:=Top+p.Y-OldY;
     OldX:=p.X; OldY:=p.Y;
@@ -2519,7 +2503,7 @@ begin
   if not Running then exit;
   if IPanel.Width<1 then IPanel.Width:=1;
   if IPanel.Height<1 then IPanel.Height:=1;
-  i:=(OY-IPanel.Top)*100 DIV IPanel.Height;
+  i:=(p.Y-IPanel.ClientOrigin.Y)*100 DIV IPanel.Height;
 
   if (MouseMode=0) and ((p.X<>OldX) or (p.Y<>OldY)) then begin
     OldX:=p.X; OldY:=p.Y;    //Hide Cursor
