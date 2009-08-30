@@ -234,8 +234,9 @@ begin
 '左鍵拖曳字幕'^I'調節字幕在屏位置'^M^J+
 '左鍵 單擊狀態欄時間'^I'切換時間顯示模式'^M^J+
 '中鍵/右鍵 單擊進度條滑塊'^I'設置片頭/片尾'^M^J+
-'在拖曳時，松開、按下不同的功能鍵和起始拖曳方向決定不同的功能'
-  );
+'在拖曳時，松開、按下不同的功能鍵和起始拖曳方向決定不同的功能'^M^J^M^J+
+'如果你想讀取或保存設置到MPUI目錄，僅僅需要在MPUI目錄創建一個名為"MPUI.ini"的档案');
+
   with OptionsForm do begin
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb 版本: ');
     LVersionMPlayer.Caption:=UTF8Decode('MPlayer 核心版本');

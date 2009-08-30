@@ -1593,7 +1593,7 @@ procedure TMainForm.MFClearClick(Sender: TObject);
 var i:integer; INI:TMemIniFile; FileName:WideString;
 begin
   if NoAccess>0 then exit; FileName:=HomeDir+DefaultFileName;
-  if (NoAccess>0) or (not WideFileExists(FileName)) then begin
+  if not WideFileExists(FileName) then begin
     FileName:=AppdataDir+DefaultFileName;
     if not WideFileExists(FileName) then exit;
   end;
@@ -1788,7 +1788,7 @@ var Mask:cardinal; Name:array[0..3]of char; Drive:char;
 begin
   NoAccess:=0;
   MDrive:=Tnt_WideLowerCase(WideExtractFileDrive(HomeDir));
-  if length(MDrive)<>2 then NoAccess:=1;
+  if length(MDrive)>2 then NoAccess:=1;
   Name:='@:\';
   Mask:=GetLogicalDrives;
   for Drive:='A' to 'Z' do
@@ -2536,7 +2536,7 @@ begin
     CheckDragD;
     if DragD then begin   //Change Volumn
       if MFunc=0 then FormMouseWheel(nil,Shift,20*(p.X-OldX),p,DragD)
-      else FormMouseWheel(nil,Shift,4*(p.X-OldX),p,DragD);
+      else FormMouseWheel(nil,Shift,4*(p.X-OldX),p,DragD); //Change Size
     end
     else begin  //Scale Video
       Scale:=Scale+(OldY-p.Y);

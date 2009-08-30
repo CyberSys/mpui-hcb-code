@@ -235,8 +235,9 @@ begin
 '左键拖曳字幕'^I'调节字幕在屏位置'^M^J+
 '左键 单击状态栏时间'^I'切换时间显示模式'^M^J+
 '中键/右键 单击进度条滑块'^I'设置片头/片尾'^M^J+
-'在拖曳时，松开、按下不同的功能键和起始拖曳方向决定不同的功能'
-  );
+'在拖曳时，松开、按下不同的功能键和起始拖曳方向决定不同的功能'^M^J^M^J+
+'如果你想读取或保存设置到MPUI目录，仅仅需要在MPUI目录创建一个名为"MPUI.ini"的文件');
+
   with OptionsForm do begin
     THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('关于');

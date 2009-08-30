@@ -236,7 +236,8 @@ begin
 'Ctrl+LMB drag video'^I'Adjust aspect ratio'^M^J+
 'Shift+LMB drag video'^I'Scale video,Adjust volume or size'^M^J+
 'Alt+LMB drag video'^I'Adjust brightness,contrast,hue,saturation,gamma'^M^J+
-'While drag,release or press different function key invoke different function');
+'While drag,release or press different function key invoke different function'^M^J^M^J+
+'if you want to read or save setting in MPUI folder, only need to create a file name as "MPUI.ini" in MPUI folder');
 
     THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:='About';

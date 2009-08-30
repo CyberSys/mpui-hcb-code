@@ -195,7 +195,6 @@ end;
 procedure Save(FileName:WideString; Mode:integer);
 var INI:TMemIniFile; h:integer; s:WideString;
 begin
-  if NoAccess>0 then exit;
   if (NoAccess>0) or (not WideFileExists(FileName)) then
     FileName:=AppdataDir+WideExtractFileName(FileName);
   if not WideFileExists(FileName) then begin
