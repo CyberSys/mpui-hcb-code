@@ -235,7 +235,9 @@ begin
 '左鍵 單擊狀態欄時間'^I'切換時間顯示模式'^M^J+
 '中鍵/右鍵 單擊進度條滑塊'^I'設置片頭/片尾'^M^J+
 '在拖曳時，松開、按下不同的功能鍵和起始拖曳方向決定不同的功能'^M^J^M^J+
-'如果你想讀取或保存設置到MPUI目錄，僅僅需要在MPUI目錄創建一個名為"MPUI.ini"的档案');
+'通過右鍵菜單，可以改變歌詞的編碼'^M^J+
+'如果MPUI目錄下存在''MPUI.ini''檔案，MPUI將優先讀取和保存設置到這個檔案'^M^J+
+'MPUI將以DVD、VCD或SVCD的方式打開包含''VIDEO_TS''、''MPEGAV''或''MPEG2''子目錄的目錄');
 
   with OptionsForm do begin
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb 版本: ');

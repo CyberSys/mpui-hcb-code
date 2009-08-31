@@ -743,12 +743,10 @@ begin
 end;
 
 procedure TMainForm.HandleLog(var msg:TMessage);
-var t:String;
 begin
-  SetLength(t,msg.LParam);
-  GetAtomName(msg.WParam,@t[1],msg.LParam+1);
-  DeleteAtom(msg.WParam);
-  HandleInputLine(t);
+  if Boolean(Msg.wParam) then begin
+    HandleInputLine(PString(Msg.lParam)^); dispose(PString(Msg.lParam));
+  end;
 end;
 
 procedure TMainForm.PassMsg(var msg:Tmessage);

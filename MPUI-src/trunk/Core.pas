@@ -44,23 +44,24 @@ const SubTypeCount=35;
             '.js','.ass','.mpsub','.idx','.sub'
       );
       
-const MediaType:array[0..202]of WideString=('.7z','.rar','.zip','.arj','.bz2','.z','.lzh',
+const MediaType:array[0..212]of WideString=('.7z','.rar','.zip','.arj','.bz2','.z','.lzh',
         '.cab','.lzma','.xar','.hfs','.dmg','.wim','.iso','.split','.rpm','.deb','.cpio',
         '.tar','.gz',
-        '.aac','.ac3','.acc','.act','.aif','.aifc','.aiff','.amf','.amr','.amv','.ape',
+        '.aac','.ac3','.acc','.act','.aif','.aifc','.aiff','.alac','.amf','.amr','.amv','.ape',
         '.as','.asf','.asx',
-        '.a52','.apl','.au','.avi','.avs','.bik','.bin','.cda','.cmf','.cmn','.cpk',
+        '.a52','.ape','.apl','.au','.avi','.avs','.bik','.bin','.cda','.cmf','.cmn','.cpk',
         '.cue','.d2v','.dat','.drc','.dsm','.dsv','.dsa','.dss','.dts','.dtswav',
         '.dv','.dvr-ms','.divx','.evo','.far','.fla','.flac','.flc','.fli','.flic','.flm',
         '.flv','.grf','.hdmov',
-        '.img','.iso','.ivf','.it','.itz','.jsv','.kar','.m1a','.m2a','.m2p','.m2ts',
+        '.img','.iso','.ivf','.it','.itz','.jsv','.kar','.m1a','.m2a','.m2p','.m2t','.m2ts',
         '.m1v','.m2v','.m3u','.m3u8','.m4a','.m4b','.m4p','.m4v','.mac','.mdz','.mid',
         '.midi','.miz','.mjf','.mka','.mkv','.mod','.mov','.mp1','.mp2','.mp2v',
-        '.mp3','.mp3pro','.mp4','.mp5','.mpa','.mpc','.mpcpl','.mpe','.mpeg','.mpg','.mpga','.mp+','.mpp',
-        '.mtm','.mpv','.mpv2','.mqv','.mts','.nrg','.nsa','.nst','.nsv','.nuv','.ogg','.ogm','.okt','.pls','.pmp',
+        '.mp3','.mp3pro','.mp4','.mp4v','.mp5','.mpa','.mpc','.mpcpl','.mpe','.mpeg','.mpg','.mpga','.mp+','.mpp',
+        '.mtm','.mpv','.mpv2','.mpv4','.mqv','.mts','.nrg','.nsa','.nst','.nsv','.nuv','.ofr','.ofs','.oga','.ogg',
+        '.ogm','.ogv','.okt','.pls','.pmp',
         '.pmp2','.pss','.ptm','.pva','.qt','.ra','.ram','.ratdvd','.rm','.rmi','.rmj',
         '.rmm','.rmp','.rms','.rmvb','.rmx','.rnx','.roq','.rp','.rpm','.rt','.rv','.realpix',
-        '.s3m','.s3z','.scm','.sdp','.smil','.smk','.smpl','.snd','.stm','.stz','.swf','.tp','.tpr',
+        '.s3m','.s3z','.scm','.sdp','.smil','.smk','.smpl','.snd','.stm','.stz','.swa','.swf','.tp','.tpr',
         '.ts','.tta','.ttpl','.ult','.umx','.vcd','.vfw','.vg2','.vid','.vivo','.vob','.voc','.vp3','.vp4','.vp5',
         '.vp6','.vp7','.vqf','.wav','.wax','.wm','.wma','.wmp','.wmv','.wmx',
         '.wpl','.wv','.wvx','.xm','.xmz','.xspf',
@@ -515,18 +516,18 @@ function GetFolderPath(csidl:integer):WideString;
 var Buffer:PAnsiChar; BufferW:PWideChar;
 begin
   if Win32PlatformIsUnicode then begin
-    GetMem(BufferW,MAX_PATH+1);
+    new(BufferW);
     if SHGetSpecialFolderPathW(0,BufferW,csidl,false) then
       Result:=BufferW
     else Result:='';
-    FreeMem(BufferW);
+    dispose(BufferW);
   end
   else begin
-    GetMem(Buffer,MAX_PATH+1);
+    new(Buffer);
     if SHGetSpecialFolderPath(0,Buffer,csidl,false) then
       Result:=WideString(Buffer)
     else Result:='';
-    FreeMem(Buffer);
+    dispose(Buffer);
   end;
 end;
 
@@ -1086,14 +1087,14 @@ begin
 end;
 
 procedure TProcessor.Process;
-var LastEOL,EOL,Len:integer; S:String;
+var LastEOL,EOL,Len:integer; S:PString;
 begin
   Len:=length(Data);
   LastEOL:=0;
   for EOL:=1 to Len do
     if (EOL>LastEOL) AND (Data[EOL] in [#13,#10]) then begin
-      S:=Copy(Data,LastEOL+1,EOL-(LastEOL+1));
-      PostMessage(MainForm.Handle,$0402,AddAtom(@S[1]),Length(S));
+      new(S); S^:=Copy(Data,LastEOL+1,EOL-(LastEOL+1));
+      if not PostMessage(MainForm.Handle,$0402,integer(true),integer(S)) then dispose(S);
       LastEOL:=EOL;
       if (LastEOL<Len) AND (Data[LastEOL+1]=#10) then inc(LastEOL);
     end;

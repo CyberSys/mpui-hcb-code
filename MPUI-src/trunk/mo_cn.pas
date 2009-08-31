@@ -236,7 +236,9 @@ begin
 '左键 单击状态栏时间'^I'切换时间显示模式'^M^J+
 '中键/右键 单击进度条滑块'^I'设置片头/片尾'^M^J+
 '在拖曳时，松开、按下不同的功能键和起始拖曳方向决定不同的功能'^M^J^M^J+
-'如果你想读取或保存设置到MPUI目录，仅仅需要在MPUI目录创建一个名为"MPUI.ini"的文件');
+'通过右键菜单，可以改变歌词的编码'^M^J+
+'如果MPUI目录下存在''MPUI.ini''文件，MPUI将优先读取和保存设置到这个文件'^M^J+
+'MPUI将以DVD、VCD或SVCD的方式打开包含''VIDEO_TS''、''MPEGAV''或''MPEG2''子目录的目录');
 
   with OptionsForm do begin
     THelp.Caption:=MainForm.MHelp.Caption;

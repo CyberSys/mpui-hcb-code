@@ -391,6 +391,57 @@ begin
   end;
 end;
 
+procedure TPlaylist.AddDirectory(Directory:Widestring);
+var SR:TSearchRecW; Entry:TPlaylistEntry;
+begin
+  Directory:=WideIncludeTrailingPathDelimiter(WideExpandUNCFileName(Directory));
+
+  // check for DVD directory
+  if WideDirectoryExists(Directory+'VIDEO_TS') then begin
+   // Directory:=WideExcludeTrailingPathDelimiter(Directory);
+    with Entry do begin
+      State:=psNotPlayed;
+      if IsWideStringMappableToAnsi(Directory) then
+        FullURL:=' -dvd-device '+EscapeParam(Directory+'VIDEO_TS')+' dvd'
+      else
+        FullURL:=' -dvd-device '+EscapeParam(WideExtractShortPathName(Directory+'VIDEO_TS'))+' dvd';
+      DisplayURL:='DVD-1 <-- '+Directory;
+    end;
+    Add(Entry);
+    exit;
+  end;
+
+  // no DVD ->is it a (S)VCD directory?
+  if WideDirectoryExists(Directory+'MPEGAV') then Directory:=Directory+'MPEGAV\'
+  else if WideDirectoryExists(Directory+'MPEG2') then Directory:=Directory+'MPEG2\';
+
+  // no (S)VCD -> search the directory recursively
+  if WideFindFirst(Directory+'*.*',faAnyFile,SR)=0 then begin
+    repeat
+      if SR.Name[1]<>'.' then begin   // exclude . or .. Directory
+        empty:=false;
+        if (SR.Attr AND faDirectory)<>0 then AddDirectory(Directory+SR.Name)
+        else if CheckInfo(MediaType,Tnt_WideLowerCase(WideExtractFileExt(SR.Name)))>-1 then
+          AddFiles(Directory+SR.Name);
+      end;
+    until WideFindNext(SR)<>0;
+    WideFindClose(SR);
+  end;
+  
+  // directory is empty, or no filesystem -> try use TrackMode to access directory
+  if empty then begin
+    with Entry do begin
+      State:=psNotPlayed;
+      if IsWideStringMappableToAnsi(Directory) then
+        FullURL:=' -cdrom-device '+EscapeParam(Directory)+' vcd://'
+      else
+        FullURL:=' -cdrom-device '+EscapeParam(WideExtractShortPathName(Directory))+' vcd://';
+      DisplayURL:='VCD <-- '+Directory;
+    end;
+    Add(Entry);
+  end;
+end;
+
 function TPlaylist.GetCount:integer;
 begin
   Result:=length(Data);
@@ -833,57 +884,6 @@ begin
   else if CurLyric<>NextLyric then
     LyricV:=PlaylistForm.TMLyric.ItemHeight/(LyricTime[NextLyric].timecode-LyricTime[CurLyric].timecode);
   PlaylistForm.TMLyric.Refresh;
-end;
-
-procedure TPlaylist.AddDirectory(Directory:Widestring);
-var SR:TSearchRecW; Entry:TPlaylistEntry;
-begin
-  Directory:=WideIncludeTrailingPathDelimiter(WideExpandUNCFileName(Directory));
-
-  // check for DVD directory
-  if WideDirectoryExists(Directory+'VIDEO_TS') then begin
-   // Directory:=WideExcludeTrailingPathDelimiter(Directory);
-    with Entry do begin
-      State:=psNotPlayed;
-      if IsWideStringMappableToAnsi(Directory) then
-        FullURL:=' -dvd-device '+EscapeParam(Directory+'VIDEO_TS')+' dvd'
-      else
-        FullURL:=' -dvd-device '+EscapeParam(WideExtractShortPathName(Directory+'VIDEO_TS'))+' dvd';
-      DisplayURL:='DVD-1 <-- '+Directory;
-    end;
-    Add(Entry);
-    exit;
-  end;
-
-  // no DVD ->is it a (S)VCD directory?
-  if WideDirectoryExists(Directory+'MPEGAV') then Directory:=Directory+'MPEGAV\'
-  else if WideDirectoryExists(Directory+'MPEG2') then Directory:=Directory+'MPEG2\';
-
-  // no (S)VCD -> search the directory recursively
-  if WideFindFirst(Directory+'*.*',faAnyFile,SR)=0 then begin
-    repeat
-      if SR.Name[1]<>'.' then begin   // exclude . or .. Directory
-        empty:=false;
-        if (SR.Attr AND faDirectory)<>0 then AddDirectory(Directory+SR.Name)
-        else if CheckInfo(MediaType,Tnt_WideLowerCase(WideExtractFileExt(SR.Name)))>-1 then
-          AddFiles(Directory+SR.Name);
-      end;
-    until WideFindNext(SR)<>0;
-    WideFindClose(SR);
-  end;
-  
-  // directory is empty, or no filesystem -> try use TrackMode to access directory
-  if empty then begin
-    with Entry do begin
-      State:=psNotPlayed;
-      if IsWideStringMappableToAnsi(Directory) then
-        FullURL:=' -cdrom-device '+EscapeParam(Directory)+' vcd://'
-      else
-        FullURL:=' -cdrom-device '+EscapeParam(WideExtractShortPathName(Directory))+' vcd://';
-      DisplayURL:='VCD <-- '+Directory;
-    end;
-    Add(Entry);
-  end;
 end;
 
 procedure TPlaylistForm.FormCreate(Sender: TObject);
