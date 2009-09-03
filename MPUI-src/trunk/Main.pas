@@ -2506,7 +2506,7 @@ begin
   if (MouseMode=0) and ((p.X<>OldX) or (p.Y<>OldY)) then begin
     OldX:=p.X; OldY:=p.Y;    //Hide Cursor
     if Dnav and (Sender=IPanel) and IsDMenu then SendCommand('set_mouse_pos '+IntToStr(X*NativeWidth div IPanel.Width)+' '+IntToStr(Y*NativeHeight div IPanel.Height));
-    if (MSubtitle.Count>0) and (not Ass) and (not IsDMenu) and (abs(i-SubPos)<=10) then begin
+    if (MSubtitle.Count>0) and (not IsDMenu) and (abs(i-SubPos)<=10) then begin
       IPanel.Cursor:=crHandPoint; OPanel.Cursor:=crHandPoint;
       HideMouseAt:=GetTickCount+2000;
     end
@@ -2522,7 +2522,7 @@ begin
       if ass then SendCommand('sub_scale '+FloatToStr(FSize/3.2)+' 1')
       else SendCommand('sub_scale '+FloatToStr(FSize)+' 1');
     end
-    else begin       //Move Subtitle
+    else if not ass then begin       //Move Subtitle
       SubPos:=i;
       if SubPos<0 then SubPos:=0; if SubPos>100 then SubPos:=100;
       SendCommand('sub_pos '+IntToStr(SubPos)+' 1');

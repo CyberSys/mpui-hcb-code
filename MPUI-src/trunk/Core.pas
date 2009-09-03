@@ -26,7 +26,7 @@ const PauseCMD:array[0..1]of WideString=('pause','frame_step');
 const PauseInfo:array[0..1]of WideString=('=  PAUSE  =','= 暂停 =');
 const CacheFill:array[0..4]of WideString=('Cache fill:','缓存填充:','缓冲填充:','緩存填充:','緩沖填充:');
 const GenIndex:array[0..2]of WideString=('Generating Index:','正在生成索引:','正在生成索引:');
-const defaultHeight=340; RFileMax=10; DefaultOSDLevel=1; stopTimeout=1000;
+const defaultHeight=340; RFileMax=10; DefaultOSDLevel=1; stopTimeout=1000; Dsubpos=96;
 const szdllCount=2;
 const szdll:array[0..szdllCount]of WideString=('7zxa.dll','7za.dll','7z.dll');
 
@@ -648,7 +648,7 @@ begin
   if dbbuf then CmdLine:=CmdLine+' -double';
   if nfc then CmdLine:=CmdLine+' -nofontconfig';
   if Ass then begin
-    CmdLine:=CmdLine+' -ass';
+    CmdLine:=CmdLine+' -ass'; SubPos:=Dsubpos;
     if Efont then CmdLine:=CmdLine+' -embeddedfonts';
     CmdLine:=CmdLine+' -ass-color '+ColorToStr(TextColor)
             +' -ass-border-color '+ColorToStr(OutColor)
@@ -2380,7 +2380,7 @@ begin
   dbbuf:=true; Dr:=false; Volnorm:=false; nfc:=true; InterW:=4; InterH:=3;
   Params:=''; OnTop:=0; UpdateSkipBar:=false; Async:=false; AsyncV:='100';
   Status:=sNone; Shuffle:=false; Loop:=false; OneLoop:=false; VideoOut:='Auto';
-  Volume:=100; Mute:=False; Duration:=''; MouseMode:=0; SubPos:=96; FSize:=4.5;
+  Volume:=100; Mute:=False; Duration:=''; MouseMode:=0; SubPos:=Dsubpos; FSize:=4.5;
   Flip:=false; Mirror:=false; Yuy2:=false; Eq2:=false; LastEq2:=false; Rot:=0;
   Bp:=0; Ep:=0; FB:=2; MAspect:='Default'; empty:=true; lavf:=false; vsync:=false;
   Cache:=false; CacheV:='2048'; bri:=101; contr:=101; hu:=101; sat:=101; CP:=0;
