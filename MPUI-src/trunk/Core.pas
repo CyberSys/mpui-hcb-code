@@ -571,11 +571,11 @@ var DummyPipe1,DummyPipe2:THandle;
     si:TStartupInfoW;
     pi:TProcessInformation;
     sec:TSecurityAttributes;
-    CmdLine,S,j:WideString;
+    CmdLine,S,j,k:WideString;
     Success:boolean; Error:DWORD;
     ErrorMessage:array[0..1023]of Char;
     ErrorMessageW:array[0..1023]of WideChar;
-    i,t:integer; UnRART:TUnRARThread;
+    i,t,h:integer; UnRART:TUnRARThread;
 begin
   if Running or (length(MediaURL)=0) then exit;
   Status:=sOpening; IsPause:=false; IsDx:=false;
@@ -598,7 +598,7 @@ begin
     exit;
   end;
 
-  FirstChance:=true; afCount:=0; afChain:='';
+  FirstChance:=true; afCount:=0; afChain:=''; h:=0;
   ClientWaitThread:=TClientWaitThread.Create(true);
   ClientWaitThread.FreeOnTerminate:=true;
   Processor:=TProcessor.Create(true);
@@ -734,8 +734,18 @@ begin
       i:=Pos(' <-- ',DisplayURL);
       if i>0 then ArcMovie:=copy(DisplayURL,1,i-1)
       else ArcMovie:=DisplayURL;
+      TmpURL:=copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie)));
+      LyricURL:=WideExtractFilePath(MediaURL)+TmpURL;
+      for t:=ZipTypeCount+2 to SubTypeCount-2 do begin
+        k:=LyricURL+SubType[t];
+        if WideFileExists(k) then begin
+          if (not IsWideStringMappableToAnsi(k)) or (pos(',',k)>0) then k:=WideExtractShortPathName(k);
+          Loadsub:=2; Loadsrt:=2;
+          AddChain(h,substring,Tnt_WideStringReplace(EscapeParam(k),'\','/',[rfReplaceAll]));
+        end;
+      end;
       if HaveLyric=0 then begin  //播放的Arc文件所在的目录下有包内当前播放文件同名的歌词
-        TmpURL:=copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie)))+'.lrc';
+        TmpURL:=TmpURL+'.lrc';
         LyricURL:=WideExtractFilePath(MediaURL)+TmpURL;
         if not WideFileExists(LyricURL) then
           LyricURL:=WideIncludeTrailingPathDelimiter(j)+TmpURL;
@@ -765,10 +775,8 @@ begin
       if WideFileExists(j+ZipType[t]) then begin
         if IsLoaded(ZipType[t]) then begin   //当前播放文件所在的目录下有同名Arc文件中的同名歌词
           if (HaveLyric=0) and (i<>0) then ExtractLyric(j+ZipType[t],ArcPW,ZipType[t],i);
-          if LoadVob<>1 then begin
-            TmpURL:=ExtractSub(j+ZipType[t],ArcPW,ZipType[t]);
-            if TmpURL<>'' then begin Vobfile:=TmpURL; LoadVob:=1; end;
-          end;
+          TmpURL:=ExtractSub(j+ZipType[t],ArcPW,ZipType[t]);
+          if (LoadVob<>1) and (TmpURL<>'') then begin Vobfile:=TmpURL; LoadVob:=1; end;
         end;
       end;
     end;
@@ -1622,10 +1630,10 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
              Loadsrt:=1;
            end;
         2: begin
-             if Pos(Tnt_WideStringReplace(TempDir,'\','/',[rfReplaceAll]),s)>0 then begin
+            // if Pos(Tnt_WideStringReplace(TempDir,'\','/',[rfReplaceAll]),s)>0 then begin
                AddChain(subcount,substring,EscapeParam(s));
                Lastsubcount:=subcount;
-             end;
+           //  end;
            end;
       end;
       Result:=true;
