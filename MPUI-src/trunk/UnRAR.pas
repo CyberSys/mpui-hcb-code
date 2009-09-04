@@ -19,7 +19,6 @@ const
   RAR_SKIP             = 0;
   RAR_EXTRACT          = 2;
   RAR_VOL_ASK          = 0;
-  UCM_PROCESSDATA      = 1;
   UCM_CHANGEVOLUME     = 0;
 
 type

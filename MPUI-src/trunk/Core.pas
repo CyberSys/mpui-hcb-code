@@ -923,7 +923,7 @@ begin
       if Dnav and SMenu and (i=1) then TID:=0
       else TID:=i;
     end;
-    tmpTID:=TID;
+    if (not Dnav) and (TID=0) then TID:=1; tmpTID:=TID;
     if TID>0 then CmdLine:=CmdLine+IntToStr(TID);
     if CID>1 then CmdLine:=CmdLine+' -chapter '+IntToStr(CID);
     if AID>1 then CmdLine:=CmdLine+' -dvdangle '+IntToStr(AID);

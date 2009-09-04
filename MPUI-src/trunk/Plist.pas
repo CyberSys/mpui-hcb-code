@@ -995,7 +995,7 @@ begin
   with MainForm.OpenDialog do begin
     Title:=MainForm.MOpenFile.Caption;
     Options:=Options+[ofAllowMultiSelect]-[ofoldstyledialog];
-    filter:=MediaFilter+'|*.rar;*.zip;*.7z;*.ttpl;*.av*;*.mp*;*.vo*;*.dat;*.bin;*.qt;'
+    filter:=MediaFilter+'|*.rar;*.zip;*.7z;*.ttpl;*.alac;*.av*;*.mp*;*.vo*;*.dat;*.bin;*.qt;'
            +'*.divx;*.og*;*.mk*;*.wm*;*.as*;*.m*v;*.dv;*.26*;*.wav;*.wpl;'
            +'*.ac*;*.m4*;*.rm*;*.vivo;*.3g*;*.iso;*.img;*.grf;*.realpix;'
            +'*.m3u*;*.vp*;*.ts;*.vqf;*.nrg;*.cue;*.a52;*.aac;*.dts*;'
