@@ -2220,11 +2220,11 @@ procedure TMainForm.UpdateParams;
 begin
   Loadsrt:=0; LoadVob:=0; MSecPos:=-1; Adelay:=0; Sdelay:=0; HaveChapters:=false;
   ETime:=false; CBHSA:=0; Firstrun:=true; HaveAudio:=false; HaveVideo:=false;
-  DirHIdx:=0; DirHSub:=0; Vobfile:=''; substring:=''; MShowSub.Checked:=true;
+  Vobfile:=''; substring:=''; MShowSub.Checked:=true; IsDMenu:=false; SMenu:=true;
   AudioID:=-1; SubID:=-1; VideoID:=-1; TID:=1; CID:=1; AID:=1; CDID:=1;
-  subcount:=0; Lastsubcount:=0; VobsubCount:=0; procArc:=false; IsDMenu:=false;
-  LastPos:=0; SecondPos:=-1; TotalTime:=0; Duration:='0:00:00'; SMenu:=true;
-  SeekBarSlider.Left:=0; UpdateSkipBar:=SkipBar.Visible; Dreset:=false;
+  subcount:=0; Lastsubcount:=0; VobsubCount:=0; procArc:=false; Dreset:=false;
+  LastPos:=0; SecondPos:=-1; TotalTime:=0; Duration:='0:00:00';
+  SeekBarSlider.Left:=0; UpdateSkipBar:=SkipBar.Visible;
   if AudioFile<>''then begin AudioFile:=''; MUloadAudio.Visible:=false; end;
 end;
 

@@ -114,7 +114,7 @@ var HomeDir,SystemDir,TempDir,AppdataDir:WideString;
 var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     ArcPW,TmpPW,DisplayURL,AudioFile,MaxLenLyricW:WideString;
     Duration,LyricF,fass,HKS,lastP1:String;
-    substring,afChain,Vobfile,ShotDir,LyricDir,LyricURL,lastFN:WideString;
+    substring,Vobfile,ShotDir,LyricDir,LyricURL,lastFN:WideString;
     subfont,osdfont,Ccap,Acap,DemuxerName:WideString;
     MplayerLocation,WadspL,AsyncV,CacheV:widestring;
     MAspect,subcode,MaxLenLyricA,VideoOut:string;
@@ -128,7 +128,7 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
 var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
     AudioID,MouseMode,SubPos,NoAccess:integer;
     SubID,TID,tmpTID,CID,AID,VCDST,VCDET,CDID:integer;
-    subcount,Bp,Ep,CurrentLocale,afCount:integer;
+    subcount,Bp,Ep,CurrentLocale:integer;
     Lastsubcount,DirHIdx,DirHSub:integer;
     AudiochannelsID,CurLyric,NextLyric,LyricCount:integer;
     VobsubCount,VobFileCount:integer;
@@ -417,8 +417,8 @@ end;
 procedure AddChain(var Count:integer; var rs:WideString; const s:WideString);
 begin
   inc(Count);
-  if Count>1 then rs:=rs+','+s
-  else rs:=s;
+  if rs='' then rs:=s
+  else rs:=rs+','+s;
 end;
 
 function CheckOption(OPTN:WideString):boolean;
@@ -571,7 +571,7 @@ var DummyPipe1,DummyPipe2:THandle;
     si:TStartupInfoW;
     pi:TProcessInformation;
     sec:TSecurityAttributes;
-    CmdLine,S,j,k:WideString;
+    CmdLine,S,j,k,g,afChain:WideString;
     Success:boolean; Error:DWORD;
     ErrorMessage:array[0..1023]of Char;
     ErrorMessageW:array[0..1023]of WideChar;
@@ -598,7 +598,7 @@ begin
     exit;
   end;
 
-  FirstChance:=true; afCount:=0; afChain:=''; h:=0;
+  FirstChance:=true; afChain:=''; h:=0;
   ClientWaitThread:=TClientWaitThread.Create(true);
   ClientWaitThread.FreeOnTerminate:=true;
   Processor:=TProcessor.Create(true);
@@ -735,15 +735,20 @@ begin
       if i>0 then ArcMovie:=copy(DisplayURL,1,i-1)
       else ArcMovie:=DisplayURL;
       TmpURL:=copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie)));
-      LyricURL:=WideExtractFilePath(MediaURL)+TmpURL;
+      g:=WideExtractFilePath(MediaURL)+TmpURL; //播放的Arc文件所在的目录下有包内当前播放文件同名的sub
+      DirHIdx:=integer(WideFileExists(g+'.idx'));
+      DirHSub:=integer(WideFileExists(g+'.sub'));
+      if (DirHIdx+DirHSub)=2 then begin LoadVob:=1; Vobfile:=g; end;
+
       for t:=ZipTypeCount+2 to SubTypeCount-2 do begin
-        k:=LyricURL+SubType[t];
+        k:=g+SubType[t];
         if WideFileExists(k) then begin
           if (not IsWideStringMappableToAnsi(k)) or (pos(',',k)>0) then k:=WideExtractShortPathName(k);
           Loadsub:=2; Loadsrt:=2;
           AddChain(h,substring,Tnt_WideStringReplace(EscapeParam(k),'\','/',[rfReplaceAll]));
         end;
       end;
+
       if HaveLyric=0 then begin  //播放的Arc文件所在的目录下有包内当前播放文件同名的歌词
         TmpURL:=TmpURL+'.lrc';
         LyricURL:=WideExtractFilePath(MediaURL)+TmpURL;
@@ -754,29 +759,30 @@ begin
     end
     else i:=-1;
 
-    Vobfile:=copy(MediaURL,1,length(MediaURL)-length(WideExtractFileExt(MediaURL)));
+    g:=copy(MediaURL,1,length(MediaURL)-length(WideExtractFileExt(MediaURL)));
     if HaveLyric=0 then begin //当前播放文件所在的目录下有同名的歌词
-      LyricURL:=Vobfile+'.lrc';
-      if WideFileExists(LyricURL) then
-        Lyric.ParseLyric(LyricURL)
-      else begin
+      LyricURL:=g+'.lrc';
+      if not WideFileExists(LyricURL) then begin
         LyricURL:=WideExtractFileName(MediaURL);
         LyricURL:=WideIncludeTrailingPathDelimiter(j)
                +copy(LyricURL,1,length(LyricURL)-length(WideExtractFileExt(MediaURL)))+'.lrc';
-        if WideFileExists(LyricURL) then Lyric.ParseLyric(LyricURL);
       end;
+      if WideFileExists(LyricURL) then Lyric.ParseLyric(LyricURL);
     end;
 
-    if WideFileExists(Vobfile+'.idx') then DirHIdx:=1;
-    if WideFileExists(Vobfile+'.sub') then DirHSub:=1;
-    if (DirHIdx+DirHSub)=2 then LoadVob:=1;
-    j:=Vobfile;
+    if LoadVob=0 then begin
+      DirHIdx:=integer(WideFileExists(g+'.idx'));
+      DirHSub:=integer(WideFileExists(g+'.sub'));
+      if (DirHIdx+DirHSub)=2 then begin LoadVob:=1; Vobfile:=g; end;
+    end
+    else begin DirHIdx:=1; DirHSub:=1; end;
+    
     for t:=Low(ZipType) to High(ZipType) do begin
-      if WideFileExists(j+ZipType[t]) then begin
+      if WideFileExists(g+ZipType[t]) then begin
         if IsLoaded(ZipType[t]) then begin   //当前播放文件所在的目录下有同名Arc文件中的同名歌词
-          if (HaveLyric=0) and (i<>0) then ExtractLyric(j+ZipType[t],ArcPW,ZipType[t],i);
-          TmpURL:=ExtractSub(j+ZipType[t],ArcPW,ZipType[t]);
-          if (LoadVob<>1) and (TmpURL<>'') then begin Vobfile:=TmpURL; LoadVob:=1; end;
+          if (HaveLyric=0) and (i<>0) then ExtractLyric(g+ZipType[t],ArcPW,ZipType[t],i);
+          TmpURL:=ExtractSub(g+ZipType[t],ArcPW,ZipType[t]);
+          if (LoadVob=0) and (TmpURL<>'') then begin Vobfile:=TmpURL; LoadVob:=1; end;
         end;
       end;
     end;
@@ -879,20 +885,20 @@ begin
   end;
 
   case AudiochannelsID of
-    1: AddChain(afCount,afChain,'channels=2:2:0:1:0:0');
-    2: AddChain(afCount,afChain,'channels=2:2:1:0:1:1');
-    3: AddChain(afCount,afChain,'pan=2:0.65:0.35:0.35:0.65');
+    1: AddChain(h,afChain,'channels=2:2:0:1:0:0');
+    2: AddChain(h,afChain,'channels=2:2:1:0:1:1');
+    3: AddChain(h,afChain,'pan=2:0.65:0.35:0.35:0.65');
   end;
   if Wadsp then begin
     s:=ExpandName(HomeDir,WadspL);
     if WideFileExists(s) then begin
       if (not IsWideStringMappableToAnsi(s)) or (pos(',',s)>0) then s:=WideExtractShortPathName(s);
-      AddChain(afCount,afChain,'wadsp='+EscapeParam(s));
+      AddChain(h,afChain,'wadsp='+EscapeParam(s));
     end;
   end;
-  if Volnorm then AddChain(afCount,afChain,'volnorm');
+  if Volnorm then AddChain(h,afChain,'volnorm');
 
-  if afCount>0 then CmdLine:=CmdLine+' -af '+afChain;
+  if afChain<>'' then CmdLine:=CmdLine+' -af '+afChain;
   if length(Params)>0 then CmdLine:=CmdLine+#32+Params;
   CmdLine:=CmdLine+' -subpos '+IntToStr(SubPos)+' -vf-add screenshot';
   if FirstOpen and Mainform.MSIE.Checked and (Bp>0) then begin
@@ -1623,18 +1629,11 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     if (len>21) and (Copy(Line,1,21)='ID_FILE_SUB_FILENAME=') then begin
       s:=copy(Line,22,MaxInt);
       SubMenu_SetNameLang(MainForm.MSubtitle,MainForm.MSubtitle.Count-1,s);
+      if subcount=0 then substring:='';
+      AddChain(subcount,substring,EscapeParam(s));
       case Loadsub of
-        1: begin
-             AddChain(subcount,substring,EscapeParam(s));
-             Mainform.NextSub;
-             Loadsrt:=1;
-           end;
-        2: begin
-            // if Pos(Tnt_WideStringReplace(TempDir,'\','/',[rfReplaceAll]),s)>0 then begin
-               AddChain(subcount,substring,EscapeParam(s));
-               Lastsubcount:=subcount;
-           //  end;
-           end;
+        1: begin Mainform.NextSub; Loadsrt:=1; end;
+        2: Lastsubcount:=subcount;
       end;
       Result:=true;
     end;
@@ -2383,7 +2382,7 @@ begin
   MFunc:=0; ETime:=false; InSubDir:=true; ML:=false; Pri:=true; HaveLyric:=0;
   AudiochannelsID:=0; OSDLevel:=DefaultOSDLevel; Ch:=0; Wid:=true; Fd:=false; oneM:=true;
   Deinterlace:=0; Aspect:=0; Postproc:=0; IntersubCount:=0; UpdatePW:=false;
-  AudioOut:=2; AudioDev:=0; Expand:=0; SPDIF:=false; DirHIdx:=0; DirHSub:=0;
+  AudioOut:=2; AudioDev:=0; Expand:=0; SPDIF:=false; nmsg:=true; Subcode:='';
   ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=true; Fol:=2;
   dbbuf:=true; Dr:=false; Volnorm:=false; nfc:=true; InterW:=4; InterH:=3;
   Params:=''; OnTop:=0; UpdateSkipBar:=false; Async:=false; AsyncV:='100';
@@ -2401,6 +2400,6 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10;
-  lastP1:=''; lastFN:=''; nmsg:=true; Subcode:=''; ResetStreamInfo;
+  lastP1:=''; lastFN:=''; ResetStreamInfo;
 end.
 
