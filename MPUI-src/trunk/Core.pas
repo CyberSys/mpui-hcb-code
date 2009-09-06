@@ -30,21 +30,21 @@ const defaultHeight=340; RFileMax=10; DefaultOSDLevel=1; stopTimeout=1000; Dsubp
 const szdllCount=2;
 const szdll:array[0..szdllCount]of WideString=('7zxa.dll','7za.dll','7z.dll');
 
-const ZipTypeCount=19;
-const ZipType:array[0..ZipTypeCount]of WideString=('.7z','.rar','.zip','.arj','.bz2','.z','.lzh',
+const ZipTypeCount=20;
+const ZipType:array[0..ZipTypeCount]of WideString=('.7z','.rar','.zip','.001','.arj','.bz2','.z','.lzh',
             '.cab','.lzma','.xar','.hfs','.dmg','.wim','.iso','.split','.rpm','.deb','.cpio',
             '.tar','.gz'
       );
 
-const SubTypeCount=35;
-      SubType:array[0..SubTypeCount]of WideString=('.7z','.rar','.zip','.arj','.bz2','.z','.lzh',
+const SubTypeCount=36;
+      SubType:array[0..SubTypeCount]of WideString=('.7z','.rar','.zip','.001','.arj','.bz2','.z','.lzh',
             '.cab','.lzma','.xar','.hfs','.dmg','.wim','.iso','.split','.rpm','.deb','.cpio',
             '.tar','.gz',
             '.lrc','.utf','.utf8','.utf-8','.srt','.smi','.rt','.txt','.ssa','.aqt','.jss',
             '.js','.ass','.mpsub','.idx','.sub'
       );
       
-const MediaType:array[0..212]of WideString=('.7z','.rar','.zip','.arj','.bz2','.z','.lzh',
+const MediaType:array[0..213]of WideString=('.7z','.rar','.zip','.001','.arj','.bz2','.z','.lzh',
         '.cab','.lzma','.xar','.hfs','.dmg','.wim','.iso','.split','.rpm','.deb','.cpio',
         '.tar','.gz',
         '.aac','.ac3','.acc','.act','.aif','.aifc','.aiff','.alac','.amf','.amr','.amv','.ape',
@@ -281,7 +281,7 @@ begin
   end
   else begin
     if Is7zLoaded=0 then Load7zLibrary;
-    if ArcType='.7z' then begin
+    if (ArcType='.7z') or (ArcType='.001') then begin
       Result:=Is7zLoaded<>0;
       if not Result then begin
         if IsZipLoaded=0 then LoadZipLibrary;
@@ -303,7 +303,7 @@ begin
     if IsZipLoaded<>0 then Result:=AddZipMovies(ArcName,PW,Add)
     else if Is7zLoaded>2 then Result:=Add7zMovies(ArcName,PW,Add);
   end
-  else if ArcType='.7z' then begin
+  else if (ArcType='.7z') or (ArcType='.001') then begin
     if Is7zLoaded<>0 then Result:=Add7zMovies(ArcName,PW,Add)
     else if IsZipLoaded<>0 then Result:=AddZipMovies(ArcName,PW,Add);
   end
@@ -320,7 +320,7 @@ begin
     if IsZipLoaded<>0 then ExtractZipMovie(ArcName,MovieName,PW)
     else if Is7zLoaded>2 then Extract7zMovie(ArcName,MovieName,PW);
   end
-  else if ArcType='.7z' then begin
+  else if (ArcType='.7z') or (ArcType='.001') then begin
     if Is7zLoaded<>0 then Extract7zMovie(ArcName,MovieName,PW)
     else if IsZipLoaded<>0 then ExtractZipMovie(ArcName,MovieName,PW);
   end
@@ -337,7 +337,7 @@ begin
     if IsZipLoaded<>0 then ExtractZipLyric(ArcName,PW,Mode)
     else if Is7zLoaded>2 then Extract7zLyric(ArcName,PW,Mode);
   end
-  else if ArcType='.7z' then begin
+  else if (ArcType='.7z') or (ArcType='.001') then begin
     if Is7zLoaded<>0 then Extract7zLyric(ArcName,PW,Mode)
     else if IsZipLoaded<>0 then ExtractZipLyric(ArcName,PW,Mode);
   end
@@ -355,7 +355,7 @@ begin
     if IsZipLoaded<>0 then Result:=ExtractZipSub(ArcName,PW)
     else if Is7zLoaded>2 then Result:=Extract7zSub(ArcName,PW);
   end
-  else if ArcType='.7z' then begin
+  else if (ArcType='.7z') or (ArcType='.001') then begin
     if Is7zLoaded<>0 then Result:=Extract7zSub(ArcName,PW)
     else if IsZipLoaded<>0 then Result:=ExtractZipSub(ArcName,PW);
   end
@@ -454,11 +454,12 @@ end;
 function CheckInfo(const Map:array of WideString; Value:WideString):integer;
 var i:integer;
 begin
-  for i:=Low(Map) to High(Map) do
-    if Map[i]=Value then begin
-      Result:=i;
-      exit;
-    end;
+  if Value<>'' then
+    for i:=Low(Map) to High(Map) do
+      if Map[i]=Value then begin
+        Result:=i;
+        exit;
+      end;
   Result:=-1;
 end;
 
@@ -735,7 +736,7 @@ begin
       if i>0 then ArcMovie:=copy(DisplayURL,1,i-1)
       else ArcMovie:=DisplayURL;
       TmpURL:=copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie)));
-      g:=WideExtractFilePath(MediaURL)+TmpURL; //播放的Arc文件所在的目录下有包内当前播放文件同名的sub
+      g:=WideIncludeTrailingPathDelimiter(WideExtractFilePath(MediaURL))+TmpURL; //播放的Arc文件所在的目录下有包内当前播放文件同名的sub
       DirHIdx:=integer(WideFileExists(g+'.idx'));
       DirHSub:=integer(WideFileExists(g+'.sub'));
       if (DirHIdx+DirHSub)=2 then begin LoadVob:=1; Vobfile:=g; end;
@@ -751,7 +752,7 @@ begin
 
       if HaveLyric=0 then begin  //播放的Arc文件所在的目录下有包内当前播放文件同名的歌词
         TmpURL:=TmpURL+'.lrc';
-        LyricURL:=WideExtractFilePath(MediaURL)+TmpURL;
+        LyricURL:=WideIncludeTrailingPathDelimiter(WideExtractFilePath(MediaURL))+TmpURL;
         if not WideFileExists(LyricURL) then
           LyricURL:=WideIncludeTrailingPathDelimiter(j)+TmpURL;
         if WideFileExists(LyricURL) then Lyric.ParseLyric(LyricURL);
@@ -1854,13 +1855,13 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
   function CheckNativeResolutionLine:boolean;
   begin
     Result:=false;
-    if (len<5) or (Copy(Line,1,5)<>'VO: [') then exit;
+    if (len<5) or (Copy(Line,1,5)<>'VO: [') then exit; s:=Line;
     p:=Pos(' => ',Line); if p=0 then exit; Delete(Line,1,p+3);
     p:=Pos(#32,Line);    if p=0 then exit; SetLength(Line,p-1);
     p:=Pos('x',Line);    if p=0 then exit;
     Val(Copy(Line,1,p-1),i,r); if (r<>0) OR (i<16) OR (i>=4096) then exit;
     Val(Copy(Line,p+1,5),j,r); if (r<>0) OR (j<16) OR (j>=4096) then exit;
-    ChkVideo:=false; if copy(line,6,7)='directx' then IsDx:=true;
+    ChkVideo:=false; if copy(s,6,7)='directx' then IsDx:=true;
     with MainForm do begin
       if not Win32PlatformIsUnicode then begin
         HaveVideo:=false; LastHaveVideo:=false;

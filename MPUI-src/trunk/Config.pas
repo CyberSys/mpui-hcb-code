@@ -201,7 +201,7 @@ begin
     h:=WideFileCreate(FileName);
     if GetLastError=0 then FileName:=WideExtractShortPathName(FileName);
     if h<0 then
-        FileName:=WideExtractShortPathName(WideExtractFilePath(FileName))+WideExtractFileName(FileName)
+        FileName:=WideExtractShortPathName(WideIncludeTrailingPathDelimiter(WideExtractFilePath(FileName)))+WideExtractFileName(FileName)
     else CloseHandle(h);
   end
   else begin

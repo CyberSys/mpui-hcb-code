@@ -665,7 +665,7 @@ begin
           inc(VobFileCount);
           if VobFileCount=1 then begin
             j:=WideExtractFileName(fnbuf);
-            Vobfile:=WideExtractFilePath(fnbuf)+copy(j,1,length(j)-4);
+            Vobfile:=WideIncludeTrailingPathDelimiter(WideExtractFilePath(fnbuf))+copy(j,1,length(j)-4);
             Loadsub:=1; LoadVob:=1; Restart;
           end;
         end
@@ -754,12 +754,12 @@ var OpenFileName:WideString; t:string;
 begin
   if not Win32PlatformIsUnicode then begin
     SetLength(t,msg.LParam);
-    GlobalGetAtomName(msg.WParam,@t[1],msg.LParam+1);
+    GlobalGetAtomName(msg.WParam,PChar(t),msg.LParam+1);
     OpenFileName:=WideString(t);
   end
   else begin
     SetLength(OpenFileName,msg.LParam);
-    GlobalGetAtomNameW(msg.WParam,@OpenFileName[1],msg.LParam+1);
+    GlobalGetAtomNameW(msg.WParam,PWChar(OpenFileName),msg.LParam+1);
   end;
   GlobalDeleteAtom(msg.WParam);
   if not CheckOption(OpenFileName) then begin

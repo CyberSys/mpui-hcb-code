@@ -376,7 +376,6 @@ begin
   if CheckInfo(ZipType,j)>-1 then begin
     if IsLoaded(j) and (AddMovies(URL,FindPW(URL),true,j)>-1) then exit;
   end;
-
   // no playlist and Arc file-> enter directly
   if (Pos('://',URL)>1) or WideFileExists(URL) then begin
     with PlistEntry do begin
@@ -995,7 +994,8 @@ begin
   with MainForm.OpenDialog do begin
     Title:=MainForm.MOpenFile.Caption;
     Options:=Options+[ofAllowMultiSelect]-[ofoldstyledialog];
-    filter:=MediaFilter+'|*.rar;*.zip;*.7z;*.ttpl;*.alac;*.av*;*.mp*;*.vo*;*.dat;*.bin;*.qt;'
+    filter:=MediaFilter+'|*.rar;*.zip;*.7z;*.001;*.ttpl;*.alac;*.av*;*.mp*;'
+           +'*.vo*;*.dat;*.bin;*.qt;'
            +'*.divx;*.og*;*.mk*;*.wm*;*.as*;*.m*v;*.dv;*.26*;*.wav;*.wpl;'
            +'*.ac*;*.m4*;*.rm*;*.vivo;*.3g*;*.iso;*.img;*.grf;*.realpix;'
            +'*.m3u*;*.vp*;*.ts;*.vqf;*.nrg;*.cue;*.a52;*.aac;*.dts*;'
@@ -1166,7 +1166,7 @@ begin
         h:=WideFileCreate(FileName);
         if GetLastError=0 then FN:=WideExtractShortPathName(FileName);
         if h<0 then
-          FN:=WideExtractShortPathName(WideExtractFilePath(FileName))+WideExtractFileName(FileName)
+          FN:=WideExtractShortPathName(WideIncludeTrailingPathDelimiter(WideExtractFilePath(FileName)))+WideExtractFileName(FileName)
         else CloseHandle(h);
       end
       else begin
@@ -1174,6 +1174,7 @@ begin
         FN:=WideExtractShortPathName(FileName);
       end;
       FList.SaveToFile(FN);
+      FList.Free;
     end;
   end;
 end;
@@ -1186,11 +1187,6 @@ begin
     Playlist.AddDirectory(s);
     empty:=true; Playlist.Changed;
   end;
-  {if AddDirForm.Execute(true) then begin
-    PClear:=false;
-    Playlist.AddDirectory(AddDirForm.DirView.SelectedFolder.PathName);
-    empty:=true; Playlist.Changed;
-  end;}
 end;
 
 procedure TPlaylistForm.FormKeyDown(Sender: TObject; var Key: Word;

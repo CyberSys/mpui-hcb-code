@@ -1227,7 +1227,7 @@ begin
   if key in [$21..$28,$2D,$2E,$5D] then ScanCode:=ScanCode or $100;
   SetLength(Result,MAX_PATH-1);
   GetKeyNameText(ScanCode shl 16,PChar(Result),MAX_PATH);
-  delete(Result,pos(#0,Result),MAX_PATH);
+  Result:=String(PChar(Result));
 end;
 
 procedure TOptionsForm.HKDblClick(Sender: TObject);

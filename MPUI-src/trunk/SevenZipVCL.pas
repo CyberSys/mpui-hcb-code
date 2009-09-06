@@ -244,6 +244,7 @@ const
 {  CLSID_CFormat7z: TGUID = }                      '{23170F69-40C1-278A-1000-000110070000}',
 {  CLSID_CFormatRar: TGUID = }                     '{23170F69-40C1-278A-1000-000110030000}',
 {  CLSID_CFormatZip: TGUID = }                     '{23170F69-40C1-278A-1000-000110010000}',
+{  CLSID_CFormat001: TGUID = }                     '{23170F69-40C1-278A-1000-000110070000}',
 {  CLSID_CFormatArj: TGUID = }                     '{23170F69-40C1-278A-1000-000110040000}',
 {  CLSID_CFormatBZip2: TGUID = }                   '{23170F69-40C1-278A-1000-000110020000}',
 {  CLSID_CFormatZ: TGUID =  }                      '{23170F69-40C1-278A-1000-000110050000}',
@@ -500,7 +501,7 @@ type
     MyLastError: Integer;                                      //FHO 22.01.2007
     
     FMultivolume: Boolean;
-    function BrowseForFile( Title: PWideChar; var Name: WideString ): Boolean;
+    function BrowseForFile(var Name:WideString): Boolean;
     function OpenVolume( Index: Integer ): Boolean;
     function OpenNextVolume: Boolean;
     function OpenLastVolume: Boolean;
@@ -975,7 +976,7 @@ end;
 function TMyArchiveExtractCallback.CryptoGetTextPassword( var Password: PWideChar ): Integer;
 begin
   if Length( FPassword ) > 0 then begin
-    Password := SysAllocString( @FPassword[ 1 ] );
+    Password:=SysAllocString(PWChar(FPassword));
     Result := S_OK;
   end else Result := S_FALSE;
 end;
@@ -988,7 +989,7 @@ function TMyArchiveOpenCallback.CryptoGetTextPassword( var Password: PWideChar )
 begin
   if FPassword='' then WideInputQuery(LOCstr_SetPW_Caption,FSevenzip.SZFileName,FPassword);
   if Length( FPassword ) > 0 then begin
-    Password := SysAllocString( @FPassword[ 1 ] );
+    Password:=SysAllocString(PWChar(FPassword));
     FSevenZip.Password:=Password;
     Result := S_OK;
   end else Result := S_FALSE;
@@ -1115,39 +1116,12 @@ begin
   else Result:=S_FALSE;
 end;
 
-function TMyStreamReader.BrowseForFile( Title: PWideChar; var Name: WideString ): Boolean;
-var
-  OpenFileName: TOpenFilenameW;
-  FileName: array[ 0..MAX_PATH - 1 ] of WideChar;
-  s: WideString;
+function TMyStreamReader.BrowseForFile(var Name:WideString): Boolean;
 begin
   Result := FALSE;
-  try
-    s := WideExtractFileName( Name );
-    s := Copy( s, 1, Length( s ) - Length( WideExtractFileExt( Name ) ) );
-    s := s + '-volumes'#0 + s + '.*'#0;
-    FillChar( FileName, MAX_PATH, 0 );
-
-    FillChar( OpenFileName, SizeOf( OpenFileName ), 0 );
-
-    OpenFileName.lStructSize := SizeOf( OpenFileName );
-    OpenFileName.hWndOwner := Application.Handle;
-
-    OpenFileName.lpstrInitialDir := PWideChar( WideExtractFilePath( Name ) );
-
-    OpenFileName.lpstrFile := @FileName;
-    OpenFileName.nMaxFile := MAX_PATH;
-
-    OpenFileName.lpstrFilter := @s[ 1 ];
-    OpenFileName.nFilterIndex := 1;
-    OpenFileName.Flags := OFN_PATHMUSTEXIST Or OFN_FILEMUSTEXIST;
-
-    if GetOpenFileNameW( OpenFileName ) then begin
-      Name := FileName;
-      Result := ( GetLastError = 0 );
-    end else Result := FALSE;
-  except
-  end;
+  if WidePromptForFileName(Name,'Any file(*.*)|*.*','',LOCstr_VolAsk_Caption,WideIncludeTrailingPathDelimiter(WideExtractFilePath(Name))) then
+    Result:=GetLastError=0
+  else Result:=FALSE;
 end;
 
 function TMyStreamReader.OpenVolume(Index:Integer):Boolean;
@@ -1188,7 +1162,7 @@ begin
         if not fCancel then Continue;
       end
       else begin
-        if BrowseForFile('Select volume', Files[ Index ].Name ) then Continue;
+        if BrowseForFile(Files[Index].Name) then Continue;
       end;
       Files[ Index ].Name := '';
       Result := FALSE;
@@ -1232,7 +1206,7 @@ begin
    name := '';
    name := GetLastVolumeFN(Arcname);
    if name = '' then
-     if not BrowseForFile(PWChar(LOCstr_VolAsk_Caption),Name) then Exit;
+     if not BrowseForFile(Name) then Exit;
 // Shadow 28.11.2006
    if Tnt_WideUpperCase(WideChangeFileExt(WideExtractFileName(Name),WideExtractFileExt(Files[0].Name))) <>
       Tnt_WideUpperCase(WideExtractFileName(Files[0].Name)) then Continue;
@@ -1530,13 +1504,14 @@ function TSevenZip.List:integer;
 var ms:TMyStreamReader; updateOpenCallback:TmyArchiveOpenCallback;
     i:integer; fileCount:dword; path,Encrypted,size,attr:PROPVARIANT;
 begin
+  if not Assigned(inA) then begin Result:=-1; exit; end;
   try
     Ffiles.Clear; FNumberOfFiles:=-1;
     ms:=TMyStreamReader.Create(Self,FSevenZipFileName,true);
     inA.Close;
     updateOpenCallback:=TMyArchiveOpenCallback.Create(self);
     if inA.Open(ms,nil,updateOpencallback)<>0 then begin
-      Result:=-1; ms.free; exit; //don't open file or wrong password
+      Result:=-1; exit; //don't open file or wrong password
     end;
 
     inA.GetNumberOfItems(fileCount);
@@ -1572,12 +1547,13 @@ var updateCallback: TMyArchiveExtractCallback;
   Filestoex,w: DWORD; //count of files to be extract finally actually
   i,fileIndex,n: Integer;
 begin
+  if not Assigned(inA) then begin Result:=-1; exit; end;
   try
     ms:=TMyStreamReader.Create(Self,FSevenZipFileName,true);
     inA.Close;
     updateOpenCallback:=TMyArchiveOpenCallback.Create(self);
     if inA.Open(ms,nil,updateOpenCallback)<>0 then begin
-      Result:=-1; ms.Free; exit; //don't open file or wrong password
+      Result:=-1; exit; //don't open file or wrong password
     end;
 
     inA.GetNumberOfItems( w ); //1..end
@@ -1612,7 +1588,7 @@ begin
 
     result:=inA.Extract(@filesDW[0],Filestoex,Integer(TestArchive),updatecallback);
   finally
-    ina.close; 
+    inA.close;
 	  FMainCancel := False;
   end;
 end;
