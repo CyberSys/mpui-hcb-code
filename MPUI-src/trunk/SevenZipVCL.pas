@@ -1503,7 +1503,7 @@ function TSevenZip.List:integer;
 var ms:TMyStreamReader; updateOpenCallback:TmyArchiveOpenCallback;
     i:integer; fileCount:dword; path,Encrypted,size,attr:PROPVARIANT;
 begin
-//  if not Assigned(inA) then begin Result:=-1; exit; end;
+  if not Assigned(inA) then begin Result:=-1; exit; end;
   try
     Ffiles.Clear; FNumberOfFiles:=-1;
     ms:=TMyStreamReader.Create(Self,FSevenZipFileName,true);
@@ -1546,7 +1546,7 @@ var updateCallback: TMyArchiveExtractCallback;
   Filestoex,w: DWORD; //count of files to be extract finally actually
   i,fileIndex,n: Integer;
 begin
-//  if not Assigned(inA) then begin Result:=-1; exit; end;
+  if not Assigned(inA) then begin Result:=-1; exit; end;
   try
     ms:=TMyStreamReader.Create(Self,FSevenZipFileName,true);
     inA.Close;
