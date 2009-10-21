@@ -75,7 +75,7 @@ begin
            end;
            s:=ReadString(SectionName,'ShotDir','');
            if s<>'' then begin
-             if WideDirectoryExists(s) then ShotDir:=GetLongPath(ShotDir)
+             if WideDirectoryExists(s) then ShotDir:=GetLongPath(s)
              else Core.ShotDir:=s;
            end;
            s:=ReadString(SectionName,'LyricDir','');
