@@ -563,7 +563,7 @@ begin
   LOCstr_InfoAudioRate:='Sample Rate';
   LOCstr_InfoAudioChannels:='Channels';
   IKeyHint:='Please press hotkey';
-  IKeyerror:='Shortcut already exists';
+  IKeyerror:='Shortcut already exists. Clicking "Yes" to overwrite it';
   Ccap:='Chapter'; Acap:='Angle';
 end;
 

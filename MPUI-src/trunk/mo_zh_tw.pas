@@ -563,7 +563,7 @@ begin
   LOCstr_InfoAudioRate:=UTF8Decode('取樣率');
   LOCstr_InfoAudioChannels:=UTF8Decode(' 聲道數');
   IKeyHint:=UTF8Decode('請按下快捷鍵');
-  IKeyerror:=UTF8Decode('快捷鍵已經存在');
+  IKeyerror:=UTF8Decode('快捷鍵已經存在，點“確定”將覆蓋原有設置');
   Ccap:=UTF8Decode('章節');
   Acap:=UTF8Decode('視角');
 end;

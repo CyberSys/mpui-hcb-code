@@ -22,9 +22,9 @@ interface
 
 uses
   Windows, TntWindows, Messages, SysUtils, TntSysUtils, Variants, Classes, Graphics, Controls,
-  Forms,TntForms, Dialogs, StdCtrls, ShellAPI, ComCtrls, Tabs, TabNotBk, ExtCtrls, TntSystem,
+  Forms,TntForms, TntDialogs, StdCtrls, ShellAPI, ComCtrls, Tabs, TabNotBk, ExtCtrls, TntSystem,
   TntExtCtrls, TntComCtrls, TntStdCtrls, TntFileCtrl, ImgList, TntRegistry, TntClasses,
-  jpeg, CheckLst, TntCheckLst, ShlObj;
+  jpeg, CheckLst, TntCheckLst, ShlObj, Dialogs;
 
 type
   TOptionsForm = class(TTntForm)
@@ -1163,23 +1163,35 @@ begin
 end;
 
 procedure TOptionsForm.TFSetClick(Sender: TObject);
-var reg:TTntRegistry; i:integer;
+var reg:TTntRegistry; i:integer; a:TTntStringList; 
+procedure updateValue(s:String);
+var j:integer; 
+begin
+ if Win32PlatformIsVista then begin
+   reg.GetValueNames(a);
+   for j:=a.Count-1 downto 0 do
+     if (pos('(',a.Strings[j])=1) and (pos(')',a.Strings[j])>2) then
+       reg.WriteString(a.Strings[j],s);
+ end
+ else reg.WriteString('',s);
+end;
+
 begin
   if TFass.Count<1 then exit;
-  reg:=TTntRegistry.Create;
+  reg:=TTntRegistry.Create; a:=TTntStringList.Create;
   with reg do begin
     try
       for i:=0 to TFass.Count-1 do begin
         if TFass.Checked[i] then begin
           RootKey := HKEY_CLASSES_ROOT;
           if OpenKey('\MPUI-hcb.'+TFass.Items[i],true) then
-            WriteString('','MPlayer file (.'+TFass.Items[i]+')');
+            updateValue('MPlayer file (.'+TFass.Items[i]+')');
           if OpenKey('\MPUI-hcb.'+TFass.Items[i]+'\DefaultIcon',true) then
-            WriteString('',WideExpandFileName(WideParamStr(0))+',0');
+            updateValue(WideExpandFileName(WideParamStr(0)+',0'));
           if OpenKey('\MPUI-hcb.'+TFass.Items[i]+'\shell\open\command',true) then
-            WriteString('','"'+WideExpandFileName(WideParamStr(0))+'" "%1"');
+            updateValue('"'+WideExpandFileName(WideParamStr(0))+'" "%1"');
           if OpenKey('\.'+TFass.Items[i],true) then
-            WriteString('','MPUI-hcb.'+TFass.Items[i]);
+            updateValue('MPUI-hcb.'+TFass.Items[i]);
           if Win32PlatformIsUnicode then begin
             RootKey := HKEY_CURRENT_USER;
             if OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.'+TFass.Items[i],true) then
@@ -1253,7 +1265,11 @@ begin
   if t<>nil then begin
     if IKey then begin
       HK.Items[sIndex].Caption:=tCap;
-      ShowMessage('"'+t.SubItems.Strings[0]+'" ,['+t.Caption+'] '+IKeyerror);
+      if WideMessageDlg('"'+t.SubItems.Strings[0]+'" ,['+t.Caption+'] '+IKeyerror,mtInformation,[mbYes,mbNo],0)=mrYes then begin
+        HK.Items[sIndex].Caption:=ShiftToStr(Shift)+KeyToStr(Key);
+        HK.Items[sIndex].Data:=Pointer(i);
+        t.Caption:=''; t.Data:=nil;
+      end;
     end
     else begin
       t.Selected:=true; t.MakeVisible(false);
