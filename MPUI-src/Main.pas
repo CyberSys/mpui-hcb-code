@@ -699,11 +699,12 @@ begin
           end
           else begin
             if Running and (j='.lrc') and (HaveLyric=0) then begin
-              j:=WideExtractFileName(MediaURL);
+              {j:=WideExtractFileName(MediaURL);
               j:=Tnt_WideLowerCase(Copy(j,1,length(j)-length(WideExtractFileExt(MediaURL))));
               t:=WideExtractFileName(fnbuf);
               t:=Tnt_WideLowerCase(Copy(t,1,length(t)-4));
-              if j=t then Lyric.ParseLyric(fnbuf);
+              if j=t then   }
+              Lyric.ParseLyric(fnbuf);
             end
             else begin
               Loadsub:=1;
@@ -739,7 +740,7 @@ end;
 procedure TMainForm.CreateParams(var Params: TCreateParams);
 begin
   inherited CreateParams(Params);
-  Params.WinClassName:='fengying';
+  Params.WinClassName:='hcb428';
 end;
 
 procedure TMainForm.HandleLog(var msg:TMessage);

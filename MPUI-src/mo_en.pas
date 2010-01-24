@@ -223,7 +223,7 @@ begin
   with OptionsForm do begin
     BClose.Caption:='Close';
     HelpText.Text:=UTF8Decode(
-'÷/*'^I'Adjust volume'^M^J+
+'//*'^I'Adjust volume'^M^J+
 'DblClick'^I'Toggle fullscreen'^M^J+
 'LMB click StatusBar Timer'^I'Toggle Time'^M^J+
 'MMB'^I'Toggle Wheel function'^M^J+
@@ -274,7 +274,7 @@ begin
     CNi.Caption:='Use non-interleaved AVI parser';
     CNi.Hint:='Fixes playback of some bad AVI files';
     Cone.Caption:='Use only one instance of MPUI';
-    CDnav.Caption:='Use DVDNav';
+    CDnav.Caption:='Use DVD menu';
     CDnav.Hint:='if Mplayer is compiled with DVDnav lib, you can use'^M^J+
                 'mouse to handle DVD menu on screen';
     CNobps.Caption:='Don''t use avg b/s for A-V sync';

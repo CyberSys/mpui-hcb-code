@@ -60,10 +60,10 @@ uses
 var hAppMutex:Thandle; Mf:hWnd; s:WideString; t:string; i,PCount:integer;
 begin
   Init;
-  hAppMutex:=CreateMutex(nil,false,PAnsiChar('fenny8248'));
+  hAppMutex:=CreateMutex(nil,false,PAnsiChar('hcb428'));
   if oneM and (WaitForSingleObject(hAppMutex,10)=WAIT_TIMEOUT) then begin
-    if Win32PlatformIsUnicode then Mf:=FindWindow('fengying.UnicodeClass',nil)
-    else Mf:=FindWindow('fengying',nil);
+    if Win32PlatformIsUnicode then Mf:=FindWindow('hcb428.UnicodeClass',nil)
+    else Mf:=FindWindow('hcb428',nil);
     if Mf<>0 then begin
       if Win32PlatformIsUnicode then begin
         PCount:=WideParamCount;
@@ -101,12 +101,12 @@ end.
 
 begin
   Application.Initialize;
-  hAppMutex:=CreateMutex(nil,false,PChar('fenny8248'));
+  hAppMutex:=CreateMutex(nil,false,PChar('hcb428'));
   if hAppMutex=0 then exit
   else begin
     if GetLastError=ERROR_ALREADY_EXISTS then begin
-      //Mf:=FindWindowW(PWideChar(WideString('fengying.UnicodeClass')),nil);
-      Mf:=FindWindow(PChar('fengying.UnicodeClass'),nil);
+      //Mf:=FindWindowW(PWideChar(WideString('hcb428.UnicodeClass')),nil);
+      Mf:=FindWindow(PChar('hcb428.UnicodeClass'),nil);
       if Mf<>0 then begin
         for i:=1 to ParamCount do begin
           s:=ParamStr(i);

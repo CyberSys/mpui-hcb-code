@@ -321,7 +321,7 @@ begin
                             '對某些文件頭損壞的AVI文件有幫助');
     CFilter.Caption:=UTF8Decode('過濾 拖放的文件');
     CFilter.Hint:=UTF8Decode('通過拖放載入文件時，僅載入支持的媒體文件');
-    CDnav.Caption:=UTF8Decode('使用DVDNav');
+    CDnav.Caption:=UTF8Decode('使用DVD導航菜單');
     CDnav.Hint:=UTF8Decode('如果編譯了DVDNav');
     CUni.Caption:=UTF8Decode('以UNICODE格式處理字幕');
     CUtf.Caption:=UTF8Decode('以UTF-8格式處理字幕');

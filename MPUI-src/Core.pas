@@ -607,7 +607,7 @@ begin
   if ML then CmdLine:=EscapeParam(ExpandName(HomeDir,MplayerLocation))
   else CmdLine:=EscapeParam(HomeDir+'mplayer.exe');
   if not GUI then CmdLine:=CmdLine+' -nogui -noconsolecontrols';
-  CmdLine:=CmdLine+' -slave -identify -noquiet -nofs -term-osd-esc "[Fenny8248] "'
+  CmdLine:=CmdLine+' -slave -identify -noquiet -nofs'
           +' -hr-mp3-seek -subalign 1 -spualign 1 -sub-fuzziness 1 -subfont-autoscale 2'
           +' -subfont-osd-scale 4.8 -subfont-text-scale '+FloatToStr(FSize)
           +' -subfont-outline '+FloatToStr(Fol)+' -subfont-blur '+FloatToStr(FB);
@@ -960,27 +960,7 @@ begin
     AddLine(LOCstr_CmdLine_Prompt);
     s:=CmdLine;
     while length(s)>0 do AddLine(SplitLine(s));
-    if Win32PlatformIsXP and (Byte(GetUserDefaultLangID)=LANG_CHINESE) then
-      AddLine(
-'                   ╭= = = = = = = = = = = = = = = = ╮'^M^J+
-'                    ║  ¤╭⌒╮ ╭⌒╮欢迎使用        ║'^M^J+
-'                    ║  ╱◥████◣ ╭⌒╮  MPUI       ║'^M^J+
-'    ╭= = = = = = = ┤ ︱田︱田田| ╰--------------   ├= = = = = = = ╮'^M^J+
-'    ║               ║ ╬=╬=╬=╬=╬=╬=╬=╬=╬=╬=╬=╬=╬=╬=╬  ║               ║'^M^J+
-'    ║               ║ http://mpui-hcb.sf.net         ║               ║'^M^J+
-'    ║              ╰= = = = = = = = = = = = = = = = ╯              ║'^M^J+
-'    ║                                    zｚＺ ^﹋  ﹏               ║'^M^J+
-'   ╱◥███◣^^╪   携起手来,共创美好未来      ●●╮                  ║'^M^J+
-'  ︱田︱田 ︱                               /█∨█\                   ║'^M^J+
-'   --------       我们会做得更好 ！          ∏  ∏                    ║'^M^J+
-'    ║            ╔┯╗  ╔┯╗  ╔┯╗  ╔┯╗  ╔┯╗  ╔┯╗  ╔┯╗            ║'^M^J+
-'    ╰= = = = = ┠似┨┠猪┨┠不┨┠怕┨┠开┨┠水┨┠烫┨= = = = = ╯'^M^J+
-'                 ╚┷╝  ╚┷╝  ╚┷╝  ╚┷╝  ╚┷╝  ╚┷╝  ╚┷╝'^M^J+
-'=========================================================================='^M^J+
-'☆猪★猪☆猪★猪☆猪★猪☆猪★猪☆猪★猪☆猪★猪☆猪★猪☆猪★猪☆猪★猪☆'^M^J+
-'=========================================================================='^M^J)
-    else
-      AddLine('');
+    AddLine('');
   end;
 
   if Loadsub<>2 then Loadsub:=-1;
