@@ -60,7 +60,7 @@ uses
 var hAppMutex:Thandle; Mf:hWnd; s:WideString; t:string; i,PCount:integer;
 begin
   Init;
-  hAppMutex:=CreateMutex(nil,false,PAnsiChar('hcb428'));
+  hAppMutex:=CreateMutex(nil,false,PChar('hcb428'));
   if oneM and (WaitForSingleObject(hAppMutex,10)=WAIT_TIMEOUT) then begin
     if Win32PlatformIsUnicode then Mf:=FindWindow('hcb428.UnicodeClass',nil)
     else Mf:=FindWindow('hcb428',nil);
@@ -69,14 +69,14 @@ begin
         PCount:=WideParamCount;
         for i:=1 to PCount do begin
           s:=WideParamStr(i);
-          if s<>'-enqueue' then SendMessage(Mf,$0401,GlobalAddAtomW(@S[1]),Length(S));
+          if s<>'-enqueue' then SendMessage(Mf,$0401,GlobalAddAtomW(PWChar(S)),Length(S));
         end;
       end
       else begin
         PCount:=ParamCount;
         for i:=1 to PCount do begin
           t:=ParamStr(i);
-          if s<>'-enqueue' then SendMessage(Mf,$0401,GlobalAddAtom(@t[1]),Length(t));
+          if s<>'-enqueue' then SendMessage(Mf,$0401,GlobalAddAtom(PChar(t)),Length(t));
         end;
       end;
       WaitForSingleObject(hAppMutex,10);

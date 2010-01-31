@@ -1473,7 +1473,7 @@ end;
 procedure TMainForm.MShowOutputClick(Sender: TObject);
 begin
   if not OptionsForm.Visible then begin
-    OptionsForm.Tab.TabIndex:=4;
+    OptionsForm.Tab.ActivePage:=OptionsForm.TLog;
     OptionsForm.Showmodal;
   end;
 end;
@@ -1821,7 +1821,7 @@ end;
 procedure TMainForm.MKeyHelpClick(Sender: TObject);
 begin
   if not OptionsForm.Visible then begin
-    OptionsForm.Tab.TabIndex:=5;
+    OptionsForm.Tab.ActivePage:=OptionsForm.THelp;
     OptionsForm.Showmodal;
   end;
 end;
@@ -1829,7 +1829,7 @@ end;
 procedure TMainForm.MAboutClick(Sender: TObject);
 begin
   if not OptionsForm.Visible then begin
-    OptionsForm.Tab.TabIndex:=6;
+    OptionsForm.Tab.ActivePage:=OptionsForm.TAbout;
     OptionsForm.Showmodal;
   end;
 end;
@@ -2699,7 +2699,7 @@ end;
 procedure TMainForm.LStatusClick(Sender: TObject);
 begin
   if (Status=sError) and (not OptionsForm.Visible) then begin
-    OptionsForm.Tab.TabIndex:=4;
+    OptionsForm.Tab.ActivePage:=OptionsForm.TLog;
     OptionsForm.Showmodal;
   end;
 end;

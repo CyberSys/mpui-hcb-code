@@ -65,7 +65,7 @@ const MediaType:array[0..213]of WideString=('.7z','.rar','.zip','.001','.arj','.
         '.ts','.tta','.ttpl','.ult','.umx','.vcd','.vfw','.vg2','.vid','.vivo','.vob','.voc','.vp3','.vp4','.vp5',
         '.vp6','.vp7','.vqf','.wav','.wax','.wm','.wma','.wmp','.wmv','.wmx',
         '.wpl','.wv','.wvx','.xm','.xmz','.xspf',
-        '.26l','.264','.3g2','.3gp','.3gpp','.3gp2','.669'
+        '.261','.264','.3g2','.3gp','.3gpp','.3gp2','.669'
       );
 
 const PlaylistType:array[0..10]of WideString=(
@@ -86,7 +86,7 @@ const DefaultFass='0aac,1ac3,1acc,1act,1aif,1aifc,1aiff,0amf,1amr,1amv,0ape,0as,
        +'0a52,0apl,1au,1avi,0avs,1bik,0bin,0cda,0cmf,0cmn,0cpk,0cue,1d2v,0dat,0drc,'
        +'1dsm,1dsv,1dsa,1dss,1dts,0dtswav,0dv,0dvr-ms,0divx,1evo,0far,0fla,0flac,1flc,'
        +'1fli,1flic,0flm,1flv,0grf,0hdmov,0img,0iso,1ivf,0it,0itz,0jsv,0kar,0m1a,0m2a,'
-       +'1m2p,1m2ts,1m1v,1m2v,1m3u,1m3u8,1m4a,1m4b,1m4p,1m4v,0mac,0mdz,0miz,'       +'0mjf,1mka,1mkv,1mod,1mov,0mp1,1mp2,0mp2v,1mp3,0mp3pro,1mp4,0mp5,0mpa,0mpc,1mpcpl,'       +'1mpe,1mpeg,1mpg,1mpga,0mp+,0mpp,0mtm,0mpv,0mpv2,0mqv,1mts,0nrg,0nsa,0nst,0nsv,0nuv,'       +'0ogg,0ogm,0okt,0pls,1pmp,1pmp2,1pss,0ptm,1pva,1qt,1ra,1ram,1ratdvd,1rm,0rmi,0rmj,'       +'0rmm,0rmp,0rms,1rmvb,0rmx,0rnx,0roq,0rp,1rpm,0rt,0rv,1realpix,0s3m,0s3z,1scm,0sdp,'       +'1smil,1smk,1smpl,0snd,0stm,0stz,1tp,1tpr,1ts,0tta,0ttpl,0ult,0umx,0vcd,0vfw,1vg2,'       +'1vid,0vivo,1vob,0voc,0vp3,0vp4,0vp5,1vp6,1vp7,1vqf,0wav,1wax,1wm,1wma,1wmp,1wmv,1wmx,'       +'0wpl,1wv,1wvx,0xm,0xmz,0xspf,026l,0264,13g2,13gp,13gpp,13gp2,0669';
+       +'1m2p,1m2ts,1m1v,1m2v,1m3u,1m3u8,1m4a,1m4b,1m4p,1m4v,0mac,0mdz,0miz,'       +'0mjf,1mka,1mkv,1mod,1mov,0mp1,1mp2,0mp2v,1mp3,0mp3pro,1mp4,0mp5,0mpa,0mpc,1mpcpl,'       +'1mpe,1mpeg,1mpg,1mpga,0mp+,0mpp,0mtm,0mpv,0mpv2,0mqv,1mts,0nrg,0nsa,0nst,0nsv,0nuv,'       +'0ogg,0ogm,0okt,0pls,1pmp,1pmp2,1pss,0ptm,1pva,1qt,1ra,1ram,1ratdvd,1rm,0rmi,0rmj,'       +'0rmm,0rmp,0rms,1rmvb,0rmx,0rnx,0roq,0rp,1rpm,0rt,0rv,1realpix,0s3m,0s3z,1scm,0sdp,'       +'1smil,1smk,1smpl,0snd,0stm,0stz,1tp,1tpr,1ts,0tta,0ttpl,0ult,0umx,0vcd,0vfw,1vg2,'       +'1vid,0vivo,1vob,0voc,0vp3,0vp4,0vp5,1vp6,1vp7,1vqf,0wav,1wax,1wm,1wma,1wmp,1wmv,1wmx,'       +'0wpl,1wv,1wvx,0xm,0xmz,0xspf,0261,0264,13g2,13gp,13gpp,13gp2,0669';
 
 const DefaultHotKey:array[0..101]of Integer=(
         262182,262184,262181,262183,262331,262333,131123,131264,131121,131122,
@@ -607,8 +607,8 @@ begin
   if ML then CmdLine:=EscapeParam(ExpandName(HomeDir,MplayerLocation))
   else CmdLine:=EscapeParam(HomeDir+'mplayer.exe');
   if not GUI then CmdLine:=CmdLine+' -nogui -noconsolecontrols';
-  CmdLine:=CmdLine+' -slave -identify -noquiet -nofs'
-          +' -hr-mp3-seek -subalign 1 -spualign 1 -sub-fuzziness 1 -subfont-autoscale 2'
+  CmdLine:=CmdLine+' -slave -identify -noquiet -nofs -noterm-osd -hr-mp3-seek'
+          +' -subalign 1 -spualign 1 -sub-fuzziness 1 -subfont-autoscale 2'
           +' -subfont-osd-scale 4.8 -subfont-text-scale '+FloatToStr(FSize)
           +' -subfont-outline '+FloatToStr(Fol)+' -subfont-blur '+FloatToStr(FB);
 
@@ -892,9 +892,16 @@ begin
   end;
   if Wadsp then begin
     s:=ExpandName(HomeDir,WadspL);
+    h:=pos(':',s); g:='';
+    if h>0 then begin
+      t:=pos(':',copy(s,h+1,MaxInt));
+      if t>0 then begin
+        g:=copy(s,h+t,MaxInt); s:=copy(s,1,h+t-1); 
+      end;
+    end;
     if WideFileExists(s) then begin
       if (not IsWideStringMappableToAnsi(s)) or (pos(',',s)>0) then s:=WideExtractShortPathName(s);
-      AddChain(h,afChain,'wadsp='+EscapeParam(s));
+      AddChain(h,afChain,'wadsp='+EscapeParam(s+g));
     end;
   end;
   if Volnorm then AddChain(h,afChain,'volnorm');
@@ -2229,14 +2236,14 @@ begin
   //suppress repetitive lines
   if (len>0) AND (Line=LastLine) then begin
     inc(LineRepeatCount);
-    if LineRepeatCount=20 then begin
+    {if LineRepeatCount=20 then begin
       OptionsForm.AddLine('(last message repeated '+IntToStr(LineRepeatCount)+' times)');
-      ExplicitStop:=0; Status:=sOpening;
+      ExplicitStop:=0; Status:=sOpening; LineRepeatCount:=0;
       if FirstChance then begin
         SendCommand('quit'); FirstChance:=false;
         if WaitForSingleObject(ClientProcess,stopTimeout)=WAIT_TIMEOUT then TerminateMP;
       end;
-    end;
+    end;}
     exit;
   end;
   if LineRepeatCount>0 then

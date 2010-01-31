@@ -24,7 +24,7 @@ uses
   Windows, TntWindows, Messages, SysUtils, TntSysUtils, Variants, Classes, Graphics, Controls,
   Forms,TntForms, TntDialogs, StdCtrls, ShellAPI, ComCtrls, Tabs, TabNotBk, ExtCtrls, TntSystem,
   TntExtCtrls, TntComCtrls, TntStdCtrls, TntFileCtrl, ImgList, TntRegistry, TntClasses,
-  jpeg, CheckLst, TntCheckLst, ShlObj, Dialogs;
+  jpeg, CheckLst, TntCheckLst, ShlObj, Dialogs, ActiveX;
 
 type
   TOptionsForm = class(TTntForm)
@@ -242,6 +242,23 @@ type
   end;
 
   PDSEnumCallback = function(lpGuid:PGUID; lpcstrDescription,lpcstrModule:PChar; lpContext:pointer):LongBool; stdcall;
+
+  ASSOCIATIONLEVEL = (AL_MACHINE, AL_EFFECTIVE, AL_USER);
+
+	ASSOCIATIONTYPE = (AT_FILEEXTENSION, AT_URLPROTOCOL, AT_STARTMENUCLIENT, AT_MIMETYPE);
+
+  IApplicationAssociationRegistration = interface( IUnknown )
+    ['{4e530b0a-e611-4c77-a3ac-9031d022281b}']
+    function QueryCurrentDefault( pszQuery:PWChar; atQueryType:ASSOCIATIONTYPE; alQueryLevel:ASSOCIATIONLEVEL; out ppszAssociation:PPWideChar ): HRESULT; stdcall;
+    function QueryAppIsDefault( pszQuery:PWChar; atQueryType:ASSOCIATIONTYPE; alQueryLevel:ASSOCIATIONLEVEL; pszAppRegistryName:PWChar; out pfDefault:PBool ): HRESULT; stdcall;
+    function QueryAppIsDefaultAll( alQueryLevel:ASSOCIATIONLEVEL; pszAppRegistryName:PWChar; out pfDefault:PBool ): HRESULT; stdcall;
+    function SetAppAsDefault( pszAppRegistryName:PWChar ; pszSet:PWChar ; atSetType:ASSOCIATIONTYPE ): HRESULT; stdcall;
+    function SetAppAsDefaultAll( pszAppRegistryName:PWChar ): HRESULT; stdcall;
+    function ClearUserAssociations: HRESULT; stdcall;
+  end;
+
+  const CLSID_ApplicationAssociationRegistration: TGUID = '{591209c7-767b-42b2-9fba-44ee4615f2c7}';
+        IID_IApplicationAssociationRegistration: TGUID = '{4e530b0a-e611-4c77-a3ac-9031d022281b}';
 
 procedure LoadDsLibrary;
 procedure UnLoadDsLibrary;
@@ -1117,14 +1134,14 @@ end;
 
 procedure TOptionsForm.TabChange(Sender: TObject);
 begin
-  case Tab.TabIndex of
-    4: begin Command.SetFocus; TheLog.Perform(EM_LINESCROLL,0,32767); end;
-    6: begin 
-         if ML then VersionMPlayer.Caption:=GetProductVersion(MplayerLocation)
-         else VersionMPlayer.Caption:=GetProductVersion(HomeDir+'mplayer.exe');
-         VersionMPUI.Caption:=GetFileVersion(WideParamStr(0));
-       end;
-    7: if IKey then begin HK.Items[sIndex].Caption:=tCap; IKey:=false; end;
+  if Tab.ActivePage=TLog then begin Command.SetFocus; TheLog.Perform(EM_LINESCROLL,0,32767); end
+  else if Tab.ActivePage=TAbout then begin
+    if ML then VersionMPlayer.Caption:=GetProductVersion(MplayerLocation)
+    else VersionMPlayer.Caption:=GetProductVersion(HomeDir+'mplayer.exe');
+      VersionMPUI.Caption:=GetFileVersion(WideParamStr(0));
+  end
+  else if Tab.ActivePage=THelp then begin
+    if IKey then begin HK.Items[sIndex].Caption:=tCap; IKey:=false; end;
   end;
 end;
 
@@ -1163,44 +1180,57 @@ begin
 end;
 
 procedure TOptionsForm.TFSetClick(Sender: TObject);
-var reg:TTntRegistry; i:integer; a:TTntStringList; 
-procedure updateValue(s:String);
-var j:integer; 
-begin
- if Win32PlatformIsVista then begin
-   reg.GetValueNames(a);
-   for j:=a.Count-1 downto 0 do
-     if (pos('(',a.Strings[j])=1) and (pos(')',a.Strings[j])>2) then
-       reg.WriteString(a.Strings[j],s);
- end
- else reg.WriteString('',s);
-end;
-
+var reg:TTntRegistry; i:integer; hr:HRESULT; AppName,ext,AppPath:widestring;
+    AAR:IApplicationAssociationRegistration;
 begin
   if TFass.Count<1 then exit;
-  reg:=TTntRegistry.Create; a:=TTntStringList.Create;
-  with reg do begin
+  reg:=TTntRegistry.Create; hr:=1; AAR:=nil;
+  with reg do begin                      
     try
+      if Win32PlatformIsVista then begin
+        RootKey := HKEY_LOCAL_MACHINE; AppName:='MPUI-hcb';
+        if OpenKey('\SOFTWARE\RegisteredApplications\',true) then
+          WriteString(AppName,'Software\Clients\Media\'+AppName+'\Capabilities');
+        if OpenKey('\Software\Clients\Media\'+AppName+'\Capabilities',true) then begin
+          WriteExpandString('ApplicationDescription','A Windows frontend for MPlayer');
+          WriteExpandString('ApplicationName',AppName);
+        end;
+        hr:=CoCreateInstance(CLSID_ApplicationAssociationRegistration,nil,CLSCTX_INPROC_SERVER,IID_IApplicationAssociationRegistration,AAR);
+      end;
+      AppPath:= WideExpandFileName(WideParamStr(0));
       for i:=0 to TFass.Count-1 do begin
         if TFass.Checked[i] then begin
+          ext:= '.'+TFass.Items[i];
           RootKey := HKEY_CLASSES_ROOT;
-          if OpenKey('\MPUI-hcb.'+TFass.Items[i],true) then
-            updateValue('MPlayer file (.'+TFass.Items[i]+')');
-          if OpenKey('\MPUI-hcb.'+TFass.Items[i]+'\DefaultIcon',true) then
-            updateValue(WideExpandFileName(WideParamStr(0)+',0'));
-          if OpenKey('\MPUI-hcb.'+TFass.Items[i]+'\shell\open\command',true) then
-            updateValue('"'+WideExpandFileName(WideParamStr(0))+'" "%1"');
-          if OpenKey('\.'+TFass.Items[i],true) then
-            updateValue('MPUI-hcb.'+TFass.Items[i]);
+          if OpenKey('\'+AppName+ext,true) then
+            WriteString('','MPlayer file ('+ext+')');
+          if OpenKey('\'+AppName+ext+'\DefaultIcon',true) then
+            WriteString('',AppPath+',0');
+          if OpenKey('\'+AppName+ext+'\shell\open\command',true) then
+            WriteString('','"'+AppPath+'" "%1"');
+          if OpenKey('\'+ext,true) then
+            WriteString('',AppName+ext);
           if Win32PlatformIsUnicode then begin
             RootKey := HKEY_CURRENT_USER;
-            if OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.'+TFass.Items[i],true) then
-              WriteString('Progid','MPUI-hcb.'+TFass.Items[i]);
+            if OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\'+ext,true) then
+              WriteString('Progid',AppName+ext);
+            if Win32PlatformIsVista then begin
+              RootKey := HKEY_LOCAL_MACHINE;
+              if OpenKey('\Software\Clients\Media\'+AppName+'\Capabilities\FileAssociations',true) then
+                WriteString(ext,AppName+ext);
+              if hr=S_OK then
+                AAR.SetAppAsDefault(PWChar(AppName),PWChar(ext),AT_FILEEXTENSION);
+            end;
           end;
         end
         else begin
           RootKey := HKEY_CLASSES_ROOT;
-          DeleteKey('\MPUI-hcb.'+TFass.Items[i]);
+          DeleteKey('\'+AppName+ext);
+          if Win32PlatformIsVista then begin
+            RootKey := HKEY_LOCAL_MACHINE;
+            if OpenKey('\Software\Clients\Media\'+AppName+'\Capabilities\FileAssociations',true) then
+              DeleteValue(ext);
+          end;
         end;
       end;
       CloseKey;
