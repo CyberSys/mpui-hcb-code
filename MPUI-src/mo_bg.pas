@@ -1,7 +1,7 @@
 {   MPUI, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
     Copyright (C) 2006 Boyan Boychev <boyan7640@gmail.com>
-    Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -33,8 +33,6 @@ begin
       LOCstr_Status_Stopped:=UTF8Decode('Спрян');
       LOCstr_Status_Error:=UTF8Decode('Не може да стартира носителя (Натиснете тук за повече информация)');
       LOCstr_SetPW_Caption:=UTF8Decode('Въведете парола за следния Архив');
-      LOCstr_NoSuport_OS_Prompt:=UTF8Decode('MPlayer не може да се стартира: невалидна версия на Операционната система');
-      LOCstr_Win9x_Prompt:=UTF8Decode('MPUI не е предвиден за Win9x базирани системи. Продължи въпреки това?');
       LOCstr_Check_Mplayer_Prompt:=UTF8Decode('Проверете местоположението на MPlayer.exe.');
       LOCstr_Error1_Prompt:=UTF8Decode('Грешка ');
       LOCstr_Error2_Prompt:=UTF8Decode(' при стартирането на MPlayer:');

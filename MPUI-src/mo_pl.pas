@@ -1,6 +1,6 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
-    Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -37,8 +37,6 @@ begin
       LOCstr_Status_Stopped:=UTF8Decode('Zatrzymane');
       LOCstr_Status_Error:=UTF8Decode('Brak moźliwości otwarcia pliku (Nacisnij aby uzyskac wiecej informacji)');
       LOCstr_SetPW_Caption:=UTF8Decode('Wpisz hasło do otwarcia archiwum');
-      LOCstr_NoSuport_OS_Prompt:=UTF8Decode('nie można uruchomić MPlayer: nieprawidłowa wersja systemu operacyjnego');
-      LOCstr_Win9x_Prompt:=UTF8Decode('MPUI nie będzie dobrze działał w systemach Windows95/98/ME. Kontynuować?');
       LOCstr_Check_Mplayer_Prompt:=UTF8Decode('Sprawdź ścieżkę do programu MPlayer.');
       LOCstr_Error1_Prompt:=UTF8Decode('Błąd ');
       LOCstr_Error2_Prompt:=UTF8Decode(' przy uruchamianiu MPlayer:');

@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -106,9 +106,6 @@ const DefaultHKS='262182,262184,262181,262183,262331,262333,131123,131264,131121
 
 type TStatus=(sNone,sOpening,sClosing,sPlaying,sPaused,sStopped,sError);
 var Status:TStatus;
-
-type TWin9xWarnLevel=(wlWarn,wlReject,wlAccept);
-var Win9xWarnLevel:TWin9xWarnLevel;
 
 var HomeDir,SystemDir,TempDir,AppdataDir:WideString;
 var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
@@ -552,10 +549,6 @@ begin
   LyricDir:=ShotDir;
   MplayerLocation:=HomeDir+'mplayer.exe';
 
-  // check for Win9x
-  if Win32PlatformIsUnicode then Win9xWarnLevel:=wlAccept
-  else Win9xWarnLevel:=wlWarn;
-
   MWC:=Windows.GetSystemMetrics(SM_CYCAPTION);
   GetLocaleFormatSettings(GetUserDefaultLCID,FormatSet);
   if Pos('ddd',FormatSet.ShortDateFormat)=0 then FormatSet.ShortDateFormat:='ddd '+FormatSet.ShortDateFormat;
@@ -583,20 +576,6 @@ begin
   if FirstOpen then begin
     MainForm.LTime.Caption:='';
     MainForm.LStatus.Caption:=LOCstr_Status_Opening;
-  end;
-
-  if Win9xWarnLevel=wlWarn then begin
-    case MessageDlg(LOCstr_Win9x_Prompt,mtWarning,[mbYes,mbNo],0) of
-      mrYes: Win9xWarnLevel:=wlAccept;
-      mrNo:  Win9xWarnLevel:=wlReject;
-    end;
-  end;
-  if Win9xWarnLevel=wlReject then begin
-    OptionsForm.TheLog.Text:=LOCstr_NoSuport_OS_Prompt;
-    Status:=sError;
-    MainForm.UpdateStatus;
-    MainForm.SetupStop;
-    exit;
   end;
 
   FirstChance:=true; afChain:=''; h:=0;

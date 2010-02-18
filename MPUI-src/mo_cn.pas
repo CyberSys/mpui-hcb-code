@@ -1,6 +1,6 @@
 {   MPUI, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
-    Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -33,8 +33,6 @@ begin
       LOCstr_Status_Error:=UTF8Decode('不能播放该文件 (点击这里查看更多的信息)');
       LOCstr_SetPW_Caption:=UTF8Decode('请输入下列文档的正确解压密码');
       LOCstr_VolAsk_Caption:=UTF8Decode('请选择下一个分卷');
-      LOCstr_NoSuport_OS_Prompt:=UTF8Decode('不能运行MPlayer: 不支持的操作系统版本');
-      LOCstr_Win9x_Prompt:=UTF8Decode('MPUI不能正常的运行在Win9x系统下。继续吗?');
       LOCstr_Check_Mplayer_Prompt:=UTF8Decode('请检查MPlayer.exe的位置是否正确');
       LOCstr_Error1_Prompt:=UTF8Decode('错误代码(');
       LOCstr_Error2_Prompt:=UTF8Decode('): 在加载MPlayer时');

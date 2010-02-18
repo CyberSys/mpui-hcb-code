@@ -1,6 +1,6 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
-    Copyright (C) 2006-2009 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -33,8 +33,6 @@ begin
       LOCstr_Status_Error:='Unable to play media (Click for more info)';
       LOCstr_SetPW_Caption:='Please enter password of following Archive';
       LOCstr_VolAsk_Caption:='Please select last volume';
-      LOCstr_NoSuport_OS_Prompt:='not executing MPlayer: invalid Operating System version';
-      LOCstr_Win9x_Prompt:='MPUI will not run properly on Win9x systems. Continue anyway?';
       LOCstr_Check_Mplayer_Prompt:='Please check MPlayer.exe location.';
       LOCstr_Error1_Prompt:='Error ';
       LOCstr_Error2_Prompt:=' while starting MPlayer:';
