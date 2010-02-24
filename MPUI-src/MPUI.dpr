@@ -60,6 +60,10 @@ uses
 var hAppMutex:Thandle; Mf:hWnd; s:WideString; t:string; i,PCount:integer;
 begin
   Init;
+  if Win32PlatformIsVista and (WideParamStr(1)='/adminoption') then begin
+     regAss; exit;
+  end;
+
   hAppMutex:=CreateMutex(nil,false,PChar('hcb428'));
   if oneM and (WaitForSingleObject(hAppMutex,10)=WAIT_TIMEOUT) then begin
     if Win32PlatformIsUnicode then Mf:=FindWindow('hcb428.UnicodeClass',nil)

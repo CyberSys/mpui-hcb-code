@@ -1719,6 +1719,7 @@ object OptionsForm: TOptionsForm
         Font.Name = 'Tahoma'
         Font.Style = [fsUnderline]
         ParentFont = False
+        OnClick = LURLClick
       end
       object MTitle: TTntLabel
         Left = 148

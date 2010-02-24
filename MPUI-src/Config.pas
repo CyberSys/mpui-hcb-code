@@ -166,8 +166,6 @@ begin
            Core.seekLen:=ReadInteger(SectionName,'seekLen',Core.seekLen);
            s:=ReadString(SectionName,'HotKey','');
            if s<>'' then Core.HKS:=s;
-           s:=ReadString(SectionName,'fileAss','');
-           if s<>'' then Core.Fass:=s;
            for i:=0 to RFileMax-1 do begin
              s:=ReadString(SectionName,'RF'+IntToStr(i),'');
              if s<>'' then begin
@@ -186,7 +184,11 @@ begin
            MainForm.MUUni.Checked:=Core.UseUni;
            MainForm.UpdateMenuCheck;
          end;
-      1: Core.oneM:=ReadBool(SectionName,'instance',Core.oneM);
+      1: begin
+           Core.oneM:=ReadBool(SectionName,'instance',Core.oneM);
+           s:=ReadString(SectionName,'fileAss','');
+           if s<>'' then Core.Fass:=s;
+         end;
     end;
     Free;
   end;

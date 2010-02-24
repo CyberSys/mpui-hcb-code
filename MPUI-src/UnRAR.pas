@@ -79,7 +79,8 @@ var
   RARSetPassword        : procedure(hArcData: THandle; Password: PChar); stdcall;
   RARSetCallback        : procedure(hArcData: THandle; UnrarCallback: TUnrarCallback; UserData: LPARAM); stdcall;
   SHGetKnownFolderPath  : function(rfid:PGUID; dwFlags:DWord; hToken:THandle; out ppszPath:PPWideChar):HRESULT; stdcall;
-  
+  IsUserAnAdmin         : function(): BOOL; stdcall;
+
 // helper functions for (un)loading the Dll and check for loaded
 procedure LoadRarLibrary;
 procedure UnLoadRarLibrary;
@@ -92,6 +93,7 @@ procedure ExtractRarLyric(ArcName,PW:WideString; Mode:integer);
 function ExtractRarSub(ArcName,PW:WideString):WideString;
 Procedure CoTaskMemFree(pv:Pointer); stdcall; external 'ole32.dll';
 function GetShellPath(rfid:TGUID):WideString;
+function IsAdmin():boolean;
 
 implementation
 uses Main,Core,plist,locale,SevenZip;
@@ -177,8 +179,10 @@ procedure LoadShell32Library;
 begin
   if IsShell32Loaded <> 0 then exit;
   IsShell32Loaded := Tnt_LoadLibraryW('shell32.dll'); 
-  if IsShell32Loaded <> 0 then
+  if IsShell32Loaded <> 0 then begin
     @SHGetKnownFolderPath:= GetProcAddress(IsShell32Loaded, 'SHGetKnownFolderPath');
+    @IsUserAnAdmin:= GetProcAddress(IsShell32Loaded, 'IsUserAnAdmin');
+  end;
 end;
 
 procedure UnLoadShell32Library;
@@ -187,6 +191,7 @@ begin
     FreeLibrary(IsShell32Loaded);
     IsShell32Loaded := 0;
     SHGetKnownFolderPath:= nil;
+    IsUserAnAdmin:= nil;
   end;
 end;
 
@@ -201,6 +206,14 @@ begin //http://msdn.microsoft.com/en-us/library/bb762188(VS.85).aspx
   OleCheck(APIResult);
   Result:=PWideChar(PathBuf);
   CoTaskMemFree(PathBuf);
+end;
+
+function IsAdmin():boolean;
+begin
+  Result:=false;
+  if IsShell32Loaded=0 then LoadShell32Library;
+  if IsShell32Loaded=0 then exit;
+  Result:=IsUserAnAdmin();
 end;
 
 procedure ClearTmpFiles(Directory:WideString);

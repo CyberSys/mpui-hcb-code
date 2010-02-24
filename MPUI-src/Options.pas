@@ -222,6 +222,7 @@ type
     procedure LoadHotKey;
     procedure SaveHotKey;
     procedure RHKClick(Sender: TObject);
+    procedure LURLClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -263,12 +264,13 @@ type
 procedure LoadDsLibrary;
 procedure UnLoadDsLibrary;
 function KeyboardHook(nCode:Integer; wParam:WPARAM; lParam:LPARAM):LResult; stdcall;
+procedure regAss();
 
 var
   OptionsForm: TOptionsForm; IsDsLoaded:THandle=0; OptionsFormHook:HHOOK;
 
 implementation
-uses Core, Config, Main, Locale, plist;
+uses Core, Config, Main, Locale, plist, unrar;
 
 {$R *.dfm}
 var DirectSoundEnumerate: function (lpDSEnumCallback:PDSEnumCallback; lpContext:pointer):HRESULT; stdcall;
@@ -1180,15 +1182,42 @@ begin
 end;
 
 procedure TOptionsForm.TFSetClick(Sender: TObject);
-var reg:TTntRegistry; i:integer; hr:HRESULT; AppName,ext,AppPath:widestring;
+var execinfo:SHELLEXECUTEINFOW;
+begin
+  SetFass; Save(HomeDir+DefaultFileName,4);
+
+  if Win32PlatformIsVista and (not IsAdmin()) then begin
+	  fillchar(execinfo, sizeof(execinfo), 0);
+	  execinfo.lpFile:=PWChar(WideParamStr(0));
+   	execinfo.cbSize:= sizeof(execinfo);
+  	execinfo.lpVerb:= 'runas';
+ 	  execinfo.fMask:= SEE_MASK_NOCLOSEPROCESS;
+	  execinfo.nShow:= SW_SHOWDEFAULT;
+  	execinfo.lpParameters:= '/adminoption 0';
+
+ 	  ShellExecuteExW(@execinfo);
+    // ShellExecuteW(Handle,'runas',PWChar(WideParamStr(0)),'/adminoption 0',nil,SW_SHOWDEFAULT);
+    exit;
+  end;
+
+  regAss();
+end;
+
+procedure regAss();
+var s:TTntStringList; reg:TTntRegistry; i:integer;
+    hr:HRESULT; AppName,ext,AppPath:widestring;
     AAR:IApplicationAssociationRegistration;
 begin
-  if TFass.Count<1 then exit;
-  reg:=TTntRegistry.Create; hr:=1; AAR:=nil;
+  s:=TTntStringList.Create;
+  s.CommaText:=FAss;
+  if s.Count<1 then begin s.Free; exit; end;
+  reg:=TTntRegistry.Create;
+  hr:=1; AAR:=nil; ext:=''; AppName:='MPUI-hcb';
+  AppPath:= WideExpandFileName(WideParamStr(0));
   with reg do begin                      
     try
       if Win32PlatformIsVista then begin
-        RootKey := HKEY_LOCAL_MACHINE; AppName:='MPUI-hcb';
+        RootKey := HKEY_LOCAL_MACHINE;
         if OpenKey('\SOFTWARE\RegisteredApplications\',true) then
           WriteString(AppName,'Software\Clients\Media\'+AppName+'\Capabilities');
         if OpenKey('\Software\Clients\Media\'+AppName+'\Capabilities',true) then begin
@@ -1197,10 +1226,10 @@ begin
         end;
         hr:=CoCreateInstance(CLSID_ApplicationAssociationRegistration,nil,CLSCTX_INPROC_SERVER,IID_IApplicationAssociationRegistration,AAR);
       end;
-      AppPath:= WideExpandFileName(WideParamStr(0));
-      for i:=0 to TFass.Count-1 do begin
-        if TFass.Checked[i] then begin
-          ext:= '.'+TFass.Items[i];
+
+      for i:=0 to s.Count-1 do begin
+        ext:= '.'+Tnt_WideLowerCase(copy(s.Strings[i],2,MaxInt));
+        if s.Strings[i][1]='1' then begin
           RootKey := HKEY_CLASSES_ROOT;
           if OpenKey('\'+AppName+ext,true) then
             WriteString('','MPlayer file ('+ext+')');
@@ -1238,8 +1267,8 @@ begin
     finally
       Free;
     end;
+    s.Free;
   end;
-  SetFass; Save(HomeDir+DefaultFileName,4);
 end;
 
 procedure HkToShiftKey(const Hk:integer; var Shift:TShiftState; var Key:Word);
@@ -1387,6 +1416,11 @@ end;
 procedure TOptionsForm.RHKClick(Sender: TObject);
 begin
   HKS:=DefaultHKS; LoadHotKey;
+end;
+
+procedure TOptionsForm.LURLClick(Sender: TObject);
+begin
+  ShellExecute(Handle,'open','http://sourceforge.net/projects/mpui-hcb',nil,nil,SW_SHOW);
 end;
 
 end.
