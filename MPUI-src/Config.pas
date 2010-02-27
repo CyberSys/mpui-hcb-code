@@ -43,6 +43,7 @@ begin
     case mode of
       0: begin
            DefaultLocale:=ReadInteger(SectionName,'Locale',DefaultLocale);
+           Core.OSDLevel:=ReadInteger(SectionName,'OSDLevel',OSDLevel);
            Core.AudioOut:=ReadInteger(SectionName,'AudioOut',Core.AudioOut);
            Core.AudioDev:=ReadInteger(SectionName,'AudioDev',Core.AudioDev);
            Core.Postproc:=ReadInteger(SectionName,'Postproc',Core.Postproc);
@@ -315,6 +316,7 @@ begin
            WriteInteger(SectionName,'Intro',Core.Bp);
            WriteInteger(SectionName,'Ending',Core.Ep);
            WriteInteger(SectionName,'Volume',Core.Volume);
+           WriteInteger(SectionName,'OSDLevel',Core.OSDLevel);
            WriteInteger(SectionName,'OnTop',Core.OnTop);
            WriteInteger(SectionName,'seekLen',Core.seekLen);
            WriteBool   (SectionName,'UseUni',Core.UseUni);
