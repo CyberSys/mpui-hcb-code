@@ -2410,6 +2410,11 @@ end;
 
 procedure TMainForm.DisplayClick(Sender: TObject);
 begin
+  if (pPoint.x<>-1) and (pPoint.y<>-1) then begin
+    pPoint.x:=-1; pPoint.y:=-1;
+    exit;
+  end;
+  
   if Running and (MouseMode>-1) then begin
     if Dnav and IsDMenu then begin
       SendCommand('dvdnav mouse');
@@ -2429,7 +2434,6 @@ procedure TMainForm.DisplayMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var p:TPoint;
 begin
-
   if Button=mbLeft then begin
     FirstDrag:=true;
     if IPanel.Cursor=crHandPoint then MouseMode:=2 //Drag Subtitle
@@ -2453,8 +2457,13 @@ begin
     MPWheelControl.Items[MFunc].Checked:=true;
   end;
 
-  if (Button=mbright) and RFScr then SimulateKey(MFullscreen);
-
+  if (Button=mbright) then begin
+    if RFScr then SimulateKey(MFullscreen)
+    else begin
+      ppoint.X:=mpopup.PopupPoint.X;
+      ppoint.y:=mpopup.PopupPoint.y;
+    end;
+  end;
 end;
 
 procedure TMainForm.DisplayMouseMove(Sender: TObject;

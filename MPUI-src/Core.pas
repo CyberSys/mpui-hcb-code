@@ -148,6 +148,7 @@ var Volume,MWC,CP,seekLen:integer;
     CurMonitor:TMonitor;
     HMonitorList:array of HMonitor;
     FontPaths:TTntStringList;
+    ppoint:TPoint;
 
 var StreamInfo:record
       FileName, FileFormat, PlaybackTime: WideString;
@@ -2367,6 +2368,6 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10;
-  lastP1:=''; lastFN:=''; ResetStreamInfo;
+  lastP1:=''; lastFN:=''; ResetStreamInfo; ppoint.x:=-1; ppoint.y:=-1;
 end.
 
