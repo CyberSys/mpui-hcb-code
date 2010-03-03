@@ -801,7 +801,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 1
       end
       object CSPDIF: TTntCheckBox
@@ -824,7 +824,8 @@ object OptionsForm: TOptionsForm
         Items.Strings = (
           '2'
           '4'
-          '5.1')
+          '5.1'
+          '7.1')
       end
       object CSoftVol: TTntCheckBox
         Left = 12

@@ -300,6 +300,7 @@ type
     MFClear: TTntMenuItem;
     N37: TTntMenuItem;
     Imagery: TImageList;
+    M8ch: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -1072,8 +1073,12 @@ else begin
         Ord('M'),VK_VOLUME_MUTE:   BMuteClick(nil);
         Ord('9'),VK_NUMPAD9,VK_DIVIDE,VK_VOLUME_DOWN:     SetVolumeRel(-3);
         Ord('0'),VK_NUMPAD0,VK_MULTIPLY,VK_VOLUME_UP:     SetVolumeRel(+3);
-        {,<} 188:   HandleSeekCommand('balance -0.1');
-        {.>} 190:   HandleSeekCommand('balance +0.1');
+        {,<} 188:   begin HandleSeekCommand('balance -0.1');
+                      SendCommand('osd_show_property_text "${balance}"');
+                    end;
+        {.>} 190:   begin HandleSeekCommand('balance +0.1');
+                      SendCommand('osd_show_property_text "${balance}"');
+                    end;
         Ord('A'):   NextAudio;
         VK_F1:      NextOnTop;
         VK_F9:      MShowPlaylistClick(nil);
@@ -1139,13 +1144,14 @@ procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   OptionsForm.HotKeyToOldKey(Shift,Key);
-  if HaveVideo then begin
+  if HaveVideo then begin 
     case Key of
       Ord('1'),VK_NUMPAD1,Ord('2'),VK_NUMPAD2:   begin CBHSA:=1; SendCommand('get_property contrast'); end;
       Ord('3'),VK_NUMPAD3,Ord('4'),VK_NUMPAD4:   begin CBHSA:=1; SendCommand('get_property brightness'); end;
       Ord('5'),VK_NUMPAD5,Ord('6'),VK_NUMPAD6:   begin CBHSA:=1; SendCommand('get_property hue'); end;
       Ord('7'),VK_NUMPAD7,Ord('8'),VK_NUMPAD8:   begin CBHSA:=1; SendCommand('get_property saturation'); end;
                           VK_INSERT,VK_DELETE:   begin CBHSA:=1; SendCommand('get_property gamma'); end;
+                            {,<} 188,{.>} 190:   SendCommand('get_property balance');
     end;
     if CBHSA=2 then begin
       InterW:=IPanel.Width; InterH:=IPanel.Height;
@@ -1576,7 +1582,13 @@ procedure TMainForm.MAudiochannelsClick(Sender: TObject);
 begin
   if (Sender as TTntMenuItem).Checked then exit;
   AudiochannelsID:=(Sender as TTntMenuItem).Tag;
-  Restart;
+  //Restart;
+  case AudiochannelsID of
+    0: begin balance:=0; SendCommand('set_property balance 0'); end;
+    1: begin balance:=-1; SendCommand('set_property balance -1'); end;
+    2: begin balance:=1; SendCommand('set_property balance 1'); end;
+    3: begin balance:=0; Restart; end;
+  end;
   (Sender as TTntMenuItem).Checked:=True;
 end;
 
@@ -2224,8 +2236,8 @@ begin
   Vobfile:=''; substring:=''; MShowSub.Checked:=true; IsDMenu:=false; SMenu:=true;
   AudioID:=-1; SubID:=-1; VideoID:=-1; TID:=1; CID:=1; AID:=1; CDID:=1;
   subcount:=0; Lastsubcount:=0; VobsubCount:=0; procArc:=false; Dreset:=false;
-  LastPos:=0; SecondPos:=-1; TotalTime:=0; Duration:='0:00:00';
-  SeekBarSlider.Left:=0; UpdateSkipBar:=SkipBar.Visible;
+  LastPos:=0; SecondPos:=-1; TotalTime:=0; Duration:='0:00:00'; ppoint.x:=-1; 
+  ppoint.y:=-1; SeekBarSlider.Left:=0; UpdateSkipBar:=SkipBar.Visible;
   if AudioFile<>''then begin AudioFile:=''; MUloadAudio.Visible:=false; end;
 end;
 
@@ -3026,7 +3038,7 @@ end;
 
 procedure TMainForm.MPanClick(Sender: TObject);
 begin
-  SendCommand('set_property balance 0');
+  SendCommand('set_property balance 0'); balance:=0;
   if HaveVideo then SendCommand('osd_show_text "'+OSD_Reset_Prompt+' '+OSD_Balance_Prompt+'"');
 end;
 

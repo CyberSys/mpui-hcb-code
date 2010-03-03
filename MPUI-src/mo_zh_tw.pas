@@ -185,6 +185,7 @@ begin
     M2ch.Caption:=UTF8Decode('2.0 立體聲');
       M4ch.Caption:=UTF8Decode('4.0 環繞立體聲');
       M6ch.Caption:=UTF8Decode('5.1 環繞立體聲');
+      M8ch.Caption:=UTF8Decode('7.1 環繞立體聲');
     MShot.Caption:=UTF8Decode('截取單幀畫面');
     MLoadAudio.Caption:=UTF8Decode('載入伴音');
     MUloadAudio.Caption:=UTF8Decode('卸載伴音');

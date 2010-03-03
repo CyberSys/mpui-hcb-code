@@ -186,6 +186,7 @@ begin
       M2ch.Caption:='Default';
       M4ch.Caption:='4.0 surround';
       M6ch.Caption:='Full 5.1';
+      M8ch.Caption:='Full 7.1';
     MShot.Caption:=OSD_ScreenShot_Prompt;
     MLoadAudio.Caption:='Load external Audio';
     MUloadAudio.Caption:='Unload external Audio';

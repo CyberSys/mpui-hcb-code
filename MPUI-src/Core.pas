@@ -144,7 +144,7 @@ var Volume,MWC,CP,seekLen:integer;
     FormatSet:TFormatSettings;
     ExplicitStop,Rot,DefaultFontIndex:integer;
     TextColor,OutColor,LTextColor,LbgColor,LhgColor:Longint;
-    Speed,FSize,Fol,FB,dy,LyricV,Adelay,Sdelay:real;
+    Speed,FSize,Fol,FB,dy,LyricV,Adelay,Sdelay,balance:real;
     CurMonitor:TMonitor;
     HMonitorList:array of HMonitor;
     FontPaths:TTntStringList;
@@ -693,6 +693,7 @@ begin
   case Ch of
     1:CmdLine:=CmdLine+' -channels 4';
     2:CmdLine:=CmdLine+' -channels 6';
+    3:CmdLine:=CmdLine+' -channels 8';
   end;
 
   if Firstrun then begin
@@ -866,8 +867,8 @@ begin
   end;
 
   case AudiochannelsID of
-    1: AddChain(h,afChain,'channels=2:2:0:1:0:0');
-    2: AddChain(h,afChain,'channels=2:2:1:0:1:1');
+    //1: AddChain(h,afChain,'channels=2:2:0:1:0:0');
+    //2: AddChain(h,afChain,'channels=2:2:1:0:1:1');
     3: AddChain(h,afChain,'pan=2:0.65:0.35:0.35:0.65');
   end;
   if Wadsp then begin
@@ -1773,6 +1774,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
     if (Copy(Line,6,5)='win32') or (Copy(Line,6,6)='dsound') then begin
       HaveAudio:=true; MainForm.MAudios.Visible:=true;
       MainForm.BMute.Enabled:=true; ChkAudio:=false;
+      SendCommand('set_property balance '+FloatToStr(balance));
       Result:=true;
     end
   end;
@@ -2213,6 +2215,18 @@ begin
     if HaveChapters then TotalTime:=UpdateLen;
     exit;
   end;
+  //check balance
+  if (len>12) and (Copy(Line,1,12)='ANS_balance=') then begin
+    Val(Copy(Line,13,MaxInt),f,r);
+    if r=0 then begin balance:=f;
+      if f=-1 then MainForm.MLchannels.Checked:=true
+      else if f=1 then MainForm.MRchannels.Checked:=true
+      else if AudiochannelsID=0 then MainForm.MStereo.Checked:=true
+      else MainForm.MMix.Checked:=true;
+    end;
+    exit;
+  end;
+
   //suppress repetitive lines
   if (len>0) AND (Line=LastLine) then begin
     inc(LineRepeatCount);
@@ -2368,6 +2382,6 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10;
-  lastP1:=''; lastFN:=''; ResetStreamInfo; ppoint.x:=-1; ppoint.y:=-1;
+  lastP1:=''; lastFN:=''; balance:=0; ResetStreamInfo;
 end.
 

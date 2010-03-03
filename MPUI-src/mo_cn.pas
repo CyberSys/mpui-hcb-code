@@ -186,6 +186,7 @@ begin
     M2ch.Caption:=UTF8Decode('2.0 立体声');
     M4ch.Caption:=UTF8Decode('4.0 环绕立体声');
     M6ch.Caption:=UTF8Decode('5.1 环绕立体声');
+    M8ch.Caption:=UTF8Decode('7.1 环绕立体声');
     MShot.Caption:=UTF8Decode('截取单帧画面');
     MLoadAudio.Caption:=UTF8Decode('载入伴音');
     MUloadAudio.Caption:=UTF8Decode('卸载伴音');
