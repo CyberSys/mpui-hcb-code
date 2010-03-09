@@ -237,7 +237,8 @@ begin
 'Alt+LMB drag video'^I'Adjust brightness,contrast,hue,saturation,gamma'^M^J+
 'While drag,release or press different function key invoke different function'^M^J^M^J+
 'Change codePage of lyric with popup menu'^M^J+
-'If ''MPUI.ini'' exist in MPUI folder, MPUI will firstly read or save setting to this file.'^M^J+
+'Add ":cfg=1" to path of Winamp plugin, to open config window'^M^J+
+'If "MPUI.ini" exist in MPUI folder, MPUI will firstly read or save setting to this file.'^M^J+
 'If open a folder contained ''VIDEO_TS'', ''MPEGAV'' or ''MPEG2'' folder, MPUI will try to'^M^J+
 'play this folder with DVD, VCD or SVCD mode.');
 
