@@ -24,7 +24,7 @@ uses
   Windows, TntWindows, Messages, SysUtils, TntSysUtils, Variants, Classes, Graphics, Controls,
   Forms,TntForms, TntDialogs, StdCtrls, ShellAPI, ComCtrls, Tabs, TabNotBk, ExtCtrls, TntSystem,
   TntExtCtrls, TntComCtrls, TntStdCtrls, TntFileCtrl, ImgList, TntRegistry, TntClasses,
-  jpeg, CheckLst, TntCheckLst, ShlObj, Dialogs, ActiveX;
+  jpeg, CheckLst, TntCheckLst, ShlObj, Dialogs, ActiveX, TntGraphics;
 
 type
   TOptionsForm = class(TTntForm)
@@ -104,7 +104,6 @@ type
     CRFScr: TTntCheckBox;
     CSubfont: TTntComboBox;
     PShow: TTntPanel;
-    COsdfont: TTntComboBox;
     BOsdfont: TButton;
     SFontColor: TTntStaticText;
     SOutline: TTntStaticText;
@@ -177,6 +176,9 @@ type
     Eseek: TTntEdit;
     TUnit: TTntLabel;
     nmsgm: TTntCheckBox;
+    Esubfont: TTntEdit;
+    Cosdfont: TTntComboBox;
+    Eosdfont: TTntEdit;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -222,7 +224,16 @@ type
     procedure LoadHotKey;
     procedure SaveHotKey;
     procedure RHKClick(Sender: TObject);
+    procedure CSubfontDrawItem(Control: TWinControl; Index: Integer;
+      Rect: TRect; State: TOwnerDrawState);
+    procedure CSubfontMeasureItem(Control: TWinControl; Index: Integer;
+      var Height: Integer);
+    procedure CSubfontChange(Sender: TObject);
     procedure LURLClick(Sender: TObject);
+    procedure CosdfontMeasureItem(Control: TWinControl; Index: Integer;
+      var Height: Integer);
+    procedure CosdfontDrawItem(Control: TWinControl; Index: Integer;
+      Rect: TRect; State: TOwnerDrawState);
 
   private
     { Private declarations }
@@ -355,8 +366,8 @@ end;
 procedure TOptionsForm.FormShow(Sender: TObject);
 begin
   LoadValues; TabChange(nil); Changed:=false;
-  if ML then HelpFile:=WideExtractFileDir(MplayerLocation)+'\man_page.html'
-  else HelpFile:=HomeDir+'man_page.html';
+  if ML then HelpFile:=WideExtractFileDir(MplayerLocation)+'\Mplayer.html'
+  else HelpFile:=HomeDir+'Mplayer.html';
   if not WideFileExists(HelpFile) then begin
     HelpFile:=WideExtractFileDir(HelpFile)+'\MPlayer.html';
     if not WideFileExists(HelpFile) then HelpFile:='';
@@ -388,7 +399,7 @@ begin
   TFass.Items.CommaText:=fass;
   for i:=0 to TFass.Count-1 do begin
     TFass.Checked[i]:=TFass.Items[i][1]<>'0';
-    TFass.Items[i]:=Tnt_WideLowerCase(copy(TFass.Items[i],2,MaxInt));
+    TFass.Items[i]:=Trim(Tnt_WideLowerCase(copy(TFass.Items[i],2,MaxInt)));
   end;
 end;
 
@@ -404,7 +415,6 @@ begin
 end;
 
 procedure TOptionsForm.LoadValues;
-var i:integer; s,h,j,k:Widestring;
 begin
   Load(HomeDir+DefaultFileName,1);
   CAudioOut.ItemIndex:=AudioOut;
@@ -474,13 +484,13 @@ begin
   TFsize.Position:=round(FSize*10);
   TFol.Position:=round(Fol*10);
   TFB.Position:=round(FB*10);
-  CAspect.Items[10]:=MainForm.MCustomAspect.Caption;
+  CAspect.Items[CAspect.Items.Count-1]:=MainForm.MCustomAspect.Caption;
   CAspect.ItemIndex:=Aspect;
   CDeinterlace.ItemIndex:=Deinterlace;
   CLanguage.ItemIndex:=DefaultLocale+1;
   CPostproc.ItemIndex:=Postproc;
-  COsdfont.Text:=osdfont;
-  CSubfont.Text:=subfont;
+  EOsdfont.Text:=osdfont;
+  Esubfont.Text:=subfont;
   PLTC.Color:=LTextColor;
   PLBC.Color:=LbgColor;
   PLHC.Color:=LhgColor;
@@ -500,33 +510,11 @@ begin
   SOsdfont.Checked:=uof;
   COsdfont.Enabled:=uof;
   BOsdfont.Enabled:=uof;
+  EOsdfont.Enabled:=uof;
   Cone.Checked:=oneM;
   CGUI.Checked:=GUI;
   Eseek.Text:=IntToStr(seekLen);
-  GetFass;
-
-  if (CSubfont.ItemIndex<0) and (COsdfont.ItemIndex<0) then begin
-    PShow.Caption:='';
-    s:= Trim(Tnt_WideLowerCase(CSubfont.Text)); j:= Trim(Tnt_WideLowerCase(COsdfont.Text));
-    for i:=0 to FontPaths.Count-1 do begin
-      k:=Tnt_WideLowerCase(CSubfont.Items[i]); h:= Tnt_WideLowerCase(FontPaths[i]);
-      if (s=k) or (s=h) then begin
-        PShow.Font.Name:=CSubfont.Items[i];
-        PShow.Caption:=CSubfont.Items[i];
-        CSubfont.ItemIndex:=i;
-        break;
-      end;
-      if (j=k) or (j=h) then begin
-        PShow.Font.Name:=COsdfont.Items[i];
-        PShow.Caption:=COsdfont.Items[i];
-        COsdfont.ItemIndex:=i;
-        break;
-      end;
-    end;
-  end
-  else if CSubfont.ItemIndex>-1 then PShow.Caption:=CSubfont.Text
-  else if COsdfont.ItemIndex>-1 then PShow.Caption:=COsdfont.Text;
-  
+  fontchange(EOsdfont); fontchange(ESubfont);
 end;
 
 procedure TOptionsForm.ApplyValues;
@@ -590,13 +578,13 @@ begin
     uof:=SOsdfont.Checked; changed:=true;
   end;
 
-  if osdfont<>COsdfont.Text then begin
-    osdfont:=COsdfont.Text;
-    if COsdfont.Enabled then changed:=true;
+  if osdfont<>EOsdfont.Text then begin
+    osdfont:=EOsdfont.Text;
+    if EOsdfont.Enabled then changed:=true;
   end;
 
-  if subfont<>CSubfont.Text then begin
-    subfont:=CSubfont.Text; changed:=true;
+  if subfont<>ESubfont.Text then begin
+    subfont:=ESubfont.Text; changed:=true;
   end;
 
   if oML<>ML then begin
@@ -866,6 +854,7 @@ begin
   DefaultFont:=TFont.Create; DefaultFont.Handle:=GetStockObject(DEFAULT_GUI_FONT);
   FontPaths:=TTntStringList.Create; a:=TTntStringList.Create;
   reg:=TTntRegistry.Create;  DefaultFontIndex:=-1;
+  DefaultFont.Name:=Trim(Tnt_WideLowerCase(DefaultFont.Name));
   if Win32PlatformIsUnicode then s:='\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts'
   else s:='\SOFTWARE\Microsoft\Windows\CurrentVersion\Fonts';
   with reg do begin
@@ -878,21 +867,17 @@ begin
           if j>0 then begin
             sn:=a.Strings[i]; sp:=ReadString(sn);
             sn:=copy(sn,1,j-1);
-            j:=pos(' & ',sn);
-            while(j>1) do begin
-              CSubfont.Items.Add(copy(sn,1,j-1)); FontPaths.Add(SystemDir+'Fonts\'+sp);
-              if CSubfont.Items[CSubfont.Items.Count-1]=DefaultFont.Name then DefaultFontIndex:=CSubfont.Items.Count-1;
-              sn:=copy(sn,j+3,MaxInt);
-              j:=pos(' & ',sn);
-            end;
-            CSubfont.Items.Add(sn); FontPaths.Add(SystemDir+'Fonts\'+sp);
-            if sn=DefaultFont.Name then DefaultFontIndex:=CSubfont.Items.Count-1;
+            CSubfont.Items.Add(Trim(sn)); FontPaths.Add(Trim(SystemDir+'Fonts\'+sp));
+            if (Tnt_WideLowerCase(sn)=DefaultFont.Name) or
+              (Pos(DefaultFont.Name+' & ',Tnt_WideLowerCase(sn))=1) or
+              (Pos(' & '+DefaultFont.Name,Tnt_WideLowerCase(sn))=1) then
+              DefaultFontIndex:=CSubfont.Items.Count-1;
           end;
         end;
         CloseKey;
       end;
     finally
-      Free; a.free;
+      Free; a.free; DefaultFont.Free;
     end;
   end;
   COsdfont.Items:=CSubfont.Items;
@@ -906,7 +891,7 @@ begin
 end;
 begin
   OptionsFormHook:=SetWindowsHookEx(WH_KEYBOARD,@KeyboardHook,0,GetCurrentThreadID);
-  initFontList; Ikey:=false; LoadHotKey;
+  initFontList; Ikey:=false; LoadHotKey; GetFass;
   Tab.TabIndex:=0; History:=TTntStringList.Create;
   if IsDsLoaded=0 then LoadDsLibrary;
   if IsDsLoaded<>0 then DirectSoundEnumerate(EnumFunc,@CAudioDev);
@@ -933,11 +918,8 @@ begin
     Title:=MainForm.MSubfont.Caption;
     Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
     filter:=FontFilter+'(*.ttf)|*.ttf|'+AnyFilter+'(*.*)|*.*';
-    if Execute then begin
-      if CSubfont.Text<>fileName then begin
-        CSubfont.Text:=fileName; FontChange(CSubfont);
-      end;
-    end;
+    if Execute and (Trim(Tnt_WideLowerCase(ESubfont.Text))<>Trim(Tnt_WideLowerCase(fileName))) then
+      ESubfont.Text:=fileName;
   end;
   WideSetCurrentDir(CurPath);
 end;
@@ -947,14 +929,11 @@ var CurPath:WideString;
 begin
   CurPath:=WideGetCurrentDir;
   with MainForm.OpenDialog do begin
-    Title:=MainForm.MOsdfont.Caption;
+    Title:= FontTitle;
     Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
     filter:=FontFilter+'(*.ttf)|*.ttf|'+AnyFilter+'(*.*)|*.*';
-    if Execute then begin
-      if COsdfont.Text<>fileName then begin
-        COsdfont.Text:=fileName; FontChange(COsdfont);
-      end;
-    end;
+    if Execute and (Trim(Tnt_WideLowerCase(EOsdfont.Text))<>Trim(Tnt_WideLowerCase(fileName))) then
+      EOsdfont.Text:=fileName;
   end;
   WideSetCurrentDir(CurPath);
 end;
@@ -1042,16 +1021,32 @@ procedure TOptionsForm.FontChange(Sender: TObject);
 var i:integer; s,k,h:WideString;
 begin
   PShow.Caption:='';
-  s:=Trim(Tnt_WideLowerCase((Sender as TTntComboBox).Text));
-  for i:=0 to FontPaths.Count-1 do begin
+  s:=Trim(Tnt_WideLowerCase((Sender as TTntEdit).Text));
+  if Sender=Esubfont then Sender:=CSubfont
+  else Sender:=COsdfont;
+  for i:=FontPaths.Count-1 downto 0 do begin
     k:=Tnt_WideLowerCase((Sender as TTntComboBox).Items[i]); h:= Tnt_WideLowerCase(FontPaths[i]);
     if (s=k) or (s=h) then begin
       PShow.Font.Name:=(Sender as TTntComboBox).Items[i];
       PShow.Caption:=(Sender as TTntComboBox).Items[i];
-      (Sender as TTntComboBox).ItemIndex:=i;
+      if Sender=CSubfont then begin
+        Esubfont.Font.Name:=PShow.Font.Name;
+        Esubfont.Font.Size:=0;
+        if s=h then Esubfont.Text:=PShow.Caption;
+      end
+      else begin
+        Eosdfont.Font.Name:=PShow.Font.Name;
+        Eosdfont.Font.Size:=0;
+        if s=h then Eosdfont.Text:=PShow.Caption;
+      end; 
       break;
     end;
   end;
+  if i=-1 then begin
+    if Sender=CSubfont then Esubfont.Font.Name:='Tahoma'
+    else Eosdfont.Font.Name:='Tahoma';
+  end;
+  (Sender as TTntComboBox).ItemIndex:=i;
 end;
 
 procedure TOptionsForm.SetColor(Sender: TObject);
@@ -1071,6 +1066,7 @@ procedure TOptionsForm.SOsdfontClick(Sender: TObject);
 begin
   COsdfont.Enabled:=SOsdfont.Checked;
   BOsdfont.Enabled:=SOsdfont.Checked;
+  EOsdfont.Enabled:=SOsdfont.Checked;
 end;
 
 procedure TOptionsForm.BSsfClick(Sender: TObject);
@@ -1324,7 +1320,7 @@ begin
   if t<>nil then begin
     if IKey then begin
       HK.Items[sIndex].Caption:=tCap;
-      if WideMessageDlg('"'+t.SubItems.Strings[0]+'" ,['+t.Caption+'] '+IKeyerror,mtInformation,[mbYes,mbNo],0)=mrYes then begin
+      if WideMessageDlg('"'+t.SubItems.Strings[0]+'"'^M^J+'"'+t.Caption+'"'+IKeyerror,mtInformation,[mbYes,mbNo],0)=mrYes then begin
         HK.Items[sIndex].Caption:=ShiftToStr(Shift)+KeyToStr(Key);
         HK.Items[sIndex].Data:=Pointer(i);
         t.Caption:=''; t.Data:=nil;
@@ -1393,14 +1389,16 @@ begin
   if HKS='' then HKS:=DefaultHKS;
   a:=TStringList.Create;
   a.CommaText:=HKS;
-  if a.Count=HK.Items.Count then
-    for i:=0 to a.Count-1 do begin
-      h:=StrToInt(a.Strings[i]);
-      if h<VK_BACK{8} then continue;
-      HkToShiftKey(h,Shift,Key);
-      HK.Items[i].Data:=Pointer(h);
-      HK.Items[i].Caption:=ShiftToStr(Shift)+KeyToStr(Key);
-    end;
+  for i:=0 to HK.Items.Count-1 do begin
+    if (a.Count<HK.Items.Count) and (i<a.Count) then
+      h:=StrToIntDef(a.Strings[i],DefaultHotKey[i])
+    else h:=DefaultHotKey[i];
+    if h<VK_BACK{8} then h:=DefaultHotKey[i];
+    if HK.FindData(0,Pointer(h),true,false)<>nil then h:=DefaultHotKey[i];
+    HkToShiftKey(h,Shift,Key);
+    HK.Items[i].Data:=Pointer(h);
+    HK.Items[i].Caption:=ShiftToStr(Shift)+KeyToStr(Key);
+  end;
   a.Free;
 end;
 
@@ -1421,6 +1419,60 @@ end;
 procedure TOptionsForm.LURLClick(Sender: TObject);
 begin
   ShellExecute(Handle,'open','http://sourceforge.net/projects/mpui-hcb',nil,nil,SW_SHOW);
+end;
+
+procedure TOptionsForm.CSubfontDrawItem(Control: TWinControl;
+  Index: Integer; Rect: TRect; State: TOwnerDrawState);
+begin
+  with CSubfont.Canvas do
+  begin
+    FillRect(Rect);
+    Font.Name := CSubfont.Items[Index];
+    Font.Size := 0;    // use font's preferred size
+    WideCanvasTextOut(CSubfont.Canvas,Rect.Left+1,Rect.Top+1,CSubfont.Items[Index]);
+  end;
+  Esubfont.Height:=CSubfont.Height;
+end;
+
+procedure TOptionsForm.CSubfontMeasureItem(Control: TWinControl;
+  Index: Integer; var Height: Integer);
+begin
+  with CSubfont.Canvas do
+  begin
+    Font.Name := CSubfont.Items[Index];
+    Font.Size := 0;                 // use font's preferred size
+    Height := TextHeight('Wg') + 2; // measure ascenders and descenders
+  end;
+end;
+
+procedure TOptionsForm.CSubfontChange(Sender: TObject);
+begin
+  if (Sender as TTntComboBox).ItemIndex<>-1 then begin
+    if sender=CSubfont then ESubfont.Text:=CSubfont.Text
+    else Eosdfont.Text:=Cosdfont.Text;
+  end;
+end;
+
+procedure TOptionsForm.CosdfontMeasureItem(Control: TWinControl;
+  Index: Integer; var Height: Integer);
+begin
+  with Cosdfont.Canvas do begin
+    Font.Name := Cosdfont.Items[Index];
+    Font.Size := 0;                 // use font's preferred size
+    Height := TextHeight('Wg') + 2; // measure ascenders and descenders
+  end;
+end;
+
+procedure TOptionsForm.CosdfontDrawItem(Control: TWinControl;
+  Index: Integer; Rect: TRect; State: TOwnerDrawState);
+begin
+  with Cosdfont.Canvas do begin
+    FillRect(Rect);
+    Font.Name := Cosdfont.Items[Index];
+    Font.Size := 0;    // use font's preferred size
+    WideCanvasTextOut(Cosdfont.Canvas,Rect.Left+1,Rect.Top+1,Cosdfont.Items[Index]);
+  end;
+  Eosdfont.Height:=Cosdfont.Height;
 end;
 
 end.

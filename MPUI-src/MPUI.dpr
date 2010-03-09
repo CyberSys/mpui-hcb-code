@@ -19,7 +19,11 @@
 program MPUI;
 
 uses
-  Windows, Forms, TntForms, TntSysUtils, TntSystem,
+  Windows,
+  Forms,
+  TntForms,
+  TntSysUtils,
+  TntSystem,
   Main in 'Main.pas' {MainForm},
   Core in 'Core.pas',
   Locale in 'Locale.pas',
@@ -53,7 +57,8 @@ uses
   UnRAR in 'UnRAR.pas',
   SevenZip in 'SevenZip.pas',
   SevenZipVCL in 'SevenZipVCL.pas',
-  Equalizer in 'Equalizer.pas' {EqualizerForm};
+  Equalizer in 'Equalizer.pas' {EqualizerForm},
+  TV in 'TV.pas' {OpenDevices};
 
 {$R *.res}
 {$R XPStyle.res}
@@ -94,6 +99,7 @@ begin
     Application.CreateForm(TInfoForm, InfoForm);
     Application.CreateForm(TEqualizerForm, EqualizerForm);
     Application.CreateForm(TOptionsForm, OptionsForm);
+    Application.CreateForm(TOpenDevices, OpenDevices);
     Application.Run;
     ReleaseMutex(hAppMutex);
   end;

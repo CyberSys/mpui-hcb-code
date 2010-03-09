@@ -167,7 +167,6 @@ type
     MAOnTop: TTntMenuItem;
     MWOnTop: TTntMenuItem;
     BOpen: TTntSpeedButton;
-    MMix: TTntMenuItem;
     MForce11: TTntMenuItem;
     MForce122: TTntMenuItem;
     MPopup: TTntPopupMenu;
@@ -216,7 +215,6 @@ type
     MMaxW: TTntMenuItem;
     MPMaxW: TTntMenuItem;
     MEqualizer: TTntMenuItem;
-    MOsdfont: TTntMenuItem;
     MVCDT: TTntMenuItem;
     MShowSub: TTntMenuItem;
     MRmMenu: TTntMenuItem;
@@ -301,6 +299,7 @@ type
     N37: TTntMenuItem;
     Imagery: TImageList;
     M8ch: TTntMenuItem;
+    MOpenDevices: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -386,7 +385,6 @@ type
       Shift: TShiftState);
     procedure MOpenDirClick(Sender: TObject);
     procedure MEqualizerClick(Sender: TObject);
-    procedure MOsdfontClick(Sender: TObject);
     procedure MQuitClick(Sender: TObject);
     procedure MChannelsClick(Sender: TObject);
     procedure MFlipClick(Sender: TObject);
@@ -413,6 +411,7 @@ type
     procedure MSubScale2Click(Sender: TObject);
     procedure MSCSClick(Sender: TObject);
     procedure MFClearClick(Sender: TObject);
+    procedure MOpenDevicesClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -472,7 +471,7 @@ var
 
 implementation
 uses Locale, Config, Options, Info,
-     UnRAR, Equalizer, SevenZip;
+     UnRAR, Equalizer, SevenZip,tv;
 
 {$R *.dfm}
 var IsDrLoaded:THandle = 0;
@@ -920,8 +919,9 @@ if MVideos.Visible then begin
                          Adelay:=Adelay+0.1; HandleCommand('audio_delay +0.100');
                        end;
           Ord('O'):   begin
-                        if OSDLevel<>DefaultOSDLevel then OSDLevel:=DefaultOSDLevel
-                        else OSDLevel:=3;
+                        if OSDLevel<2 then OSDLevel:=3
+                        else if DefaultOSDLevel>1 then OSDLevel:=1
+                        else OSDLevel:=DefaultOSDLevel;
                         HandleCommand('osd '+IntToStr(OSDLevel));
                         MOSD.Items[OSDLevel].Checked:=true;
                         OSDMenu.Items[OSDLevel].Checked:=true;
@@ -1030,7 +1030,6 @@ else begin
         Ord('D'):   MAudiochannelsClick(MStereo);
         Ord('L'):   MAudiochannelsClick(MLchannels);
         Ord('R'):   MAudiochannelsClick(MRchannels);
-        Ord('M'):   MAudiochannelsClick(MMix);
       end;
     end
     else begin
@@ -1581,14 +1580,9 @@ end;
 procedure TMainForm.MAudiochannelsClick(Sender: TObject);
 begin
   if (Sender as TTntMenuItem).Checked then exit;
-  AudiochannelsID:=(Sender as TTntMenuItem).Tag;
-  //Restart;
-  case AudiochannelsID of
-    0: begin balance:=0; SendCommand('set_property balance 0'); end;
-    1: begin balance:=-1; SendCommand('set_property balance -1'); end;
-    2: begin balance:=1; SendCommand('set_property balance 1'); end;
-    3: begin balance:=0; Restart; end;
-  end;
+  balance:=(Sender as TTntMenuItem).Tag;
+  SendCommand('set_property balance '+FloatToStr(balance));
+  if HaveVideo then SendCommand('osd_show_text "'+UTF8Encode(Trim(copy((Sender as TTntMenuItem).Caption,1,Pos('(',(Sender as TTntMenuItem).Caption)-1)))+'"');
   (Sender as TTntMenuItem).Checked:=True;
 end;
 
@@ -2615,31 +2609,6 @@ begin
     end;
     OldX:=p.X; OldY:=p.Y;
   end;
-  
-{//鼠标为手形时，不隐藏鼠标
-  if MouseMode=0 then begin
-    if (MSubtitle.Count>0) and (abs(Y*100 DIV IPanel.Height-SubPos)<=10) then begin
-      IPanel.Cursor:=crHandPoint;
-    else begin
-      if (X<>OldX) or (Y<>OldY) then begin
-        OldX:=X; OldY:=Y;
-        SetMouseV(true);
-      end;
-    end;
-  end;
-
-//无论鼠标为何种形状，当鼠标不是隐藏状态时都会去执行鼠标隐藏。当鼠标隐藏时不会执行拖曳字幕功能
-if (MouseMode=0) and ((X<>OldX) or (Y<>OldY)) then begin
-    OldX:=X; OldY:=Y;
-    if (MSubtitle.Count>0) and (abs(Y*100 DIV IPanel.Height-SubPos)<=10) then begin
-      IPanel.Cursor:=crHandPoint;
-      OPanel.Cursor:=crDefault;
-      HideMouseAt:=GetTickCount+500;
-    end
-    else SetMouseV(true);
-  end;
-//////////////////////}
-
 end;
 
 procedure TMainForm.DisplayMouseUp(Sender: TObject;
@@ -2670,19 +2639,16 @@ begin
     IPanel.Cursor:=crDefault;
     OPanel.Cursor:=crDefault;
     HideMouseAt:=GetTickCount+500;
-    //ShowCursor(true);
   end
   else begin
     OPanel.Cursor:=-1;
     IPanel.Cursor:=-1;
     Logo.Cursor:=-1;
-    //ShowCursor(false);
   end;
 end;
 
 procedure TMainForm.UpdateMenuCheck;
 begin
-  MAudiochannels.Items[AudiochannelsID].Checked:=true;
   MChannels.Items[Ch].Checked:=true;
   MRotate.Items[Rot].Checked:=true;
   MDeinterlace.Items[Deinterlace].Checked:=true;
@@ -2809,37 +2775,11 @@ begin
 end;
 
 procedure TMainForm.MSubfontClick(Sender: TObject);
-var CurPath:WideString;
 begin
-  CurPath:=WideGetCurrentDir;
-  with OpenDialog do begin
-    Title:=MSubfont.Caption;
-    Options:=Options-[ofAllowMultiSelect]+[ofoldstyledialog];
-    InitialDir:=EscapeParam(SystemDir+'Fonts\');
-    filter:=FontFilter+'(*.ttf)|*.ttf|'+AnyFilter+'(*.*)|*.*';
-    if Execute then begin
-      subfont:=fileName;
-      restart;
-    end;
+  if not OptionsForm.Visible then begin
+    OptionsForm.Tab.ActivePage:=OptionsForm.TSub;
+    OptionsForm.Showmodal;
   end;
-  WideSetCurrentDir(CurPath);
-end;
-
-procedure TMainForm.MOsdfontClick(Sender: TObject);
-var CurPath:WideString;
-begin
-  CurPath:=WideGetCurrentDir;
-  with OpenDialog do begin
-    Title:=MOsdfont.Caption;
-    Options:=Options-[ofAllowMultiSelect]+[ofoldstyledialog];
-    InitialDir:=EscapeParam(SystemDir+'Fonts\');
-    filter:=FontFilter+'(*.ttf)|*.ttf|'+AnyFilter+'(*.*)|*.*';
-    if Execute then begin
-      osdfont:=fileName;
-      restart;
-    end;
-  end;
-  WideSetCurrentDir(CurPath);
 end;
 
 procedure TMainForm.MKaspectClick(Sender: TObject);
@@ -3115,6 +3055,11 @@ procedure TMainForm.MSCSClick(Sender: TObject);
 begin
   NW:=OPanel.Width; NH:=OPanel.Height;
   Config.Save(HomeDir+DefaultFileName,3);
+end;
+
+procedure TMainForm.MOpenDevicesClick(Sender: TObject);
+begin
+  if not OpenDevices.Visible then OpenDevices.ShowModal;
 end;
 
 end.

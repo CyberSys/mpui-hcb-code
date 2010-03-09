@@ -20,7 +20,7 @@
 unit mo_en;
 interface
 implementation
-uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
+uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer,TV;
 
 procedure Activate;
 begin
@@ -88,11 +88,12 @@ begin
         LOCstr_OpenURL_Caption:='Play URL';
         LOCstr_OpenURL_Prompt:='Which URL do you want to play?';
       MOpenDrive.Caption:='Play Media CD';
+      MOpenDevices.Caption:='Open Devices';
       MRFile.Caption:='Recent files';
       MFClear.Caption:='Clear list';
       MLoadLyric.Caption:='Load Lyric File';
       MLoadSub.Caption:='Load Subtitle...';
-      MOsdfont.Caption:='OSD Font...';
+      FontTitle:='OSD Font...';
       MSubfont.Caption:='Subtitle Font...';
       MClose.Caption:='Close';
       MQuit.Caption:='Quit';
@@ -135,7 +136,6 @@ begin
         MStereo.Caption:='Stereo';
         MLchannels.Caption:='Left channels';
         MRchannels.Caption:='Right channels';
-        MMix.Caption:='Mix Stereo';
         MMute.Caption:='Mute';
       MWheelControl.Caption:='Mouse wheel control';
         MVol.Caption:=OSD_Volume_Prompt;
@@ -446,38 +446,37 @@ begin
     HK.Items[67].SubItems.Strings[0]:=MainForm.MStereo.Caption;
     HK.Items[68].SubItems.Strings[0]:=MainForm.MLchannels.Caption;
     HK.Items[69].SubItems.Strings[0]:=MainForm.MRchannels.Caption;
-    HK.Items[70].SubItems.Strings[0]:=MainForm.MMix.Caption;
-    HK.Items[71].SubItems.Strings[0]:='Rewind '+IntToStr(seekLen)+' seconds';
-    HK.Items[72].SubItems.Strings[0]:='Forward '+IntToStr(seekLen)+' seconds';
-    HK.Items[73].SubItems.Strings[0]:=MainForm.MSeekF60.Caption;
-    HK.Items[74].SubItems.Strings[0]:=MainForm.MSeekR60.Caption;
-    HK.Items[75].SubItems.Strings[0]:=MainForm.MSeekF600.Caption;
-    HK.Items[76].SubItems.Strings[0]:=MainForm.MSeekR600.Caption;
-    HK.Items[77].SubItems.Strings[0]:='Forward 1 chapter';
-    HK.Items[78].SubItems.Strings[0]:='Rewind 1 chapter';
-    HK.Items[79].SubItems.Strings[0]:='Reset speed';
-    HK.Items[80].SubItems.Strings[0]:='Decrease speed';
-    HK.Items[81].SubItems.Strings[0]:='Increase speed';
-    HK.Items[82].SubItems.Strings[0]:=MainForm.MMute.Caption;
-    HK.Items[83].SubItems.Strings[0]:='Next aspect';
-    HK.Items[84].SubItems.Strings[0]:='Next subtitle';
-    HK.Items[85].SubItems.Strings[0]:='Next video track';
-    HK.Items[86].SubItems.Strings[0]:='Next program';
-    HK.Items[87].SubItems.Strings[0]:=MainForm.MPan1.Caption;
-    HK.Items[88].SubItems.Strings[0]:=MainForm.MPan0.Caption;
-    HK.Items[89].SubItems.Strings[0]:='Next audio track';
-    HK.Items[90].SubItems.Strings[0]:='Toggle OnTop';
-    HK.Items[91].SubItems.Strings[0]:=MainForm.MShowPlaylist.Caption;
-    HK.Items[92].SubItems.Strings[0]:=MainForm.MOptions.Caption;
-    HK.Items[93].SubItems.Strings[0]:=MainForm.MStreamInfo.Caption;
-    HK.Items[94].SubItems.Strings[0]:=MainForm.MShowOutput.Caption;
-    HK.Items[95].SubItems.Strings[0]:=MainForm.MIntro.Caption;
-    HK.Items[96].SubItems.Strings[0]:=MainForm.MEnd.Caption;
-    HK.Items[97].SubItems.Strings[0]:=MainForm.MSkip.Caption;
-    HK.Items[98].SubItems.Strings[0]:=MainForm.MPause.Caption;
-    HK.Items[99].SubItems.Strings[0]:='Play/Pause';
-    HK.Items[100].SubItems.Strings[0]:=MainForm.MPrev.Caption;
-    HK.Items[101].SubItems.Strings[0]:=MainForm.MNext.Caption;
+    HK.Items[70].SubItems.Strings[0]:='Rewind '+IntToStr(seekLen)+' seconds';
+    HK.Items[71].SubItems.Strings[0]:='Forward '+IntToStr(seekLen)+' seconds';
+    HK.Items[72].SubItems.Strings[0]:=MainForm.MSeekF60.Caption;
+    HK.Items[73].SubItems.Strings[0]:=MainForm.MSeekR60.Caption;
+    HK.Items[74].SubItems.Strings[0]:=MainForm.MSeekF600.Caption;
+    HK.Items[75].SubItems.Strings[0]:=MainForm.MSeekR600.Caption;
+    HK.Items[76].SubItems.Strings[0]:='Forward 1 chapter';
+    HK.Items[77].SubItems.Strings[0]:='Rewind 1 chapter';
+    HK.Items[78].SubItems.Strings[0]:='Reset speed';
+    HK.Items[79].SubItems.Strings[0]:='Decrease speed';
+    HK.Items[80].SubItems.Strings[0]:='Increase speed';
+    HK.Items[81].SubItems.Strings[0]:=MainForm.MMute.Caption;
+    HK.Items[82].SubItems.Strings[0]:='Next aspect';
+    HK.Items[83].SubItems.Strings[0]:='Next subtitle';
+    HK.Items[84].SubItems.Strings[0]:='Next video track';
+    HK.Items[85].SubItems.Strings[0]:='Next program';
+    HK.Items[86].SubItems.Strings[0]:=MainForm.MPan1.Caption;
+    HK.Items[87].SubItems.Strings[0]:=MainForm.MPan0.Caption;
+    HK.Items[88].SubItems.Strings[0]:='Next audio track';
+    HK.Items[89].SubItems.Strings[0]:='Toggle OnTop';
+    HK.Items[90].SubItems.Strings[0]:=MainForm.MShowPlaylist.Caption;
+    HK.Items[91].SubItems.Strings[0]:=MainForm.MOptions.Caption;
+    HK.Items[92].SubItems.Strings[0]:=MainForm.MStreamInfo.Caption;
+    HK.Items[93].SubItems.Strings[0]:=MainForm.MShowOutput.Caption;
+    HK.Items[94].SubItems.Strings[0]:=MainForm.MIntro.Caption;
+    HK.Items[95].SubItems.Strings[0]:=MainForm.MEnd.Caption;
+    HK.Items[96].SubItems.Strings[0]:=MainForm.MSkip.Caption;
+    HK.Items[97].SubItems.Strings[0]:=MainForm.MPause.Caption;
+    HK.Items[98].SubItems.Strings[0]:='Play/Pause';
+    HK.Items[99].SubItems.Strings[0]:=MainForm.MPrev.Caption;
+    HK.Items[100].SubItems.Strings[0]:=MainForm.MNext.Caption;
   end;
   with PlaylistForm do begin
     Caption:='Playlist';
@@ -543,6 +542,13 @@ begin
     SSat.Caption:=OSD_Saturation_Prompt;
     SHue.Caption:=OSD_Hue_Prompt;
   end;
+  with OpenDevices do begin
+    LVideoDevices.Caption:='Video Devices';
+    LAudioDevices.Caption:='Audio Devices';
+    LCountryCode.Caption:='Country Code';
+    OKBtn.Caption:='OK';
+    CancelBtn.Caption:='Cancel';
+  end;
   InfoForm.Caption:='Clip information';
   InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   InfoForm.TCB.Caption:='Copy Info';
@@ -562,7 +568,7 @@ begin
   LOCstr_InfoAudioRate:='Sample Rate';
   LOCstr_InfoAudioChannels:='Channels';
   IKeyHint:='Please press hotkey';
-  IKeyerror:='Shortcut already exists. Clicking "Yes" to overwrite it';
+  IKeyerror:='Shortcut is already in use.'^M^J+'Overwrite?';
   Ccap:='Chapter'; Acap:='Angle';
 end;
 

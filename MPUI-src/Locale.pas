@@ -45,6 +45,7 @@ var LOCstr_Title:WideString;
     LOCstr_Status_Paused:WideString;
     LOCstr_Status_Stopped:WideString;
     LOCstr_Status_Error:WideString;
+    FontTitle:WideString;
     OSD_Volume_Prompt:String;
     OSD_ScreenShot_Prompt:String;
     OSD_Contrast_Prompt:String;
@@ -247,4 +248,5 @@ begin
   OSD_SubDelay_Prompt:='Subtitle Delay';
   IKeyHint:='Please press hotkey';
   IKeyerror:=' ,Shortcut already exists';
+  FontTitle:='OSD font ...';
 end.

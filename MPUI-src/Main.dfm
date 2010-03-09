@@ -1476,6 +1476,10 @@ object MainForm: TMainForm
         ImageIndex = 2
         Visible = False
       end
+      object MOpenDevices: TTntMenuItem
+        Caption = 'Open Devices'
+        OnClick = MOpenDevicesClick
+      end
       object N33: TTntMenuItem
         Caption = '-'
       end
@@ -2232,22 +2236,15 @@ object MainForm: TMainForm
           OnClick = MAudiochannelsClick
         end
         object MLchannels: TTntMenuItem
-          Tag = 1
+          Tag = -1
           Caption = 'Lchannels'
           GroupIndex = 88
           RadioItem = True
           OnClick = MAudiochannelsClick
         end
         object MRchannels: TTntMenuItem
-          Tag = 2
+          Tag = 1
           Caption = 'Rchannels'
-          GroupIndex = 88
-          RadioItem = True
-          OnClick = MAudiochannelsClick
-        end
-        object MMix: TTntMenuItem
-          Tag = 3
-          Caption = 'Mix Stereo'
           GroupIndex = 88
           RadioItem = True
           OnClick = MAudiochannelsClick
@@ -2352,11 +2349,6 @@ object MainForm: TMainForm
         GroupIndex = 1
         ImageIndex = 35
         OnClick = MSubfontClick
-      end
-      object MOsdfont: TTntMenuItem
-        Caption = 'Set OSD Font'
-        GroupIndex = 1
-        OnClick = MOsdfontClick
       end
       object N30: TTntMenuItem
         Caption = '-'

@@ -90,7 +90,7 @@ begin
       MOpenDrive.Caption:=UTF8Decode('Отвори CD/DVD');
       MLoadLyric.Caption:=UTF8Decode('Зареди файл с говор ...');
       MLoadSub.Caption:=UTF8Decode('Зареди субтитри ...');
-      MOsdfont.Caption:=UTF8Decode('OSD шрифт ...');
+      FontTitle:=UTF8Decode('OSD шрифт ...');
       MSubfont.Caption:=UTF8Decode('Шрифт на субтитрите ...');
       MClose.Caption:=UTF8Decode('Затвори');
       MQuit.Caption:=UTF8Decode('Изход');
@@ -132,7 +132,6 @@ begin
         MStereo.Caption:=UTF8Decode('Стерео');
         MLchannels.Caption:=UTF8Decode('Ляв канал');
         MRchannels.Caption:=UTF8Decode('Десен канал');
-        MMix.Caption:=UTF8Decode('Микс Стерео');
         MMute.Caption:=UTF8Decode('Без звук');
       MWheelControl.Caption:=UTF8Decode('Поведение на скролера на мишката');
         MVol.Caption:=UTF8Decode(OSD_Volume_Prompt);

@@ -20,7 +20,7 @@
 unit mo_zh_tw;
 interface
 implementation
-uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer;
+uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer,TV;
 
 procedure Activate;
 begin
@@ -88,11 +88,13 @@ begin
         LOCstr_OpenURL_Caption:=UTF8Decode('播放網址');
         LOCstr_OpenURL_Prompt:=UTF8Decode('請輸入您想播放的網址');
       MOpenDrive.Caption:=UTF8Decode('播放 鐳射光碟');
+      MOpenDevices.Caption:=UTF8Decode('打開 設備');
       MRFile.Caption:=UTF8Decode('最近打開的檔案');
       MFClear.Caption:=UTF8Decode('清除列表');
       MLoadLyric.Caption:=UTF8Decode('載入歌詞');
       MLoadSub.Caption:=UTF8Decode('載入字幕...');
       MSubfont.Caption:=UTF8Decode('字幕字體...');
+	  FontTitle:=UTF8Decode('OSD字體...');
       MClose.Caption:=UTF8Decode('關閉');
       MQuit.Caption:=UTF8Decode('退出');
     MView.Caption:=UTF8Decode('檢視');
@@ -134,7 +136,6 @@ begin
         MStereo.Caption:=UTF8Decode('立體聲');
         MLchannels.Caption:=UTF8Decode('左聲道');
         MRchannels.Caption:=UTF8Decode('右聲道');
-        MMix.Caption:=UTF8Decode('混合立體聲');
         MMute.Caption:=UTF8Decode('靜音');
       MWheelControl.Caption:=UTF8Decode('鼠標滾輪控制');
         MVol.Caption:=UTF8Decode(OSD_Volume_Prompt);
@@ -446,38 +447,37 @@ begin
     HK.Items[67].SubItems.Strings[0]:=MainForm.MStereo.Caption;
     HK.Items[68].SubItems.Strings[0]:=MainForm.MLchannels.Caption;
     HK.Items[69].SubItems.Strings[0]:=MainForm.MRchannels.Caption;
-    HK.Items[70].SubItems.Strings[0]:=MainForm.MMix.Caption;
-    HK.Items[71].SubItems.Strings[0]:=UTF8Decode('向後 '+IntToStr(seekLen)+'秒');
-    HK.Items[72].SubItems.Strings[0]:=UTF8Decode('向前 '+IntToStr(seekLen)+'秒');
-    HK.Items[73].SubItems.Strings[0]:=MainForm.MSeekF60.Caption;
-    HK.Items[74].SubItems.Strings[0]:=MainForm.MSeekR60.Caption;
-    HK.Items[75].SubItems.Strings[0]:=MainForm.MSeekF600.Caption;
-    HK.Items[76].SubItems.Strings[0]:=MainForm.MSeekR600.Caption;
-    HK.Items[77].SubItems.Strings[0]:=UTF8Decode('前進一個章節');
-    HK.Items[78].SubItems.Strings[0]:=UTF8Decode('後退一個章節');
-    HK.Items[79].SubItems.Strings[0]:=UTF8Decode('重置 速度');
-    HK.Items[80].SubItems.Strings[0]:=UTF8Decode('減速');
-    HK.Items[81].SubItems.Strings[0]:=UTF8Decode('加速');
-    HK.Items[82].SubItems.Strings[0]:=MainForm.MMute.Caption;
-    HK.Items[83].SubItems.Strings[0]:=UTF8Decode('切換縱橫比');
-    HK.Items[84].SubItems.Strings[0]:=UTF8Decode('切換字幕');
-    HK.Items[85].SubItems.Strings[0]:=UTF8Decode('切換視頻軌');
-    HK.Items[86].SubItems.Strings[0]:=UTF8Decode('切換節目');
-    HK.Items[87].SubItems.Strings[0]:=MainForm.MPan1.Caption;
-    HK.Items[88].SubItems.Strings[0]:=MainForm.MPan0.Caption;
-    HK.Items[89].SubItems.Strings[0]:=UTF8Decode('切換音軌');
-    HK.Items[90].SubItems.Strings[0]:=UTF8Decode('切換 置頂');
-    HK.Items[91].SubItems.Strings[0]:=MainForm.MShowPlaylist.Caption;
-    HK.Items[92].SubItems.Strings[0]:=MainForm.MOptions.Caption;
-    HK.Items[93].SubItems.Strings[0]:=MainForm.MStreamInfo.Caption;
-    HK.Items[94].SubItems.Strings[0]:=MainForm.MShowOutput.Caption;
-    HK.Items[95].SubItems.Strings[0]:=MainForm.MIntro.Caption;
-    HK.Items[96].SubItems.Strings[0]:=MainForm.MEnd.Caption;
-    HK.Items[97].SubItems.Strings[0]:=MainForm.MSkip.Caption;
-    HK.Items[98].SubItems.Strings[0]:=MainForm.MPause.Caption;
-    HK.Items[99].SubItems.Strings[0]:=UTF8Decode('播放/暫停');
-    HK.Items[100].SubItems.Strings[0]:=MainForm.MPrev.Caption;
-    HK.Items[101].SubItems.Strings[0]:=MainForm.MNext.Caption;
+    HK.Items[70].SubItems.Strings[0]:=UTF8Decode('向後 '+IntToStr(seekLen)+'秒');
+    HK.Items[71].SubItems.Strings[0]:=UTF8Decode('向前 '+IntToStr(seekLen)+'秒');
+    HK.Items[72].SubItems.Strings[0]:=MainForm.MSeekF60.Caption;
+    HK.Items[73].SubItems.Strings[0]:=MainForm.MSeekR60.Caption;
+    HK.Items[74].SubItems.Strings[0]:=MainForm.MSeekF600.Caption;
+    HK.Items[75].SubItems.Strings[0]:=MainForm.MSeekR600.Caption;
+    HK.Items[76].SubItems.Strings[0]:=UTF8Decode('前進一個章節');
+    HK.Items[77].SubItems.Strings[0]:=UTF8Decode('後退一個章節');
+    HK.Items[78].SubItems.Strings[0]:=UTF8Decode('重置 速度');
+    HK.Items[79].SubItems.Strings[0]:=UTF8Decode('減速');
+    HK.Items[80].SubItems.Strings[0]:=UTF8Decode('加速');
+    HK.Items[81].SubItems.Strings[0]:=MainForm.MMute.Caption;
+    HK.Items[82].SubItems.Strings[0]:=UTF8Decode('切換縱橫比');
+    HK.Items[83].SubItems.Strings[0]:=UTF8Decode('切換字幕');
+    HK.Items[84].SubItems.Strings[0]:=UTF8Decode('切換視頻軌');
+    HK.Items[85].SubItems.Strings[0]:=UTF8Decode('切換節目');
+    HK.Items[86].SubItems.Strings[0]:=MainForm.MPan1.Caption;
+    HK.Items[87].SubItems.Strings[0]:=MainForm.MPan0.Caption;
+    HK.Items[88].SubItems.Strings[0]:=UTF8Decode('切換音軌');
+    HK.Items[89].SubItems.Strings[0]:=UTF8Decode('切換 置頂');
+    HK.Items[90].SubItems.Strings[0]:=MainForm.MShowPlaylist.Caption;
+    HK.Items[91].SubItems.Strings[0]:=MainForm.MOptions.Caption;
+    HK.Items[92].SubItems.Strings[0]:=MainForm.MStreamInfo.Caption;
+    HK.Items[93].SubItems.Strings[0]:=MainForm.MShowOutput.Caption;
+    HK.Items[94].SubItems.Strings[0]:=MainForm.MIntro.Caption;
+    HK.Items[95].SubItems.Strings[0]:=MainForm.MEnd.Caption;
+    HK.Items[96].SubItems.Strings[0]:=MainForm.MSkip.Caption;
+    HK.Items[97].SubItems.Strings[0]:=MainForm.MPause.Caption;
+    HK.Items[98].SubItems.Strings[0]:=UTF8Decode('播放/暫停');
+    HK.Items[99].SubItems.Strings[0]:=MainForm.MPrev.Caption;
+    HK.Items[100].SubItems.Strings[0]:=MainForm.MNext.Caption;
   end;
   with PlaylistForm do begin
     Caption:=UTF8Decode('播放清單');
@@ -543,6 +543,13 @@ begin
     SSat.Caption:=UTF8Decode(OSD_Saturation_Prompt);
     SHue.Caption:=UTF8Decode(OSD_Hue_Prompt);
   end;
+  with OpenDevices do begin
+    LVideoDevices.Caption:=UTF8Decode('視頻設備');
+    LAudioDevices.Caption:=UTF8Decode('音頻設備');
+    LCountryCode.Caption:=UTF8Decode('國家代碼');
+    OKBtn.Caption:=UTF8Decode('確定');
+    CancelBtn.Caption:=UTF8Decode('取消');
+  end;
   InfoForm.Caption:=UTF8Decode('影片資訊');
   InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   InfoForm.TCB.Caption:=UTF8Decode('拷貝資訊');
@@ -562,7 +569,7 @@ begin
   LOCstr_InfoAudioRate:=UTF8Decode('取樣率');
   LOCstr_InfoAudioChannels:=UTF8Decode(' 聲道數');
   IKeyHint:=UTF8Decode('請按下快捷鍵');
-  IKeyerror:=UTF8Decode('快捷鍵已經存在，點“確定”將覆蓋原有設置');
+  IKeyerror:=UTF8Decode('快捷鍵已被使用。'^M^J+'要覆蓋它嗎？');
   Ccap:=UTF8Decode('章節');
   Acap:=UTF8Decode('視角');
 end;

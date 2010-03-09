@@ -43,7 +43,8 @@ begin
     case mode of
       0: begin
            DefaultLocale:=ReadInteger(SectionName,'Locale',DefaultLocale);
-           Core.OSDLevel:=ReadInteger(SectionName,'OSDLevel',OSDLevel);
+           Core.DefaultOSDLevel:=ReadInteger(SectionName,'OSDLevel',DefaultOSDLevel);
+           Core.OSDLevel:=Core.DefaultOSDLevel;
            Core.AudioOut:=ReadInteger(SectionName,'AudioOut',Core.AudioOut);
            Core.AudioDev:=ReadInteger(SectionName,'AudioDev',Core.AudioDev);
            Core.Postproc:=ReadInteger(SectionName,'Postproc',Core.Postproc);

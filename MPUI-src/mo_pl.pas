@@ -94,7 +94,7 @@ begin
       MOpenDrive.Caption:=UTF8Decode('Otwórz CD/DVD');
       MLoadLyric.Caption:=UTF8Decode('Wczytaj plik Lyric');
       MLoadSub.Caption:=UTF8Decode('Wczytaj napisy...');
-      MOsdfont.Caption:=UTF8Decode('Czcionka OSD...');
+      FontTitle:=UTF8Decode('Czcionka OSD...');
       MSubfont.Caption:=UTF8Decode('Czcionka napisów...');
       MClose.Caption:=UTF8Decode('Zamknij');
       MQuit.Caption:=UTF8Decode('Zakończ');
@@ -136,7 +136,6 @@ begin
         MStereo.Caption:=UTF8Decode('Tryb stereo');
         MLchannels.Caption:=UTF8Decode('Lewy kanał');
         MRchannels.Caption:=UTF8Decode('Prawy kanał');
-        MMix.Caption:=UTF8Decode('Mix Stereo');
         MMute.Caption:=UTF8Decode('Wycisz');
       MWheelControl.Caption:=UTF8Decode('Kontroluj rolką myszki');
         MVol.Caption:=OSD_Volume_Prompt;

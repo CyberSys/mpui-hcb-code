@@ -26,7 +26,7 @@ const PauseCMD:array[0..1]of WideString=('pause','frame_step');
 const PauseInfo:array[0..1]of WideString=('=  PAUSE  =','= ÔÝÍ£ =');
 const CacheFill:array[0..4]of WideString=('Cache fill:','»º´æÌî³ä:','»º³åÌî³ä:','¾´æÌî³ä:','¾›_Ìî³ä:');
 const GenIndex:array[0..2]of WideString=('Generating Index:','ÕýÔÚÉú³ÉË÷Òý:','ÕýÔÚÉú³ÉË÷Òý:');
-const defaultHeight=340; RFileMax=10; DefaultOSDLevel=1; stopTimeout=1000; Dsubpos=96;
+const defaultHeight=340; RFileMax=10; stopTimeout=1000; Dsubpos=96;
 const szdllCount=2;
 const szdll:array[0..szdllCount]of WideString=('7zxa.dll','7za.dll','7z.dll');
 
@@ -86,23 +86,29 @@ const DefaultFass='0aac,1ac3,1acc,1act,1aif,1aifc,1aiff,0amf,1amr,1amv,0ape,0as,
        +'0a52,0apl,1au,1avi,0avs,1bik,0bin,0cda,0cmf,0cmn,0cpk,0cue,1d2v,0dat,0drc,'
        +'1dsm,1dsv,1dsa,1dss,1dts,0dtswav,0dv,0dvr-ms,0divx,1evo,0far,0fla,0flac,1flc,'
        +'1fli,1flic,0flm,1flv,0grf,0hdmov,0img,0iso,1ivf,0it,0itz,0jsv,0kar,0m1a,0m2a,'
-       +'1m2p,1m2ts,1m1v,1m2v,1m3u,1m3u8,1m4a,1m4b,1m4p,1m4v,0mac,0mdz,0miz,'       +'0mjf,1mka,1mkv,1mod,1mov,0mp1,1mp2,0mp2v,1mp3,0mp3pro,1mp4,0mp5,0mpa,0mpc,1mpcpl,'       +'1mpe,1mpeg,1mpg,1mpga,0mp+,0mpp,0mtm,0mpv,0mpv2,0mqv,1mts,0nrg,0nsa,0nst,0nsv,0nuv,'       +'0ogg,0ogm,0okt,0pls,1pmp,1pmp2,1pss,0ptm,1pva,1qt,1ra,1ram,1ratdvd,1rm,0rmi,0rmj,'       +'0rmm,0rmp,0rms,1rmvb,0rmx,0rnx,0roq,0rp,1rpm,0rt,0rv,1realpix,0s3m,0s3z,1scm,0sdp,'       +'1smil,1smk,1smpl,0snd,0stm,0stz,1tp,1tpr,1ts,0tta,0ttpl,0ult,0umx,0vcd,0vfw,1vg2,'       +'1vid,0vivo,1vob,0voc,0vp3,0vp4,0vp5,1vp6,1vp7,1vqf,0wav,1wax,1wm,1wma,1wmp,1wmv,1wmx,'       +'0wpl,1wv,1wvx,0xm,0xmz,0xspf,0261,0264,13g2,13gp,13gpp,13gp2,0669';
+       +'1m2p,1m2ts,1m1v,1m2v,1m3u,1m3u8,1m4a,1m4b,1m4p,1m4v,0mac,0mdz,0miz,'
+       +'0mjf,1mka,1mkv,1mod,1mov,0mp1,1mp2,0mp2v,1mp3,0mp3pro,1mp4,0mp5,0mpa,0mpc,1mpcpl,'
+       +'1mpe,1mpeg,1mpg,1mpga,0mp+,0mpp,0mtm,0mpv,0mpv2,0mqv,1mts,0nrg,0nsa,0nst,0nsv,0nuv,'
+       +'0ogg,0ogm,0okt,0pls,1pmp,1pmp2,1pss,0ptm,1pva,1qt,1ra,1ram,1ratdvd,1rm,0rmi,0rmj,'
+       +'0rmm,0rmp,0rms,1rmvb,0rmx,0rnx,0roq,0rp,1rpm,0rt,0rv,1realpix,0s3m,0s3z,1scm,0sdp,'
+       +'1smil,1smk,1smpl,0snd,0stm,0stz,1tp,1tpr,1ts,0tta,0ttpl,0ult,0umx,0vcd,0vfw,1vg2,'
+       +'1vid,0vivo,1vob,0voc,0vp3,0vp4,0vp5,1vp6,1vp7,1vqf,0wav,1wax,1wm,1wma,1wmp,1wmv,1wmx,'
+       +'0wpl,1wv,1wvx,0xm,0xmz,0xspf,0261,0264,13g2,13gp,13gpp,13gp2,0669';
 
-const DefaultHotKey:array[0..101]of Integer=(
+const DefaultHotKey:array[0..100]of Integer=(
         262182,262184,262181,262183,262331,262333,131123,131264,131121,131122,
         65601,65605,65728,65619,65626,109,107,79,192,222,69,87,49,50,51,52,53,
         54,55,56,57,48,46,45,68,70,67,84,82,86,83,89,85,90,88,71,72,73,75,74,
         76,186,113,114,115,116,9,13,262223,262220,262231,262227,262336,262225,
-        262212,262152,131187,65604,65612,65618,65613,37,39,38,40,33,34,36,35,
-        8,189,187,77,78,66,81,80,188,190,65,112,120,121,122,123,219,221,220,
-        191,32,118,119);
+        262212,262152,131187,65604,65612,65618,37,39,38,40,33,34,36,35,8,189,
+        187,77,78,66,81,80,188,190,65,112,120,121,122,123,219,221,220,191,32,118,119);
+
 const DefaultHKS='262182,262184,262181,262183,262331,262333,131123,131264,131121,131122,'
        +'65601,65605,65728,65619,65626,109,107,79,192,222,69,87,49,50,51,52,53,'
        +'54,55,56,57,48,46,45,68,70,67,84,82,86,83,89,85,90,88,71,72,73,75,74,'
        +'76,186,113,114,115,116,9,13,262223,262220,262231,262227,262336,262225,'
-       +'262212,262152,131187,65604,65612,65618,65613,37,39,38,40,33,34,36,35,'
-       +'8,189,187,77,78,66,81,80,188,190,65,112,120,121,122,123,219,221,220,'
-       +'191,32,118,119';
+       +'262212,262152,131187,65604,65612,65618,37,39,38,40,33,34,36,35,8,189,'
+       +'187,77,78,66,81,80,188,190,65,112,120,121,122,123,219,221,220,191,32,118,119';
 
 type TStatus=(sNone,sOpening,sClosing,sPlaying,sPaused,sStopped,sError);
 var Status:TStatus;
@@ -127,7 +133,7 @@ var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
     SubID,TID,tmpTID,CID,AID,VCDST,VCDET,CDID:integer;
     subcount,Bp,Ep,CurrentLocale:integer;
     Lastsubcount,DirHIdx,DirHSub:integer;
-    AudiochannelsID,CurLyric,NextLyric,LyricCount:integer;
+    CurLyric,NextLyric,LyricCount:integer;
     VobsubCount,VobFileCount:integer;
     CurrentSubCount,OnTop,VobAndInterSubCount,IntersubCount:integer;
     IL,IT,EL,ET,EW,EH,InterW,InterH,NW,NH,OldX,OldY,Scale,LastScale:integer;
@@ -137,7 +143,7 @@ var AudioOut,AudioDev,Postproc,Deinterlace,Aspect:integer;
     Loadsrt,LoadVob,Loadsub,Expand,TotalTime,TTime:integer;
 var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
-    LastPos,SecondPos,OSDLevel,MSecPos:integer;
+    LastPos,SecondPos,OSDLevel,DefaultOSDLevel,MSecPos:integer;
 var Volume,MWC,CP,seekLen:integer;
     ds,tEnd,procArc,Mute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
     DTFormat:string;
@@ -866,11 +872,6 @@ begin
        end;  
   end;
 
-  case AudiochannelsID of
-    //1: AddChain(h,afChain,'channels=2:2:0:1:0:0');
-    //2: AddChain(h,afChain,'channels=2:2:1:0:1:1');
-    3: AddChain(h,afChain,'pan=2:0.65:0.35:0.35:0.65');
-  end;
   if Wadsp then begin
     s:=ExpandName(HomeDir,WadspL);
     h:=pos(':',s); g:='';
@@ -938,6 +939,7 @@ begin
       CmdLine:=CmdLine+MediaURL;
       if CDID>1 then CmdLine:=CmdLine+IntToStr(CDID);
     end
+    else if Pos('tv:///',MediaURL)>0 then CmdLine:=CmdLine+#32+MediaURL
     else if (Pos('://',MediaURL)>1) or IsWideStringMappableToAnsi(MediaURL) then
       CmdLine:=CmdLine+#32+EscapeParam(MediaURL)
     else CmdLine:=CmdLine+#32+EscapeParam(WideExtractShortPathName(MediaURL));
@@ -1935,7 +1937,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           MPWheelControl.Items[0].Checked:=true;
         end;
       end;
-      UpdateMenuEV(true); MOsdfont.Visible:=uof;
+      UpdateMenuEV(true);
       MRmMenu.Visible:=Dnav; MRnMenu.Visible:=Dnav;
       MDeinterlace.Enabled:=not Dda; MSEqualizer.Enabled:=not Dda;
       if MSubtitle.Count>0 then begin
@@ -2221,8 +2223,7 @@ begin
     if r=0 then begin balance:=f;
       if f=-1 then MainForm.MLchannels.Checked:=true
       else if f=1 then MainForm.MRchannels.Checked:=true
-      else if AudiochannelsID=0 then MainForm.MStereo.Checked:=true
-      else MainForm.MMix.Checked:=true;
+      else MainForm.MStereo.Checked:=true;
     end;
     exit;
   end;
@@ -2362,7 +2363,7 @@ end;
 begin
   DecimalSeparator:='.'; Wadsp:=false; GUI:=false; HaveMsg:=false; Uni:=false;
   MFunc:=0; ETime:=false; InSubDir:=true; ML:=false; Pri:=true; HaveLyric:=0;
-  AudiochannelsID:=0; OSDLevel:=DefaultOSDLevel; Ch:=0; Wid:=true; Fd:=false; oneM:=true;
+  DefaultOSDLevel:=1; OSDLevel:=1; Ch:=0; Fd:=false; oneM:=true; Wid:=true;
   Deinterlace:=0; Aspect:=0; Postproc:=0; IntersubCount:=0; UpdatePW:=false;
   AudioOut:=2; AudioDev:=0; Expand:=0; SPDIF:=false; nmsg:=true; Subcode:='';
   ReIndex:=false; SoftVol:=false; RFScr:=false; ni:=false; Dnav:=true; Fol:=2;
@@ -2382,6 +2383,7 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10;
-  lastP1:=''; lastFN:=''; balance:=0; ResetStreamInfo;
+  lastP1:=''; lastFN:=''; balance:=0;
+  ResetStreamInfo;
 end.
 
