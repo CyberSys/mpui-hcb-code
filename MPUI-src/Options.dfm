@@ -1397,6 +1397,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 25
         OnChange = CSubfontChange
         OnDrawItem = CSubfontDrawItem
+        OnDropDown = CSubfontDropDown
         OnMeasureItem = CSubfontMeasureItem
       end
       object Esubfont: TTntEdit
@@ -1431,6 +1432,7 @@ object OptionsForm: TOptionsForm
         TabOrder = 26
         OnChange = CSubfontChange
         OnDrawItem = CosdfontDrawItem
+        OnDropDown = CSubfontDropDown
         OnMeasureItem = CosdfontMeasureItem
       end
       object Eosdfont: TTntEdit

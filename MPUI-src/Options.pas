@@ -24,7 +24,7 @@ uses
   Windows, TntWindows, Messages, SysUtils, TntSysUtils, Variants, Classes, Graphics, Controls,
   Forms,TntForms, TntDialogs, StdCtrls, ShellAPI, ComCtrls, Tabs, TabNotBk, ExtCtrls, TntSystem,
   TntExtCtrls, TntComCtrls, TntStdCtrls, TntFileCtrl, ImgList, TntRegistry, TntClasses,
-  jpeg, CheckLst, TntCheckLst, ShlObj, Dialogs, ActiveX, TntGraphics;
+  jpeg, CheckLst, TntCheckLst, ShlObj, Dialogs, ActiveX, TntGraphics,Math;
 
 type
   TOptionsForm = class(TTntForm)
@@ -234,6 +234,7 @@ type
       var Height: Integer);
     procedure CosdfontDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
+    procedure CSubfontDropDown(Sender: TObject);
 
   private
     { Private declarations }
@@ -1424,12 +1425,11 @@ end;
 procedure TOptionsForm.CSubfontDrawItem(Control: TWinControl;
   Index: Integer; Rect: TRect; State: TOwnerDrawState);
 begin
-  with CSubfont.Canvas do
-  begin
+  with CSubfont.Canvas do begin
     FillRect(Rect);
     Font.Name := CSubfont.Items[Index];
     Font.Size := 0;    // use font's preferred size
-    WideCanvasTextOut(CSubfont.Canvas,Rect.Left+1,Rect.Top+1,CSubfont.Items[Index]);
+    WideCanvasTextOut(CSubfont.Canvas,Rect.Left+10,(Rect.Top+Rect.Bottom-WideCanvasTextHeight(CSubfont.Canvas,Cosdfont.Items[Index])) div 2,CSubfont.Items[Index]);
   end;
   Esubfont.Height:=CSubfont.Height;
 end;
@@ -1437,11 +1437,10 @@ end;
 procedure TOptionsForm.CSubfontMeasureItem(Control: TWinControl;
   Index: Integer; var Height: Integer);
 begin
-  with CSubfont.Canvas do
-  begin
+  with CSubfont.Canvas do begin
     Font.Name := CSubfont.Items[Index];
     Font.Size := 0;                 // use font's preferred size
-    Height := TextHeight('Wg') + 2; // measure ascenders and descenders
+    Height :=WideCanvasTextHeight(CSubfont.Canvas,CSubfont.Items[Index])+2;
   end;
 end;
 
@@ -1459,7 +1458,7 @@ begin
   with Cosdfont.Canvas do begin
     Font.Name := Cosdfont.Items[Index];
     Font.Size := 0;                 // use font's preferred size
-    Height := TextHeight('Wg') + 2; // measure ascenders and descenders
+    Height :=WideCanvasTextHeight(Cosdfont.Canvas,Cosdfont.Items[Index])+2;
   end;
 end;
 
@@ -1470,9 +1469,18 @@ begin
     FillRect(Rect);
     Font.Name := Cosdfont.Items[Index];
     Font.Size := 0;    // use font's preferred size
-    WideCanvasTextOut(Cosdfont.Canvas,Rect.Left+1,Rect.Top+1,Cosdfont.Items[Index]);
+    WideCanvasTextOut(Cosdfont.Canvas,Rect.Left+10,(Rect.Top+Rect.Bottom-WideCanvasTextHeight(Cosdfont.Canvas,Cosdfont.Items[Index])) div 2,Cosdfont.Items[Index]);
   end;
   Eosdfont.Height:=Cosdfont.Height;
+end;
+
+procedure TOptionsForm.CSubfontDropDown(Sender: TObject);
+var i,MaxWidth:Integer;
+begin
+  MaxWidth:=(Sender as TTntCombobox).Width;
+  for i:=0 to (Sender as TTntCombobox).Items.Count-1 do
+    MaxWidth:=Max(MaxWidth,50+WideCanvasTextWidth((Sender as TTntCombobox).Canvas,(Sender as TTntCombobox).Items[i]));
+  (Sender as TTntCombobox).Perform(CB_SETDROPPEDWIDTH,MaxWidth,0);
 end;
 
 end.
