@@ -18,7 +18,7 @@
 }
 unit Core;
 interface
-uses Windows, TntWindows, SysUtils, TntSysUtils, TntSystem, Classes, Forms, Menus,TntMenus, 
+uses Windows, TntWindows, SysUtils, TntSysUtils, TntSystem, Classes, Forms, Menus,TntMenus,
      Controls, Graphics, Dialogs, MultiMon, ShlObj, TntClasses;
 
 const ABOVE_NORMAL_PRIORITY_CLASS:Cardinal=$00008000;
@@ -43,7 +43,7 @@ const SubTypeCount=36;
             '.lrc','.utf','.utf8','.utf-8','.srt','.smi','.rt','.txt','.ssa','.aqt','.jss',
             '.js','.ass','.mpsub','.idx','.sub'
       );
-      
+
 const MediaType:array[0..213]of WideString=('.7z','.rar','.zip','.001','.arj','.bz2','.z','.lzh',
         '.cab','.lzma','.xar','.hfs','.dmg','.wim','.iso','.split','.rpm','.deb','.cpio',
         '.tar','.gz',
@@ -181,7 +181,7 @@ function GetLongPathNameW(lpszShortPath,lpszLongPath:PWideChar; cchBuffer:DWORD)
 procedure AddChain(var Count:integer; var rs:WideString; const s:WideString);
 function WideGetEnvironmentVariable(const Name:WideString):WideString;
 function WideExpandUNCFileName(const FileName:WideString):WideString;
-function WideGetUniversalName(const FileName:WideString):WideString;    
+function WideGetUniversalName(const FileName:WideString):WideString;
 function CheckOption(OPTN:WideString):boolean;
 function SecondsToTime(Seconds:integer):String;
 function EscapeParam(const Param:widestring):widestring;

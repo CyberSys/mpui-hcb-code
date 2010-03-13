@@ -868,7 +868,9 @@ begin
           if j>0 then begin
             sn:=a.Strings[i]; sp:=ReadString(sn);
             sn:=copy(sn,1,j-1);
-            CSubfont.Items.Add(Trim(sn)); FontPaths.Add(Trim(SystemDir+'Fonts\'+sp));
+            CSubfont.Items.Add(Trim(sn));
+            if WideFileExists(sp) then FontPaths.Add(Trim(sp))
+            else FontPaths.Add(Trim(SystemDir+'Fonts\'+sp));
             if (Tnt_WideLowerCase(sn)=DefaultFont.Name) or
               (Pos(DefaultFont.Name+' & ',Tnt_WideLowerCase(sn))=1) or
               (Pos(' & '+DefaultFont.Name,Tnt_WideLowerCase(sn))=1) then
@@ -887,8 +889,8 @@ begin
     else subfont:=CSubfont.Items[DefaultFontIndex];
   end;
   if osdfont='' then osdfont:=subfont;
-  if not FileExists(CheckSubfont(subfont)) then subfont:=HomeDir+'mplayer\subfont.ttf';
-  if not FileExists(CheckSubfont(osdfont)) then osdfont:=HomeDir+'mplayer\subfont.ttf';
+  if not WideFileExists(CheckSubfont(subfont)) then subfont:=HomeDir+'mplayer\subfont.ttf';
+  if not WideFileExists(CheckSubfont(osdfont)) then osdfont:=HomeDir+'mplayer\subfont.ttf';
 end;
 begin
   OptionsFormHook:=SetWindowsHookEx(WH_KEYBOARD,@KeyboardHook,0,GetCurrentThreadID);
