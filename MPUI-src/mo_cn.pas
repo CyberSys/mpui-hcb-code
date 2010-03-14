@@ -235,12 +235,16 @@ begin
 '左键 单击状态栏时间'^I'切换时间显示模式'^M^J+
 '中键/右键 单击进度条滑块'^I'设置片头/片尾'^M^J+
 '在拖曳时，松开、按下不同的功能键和起始拖曳方向决定不同的功能'^M^J^M^J+
-'通过右键菜单，可以改变歌词的编码'^M^J+
-'添加":cfg=1"到winamp插件路径后，将打开配置面板'^M^J+
 '如果MPUI目录下存在''MPUI.ini''文件，MPUI将优先读取和保存设置到这个文件'^M^J+
 'MPUI将以DVD、VCD或SVCD的方式打开包含''VIDEO_TS''、''MPEGAV''或''MPEG2''子目录的目录');
 
   with OptionsForm do begin
+    Cconfig.Caption:=UTF8Decode('在播放的时候打开配置面板');
+    Cconfig.Hint:=UTF8Decode('勾选它或添加":cfg=1"到winamp插件路径后，在播放的时候将打开配置面板');
+    Esubfont.Hint:=UTF8Decode('输入字体的完整路径或系统字体目录下字体的字体名、字体文件名');
+    Csubfont.Hint:=Esubfont.Hint;
+    Cosdfont.Hint:=Esubfont.Hint;
+    Eosdfont.Hint:=Esubfont.Hint;
     THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:=UTF8Decode('关于');
     LVersionMPUI.Caption:=UTF8Decode('MPUI-hcb 版本:');
@@ -476,6 +480,7 @@ begin
     HK.Items[100].SubItems.Strings[0]:=MainForm.MNext.Caption;
   end;
   with PlaylistForm do begin
+    TMLyric.Hint:=UTF8Decode('通过右键菜单，可以改变歌词的编码');
     Caption:=UTF8Decode('播放列表');
     BPlay.Hint:=UTF8Decode('播放 列表');
     BAdd.Hint:=UTF8Decode('添加文件 ...');

@@ -67,13 +67,13 @@ begin
            Core.nmsg:=ReadBool(SectionName,'nomsgmodule',Core.nmsg);
            s:=ReadString(SectionName,'Subfont','');
            if s<>'' then begin
-             if WideFileExists(s) then Core.subfont:=GetLongPath(s)
-             else Core.subfont:=s;
+             if WideFileExists(s) then Core.subfont:=Tnt_WideLowerCase(GetLongPath(s))
+             else Core.subfont:=Tnt_WideLowerCase(s);
            end;
            s:=ReadString(SectionName,'OSDfont','');
            if s<>'' then begin
-             if WideFileExists(s) then osdfont:=GetLongPath(s)
-             else Core.osdfont:=s;
+             if WideFileExists(s) then osdfont:=Tnt_WideLowerCase(GetLongPath(s))
+             else Core.osdfont:=Tnt_WideLowerCase(s);
            end;
            s:=ReadString(SectionName,'ShotDir','');
            if s<>'' then begin
@@ -105,6 +105,7 @@ begin
            Core.UseUni:=ReadBool(SectionName,'UseUni',Core.UseUni);
            Core.vsync:=ReadBool(SectionName,'VSync',Core.vsync);
            Core.Uni:=ReadBool(SectionName,'Unicode',Core.Uni);
+           Core.sconfig:=ReadBool(SectionName,'Show config windows',Core.sconfig);
            Core.Utf:=ReadBool(SectionName,'Utf8',Core.Utf);
            Core.FSize:=ReadFloat(SectionName,'FontSize',Core.FSize);
            Core.Fol:=ReadFloat(SectionName,'Outline',Core.Fol);
@@ -234,6 +235,7 @@ begin
            WriteBool  (SectionName,'Seek_Chapter',Core.UseekC);
            WriteBool  (SectionName,'Dr',Core.Dr);
            WriteBool  (SectionName,'Double',Core.dbbuf);
+           WriteBool  (SectionName,'Show config windows',Core.sconfig);
            WriteBool  (SectionName,'Volnorm',Core.Volnorm);
            WriteBool  (SectionName,'nofontconfig',Core.nfc);
            WriteBool  (SectionName,'nomsgmodule',Core.nmsg);

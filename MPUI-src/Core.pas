@@ -145,7 +145,7 @@ var HaveAudio,HaveVideo,LastHaveVideo,ChkAudio,ChkVideo,ChkStartPlay:boolean;
     NativeWidth,NativeHeight,MonitorID,MonitorW,MonitorH:integer;
     LastPos,SecondPos,OSDLevel,DefaultOSDLevel,MSecPos:integer;
 var Volume,MWC,CP,seekLen:integer;
-    ds,tEnd,procArc,Mute,Ass,Efont,ISub,AutoNext,UpdatePW:boolean;
+    ds,tEnd,procArc,Mute,Ass,Efont,ISub,AutoNext,UpdatePW,sconfig:boolean;
     DTFormat:string;
     FormatSet:TFormatSettings;
     ExplicitStop,Rot,DefaultFontIndex:integer;
@@ -468,26 +468,25 @@ begin
 end;
 
 function CheckSubfont(Sfont:WideString):WideString;
-var i:integer; s:WideString;
+var i:integer;
 begin
   if WideFileExists(ExpandName(HomeDir,Sfont)) then begin
     Result:=Sfont;
     if not IsWideStringMappableToAnsi(Sfont) then Result:=WideExtractShortPathName(Sfont);
   end
   else begin
-    Result:=''; s:=Trim(Tnt_WideLowerCase(Sfont));
+    Result:=''; Sfont:=Trim(Tnt_WideLowerCase(Sfont));
     for i:=0 to FontPaths.Count-1 do begin
-      if (Tnt_WideLowerCase(SystemDir+'Fonts\'+s)=Tnt_WideLowerCase(FontPaths[i])) OR
-        (s=Tnt_WideLowerCase(OptionsForm.CSubfont.Items[i])) then begin
-        Result:=FontPaths[i];
+      if (Sfont=Tnt_WideLowerCase(OptionsForm.CSubfont.Items[i])) OR (Sfont=FontPaths[i]) then begin
+        Result:=ExpandName(SystemDir+'fonts\',FontPaths[i]);
         exit;
       end;
     end;
 
     if Result='' then begin
-      if DefaultFontIndex>-1 then Result:=FontPaths[DefaultFontIndex]
-      else if FileExists(SystemDir+'Fonts\arial.ttf') then
-        Result:=SystemDir+'Fonts\arial.ttf'
+      if DefaultFontIndex>-1 then Result:=ExpandName(SystemDir+'fonts\',FontPaths[DefaultFontIndex])
+      else if FileExists(SystemDir+'fonts\arial.ttf') then
+        Result:=SystemDir+'fonts\arial.ttf'
       else if WideFileExists(HomeDir+'mplayer\subfont.ttf') then begin
         if IsWideStringMappableToAnsi(HomeDir+'mplayer\subfont.ttf') then
           Result:=HomeDir+'mplayer\subfont.ttf'
@@ -541,9 +540,9 @@ const RFID_APPDATA:TGUID='{3EB685DB-65F9-4CF6-A03A-E3EF65729F3D}';
       RFID_PERSONAL:TGUID='{FDD39AD0-238F-46AF-ADB4-6C85480369C7}';
       // use by SHGetKnownFolderPath http://msdn.microsoft.com/en-us/library/bb762584(VS.85).aspx
 begin
-  SystemDir:=WideIncludeTrailingPathDelimiter(WideGetEnvironmentVariable('windir'));
+  SystemDir:=Tnt_WideLowerCase(WideIncludeTrailingPathDelimiter(WideGetEnvironmentVariable('windir')));
   TempDir:=WideIncludeTrailingPathDelimiter(WideGetEnvironmentVariable('TEMP'))+'MPUI\';
-  HomeDir:=WideIncludeTrailingPathDelimiter(WideExtractFileDir(WideExpandFileName(WideParamStr(0))));
+  HomeDir:=Tnt_WideLowerCase(WideIncludeTrailingPathDelimiter(WideExtractFileDir(WideExpandFileName(WideParamStr(0)))));
 
   if Win32PlatformIsVista then AppdataDir:=GetShellPath(RFID_APPDATA)
   else AppdataDir:=GetFolderPath(CSIDL_APPDATA);
@@ -883,7 +882,8 @@ begin
     end;
     if WideFileExists(s) then begin
       if (not IsWideStringMappableToAnsi(s)) or (pos(',',s)>0) then s:=WideExtractShortPathName(s);
-      AddChain(h,afChain,'wadsp='+EscapeParam(s+g));
+      if sconfig or (g<>'') then AddChain(h,afChain,'wadsp='+EscapeParam(s)+':cfg=1')
+      else AddChain(h,afChain,'wadsp='+EscapeParam(s));
     end;
   end;
   if Volnorm then AddChain(h,afChain,'volnorm');
@@ -2383,7 +2383,7 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10;
-  lastP1:=''; lastFN:=''; balance:=0;
+  lastP1:=''; lastFN:=''; balance:=0; sconfig:=false;
   ResetStreamInfo;
 end.
 

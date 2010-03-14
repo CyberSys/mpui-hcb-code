@@ -236,12 +236,16 @@ begin
 'Shift+LMB drag video'^I'Scale video,Adjust volume or size'^M^J+
 'Alt+LMB drag video'^I'Adjust brightness,contrast,hue,saturation,gamma'^M^J+
 'While drag,release or press different function key invoke different function'^M^J^M^J+
-'Change codePage of lyric with popup menu'^M^J+
-'Add ":cfg=1" to path of Winamp plugin, to open config window'^M^J+
 'If "MPUI.ini" exist in MPUI folder, MPUI will firstly read or save setting to this file.'^M^J+
 'If open a folder contained ''VIDEO_TS'', ''MPEGAV'' or ''MPEG2'' folder, MPUI will try to'^M^J+
 'play this folder with DVD, VCD or SVCD mode.');
-
+    Cconfig.Caption:='Show config window while play';
+    Cconfig.Hint:='Check it or add ":cfg=1" to path of Winamp plugin, to open config window as play';
+    Esubfont.Hint:='please input font name, font''s file name of font in system font folder,'^M^J+
+                   'or font''s whole path';
+    Csubfont.Hint:=Esubfont.Hint;
+    Cosdfont.Hint:=Esubfont.Hint;
+    Eosdfont.Hint:=Esubfont.Hint;
     THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:='About';
     LVersionMPUI.Caption:='MPUI-hcb version:';
@@ -494,6 +498,7 @@ begin
     BSave.Hint:='Save Playlist...';
     TntTabSheet1.Caption:=Caption;
     TntTabSheet2.Caption:='Lyric';
+    TMLyric.Hint:='Change codePage of lyric with popup menu';
     CP0.Caption:='System Default';
     CPO.Caption:='Other';
     SC.Caption:=UTF8Decode('简体中文 (Simplified Chinese)');

@@ -836,9 +836,9 @@ object OptionsForm: TOptionsForm
         TabOrder = 2
       end
       object EWadsp: TTntEdit
-        Left = 4
+        Left = 176
         Top = 314
-        Width = 510
+        Width = 338
         Height = 21
         Anchors = [akLeft, akRight, akBottom]
         TabOrder = 6
@@ -993,9 +993,28 @@ object OptionsForm: TOptionsForm
           Height = 25
           Anchors = [akRight, akBottom]
           Caption = 'font'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = 0
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = False
           TabOrder = 6
           OnClick = BFontClick
         end
+      end
+      object Cconfig: TTntCheckBox
+        Left = 4
+        Top = 316
+        Width = 168
+        Height = 17
+        Anchors = [akLeft, akRight, akBottom]
+        Caption = 'Show config window while play'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 11
       end
     end
     object TSub: TTntTabSheet
@@ -1011,6 +1030,8 @@ object OptionsForm: TOptionsForm
         Height = 22
         Anchors = [akTop, akRight]
         Caption = '...'
+        ParentShowHint = False
+        ShowHint = False
         TabOrder = 0
         OnClick = BSubfontClick
       end
@@ -1101,6 +1122,8 @@ object OptionsForm: TOptionsForm
         Height = 22
         Anchors = [akTop, akRight]
         Caption = '...'
+        ParentShowHint = False
+        ShowHint = False
         TabOrder = 16
         OnClick = BOsdfontClick
       end
@@ -1394,6 +1417,8 @@ object OptionsForm: TOptionsForm
         Font.Style = []
         ItemHeight = 15
         ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 25
         OnChange = CSubfontChange
         OnDrawItem = CSubfontDrawItem
@@ -1412,6 +1437,8 @@ object OptionsForm: TOptionsForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 24
         OnChange = FontChange
       end
@@ -1429,6 +1456,8 @@ object OptionsForm: TOptionsForm
         Font.Style = []
         ItemHeight = 15
         ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 26
         OnChange = CSubfontChange
         OnDrawItem = CosdfontDrawItem
@@ -1447,6 +1476,8 @@ object OptionsForm: TOptionsForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 27
         OnChange = FontChange
       end

@@ -342,7 +342,9 @@ object PlaylistForm: TPlaylistForm
         Style = lbVirtualOwnerDraw
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 16
+        ParentShowHint = False
         PopupMenu = TntCP
+        ShowHint = True
         TabOrder = 0
         OnDrawItem = TMLyricDrawItem
         OnEnter = TMLyricEnter

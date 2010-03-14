@@ -179,6 +179,7 @@ type
     Esubfont: TTntEdit;
     Cosdfont: TTntComboBox;
     Eosdfont: TTntEdit;
+    Cconfig: TTntCheckBox;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -467,6 +468,8 @@ begin
   CWadsp.Checked:=Wadsp;
     EWadsp.Enabled:=Wadsp;
     BWadsp.Enabled:=Wadsp;
+    Cconfig.Enabled:=Wadsp;
+    Cconfig.Checked:=sconfig;
   EWadsp.Text:=WadspL;
   Clavf.Checked:=lavf;
   CFd.Checked:=Fd;
@@ -579,12 +582,12 @@ begin
     uof:=SOsdfont.Checked; changed:=true;
   end;
 
-  if osdfont<>EOsdfont.Text then begin
+  if CheckSubfont(osdfont)<>CheckSubfont(EOsdfont.Text) then begin
     osdfont:=EOsdfont.Text;
     if EOsdfont.Enabled then changed:=true;
   end;
 
-  if subfont<>ESubfont.Text then begin
+  if CheckSubfont(subfont)<>CheckSubfont(Esubfont.Text) then begin
     subfont:=ESubfont.Text; changed:=true;
   end;
 
@@ -690,6 +693,11 @@ begin
   if WadspL<>EWadsp.Text then begin
     WadspL:=EWadsp.Text;
     if EWadsp.Enabled then changed:=true;
+  end;
+
+  if Cconfig.Checked<>sconfig then begin
+    sconfig:=Cconfig.Checked;
+    if Cconfig.Enabled then changed:=true;
   end;
 
   if lavf<>Clavf.Checked then begin
@@ -849,7 +857,7 @@ end;
 
 procedure TOptionsForm.FormCreate(Sender: TObject);
 procedure initFontList;
-var i,j:integer; s:string; sn,sp:widestring; DefaultFont:TFont;
+var i,j:integer; s:string; sn,sp,lsn:widestring; DefaultFont:TFont;
     reg: TTntRegistry; a:TTntStringList;
 begin
   DefaultFont:=TFont.Create; DefaultFont.Handle:=GetStockObject(DEFAULT_GUI_FONT);
@@ -867,13 +875,13 @@ begin
           j:=pos(' (TrueType)',a.Strings[i]);
           if j>0 then begin
             sn:=a.Strings[i]; sp:=ReadString(sn);
-            sn:=copy(sn,1,j-1);
-            CSubfont.Items.Add(Trim(sn));
-            if WideFileExists(sp) then FontPaths.Add(Trim(sp))
-            else FontPaths.Add(Trim(SystemDir+'Fonts\'+sp));
-            if (Tnt_WideLowerCase(sn)=DefaultFont.Name) or
-              (Pos(DefaultFont.Name+' & ',Tnt_WideLowerCase(sn))=1) or
-              (Pos(' & '+DefaultFont.Name,Tnt_WideLowerCase(sn))=1) then
+            sn:=Trim(copy(sn,1,j));
+            CSubfont.Items.Add(sn);
+            FontPaths.Add(Trim(Tnt_WideLowerCase(sp)));
+            lsn:=Tnt_WideLowerCase(sn);
+            if (lsn=DefaultFont.Name) or
+              (Pos(DefaultFont.Name+' & ',lsn)=1) or
+              (Pos(' & '+DefaultFont.Name,lsn)=1) then
               DefaultFontIndex:=CSubfont.Items.Count-1;
           end;
         end;
@@ -978,6 +986,7 @@ procedure TOptionsForm.CWadspClick(Sender: TObject);
 begin
   EWadsp.Enabled:=CWadsp.Checked;
   BWadsp.Enabled:=CWadsp.Checked;
+  Cconfig.Enabled:=CWadsp.Checked;
 end;
 
 procedure TOptionsForm.BWadspClick(Sender: TObject);
@@ -1021,26 +1030,27 @@ begin
 end;
 
 procedure TOptionsForm.FontChange(Sender: TObject);
-var i:integer; s,k,h:WideString;
+var i:integer; s,k,h,j:WideString;
 begin
   PShow.Caption:='';
   s:=Trim(Tnt_WideLowerCase((Sender as TTntEdit).Text));
   if Sender=Esubfont then Sender:=CSubfont
   else Sender:=COsdfont;
   for i:=FontPaths.Count-1 downto 0 do begin
-    k:=Tnt_WideLowerCase((Sender as TTntComboBox).Items[i]); h:= Tnt_WideLowerCase(FontPaths[i]);
-    if (s=k) or (s=h) then begin
+    k:=Tnt_WideLowerCase((Sender as TTntComboBox).Items[i]);
+    h:= FontPaths[i]; j:=ExpandName(SystemDir+'fonts\',FontPaths[i]);
+    if (s=k) or (s=h) or (s=j) then begin
       PShow.Font.Name:=(Sender as TTntComboBox).Items[i];
       PShow.Caption:=(Sender as TTntComboBox).Items[i];
       if Sender=CSubfont then begin
         Esubfont.Font.Name:=PShow.Font.Name;
         Esubfont.Font.Size:=0;
-        if s=h then Esubfont.Text:=PShow.Caption;
+        if (s=h) or (s=j) then Esubfont.Text:=PShow.Caption;
       end
       else begin
         Eosdfont.Font.Name:=PShow.Font.Name;
         Eosdfont.Font.Size:=0;
-        if s=h then Eosdfont.Text:=PShow.Caption;
+        if (s=h) or (s=j) then Eosdfont.Text:=PShow.Caption;
       end; 
       break;
     end;
@@ -1090,6 +1100,7 @@ begin
     FontDialog1.Font.Size:=TMLyric.Font.Size;
     if FontDialog1.Execute then begin
       BFont.Caption:=FontDialog1.Font.Name;
+      BFont.Font.Name:=FontDialog1.Font.Name;
       TMLyric.Font.Name:=FontDialog1.Font.Name;
       TMLyric.Font.Size:=FontDialog1.Font.Size;
       TMLyric.ItemHeight:=FontDialog1.Font.Size*2;
