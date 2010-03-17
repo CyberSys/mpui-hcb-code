@@ -211,7 +211,7 @@ end;
 
 procedure TInfoForm.FormShow(Sender: TObject);
 begin
-  UpdateInfo(true); ControlledMove:=true;
+  UpdateInfo(true);
   MainForm.MStreamInfo.Checked:=True;
   MainForm.BStreamInfo.Down:=True;
   if (left+width)>=Screen.Width then begin ControlledMove:=true; left:=Screen.Width-width; end;
@@ -280,7 +280,8 @@ end;
 
 procedure TInfoForm.TntFormResize(Sender: TObject);
 begin
-   if InfoBox.Width<=MW then UpdateInfo(false);
+  ControlledMove:=true;
+  if InfoBox.Width<=MW then UpdateInfo(false);
 end;
 
 end.

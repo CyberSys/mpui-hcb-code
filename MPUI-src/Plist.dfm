@@ -330,7 +330,7 @@ object PlaylistForm: TPlaylistForm
         Top = 0
         Width = 102
         Height = 21
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 5
         OnChange = CLyricFChange
       end

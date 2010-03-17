@@ -1088,11 +1088,12 @@ begin
 end;
 
 procedure TPlaylistForm.FormMove(var msg:TMessage);
+const m=20;
 begin
   msg.Result:=0;
   if not ControlledMove then begin ControlledMove:=true; exit; end;
 
-  if (left>=(MainForm.Left+MainForm.Width-20)) and (left<=(MainForm.Left+MainForm.Width+20)) and
+  if (left>=(MainForm.Left+MainForm.Width-m)) and (left<=(MainForm.Left+MainForm.Width+m)) and
      (top>(MainForm.top-Height)) and (top<(MainForm.top+MainForm.Height)) then begin
     if not LDocked then TT:=MainForm.Top-top;
     Left:=MainForm.Left+MainForm.Width;
@@ -1102,7 +1103,7 @@ begin
   end
   else LDocked:=False;
 
-  if (left>=(MainForm.Left-Width-20)) and (left<=(MainForm.Left-Width+20)) and
+  if (left>=(MainForm.Left-Width-m)) and (left<=(MainForm.Left-Width+m)) and
      (top>(MainForm.top-Height)) and (top<(MainForm.top+MainForm.Height))then begin
     if not RDocked then TT:=MainForm.Top-top;
     Left:=MainForm.Left-Width;
@@ -1112,10 +1113,10 @@ begin
   end
   else RDocked:=False;
 
-  if ((top>=(MainForm.top+MainForm.Height)) and (top<=(MainForm.top+MainForm.Height+20)) and
+  if ((top>=(MainForm.top+MainForm.Height)) and (top<=(MainForm.top+MainForm.Height+m)) and
      (left>=(MainForm.left-Width)) and (left<=(MainForm.left+MainForm.Width))) or
-     ((top>=(MainForm.top+MainForm.Height-20)) and (top<(MainForm.top+MainForm.Height)) and
-     (left>(MainForm.left-Width+20)) and (left<(MainForm.left+MainForm.Width-20))) then begin
+     ((top>=(MainForm.top+MainForm.Height-m)) and (top<(MainForm.top+MainForm.Height)) and
+     (left>(MainForm.left-Width+m)) and (left<(MainForm.left+MainForm.Width-m))) then begin
     if not TDocked then LL:=MainForm.Left-left;
     Top:=MainForm.Top+MainForm.Height;
     TDocked:=true;
@@ -1124,10 +1125,10 @@ begin
   end
   else TDocked:=False;
 
-  if ((top>=(MainForm.top-Height-20)) and (top<=(MainForm.top-Height)) and
+  if ((top>=(MainForm.top-Height-m)) and (top<=(MainForm.top-Height)) and
      (left>=(MainForm.left-Width)) and (left<=(MainForm.left+MainForm.Width))) or
-     ((top>(MainForm.top-Height)) and (top<=(MainForm.top-Height-20)) and
-     (left>(MainForm.left-Width+20)) and (left<(MainForm.left+MainForm.Width-20))) then begin
+     ((top>(MainForm.top-Height)) and (top<=(MainForm.top-Height+m)) and
+     (left>(MainForm.left-Width+m)) and (left<(MainForm.left+MainForm.Width-m))) then begin
     if not BDocked then LL:=MainForm.Left-left;
     Top:=MainForm.Top-Height;
     BDocked:=true;
