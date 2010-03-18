@@ -886,7 +886,7 @@ begin
       else AddChain(h,afChain,'wadsp='+EscapeParam(s));
     end;
   end;
-  if Volnorm then AddChain(h,afChain,'volnorm');
+  if Volnorm then AddChain(h,afChain,'volnorm=2');
 
   if afChain<>'' then CmdLine:=CmdLine+' -af '+afChain;
   if length(Params)>0 then CmdLine:=CmdLine+#32+Params;
