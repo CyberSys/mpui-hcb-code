@@ -306,6 +306,8 @@ type
     procedure BPauseClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure HotKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure UpdateTimerTimer(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -334,7 +336,6 @@ type
     procedure MVideoClick(Sender: TObject);
     procedure UpdateMenus(Sender: TObject);
     procedure MDeinterlaceClick(Sender: TObject);
-    procedure MOpenFileClick(Sender: TObject);
     procedure MOpenURLClick(Sender: TObject);
     procedure MOpenDriveClick(Sender: TObject);
     procedure MKeyHelpClick(Sender: TObject);
@@ -838,8 +839,15 @@ begin
   SendVolumeChangeCommand(Volume);
 end;
 
-
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if OptionsForm.HotKeyToOldKey(Shift,Key)=nil then begin
+    Key:=0; Shift:=[];
+  end
+  else HotKeyDown(Sender,Key,Shift);
+end;
+
+procedure TMainForm.HotKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var i,j:integer;
   procedure HandleCommand(const Command:string); begin
     if not Win32PlatformIsUnicode then exit;
@@ -848,7 +856,7 @@ var i,j:integer;
   procedure HandleSeekCommand(const Command:string); begin
     if not Win32PlatformIsUnicode then exit;
     if Status=sPaused then SendCommand(Command)
-    else begin 
+    else begin
       SendCommand('set_property mute 1');
       SendCommand(Command);
       SendCommand('set_property mute 0');
@@ -857,7 +865,6 @@ var i,j:integer;
     SendCommand('get_time_length');
   end;
 begin
-OptionsForm.HotKeyToOldKey(Shift,Key);
 if MVideos.Visible then begin
   if Key=VK_ESCAPE then begin
     if MFullscreen.Checked then Key:=Ord('F')
@@ -1008,7 +1015,7 @@ if MVideos.Visible then begin
 end;
 if ssCtrl in Shift then begin
   case Key of
-    Ord('O'):   MOpenFileClick(nil);
+    Ord('O'):   PlaylistForm.BAddClick(Sender);
     Ord('L'):   MOpenURLClick(nil);
     Ord('W'):   MCloseClick(nil);
     Ord('S'):   BStopClick(nil);
@@ -1136,7 +1143,7 @@ else begin
     end;
   end;
 end;
-Key:=0;
+Key:=0; Shift:=[];
 end;
 
 procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word;
@@ -1160,7 +1167,7 @@ begin
       FixSize;
     end;
   end;
-  Key:=0;
+  Key:=0; Shift:=[];
 end;
 
 procedure TMainForm.UpdateTimerTimer(Sender: TObject);
@@ -1423,8 +1430,8 @@ begin
   else if Sender=MRmMenu then Key:=71 //g
   else if Sender=MSubScale0 then begin Key:=187; Shift:=[ssCtrl]; end //-_
   else if Sender=MSubScale1 then begin Key:=189; Shift:=[ssCtrl]; end //+=
-  else Key:=(Sender as TComponent).Tag; OptionsForm.OldKeyToHotKey(Shift,Key);
-  FormKeyDown(Sender,Key,Shift);
+  else HkToShiftKey((Sender as TComponent).Tag,Shift,Key);
+  HotKeyDown(Sender,Key,Shift);
 end;
 
 procedure TMainForm.VideoSizeChanged;
@@ -1743,11 +1750,6 @@ begin
     end;
   end;
   (Sender as TTntMenuItem).Checked:=true;
-end;
-
-procedure TMainForm.MOpenFileClick(Sender: TObject);
-begin
-  PlaylistForm.BAddClick(Sender);
 end;
 
 procedure TMainForm.MOpenDirClick(Sender: TObject);

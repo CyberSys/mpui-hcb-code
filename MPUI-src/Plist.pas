@@ -82,7 +82,7 @@ type TLyric=class
 type TWStringList=class(TTntStringList)
             private
             public
-              procedure LoadFromFile(const FileName:WideString; CharSet:TTntStreamCharSet);
+              procedure LoadFile(const FileName:WideString; CharSet:TTntStreamCharSet);
             end;
 
 type
@@ -290,7 +290,7 @@ uses Main, Core, UnRAR, Locale,Options, SevenZip;
 {$R *.dfm}
 {$R plist_img.res}
 
-procedure TWStringList.LoadFromFile(const FileName:WideString; CharSet:TTntStreamCharSet);
+procedure TWStringList.LoadFile(const FileName:WideString; CharSet:TTntStreamCharSet);
 var Stream:TStream; DataLeft:Integer; SW:WideString; SA:AnsiString;
 begin
   Stream := TTntFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
@@ -646,7 +646,7 @@ var FileNameList:TWStringList; i:integer;
 begin
   if Result then exit;
   FileNameList:=TWStringList.Create;
-  FileNameList.LoadFromFile(FileName,mode);
+  FileNameList.LoadFile(FileName,mode);
   if FileNameList.Count>0 then begin
     for i:=0 to FileNameList.Count-1 do begin
       s:=Trim(FileNameList[i]);
@@ -767,7 +767,7 @@ var s:WideString; TimeEntry:TLyricTimeCodeEntry;
 begin
   if IsParsed then exit;
   a:=TWStringList.Create;
-  a.LoadFromFile(FileName,mode);
+  a.LoadFile(FileName,mode);
   if a.Count<1 then begin a.Free; exit; end;
   Lyricindex:=0; offset:=0; len:=-1; sMaxLen:=0; First:=true;
   for j:=0 to a.Count-1 do begin

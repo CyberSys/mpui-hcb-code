@@ -251,8 +251,7 @@ type
     procedure ApplyValues;
     procedure LoadValues;
     procedure AddLine(const Line:Widestring);
-    procedure HotKeyToOldKey(var Shift:TShiftState; var Key:Word);
-    procedure OldKeyToHotKey(var Shift:TShiftState; var Key:Word);
+    function HotKeyToOldKey(var Shift:TShiftState; var Key:Word):TListItem;
   end;
 
   PDSEnumCallback = function(lpGuid:PGUID; lpcstrDescription,lpcstrModule:PChar; lpContext:pointer):LongBool; stdcall;
@@ -278,6 +277,7 @@ procedure LoadDsLibrary;
 procedure UnLoadDsLibrary;
 function KeyboardHook(nCode:Integer; wParam:WPARAM; lParam:LPARAM):LResult; stdcall;
 procedure regAss();
+procedure HkToShiftKey(const Hk:integer; var Shift:TShiftState; var Key:Word);
 
 var
   OptionsForm: TOptionsForm; IsDsLoaded:THandle=0; OptionsFormHook:HHOOK;
@@ -1356,22 +1356,10 @@ begin
   if IKey then HK.ItemIndex:=sIndex;
 end;
 
-procedure TOptionsForm.HotKeyToOldKey(var Shift:TShiftState; var Key:Word);
-var t:TListItem;
+function TOptionsForm.HotKeyToOldKey(var Shift:TShiftState; var Key:Word):TListItem;
 begin
-  t:=HK.FindData(0,Pointer(ShiftKeyToHk(Shift,Key)),true,false);
-  if t<>nil then HkToShiftKey(DefaultHotKey[t.Index],Shift,Key);
-end;
-
-procedure TOptionsForm.OldKeyToHotKey(var Shift:TShiftState; var Key:Word);
-var i,OldKey:integer;
-begin
-  OldKey:=ShiftKeyToHk(Shift,Key);
-  for i:=Low(DefaultHotKey) to High(DefaultHotKey) do 
-    if DefaultHotKey[i]=OldKey then begin
-      HkToShiftKey(Integer(HK.Items[i].Data),Shift,Key);
-      exit;
-    end;
+  Result:=HK.FindData(0,Pointer(ShiftKeyToHk(Shift,Key)),true,false);
+  if Result<>nil then HkToShiftKey(DefaultHotKey[Result.Index],Shift,Key);
 end;
 
 procedure TOptionsForm.FormDestroy(Sender: TObject);

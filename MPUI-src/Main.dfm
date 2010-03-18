@@ -1122,7 +1122,7 @@ object MainForm: TMainForm
       OnClick = SimulateKey
     end
     object BOpen: TTntSpeedButton
-      Tag = 1
+      Tag = 262223
       Left = 132
       Top = 16
       Width = 23
@@ -1157,7 +1157,7 @@ object MainForm: TMainForm
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
       ParentShowHint = False
       ShowHint = True
-      OnClick = MOpenFileClick
+      OnClick = SimulateKey
     end
     object BSkip: TTntSpeedButton
       Tag = 1
@@ -1457,9 +1457,10 @@ object MainForm: TMainForm
       Caption = 'File'
       OnClick = UpdateMenus
       object MOpenFile: TTntMenuItem
+        Tag = 262223
         Caption = 'Open file'
         ImageIndex = 51
-        OnClick = MOpenFileClick
+        OnClick = SimulateKey
       end
       object MOpenDir: TTntMenuItem
         Caption = 'Open Directory'
@@ -2555,9 +2556,10 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object MPOpenFile: TTntMenuItem
+      Tag = 262223
       Caption = 'Open File'
       ImageIndex = 0
-      OnClick = MOpenFileClick
+      OnClick = SimulateKey
     end
     object MPWheelControl: TTntMenuItem
       Caption = 'WheelControl'
