@@ -1150,7 +1150,7 @@ begin
     s:=IntToStr(Index+1);
     while Length(s)<3 do s:='0'+s;
 // Shadow 28.11.2006
-    Files[Index].Name:=Copy(arcName,1,Length(arcName)-Length(WideExtractFileExt(arcName)))+'.'+s;
+    Files[Index].Name:=GetFileName(arcName)+'.'+s;
   end;
 
   while Files[Index].Handle=INValid_Handle_Value do begin  //FHO 20.01.2007

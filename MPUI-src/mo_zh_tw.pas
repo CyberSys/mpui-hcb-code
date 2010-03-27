@@ -361,6 +361,7 @@ begin
     LMAspect.Caption:=UTF8Decode('顯示器的寬高比');
     LParams.Caption:=UTF8Decode('其它 MPlayer 播放參數: ');
     LHelp.Caption:=THelp.Caption;
+    CAddsFiles.Caption:=UTF8Decode('添加連續文件');
     SSF.Caption:=UTF8Decode('保存截圖的目錄');
     SLyric.Caption:=UTF8Decode('歌詞目錄:');
     TLyric.Caption:=UTF8Decode('歌词');
@@ -377,8 +378,8 @@ begin
     RHK.Caption:=UTF8Decode('重置 快捷鍵');
     HK.Columns[0].Caption:=UTF8Decode('快捷鍵');
     HK.Columns[1].Caption:=UTF8Decode('操作');
-    TUnit.Caption:=UTF8Decode('秒');
-    TseekL.Caption:=UTF8Decode('搜索 跳躍');
+    TUnit.Caption:=UTF8Decode('秒/查尋');
+    TseekL.Caption:=UTF8Decode('跳躍');
     CDs.Caption:=UTF8Decode('總是顯示視頻界面');
     
     HK.Hint:=UTF8Decode('按下快捷鍵去查找對應的記錄，雙擊記錄去修改快捷鍵');

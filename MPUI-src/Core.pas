@@ -126,13 +126,13 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     CT,RP,RS,SP,AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
     ControlledResize,ni,nobps,Dnav,IsDMenu,SMenu,lavf,UseekC,vsync:boolean;
-    Flip,Mirror,Yuy2,Eq2,LastEq2,Dda,LastDda,Wadsp:boolean;
+    Flip,Mirror,Yuy2,Eq2,LastEq2,Dda,LastDda,Wadsp,addsFiles:boolean;
     WantFullscreen,WantCompact,AutoQuit,IsPause,IsDx:boolean;
 var VideoID,Ch,CurPlay,LyricS,HaveLyric:integer;
     AudioID,MouseMode,SubPos,NoAccess:integer;
     SubID,TID,tmpTID,CID,AID,VCDST,VCDET,CDID:integer;
     subcount,Bp,Ep,CurrentLocale:integer;
-    Lastsubcount,DirHIdx,DirHSub:integer;
+    Lastsubcount:integer;
     CurLyric,NextLyric,LyricCount:integer;
     VobsubCount,VobFileCount:integer;
     CurrentSubCount,OnTop,VobAndInterSubCount,IntersubCount:integer;
@@ -198,7 +198,7 @@ function Running:boolean;
 function IsLoaded(ArcType:WideString):boolean;
 function AddMovies(ArcName,PW:widestring; Add:boolean; ArcType:WideString):integer;
 procedure ExtractMovie(ArcName,MovieName,PW,ArcType:WideString);
-procedure ExtractLyric(ArcName,PW,ArcType:WideString; Mode:integer);
+procedure ExtractLyric(ArcName,PW,ArcType:WideString);
 function ExtractSub(ArcName,PW,ArcType:WideString):WideString;
 procedure TerminateMP;
 procedure SendCommand(Command:String);
@@ -206,6 +206,9 @@ procedure SendVolumeChangeCommand(Vol:integer);
 procedure ResetStreamInfo;
 function ExpandName(const BasePath, FileName:WideString):WideString;
 procedure HandleInputLine(Line:String);
+function GetFileName(const fileName:WideString):WideString;
+procedure loadArcLyric(ArcName,psw:WideString);
+function loadArcSub(ArcName,psw:WideString):WideString;
 
 implementation
 uses Main,config,plist,Info,UnRAR,Equalizer,Locale,Options,SevenZip;
@@ -262,6 +265,39 @@ begin
     SetLength(SA,MAX_PATH+1);
     SetLength(SA,GetLongPathNameA(PChar(AnsiString(ShortName)),PChar(SA),MAX_PATH));
     Result:=WideString(SA);
+  end;
+end;
+
+function GetFileName(const fileName:WideString):WideString;
+begin
+  Result:=copy(fileName,1,length(fileName)-length(WideExtractFileExt(fileName)));
+end;
+
+procedure loadArcLyric(ArcName,psw:WideString);
+var i:integer;
+begin
+  ArcName:=GetFileName(ArcName);
+  for i:=Low(ZipType) to High(ZipType) do begin
+    if WideFileExists(ArcName+ZipType[i]) then begin
+      if IsLoaded(ZipType[i]) then begin
+        if HaveLyric=0 then ExtractLyric(ArcName+ZipType[i],psw,ZipType[i])
+        else exit;
+      end;
+    end;
+  end;
+end;
+
+function loadArcSub(ArcName,psw:WideString):WideString;
+var i:integer;
+begin
+  Result:=''; ArcName:=GetFileName(ArcName);
+  for i:=Low(ZipType) to High(ZipType) do begin
+    if WideFileExists(ArcName+ZipType[i]) then begin
+      if IsLoaded(ZipType[i]) then begin
+        if Result='' then Result:=ExtractSub(ArcName+ZipType[i],psw,ZipType[i])
+        else exit;
+      end;
+    end;
   end;
 end;
 
@@ -331,21 +367,21 @@ begin
   else if Is7zLoaded>2 then Extract7zMovie(ArcName,MovieName,PW);
 end;
 
-procedure ExtractLyric(ArcName,PW,ArcType:WideString; Mode:integer);
+procedure ExtractLyric(ArcName,PW,ArcType:WideString);
 begin
   if ArcType='.rar' then begin
-    if IsRarLoaded<>0 then ExtractRarLyric(ArcName,PW,Mode)
-    else if Is7zLoaded>2 then Extract7zLyric(ArcName,PW,Mode);
+    if IsRarLoaded<>0 then ExtractRarLyric(ArcName,PW)
+    else if Is7zLoaded>2 then Extract7zLyric(ArcName,PW);
   end
   else if ArcType='.zip' then begin
-    if IsZipLoaded<>0 then ExtractZipLyric(ArcName,PW,Mode)
-    else if Is7zLoaded>2 then Extract7zLyric(ArcName,PW,Mode);
+    if IsZipLoaded<>0 then ExtractZipLyric(ArcName,PW)
+    else if Is7zLoaded>2 then Extract7zLyric(ArcName,PW);
   end
   else if (ArcType='.7z') or (ArcType='.001') then begin
-    if Is7zLoaded<>0 then Extract7zLyric(ArcName,PW,Mode)
-    else if IsZipLoaded<>0 then ExtractZipLyric(ArcName,PW,Mode);
+    if Is7zLoaded<>0 then Extract7zLyric(ArcName,PW)
+    else if IsZipLoaded<>0 then ExtractZipLyric(ArcName,PW);
   end
-  else if Is7zLoaded>2 then Extract7zLyric(ArcName,PW,Mode);
+  else if Is7zLoaded>2 then Extract7zLyric(ArcName,PW);
 end;
 
 function ExtractSub(ArcName,PW,ArcType:WideString):WideString;
@@ -706,26 +742,23 @@ begin
 
     if WideFileExists(LyricURL) then begin //拖放的歌词或用户指定的歌词
       TmpURL:=WideExtractFileName(MediaURL);
-      TmpURL:=Tnt_WideLowerCase(Copy(TmpURL,1,length(TmpURL)-length(WideExtractFileExt(MediaURL))));
+      TmpURL:=Tnt_WideLowerCase(GetFileName(TmpURL));
       s:=WideExtractFileName(LyricURL);
-      s:=Tnt_WideLowerCase(Copy(s,1,length(s)-4));
+      s:=Tnt_WideLowerCase(GetFileName(s));
       if TmpURL=s then Lyric.ParseLyric(LyricURL);
     end;
 
     s:=Tnt_WideLowerCase(WideExtractFileExt(MediaURL));
-    j:=ExpandName(HomeDir,LyricDir);
+    j:=ExpandName(HomeDir,LyricDir); ArcMovie:=DisplayURL;
     if CheckInfo(ZipType,s)>-1 then begin
       i:=Pos(':',DisplayURL);
       if i>0 then ArcPW:=copy(DisplayURL,i+1,length(DisplayURL)-i)
       else ArcPW:='';
       i:=Pos(' <-- ',DisplayURL);
-      if i>0 then ArcMovie:=copy(DisplayURL,1,i-1)
-      else ArcMovie:=DisplayURL;
-      TmpURL:=copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie)));
+      if i>0 then ArcMovie:=copy(DisplayURL,1,i-1);
+      TmpURL:=GetFileName(ArcMovie);
       g:=WideIncludeTrailingPathDelimiter(WideExtractFilePath(MediaURL))+TmpURL; //播放的Arc文件所在的目录下有包内当前播放文件同名的sub
-      DirHIdx:=integer(WideFileExists(g+'.idx'));
-      DirHSub:=integer(WideFileExists(g+'.sub'));
-      if (DirHIdx+DirHSub)=2 then begin LoadVob:=1; Vobfile:=g; end;
+      if WideFileExists(g+'.idx') and WideFileExists(g+'.sub') then begin LoadVob:=1; Vobfile:=g; end;//idx
 
       for t:=ZipTypeCount+2 to SubTypeCount-2 do begin
         k:=g+SubType[t];
@@ -746,35 +779,22 @@ begin
     end
     else i:=-1;
 
-    g:=copy(MediaURL,1,length(MediaURL)-length(WideExtractFileExt(MediaURL)));
+    g:=getFileName(MediaURL);
     if HaveLyric=0 then begin //当前播放文件所在的目录下有同名的歌词
       LyricURL:=g+'.lrc';
       if not WideFileExists(LyricURL) then begin
         LyricURL:=WideExtractFileName(MediaURL);
         LyricURL:=WideIncludeTrailingPathDelimiter(j)
-               +copy(LyricURL,1,length(LyricURL)-length(WideExtractFileExt(MediaURL)))+'.lrc';
+               +GetFileName(LyricURL)+'.lrc';
       end;
       if WideFileExists(LyricURL) then Lyric.ParseLyric(LyricURL);
     end;
 
+    if HaveLyric=0 then loadArcLyric(g,ArcPW);
     if LoadVob=0 then begin
-      DirHIdx:=integer(WideFileExists(g+'.idx'));
-      DirHSub:=integer(WideFileExists(g+'.sub'));
-      if (DirHIdx+DirHSub)=2 then begin LoadVob:=1; Vobfile:=g; end;
-    end
-    else begin DirHIdx:=1; DirHSub:=1; end;
-    
-    for t:=Low(ZipType) to High(ZipType) do begin
-      if WideFileExists(g+ZipType[t]) then begin
-        if IsLoaded(ZipType[t]) then begin   //当前播放文件所在的目录下有同名Arc文件中的同名歌词
-          if (HaveLyric=0) and (i<>0) then ExtractLyric(g+ZipType[t],ArcPW,ZipType[t],i);
-          TmpURL:=ExtractSub(g+ZipType[t],ArcPW,ZipType[t]);
-          if (LoadVob=0) and (TmpURL<>'') then begin Vobfile:=TmpURL; LoadVob:=1; end;
-        end;
-      end;
+      TmpURL:=loadArcSub(g,ArcPW);
+      if TmpURL<>'' then begin Vobfile:=TmpURL; LoadVob:=1; end;
     end;
-
-    DirHIdx:=0; DirHSub:=0;
 
     if (i>0) and IsLoaded(s) then begin
       tEnd:=false;
@@ -838,7 +858,7 @@ begin
     if Vobfile<>'' then begin
       s:=Vobfile;
       if not IsWideStringMappableToAnsi(s) then begin
-        s:=WideExtractShortPathName(Vobfile+'.idx'); s:=copy(s,1,length(s)-4);
+        s:=WideExtractShortPathName(Vobfile+'.idx'); s:=GetFileName(s);
       end;
       CmdLine:=CmdLine+' -vobsub '+EscapeParam(s);
     end;
@@ -2383,7 +2403,7 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10;
-  lastP1:=''; lastFN:=''; balance:=0; sconfig:=false;
+  lastP1:=''; lastFN:=''; balance:=0; sconfig:=false; Addsfiles:=false;
   ResetStreamInfo;
 end.
 

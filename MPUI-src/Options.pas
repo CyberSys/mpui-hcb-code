@@ -180,6 +180,7 @@ type
     Cosdfont: TTntComboBox;
     Eosdfont: TTntEdit;
     Cconfig: TTntCheckBox;
+    CAddsfiles: TTntCheckBox;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -425,6 +426,7 @@ begin
   CIndex.Checked:=ReIndex;
   CSoftVol.Checked:=SoftVol;
   CRFScr.Checked:=RFScr;
+  CAddsfiles.Checked:=Addsfiles;
   CDr.Checked:=Dr;
   Double.Checked:=dbbuf;
   CVolnorm.Checked:=Volnorm;
@@ -564,6 +566,10 @@ begin
 
   if Volnorm<>CVolnorm.Checked then begin
     Volnorm:=CVolnorm.Checked; changed:=true;
+  end;
+
+  if Addsfiles<>CAddsfiles.Checked then begin
+    Addsfiles:=CAddsfiles.Checked; changed:=true;
   end;
 
   if nfc<>nfconf.Checked then begin

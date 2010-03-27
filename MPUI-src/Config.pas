@@ -161,6 +161,7 @@ begin
            Core.Speed:=ReadFloat(SectionName,'Speed',Core.Speed);
            Core.WantFullscreen:=ReadBool(SectionName,'Fullscreen',Core.WantFullscreen);
            Core.AutoQuit:=ReadBool(SectionName,'AutoQuit',Core.AutoQuit);
+           Core.Addsfiles:=ReadBool(SectionName,'Add sequence files',Core.Addsfiles);
            Core.WantCompact:=ReadBool(SectionName,'Compact',Core.WantCompact);
            Core.PScroll:=ReadBool(SectionName,'Scroll',Core.PScroll);
            s:=ReadString(SectionName,'LyricFont','');
@@ -298,6 +299,7 @@ begin
            WriteBool  (SectionName,'SPause',Core.SP);
            WriteBool  (SectionName,'DTime',Core.CT);
            WriteString(SectionName,'Params',Core.Params);
+           WriteBool   (SectionName,'Add sequence files',Core.Addsfiles);
          end;
       1: begin
            WriteInteger(SectionName,'IPanelWidth',Core.InterW);

@@ -113,8 +113,8 @@ procedure LoadZipLibrary;
 procedure UnLoadZipLibrary;
 procedure Load7zLibrary;
 procedure UnLoad7zLibrary;
-procedure Extract7zLyric(ArcName,PW:WideString; Mode:integer);
-procedure ExtractZipLyric(ArcName,PW:WideString; Mode:integer);
+procedure Extract7zLyric(ArcName,PW:WideString);
+procedure ExtractZipLyric(ArcName,PW:WideString);
 function Extract7zSub(ArcName,PW:WideString):WideString;
 function ExtractZipSub(ArcName,PW:WideString):WideString;
 function Add7zMovies(ArcName,PW:WideString; Add:boolean):integer;
@@ -346,7 +346,7 @@ begin
   sz.Free;
 end;
 
-procedure ExtractZipLyric(ArcName,PW:widestring; Mode:integer);
+procedure ExtractZipLyric(ArcName,PW:widestring);
 var hArc:integer; FName:WideString; fileInfo:TZipINDIVIDUALINFO;
     UArcName:UTF8String;
 begin
@@ -357,11 +357,7 @@ begin
     hArc:=ZipOpenArchive(0,PChar(UArcName),0);
     if hArc=0 then exit;
     if ZipFindFirst(hArc,'*',fileInfo)=0 then begin
-      if Mode>0 then FName:=Tnt_WideLowerCase(copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie))))+'.lrc'
-      else if Mode<0 then begin
-        FName:=WideExtractFileName(MediaURL);
-        FName:=Tnt_WideLowerCase(Copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL))))+'.lrc';
-      end;
+      FName:=Tnt_WideLowerCase(GetFileName(ArcMovie))+'.lrc';
       repeat
         if FName=Tnt_WideLowerCase(WideExtractFileName(UTF8Decode(fileInfo.szFilename))) then begin
           if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,UnZIPCallback)<>0 then
@@ -378,7 +374,7 @@ begin
   end;
 end;
 
-procedure Extract7zLyric(ArcName,PW:widestring; Mode:integer);
+procedure Extract7zLyric(ArcName,PW:widestring);
 var FName:WideString; x,z:integer; sz:TSevenZip; Flist:TWideStringList_;
 begin
   sz:=TSevenZip.Create(nil,Tnt_WideLowerCase(WideExtractFileExt(ArcName)));
@@ -389,11 +385,7 @@ begin
   if x<1 then begin sz.Free; exit; end;
   Flist:=TWideStringList_.Create;
   Flist.WStrings:=sz.Files.wstrings;
-  if Mode>0 then FName:=Tnt_WideLowerCase(copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie))))+'.lrc'
-  else if Mode<0 then begin
-    FName:=WideExtractFileName(MediaURL);
-    FName:=Tnt_WideLowerCase(Copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL))))+'.lrc';
-  end;
+  FName:=Tnt_WideLowerCase(GetFileName(ArcMovie))+'.lrc';
   for z:=0 to x-1 do begin
     if Tnt_WideLowerCase(WideExtractFileName(Flist.wstrings[z]))=FName then begin
       sz.Files.Clear;
@@ -412,16 +404,19 @@ begin
 end;
 
 function ExtractZipSub(ArcName,PW:widestring):WideString;
-var i,j,HaveIdx,HaveSub:integer; FExt,FName:string;
+var i,j,HaveIdx,HaveSub,DirHIdx,DirHSub:integer; FExt,FName:string; g:widestring;
     hArc:integer; UArcName:UTF8String; First:boolean;
     fileInfo:TZipINDIVIDUALINFO;
 begin
+  g:=GetFileName(ArcName);
+  DirHIdx:=integer(WideFileExists(g+'.idx'));
+  DirHSub:=integer(WideFileExists(g+'.sub'));
+  if (DirHIdx+DirHSub)=2 then begin result:=g; exit; end;
+  
   Result:=''; HaveIdx:=0; HaveSub:=0;
   ZipSetUnicodeMode(true);
   UArcName:=UTF8Encode(ArcName);
-  {如果当前播放文档目录下有同名VOBSUB字幕或部分VOBSUB字幕就扫描同名RAR文档，
-  检查是否含有VOBSUB字幕及VOBSUB字幕组成情况，以便决定是否解压RAR文档内的
-  全部VOBSUB字幕或VOBSUB字幕的部分组件}
+
   if (DirHIdx+DirHSub)=1 then begin
     if ZipGetRunning then exit
     else begin
@@ -470,8 +465,8 @@ begin
           end
           else begin
             if (DirHIdx+DirHSub=0) OR (HaveIdx+HaveSub=2) then begin
-              FName:=WideExtractFileName(MediaURL);
-              FName:=TempDir+copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL)));
+              FName:=WideExtractFileName(ArcName);
+              FName:=TempDir+GetFileName(FName);
               if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,UnZIPCallback)<>0 then
                 Break
               else begin
@@ -483,7 +478,7 @@ begin
             else begin
               if ((HaveIdx+DirHSub=2) and (FExt='.idx')) OR
                  ((DirHIdx+HaveSub=2) and (FExt='.sub')) then begin
-                FName:=copy(MediaURL,1,length(MediaURL)-length(WideExtractFileExt(MediaURL)));
+                FName:=GetFileName(ArcName);
                 if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,UnZIPCallback)<>0 then
                   Break
                 else begin
@@ -503,9 +498,14 @@ begin
 end;
 
 function Extract7zSub(ArcName,PW:widestring):WideString;
-var i,j,z,x,HaveIdx,HaveSub:integer; FExt,FName:WideString;
+var i,j,z,x,HaveIdx,HaveSub,DirHIdx,DirHSub:integer; FExt,FName,g:WideString;
     sz:TsevenZip; Flist:TWideStringList_;
 begin
+  g:=GetFileName(ArcName);
+  DirHIdx:=integer(WideFileExists(g+'.idx'));
+  DirHSub:=integer(WideFileExists(g+'.sub'));
+  if (DirHIdx+DirHSub)=2 then begin result:=g; exit; end;
+  
   Result:=''; HaveIdx:=0; HaveSub:=0;
   sz:=TSevenZip.Create(nil,Tnt_WideLowerCase(WideExtractFileExt(ArcName)));
   sz.Password:=PW; sz.SZFileName:=ArcName;
@@ -513,9 +513,7 @@ begin
   x:=sz.List;
   if sz.Password<>'' then TmpPW:=sz.Password;
   if x<1 then begin sz.Free; exit; end;
-  (*如果当前播放文档目录下有同名VOBSUB字幕或部分VOBSUB字幕就扫描同名RAR文档，
-  检查是否含有VOBSUB字幕及VOBSUB字幕组成情况，以便决定是否解压RAR文档内的
-  全部VOBSUB字幕或VOBSUB字幕的部分组件*)
+
   if (DirHIdx+DirHSub)=1 then begin
     for z:=0 to x-1 do begin
       FExt:=Tnt_WideLowerCase(WideExtractFileExt(sz.Files.wstrings[z]));
@@ -562,7 +560,7 @@ begin
         else begin
           if ((HaveIdx+DirHSub=2) and (FExt='.idx')) OR
              ((DirHIdx+HaveSub=2) and (FExt='.sub')) then begin
-            FName:=copy(MediaURL,1,length(MediaURL)-length(WideExtractFileExt(MediaURL)));
+            FName:=GetFileName(ArcName);
             sz.Files.Clear;
             sz.Files.AddString(Flist.wstrings[z]);
             sz.ExtractOptions:=sz.ExtractOptions+[ExtractNoPath];

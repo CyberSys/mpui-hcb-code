@@ -23,7 +23,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, TntSysUtils, Variants, Graphics, TntGraphics,
-  Forms, TntForms, StdCtrls, TntStdCtrls,  Controls, ShellAPI,
+  Forms, TntForms, StdCtrls, TntStdCtrls,  Controls, ShellAPI,Math,
   Dialogs, TntDialogs, Buttons, TntButtons, Menus, TntMenus,
   ComCtrls, TntComCtrls, Classes, TntClasses, TntSystem, ExtCtrls,
   TntExtCtrls,TntFileCtrl;
@@ -282,6 +282,8 @@ var
   Lyric:TLyric;
   LDocked,RDocked,TDocked,BDocked:boolean;
   LL,TT:integer;
+
+procedure addEpisode (s:widestring);
 
 implementation
 
@@ -988,8 +990,99 @@ begin
   end;
 end;
 
+
+
+
+function mysort(s: TTntStringList; P1, P2: Integer) :Integer;
+var s1,s2:WideString; ef,k,j,g,ce,ne:integer;
+function isnum(n:wchar):boolean;
+begin
+  result:=(n>='0') and (n<='9');
+end;
+begin
+  s1:=Tnt_WideLowerCase(s.strings[p1]);
+  s2:=Tnt_WideLowerCase(s.strings[p2]);
+  ce:=length(s1);  ne:=length(s2);
+  ef:=min(ce,ne);
+  for k:=1 to ef do begin            
+    if s1[k]<>s2[k] then begin
+      j:=0; g:=0;
+      while ((k+j)<=ce) and isnum(s1[k+j]) do inc(j);
+      while ((k+g)<=ne) and isnum(s2[k+g]) do inc(g);
+      if (j<>0) and ((k+j)<=ce) and (g=0) and (StrToInt(copy(s1,k,j))=0) then
+        result:=ord(s1[k+j])- ord(s2[k])
+      else if (g<>0) and ((k+g)<=ne) and (j=0) and (StrToInt(copy(s2,k,g))=0) then
+        result:=ord(s1[k])- ord(s2[k+g])
+      else if j*g<>0 then  result:=StrToInt(copy(s1,k,j))- StrToInt(copy(s2,k,g))
+      else result:=ord(s1[k])- ord(s2[k]);
+      exit;
+    end;
+  end;
+  result:=ce-ne;
+end;
+
+procedure addEpisode (s:widestring);
+var index,a,eof:integer; ex,s1,s2,path:WideString;
+    efiles:TTntStringList; first:boolean; SR:TSearchRecW;
+procedure trimpzero (var s:widestring);
+var z:integer;
+begin
+  for z:=1 to length(s) do
+    if s[z]<>'0' then break;
+  delete(s,1,z-1);
+end;
+
+function compare(c,n:widestring):integer;
+var l,bl,br,ed,cc,nc,ce,ne:integer; cd,nd:widestring;
+begin
+  result:=0;
+  bl:=0; br:=0;
+  cc:=length(c); nc:=length(n);
+  ed:=min(cc,nc);
+  for l:=1 to ed do begin
+    if (bl=0) and (c[l]<>n[l]) then bl:=l;
+    if (br=0) and (c[cc-l+1]<>n[nc-l+1]) then br:=l;
+    if bl*br>0 then break;
+  end;
+  if (br>eof) and (not first) then exit;
+  cd:=copy(c,bl,cc-br-bl+2); nd:=copy(n,bl,nc-br-bl+2);
+  Val(cd, cc, ce); Val(nd, nc, ne);
+  if (ce=0) and (ne=0) and (nc*cc>=0)then begin
+    eof:=br; result:=1; first:=false; exit;
+  end;
+  trimpzero(cd); trimpzero(nd);
+  if length(cd)<>length(nd) then exit
+  else if length(cd)=1 then begin
+    if (cd[1]>='a') and (cd[1]<='z') and (nd[1]>='a') and (nd[1]<='z') then begin
+      eof:=br; result:=1; first:=false; exit;
+    end;
+  end;
+end;
+begin
+  if not WideFileExists(s) then exit;
+  path:=WideIncludeTrailingPathDelimiter(WideExtractFilePath(s));
+  efiles:=TTntSTringList.Create;
+  if WideFindFirst(path+'*'+WideExtractFileExt(s),faAnyFile,SR)=0 then begin
+    repeat
+      if (SR.Name[1]<>'.') and ((SR.Attr AND faDirectory)=0) then efiles.Add(SR.Name);
+    until WideFindNext(SR)<>0;
+    WideFindClose(SR); efiles.CustomSort(mysort);
+  end;
+  first:=true; eof:=1; s:=WideExtractFileName(s);
+  index:=efiles.IndexOf(s);
+  if index>efiles.Count-2 then exit;
+  s1:=Tnt_Widelowercase(s);
+  ex:=WideExtractFileExt(s1);
+  for a:=index+1 to efiles.Count-1 do begin
+    s2:=Tnt_Widelowercase(efiles.Strings[a]);
+    if compare(s1,s2)<>0 then
+      Playlist.AddFiles(path+efiles.Strings[a])
+    else break;
+  end;
+end;
+
 procedure TPlaylistForm.BAddClick(Sender: TObject);
-var i:integer;
+var i:integer;  sfiles:TTntStringList;
 begin
   with MainForm.OpenDialog do begin
     Title:=MainForm.MOpenFile.Caption;
@@ -1009,9 +1102,14 @@ begin
 
     if Execute then begin
       PClear:=(Sender<>BAdd);
-      for i:=0 to Files.Count-1 do
-        Playlist.AddFiles(Files[i]);
-      Playlist.Changed;
+      sfiles:=TTntSTringList.Create;
+      sfiles.AddStrings(files);
+      sfiles.CustomSort(mysort);
+      for i:=0 to Files.Count-1 do begin
+        Playlist.AddFiles(sfiles[i]);
+        if Addsfiles then addEpisode(sfiles[i]);
+      end;
+      Playlist.Changed; sfiles.Free;
       if Sender<>BAdd then PlaylistForm.BPlayClick(Sender);
     end;
   end;
@@ -1044,9 +1142,9 @@ begin
       else begin
         if Running and (k='.lrc') and (HaveLyric=0) then begin
           FName:=WideExtractFileName(MediaURL);
-          FName:=Tnt_WideLowerCase(Copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL))));
+          FName:=Tnt_WideLowerCase(GetFileName(FName));
           LName:=WideExtractFileName(fnbuf);
-          LName:=Tnt_WideLowerCase(Copy(LName,1,length(LName)-4));
+          LName:=Tnt_WideLowerCase(GetFileName(LName));
           if FName=LName then Lyric.ParseLyric(fnbuf);
         end
         else begin
@@ -1054,7 +1152,7 @@ begin
             if IsLoaded(k) then begin
               TmpPW:='';
               h:=AddMovies(fnbuf,playlist.FindPW(fnbuf),false,k);
-              if HaveLyric=0 then ExtractLyric(fnbuf,TmpPW,k,-1);
+              if HaveLyric=0 then ExtractLyric(fnbuf,TmpPW,k);
               if h>0 then AddMovies(fnbuf,playlist.FindPW(fnbuf),true,k);
               if h<0 then begin
                 Entry.State:=psNotPlayed;

@@ -356,6 +356,7 @@ begin
                                     '有时候可能造成其他的一些问题');
     LParams.Caption:=UTF8Decode('其它 MPlayer 播放参数:');
     LHelp.Caption:=THelp.Caption;
+    CAddsFiles.Caption:=UTF8Decode('添加连续文件');
     SSF.Caption:=UTF8Decode('保存截图的目录');
     SLyric.Caption:=UTF8Decode('歌词目录:');
     TLyric.Caption:=UTF8Decode('歌词');
@@ -374,8 +375,8 @@ begin
     RHK.Caption:=UTF8Decode('重置 快捷键');
     HK.Columns[0].Caption:=UTF8Decode('快捷键');
     HK.Columns[1].Caption:=UTF8Decode('操作');
-    TUnit.Caption:=UTF8Decode('秒');
-    TseekL.Caption:=UTF8Decode('搜索 跳跃');
+    TUnit.Caption:=UTF8Decode('秒/查寻');
+    TseekL.Caption:=UTF8Decode('跳跃');
     HK.Hint:=UTF8Decode('按下快捷键去查找对应的记录，双击记录去修改快捷键');
     HK.Items[0].SubItems.Strings[0]:=UTF8Decode('增加视频高度');
     HK.Items[1].SubItems.Strings[0]:=UTF8Decode('减小视频高度');

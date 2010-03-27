@@ -377,8 +377,9 @@ begin
     RHK.Caption:='Reset HotKey';
     HK.Columns[0].Caption:='HotKey';
     HK.Columns[1].Caption:='Action';
-    TUnit.Caption:='seconds';
-    TseekL.Caption:='Seek jump';
+    TUnit.Caption:='seconds/seek';
+    TseekL.Caption:='Jump';
+    CAddsFiles.Caption:='Add sequence files';
     HK.Hint:='Press hotKey to search related entry.'^M^J+
              'Double clik entry to modify hotKey.';
     HK.Items[0].SubItems.Strings[0]:='Increase height of video';

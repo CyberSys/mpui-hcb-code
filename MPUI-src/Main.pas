@@ -663,11 +663,13 @@ begin
       end
       else begin
         if j='.idx' then begin
-          inc(VobFileCount);
-          if VobFileCount=1 then begin
-            j:=WideExtractFileName(fnbuf);
-            Vobfile:=WideIncludeTrailingPathDelimiter(WideExtractFilePath(fnbuf))+copy(j,1,length(j)-4);
-            Loadsub:=1; LoadVob:=1; Restart;
+          j:=loadArcSub(fnbuf,playlist.FindPW(fnbuf));
+          if j<>'' then begin
+            inc(VobFileCount);
+            if VobFileCount=1 then begin
+              Vobfile:=j;
+              Loadsub:=1; LoadVob:=1; Restart;
+            end;
           end;
         end
         else begin
@@ -675,7 +677,7 @@ begin
             if IsLoaded(j) then begin
               Loadsub:=1; TmpPW:='';
               t:=ExtractSub(fnbuf,playlist.FindPW(fnbuf),j);
-              if HaveLyric=0 then ExtractLyric(fnbuf,TmpPW,j,-1);
+              if HaveLyric=0 then ExtractLyric(fnbuf,TmpPW,j);
               if t<>'' then begin
                 Vobfile:=t;
                 inc(VobFileCount);
@@ -701,9 +703,9 @@ begin
           else begin
             if Running and (j='.lrc') and (HaveLyric=0) then begin
               {j:=WideExtractFileName(MediaURL);
-              j:=Tnt_WideLowerCase(Copy(j,1,length(j)-length(WideExtractFileExt(MediaURL))));
+              j:=Tnt_WideLowerCase(GetFileName(j));
               t:=WideExtractFileName(fnbuf);
-              t:=Tnt_WideLowerCase(Copy(t,1,length(t)-4));
+              t:=Tnt_WideLowerCase(GetFileName(t));
               if j=t then   }
               Lyric.ParseLyric(fnbuf);
             end
@@ -1705,7 +1707,7 @@ begin
   MSubScale.Visible:=MShowSub.Visible; N30.Visible:=MShowSub.Visible;
   MSubDelay.Visible:=MShowSub.Visible; MLoadSub.Visible:=Running;
   MSubStep.Visible:=MShowSub.Visible; N15.Visible:=MShowSub.Visible;
-  N17.Visible:=MShowSub.Visible;
+  N17.Visible:=MShowSub.Visible;  MLoadlyric.Visible:=Running;
 end;
 
 procedure TMainForm.MPopupPopup(Sender: TObject);
@@ -2740,19 +2742,20 @@ begin
       for i:=0 to Files.Count-1 do begin
         Loadsub:=1; j:=Tnt_WideLowerCase(WideExtractFileExt(Files[i]));
         if j='.idx' then begin
-          inc(VobFileCount);
-          if VobFileCount=1 then begin
-            Vobfile:=copy(Files[i],1,length(Files[i])-4);
-            LoadVob:=1; Restart;
+          j:=loadArcSub(Files[i],playlist.FindPW(Files[i]));
+          if j<>'' then begin
+            inc(VobFileCount);
+            if VobFileCount=1 then begin
+              Vobfile:=j; LoadVob:=1; Restart;
+            end;
           end;
         end
         else begin
           if CheckInfo(ZipType,j)>-1 then begin
             if IsLoaded(j) then begin
-              j:=ExtractSub(Files[i],'',j);
+              j:=ExtractSub(Files[i],playlist.FindPW(Files[i]),j);
               if j<>'' then begin
-                Vobfile:=j;
-                inc(VobFileCount);
+                Vobfile:=j; inc(VobFileCount);
                 if VobFileCount=1 then begin
                   LoadVob:=1; Restart;
                 end;
@@ -3026,14 +3029,23 @@ begin
 end;
 
 procedure TMainForm.MLoadlyricClick(Sender: TObject);
+var j:WideString;
 begin
   with OpenDialog do begin
     Title:=MLoadlyric.Caption;
     Options:=Options-[ofAllowMultiSelect]-[ofoldstyledialog];
-    filter:=LyricFilter+'|*.lrc|'+AnyFilter+'(*.*)|*.*';
+    filter:=LyricFilter+'|*.lrc;*.7z;*.rar;*.zip;*.001;*.arj;*.bz2;*.z;*.lzh;'
+        +'*.cab;*.lzma;*.xar;*.hfs;*.dmg;*.wim;*.iso;*.split;*.rpm;*.deb;*.cpio;'
+        +'*.tar;*.gz|'+AnyFilter+'(*.*)|*.*';
     if Execute then begin
-      LyricURL:=fileName;
-      Lyric.ParseLyric(LyricURL);
+      j:=Tnt_WideLowerCase(WideExtractFileExt(FileName));
+      if CheckInfo(ZipType,j)>-1 then begin
+        if IsLoaded(j) then ExtractLyric(FileName,playlist.FindPW(FileName),j);
+      end
+      else begin
+        LyricURL:=fileName;
+        Lyric.ParseLyric(LyricURL);
+      end;
     end;
   end;
 end;

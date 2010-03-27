@@ -89,7 +89,7 @@ procedure UnLoadShell32Library;
 procedure ClearTmpFiles(Directory:WideString);
 function AddRarMovies(ArcName,PW:widestring; Add:boolean):integer;
 procedure ExtractRarMovie(ArcName,MovieName,PW:widestring);
-procedure ExtractRarLyric(ArcName,PW:WideString; Mode:integer);
+procedure ExtractRarLyric(ArcName,PW:WideString);
 function ExtractRarSub(ArcName,PW:WideString):WideString;
 Procedure CoTaskMemFree(pv:Pointer); stdcall; external 'ole32.dll';
 function GetShellPath(rfid:TGUID):WideString;
@@ -344,7 +344,7 @@ begin
 end;
 
 
-procedure ExtractRarLyric(ArcName,PW:widestring; Mode:integer);
+procedure ExtractRarLyric(ArcName,PW:widestring);
 var hArcData:THandle; First:boolean; FName:widestring;
     HeaderData:TRARHeaderData; OpenArchiveData:TRAROpenArchiveData;
 begin
@@ -361,11 +361,8 @@ begin
     First:=false; RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
   end;
   FillChar(HeaderData ,sizeof(HeaderData),0);
-  if Mode>0 then FName:=Tnt_WideLowerCase(copy(ArcMovie,1,length(ArcMovie)-length(WideExtractFileExt(ArcMovie))))+'.lrc'
-  else if Mode<0 then begin
-    FName:=WideExtractFileName(MediaURL);
-    FName:=Tnt_WideLowerCase(Copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL))))+'.lrc';
-  end;
+  FName:=Tnt_WideLowerCase(GetFileName(ArcMovie))+'.lrc';
+
   repeat
     if RARReadHeader(hArcData,HeaderData) <> 0 then Break;
     if ((HeaderData.Flags and $00000070) <> $00000070) and
@@ -385,17 +382,19 @@ begin
 end;
 
 function ExtractRarSub(ArcName,PW:widestring):widestring;
-var i,j,HaveIdx,HaveSub:integer; FName,FExt:widestring;
+var i,j,HaveIdx,HaveSub,DirHIdx,DirHSub:integer; FName,FExt,g:widestring;
     First:boolean; hArcData:THandle; HeaderData:TRARHeaderData;
     OpenArchiveData:TRAROpenArchiveData;
 begin
+  g:=GetFileName(ArcName);
+  DirHIdx:=integer(WideFileExists(g+'.idx'));
+  DirHSub:=integer(WideFileExists(g+'.sub'));
+  if (DirHIdx+DirHSub)=2 then begin result:=g; exit; end;
+
   Result:=''; j:=0; TmpPW:=PW; First:=true;
   HaveIdx:=0; HaveSub:=0;
   FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
   OpenArchiveData.ArcNameW := PWideChar(ArcName);
-  {如果当前播放文档目录下有同名VOBSUB字幕或部分VOBSUB字幕就扫描同名RAR文档，
-  检查是否含有VOBSUB字幕及VOBSUB字幕组成情况，以便决定是否解压RAR文档内的
-  全部VOBSUB字幕或VOBSUB字幕的部分组件}
   if (DirHIdx+DirHSub)=1 then begin
     OpenArchiveData.OpenMode := RAR_OM_LIST;
     hArcData := RAROpenArchive(OpenArchiveData);
@@ -468,8 +467,8 @@ begin
         end
         else begin
           if (DirHIdx+DirHSub=0) OR (HaveIdx+HaveSub=2) then begin
-            FName:=WideExtractFileName(MediaURL);
-            FName:=TempDir+copy(FName,1,length(FName)-length(WideExtractFileExt(MediaURL)));
+            FName:=WideExtractFileName(ArcName);
+            FName:=TempDir+GetFileName(FName);
             if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(FName+FExt))<>0 then
               Break
             else
@@ -478,7 +477,7 @@ begin
           else begin
             if ((HaveIdx+DirHSub=2) and (FExt='.idx')) OR
                ((DirHIdx+HaveSub=2) and (FExt='.sub')) then begin
-              FName:=copy(MediaURL,1,length(MediaURL)-length(WideExtractFileExt(MediaURL)));
+              FName:=GetFileName(ArcName);
               if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(FName+FExt))<>0 then
                 Break
               else
@@ -585,8 +584,8 @@ begin
     if RARReadHeader(hArcData, HeaderData) <> 0 then Break;
     FExt:=LowerCase(ExtractFileExt(HeaderData.FileName));
     if (FExt='.idx') or (FExt='.sub') then begin
-      FName:=ExtractFileName(MediaURL);
-      FName:=TempDir+copy(FName,1,length(FName)-length(ExtractFileExt(MediaURL)));
+      FName:=ExtractFileName(ArcName);
+      FName:=TempDir+GetFileName(FName);
       if RARProcessFile(hArcData, RAR_EXTRACT, nil, PChar(FName+FExt))<>0 then Break
       else Result:=FName;
     end
