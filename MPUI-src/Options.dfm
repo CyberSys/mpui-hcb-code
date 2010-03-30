@@ -1437,10 +1437,10 @@ object OptionsForm: TOptionsForm
       end
       object Esubfont: TTntEdit
         Left = 240
-        Top = 60
+        Top = 32
         Width = 256
         Height = 24
-        Anchors = [akLeft, akRight, akBottom]
+        Anchors = [akLeft, akTop, akRight]
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
@@ -1476,10 +1476,10 @@ object OptionsForm: TOptionsForm
       end
       object Eosdfont: TTntEdit
         Left = 240
-        Top = 88
+        Top = 60
         Width = 256
         Height = 24
-        Anchors = [akLeft, akRight, akBottom]
+        Anchors = [akLeft, akTop, akRight]
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
