@@ -270,7 +270,7 @@ end;
 
 function GetFileName(const fileName:WideString):WideString;
 begin
-  Result:=copy(fileName,1,length(fileName)-length(WideExtractFileExt(fileName)));
+  Result:=WideChangeFileExt(fileName,'');
 end;
 
 procedure loadArcLyric(ArcName,psw:WideString);
@@ -536,6 +536,7 @@ end;
 function ColorToStr(Color:Longint):WideString;
 var i:integer; s:WideString;
 begin
+  Result:='';
   s:=Tnt_WideFormat('%.8x',[Color]);
   for i:=length(s) downto 1 do Result:=Result+s[i];
 end;

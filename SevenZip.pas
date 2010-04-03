@@ -213,7 +213,7 @@ function ZipCommand(hWnd:HWND; CommandLine:string; var CommandOutput:string; Max
 begin
   SetLength(CommandOutput,MaxCommandOutputLen);
   Result:=_ZipCommand(hWnd,PChar(CommandLine),PChar(CommandOutput),MaxCommandOutputLen);
-  CommandOutput:=string(PChar(CommandOutput));
+  CommandOutput:=PChar(CommandOutput);
 end;
 
 function ZipExtractArchive( hWnd : HWND; // parent window handle
@@ -244,7 +244,7 @@ begin
       ZipSetOwnerWindowEx(hwnd,Callback );
       ZipCommand(hWnd,s7cmd,s7ResultOutput );
       ZipSetOwnerWindowEx(hwnd,nil);
-      S7ResultOutput:=string(PChar(S7ResultOutput));
+      S7ResultOutput:=PChar(S7ResultOutput);
       if Pos('operation aborted',Lowercase(S7ResultOutput))>0 then
         Result:=SZ_CANCELLED
       else if Pos('error:',LowerCase(S7ResultOutput))>0 then
@@ -566,9 +566,9 @@ begin
             sz.ExtractOptions:=sz.ExtractOptions+[ExtractNoPath];
             if sz.Extract<>0 then Break
             else begin
-              if WideCopyFile(TempDir+Flist.wstrings[z],FName+FExt,false) then
+              if WideCopyFile(TempDir+'hcb428'+FExt,FName+FExt,false) then
                 Result:=FName
-              else Result:=TempDir+WideExtractFileName(Flist.wstrings[z]);
+              else Result:=TempDir+'hcb428';
             end;
           end;
         end;

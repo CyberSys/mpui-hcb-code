@@ -296,7 +296,7 @@ begin
        (CheckInfo(MediaType,Tnt_WideLowerCase(WideExtractFileExt(HeaderData.FileNameW)))>ZipTypeCount) then begin
       inc(Result);
       if Add then begin
-        i:=HeaderData.FileNameW+' <-- '+k;
+        i:=HeaderData.FileNameW+Widestring(' <-- ')+k;
         if playlist.FindItem('.part',i)<0 then begin
           with Entry do begin
             State:=psNotPlayed;
@@ -467,12 +467,10 @@ begin
         end
         else begin
           if (DirHIdx+DirHSub=0) OR (HaveIdx+HaveSub=2) then begin
-            FName:=WideExtractFileName(ArcName);
-            FName:=TempDir+GetFileName(FName);
-            if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(FName+FExt))<>0 then
+            if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(TempDir+'hcb428'+FExt))<>0 then
               Break
             else
-              Result:=FName;
+              Result:=TempDir+'hcb428';
           end
           else begin
             if ((HaveIdx+DirHSub=2) and (FExt='.idx')) OR

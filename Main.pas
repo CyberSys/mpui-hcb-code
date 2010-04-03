@@ -508,7 +508,6 @@ begin
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
-//var Buf: array[0..6] of AnsiChar; i,e:integer;
 begin
 //AllocConsole;
   randomize;
