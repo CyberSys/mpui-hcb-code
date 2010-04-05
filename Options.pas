@@ -1050,12 +1050,10 @@ begin
       PShow.Caption:=(Sender as TTntComboBox).Items[i];
       if Sender=CSubfont then begin
         Esubfont.Font.Name:=PShow.Font.Name;
-        Esubfont.Font.Size:=0;
         if (s=h) or (s=j) then Esubfont.Text:=PShow.Caption;
       end
       else begin
         Eosdfont.Font.Name:=PShow.Font.Name;
-        Eosdfont.Font.Size:=0;
         if (s=h) or (s=j) then Eosdfont.Text:=PShow.Caption;
       end; 
       break;
@@ -1066,6 +1064,7 @@ begin
     else Eosdfont.Font.Name:='Tahoma';
   end;
   (Sender as TTntComboBox).ItemIndex:=i;
+  Eosdfont.Height:=Cosdfont.Height; Esubfont.Height:=CSubfont.Height;
 end;
 
 procedure TOptionsForm.SetColor(Sender: TObject);
@@ -1198,25 +1197,11 @@ begin
 end;
 
 procedure TOptionsForm.TFSetClick(Sender: TObject);
-var execinfo:SHELLEXECUTEINFOW;
 begin
   SetFass; Save(HomeDir+DefaultFileName,4);
-
-  if Win32PlatformIsVista and (not IsAdmin()) then begin
-	  fillchar(execinfo, sizeof(execinfo), 0);
-	  execinfo.lpFile:=PWChar(WideParamStr(0));
-   	execinfo.cbSize:= sizeof(execinfo);
-  	execinfo.lpVerb:= 'runas';
- 	  execinfo.fMask:= SEE_MASK_NOCLOSEPROCESS;
-	  execinfo.nShow:= SW_SHOWDEFAULT;
-  	execinfo.lpParameters:= '/adminoption 0';
-
- 	  ShellExecuteExW(@execinfo);
-    // ShellExecuteW(Handle,'runas',PWChar(WideParamStr(0)),'/adminoption 0',nil,SW_SHOWDEFAULT);
-    exit;
-  end;
-
-  regAss();
+  if Win32PlatformIsVista and (not IsAdmin()) then
+    ShellExecuteW(Handle,'runas',PWChar(WideParamStr(0)),'/adminoption 0',nil,SW_SHOWDEFAULT)
+  else regAss();
 end;
 
 procedure regAss();
@@ -1432,6 +1417,7 @@ end;
 procedure TOptionsForm.CSubfontDrawItem(Control: TWinControl;
   Index: Integer; Rect: TRect; State: TOwnerDrawState);
 begin
+  if Index<0 then exit;
   with CSubfont.Canvas do begin
     FillRect(Rect);
     Font.Name := CSubfont.Items[Index];
@@ -1444,6 +1430,7 @@ end;
 procedure TOptionsForm.CSubfontMeasureItem(Control: TWinControl;
   Index: Integer; var Height: Integer);
 begin
+  if Index<0 then exit;
   with CSubfont.Canvas do begin
     Font.Name := CSubfont.Items[Index];
     Font.Size := 0;                 // use font's preferred size
@@ -1457,15 +1444,17 @@ begin
     if sender=CSubfont then ESubfont.Text:=CSubfont.Text
     else Eosdfont.Text:=Cosdfont.Text;
   end;
+  Eosdfont.Height:=Cosdfont.Height; Esubfont.Height:=CSubfont.Height;
 end;
 
 procedure TOptionsForm.CosdfontMeasureItem(Control: TWinControl;
   Index: Integer; var Height: Integer);
 begin
+  if Index<0 then exit;
   with Cosdfont.Canvas do begin
     Font.Name := Cosdfont.Items[Index];
     Font.Size := 0;                 // use font's preferred size
-    Height :=WideCanvasTextHeight(Cosdfont.Canvas,Cosdfont.Items[Index])+2;
+    Height :=WideCanvasTextHeight(CSubfont.Canvas,CSubfont.Items[Index])+2;
   end;
 end;
 

@@ -1439,7 +1439,7 @@ object OptionsForm: TOptionsForm
         Left = 240
         Top = 32
         Width = 256
-        Height = 24
+        Height = 21
         Anchors = [akLeft, akTop, akRight]
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1478,7 +1478,7 @@ object OptionsForm: TOptionsForm
         Left = 240
         Top = 60
         Width = 256
-        Height = 24
+        Height = 21
         Anchors = [akLeft, akTop, akRight]
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
