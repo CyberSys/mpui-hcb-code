@@ -427,11 +427,11 @@ type
     procedure FormGetMinMaxInfo(var msg:TMessage); message WM_GETMINMAXINFO;
     procedure FormMove(var msg:TMessage); message WM_MOVE;
     procedure FormWantSpecialKey(var msg:TCMWantSpecialKey); message CM_WANTSPECIALKEY;
-    procedure UpdateMRF;
     Procedure PassMsg(var msg: Tmessage); message $0401;
     Procedure HandleLog(var msg: Tmessage); message $0402;
   public
     { Public declarations }
+    procedure UpdateMRF;
     procedure FixSize;
     procedure SetupStart;
     procedure SetupPlay;
@@ -789,7 +789,6 @@ begin
   UpdateCaption;
   FirstOpen:=true;
   Start;
-  UpdateMRF;
 end;
 
 procedure TMainForm.BPlayClick(Sender: TObject);
@@ -1625,22 +1624,33 @@ begin
 end;
 
 procedure TMainForm.MRFClick(Sender: TObject);
+var Entry:TPlaylistEntry; w,g:WideString; h:integer;
 begin
   PClear:=true;
-  Playlist.AddFiles((Sender as TTntMenuItem).Hint);
+  w:=(Sender as TTntMenuItem).Hint;
+  h:=pos('|',w); g:='';
+  if h>0 then begin
+    g:=copy(w,h+1,MaxInt); w:=copy(w,1,h-1);
+  end;
+  if g<>'' then Entry.DisplayURL:=g
+  else Entry.DisplayURL:=WideExtractFileName(w);
+  Entry.FullURL:=w;
+  Entry.State:=psNotPlayed;
+  playlist.Add(Entry);
   Playlist.Changed;
   UpdateParams;
   NextFile(0,psPlaying);
 end;
 
 procedure TMainForm.UpdateMRF;
-var t:TTntMenuItem;
+var t:TTntMenuItem; s:WideString;
 begin
-  if (MRfile.Count>2) and (TTntMenuItem(MRFile.Items[2]).Hint=MediaURL) then exit;
+  s:=MediaURL+'|'+DisplayURL;
+  if (MRfile.Count>2) and (TTntMenuItem(MRFile.Items[2]).Hint=s) then exit;
   if (Copy(MediaURL,1,12)=' -dvd-device') or (Copy(MediaURL,1,14)=' -cdrom-device') then exit;
   if MRFile.Count=(RFileMax+2) then MRFile.Delete(RFileMax+1);
   t:=TTntMenuItem.Create(MRFile);
-  t.Caption:=DisplayURL; t.Hint:=MediaURL;
+  t.Caption:=DisplayURL; t.Hint:=s;
   t.OnClick:=MRFClick;
   MRFile.Insert(2,t);
   MRFile.Visible:=true;

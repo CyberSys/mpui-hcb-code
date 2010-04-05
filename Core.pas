@@ -796,6 +796,8 @@ begin
       TmpURL:=loadArcSub(g,ArcPW);
       if TmpURL<>'' then begin Vobfile:=TmpURL; LoadVob:=1; end;
     end;
+    
+    MainForm.UpdateMRF;
 
     if (i>0) and IsLoaded(s) then begin
       tEnd:=false;

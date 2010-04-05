@@ -32,7 +32,8 @@ implementation
 uses SysUtils, TntSysUtils, INIFiles, Windows;
 
 procedure Load(FileName:WideString; Mode:integer);
-var INI:TMemIniFile; t:TTntMenuItem; s:String; i:integer;
+var INI:TMemIniFile; t:TTntMenuItem; s:String;
+    i,h:integer; w,g:WideString;
 begin
   if not WideFileExists(FileName) then begin
     FileName:=AppdataDir+WideExtractFileName(FileName);
@@ -66,31 +67,16 @@ begin
            Core.nfc:=ReadBool(SectionName,'nofontconfig',Core.nfc);
            Core.nmsg:=ReadBool(SectionName,'nomsgmodule',Core.nmsg);
            s:=ReadString(SectionName,'Subfont','');
-           if s<>'' then begin
-             if WideFileExists(s) then Core.subfont:=Tnt_WideLowerCase(GetLongPath(s))
-             else Core.subfont:=Tnt_WideLowerCase(s);
-           end;
+           if s<>'' then Core.subfont:=Tnt_WideLowerCase(UTF8Decode(s));
            s:=ReadString(SectionName,'OSDfont','');
-           if s<>'' then begin
-             if WideFileExists(s) then osdfont:=Tnt_WideLowerCase(GetLongPath(s))
-             else Core.osdfont:=Tnt_WideLowerCase(s);
-           end;
+           if s<>'' then osdfont:=Tnt_WideLowerCase(UTF8Decode(s));
            s:=ReadString(SectionName,'ShotDir','');
-           if s<>'' then begin
-             if WideDirectoryExists(s) then ShotDir:=GetLongPath(s)
-             else Core.ShotDir:=s;
-           end;
+           if s<>'' then ShotDir:=UTF8Decode(s);
            s:=ReadString(SectionName,'LyricDir','');
-           if s<>'' then begin
-             if WideDirectoryExists(s) then LyricDir:=GetLongPath(s)
-             else if WideDirectoryExists(ExpandName(HomeDir,LyricDir)) then Core.LyricDir:=s;
-           end;
+           if s<>'' then LyricDir:=UTF8Decode(s);
            Core.ML:=ReadBool(SectionName,'ML',Core.ML);
            s:=ReadString(SectionName,'MplayerLocation','');
-           if s<>'' then begin
-             if WideFileExists(s) then MplayerLocation:=GetLongPath(s)
-             else Core.MplayerLocation:=s;
-           end;
+           if s<>'' then MplayerLocation:=UTF8Decode(s);
            Core.Wid:=ReadBool(SectionName,'Wid',Core.Wid);
            Core.Flip:=ReadBool(SectionName,'Flip',Core.Flip);
            Core.Mirror:=ReadBool(SectionName,'Mirror',Core.Mirror);
@@ -112,10 +98,7 @@ begin
            Core.FB:=ReadFloat(SectionName,'FontBlur',Core.FB);
            Core.Wadsp:=ReadBool(SectionName,'Wadsp',Core.Wadsp);
            s:=ReadString(SectionName,'WadspL','');
-           if s<>'' then begin
-             if WideFileExists(s) then WadspL:=GetLongPath(s)
-             else Core.WadspL:=s;
-           end;
+           if s<>'' then WadspL:=UTF8Decode(s);
            Core.lavf:=ReadBool(SectionName,'Lavf',Core.lavf);
            Core.Fd:=ReadBool(SectionName,'Framedrop',Core.Fd);
            Core.Async:=ReadBool(SectionName,'Autosync',Core.Async);
@@ -174,16 +157,20 @@ begin
              s:=ReadString(SectionName,'RF'+IntToStr(i),'');
              if s<>'' then begin
                t:=TTntMenuItem.Create(MainForm.MRFile);
-               if WideFileExists(s) then begin
-                 s:=GetLongPath(s); t.Caption:=WideExtractFileName(s);
-               end
-               else t.Caption:=s;
-               t.Hint:=s;
+               w:=UTF8Decode(s);
+               t.Hint:=w;
+               h:=pos('|',w); g:='';
+               if h>0 then begin
+                 g:=copy(w,h+1,MaxInt); w:=copy(w,1,h-1);
+               end;
+                 if g<>'' then t.Caption:=g
+                 else t.Caption:=WideExtractFileName(w);
                t.OnClick:=MainForm.MRFClick;
                MainForm.MRFile.add(t);
                MainForm.MRFile.Visible:=true;
              end;
            end;
+
            MainForm.MOnTop.Items[Core.OnTop].Checked:=true;
            MainForm.MUUni.Checked:=Core.UseUni;
            MainForm.UpdateMenuCheck;
@@ -199,7 +186,7 @@ begin
 end;
 
 procedure Save(FileName:WideString; Mode:integer);
-var INI:TMemIniFile; h:integer; s:WideString;
+var INI:TMemIniFile; h:integer;
 begin
   if (NoAccess>0) or (not WideFileExists(FileName)) then
     FileName:=AppdataDir+WideExtractFileName(FileName);
@@ -207,7 +194,7 @@ begin
     h:=WideFileCreate(FileName);
     if GetLastError=0 then FileName:=WideExtractShortPathName(FileName);
     if h<0 then
-        FileName:=WideExtractShortPathName(WideIncludeTrailingPathDelimiter(WideExtractFilePath(FileName)))+WideExtractFileName(FileName)
+      FileName:=WideExtractShortPathName(WideIncludeTrailingPathDelimiter(WideExtractFilePath(FileName)))+WideExtractFileName(FileName)
     else CloseHandle(h);
   end
   else begin
@@ -241,22 +228,12 @@ begin
            WriteBool  (SectionName,'nofontconfig',Core.nfc);
            WriteBool  (SectionName,'nomsgmodule',Core.nmsg);
            WriteString  (SectionName,'Subcode',Core.subcode);
-           if WideFileExists(subfont) then
-             WriteString  (SectionName,'Subfont',WideExtractShortPathName(subfont))
-           else WriteString(SectionName,'Subfont',subfont);
-           if WideFileExists(osdfont) then
-             WriteString  (SectionName,'OSDfont',WideExtractShortPathName(osdfont))
-           else WriteString(SectionName,'OSDfont',osdfont);
-           if WideDirectoryExists(ShotDir) then
-             WriteString  (SectionName,'ShotDir',WideExtractShortPathName(ShotDir))
-           else WriteString(SectionName,'ShotDir',ShotDir);
-           if WideDirectoryExists(LyricDir) then
-             WriteString  (SectionName,'LyricDir',WideExtractShortPathName(LyricDir))
-           else WriteString(SectionName,'LyricDir',LyricDir);
+           WriteString  (SectionName,'Subfont',UTF8Encode(subfont));
+           WriteString  (SectionName,'OSDfont',UTF8Encode(osdfont));
+           WriteString  (SectionName,'ShotDir',UTF8Encode(ShotDir));
+           WriteString  (SectionName,'LyricDir',UTF8Encode(LyricDir));
            WriteBool  (SectionName,'ML',Core.ML);
-           if WideFileExists(MplayerLocation) then
-             WriteString  (SectionName,'MplayerLocation',WideExtractShortPathName(MplayerLocation))
-           else WriteString(SectionName,'MplayerLocation',MplayerLocation);
+           WriteString  (SectionName,'MplayerLocation',UTF8Encode(MplayerLocation));
            WriteBool  (SectionName,'Wid',Core.Wid);
            WriteBool  (SectionName,'Flip',Core.Flip);
            WriteBool  (SectionName,'Mirror',Core.Mirror);
@@ -274,9 +251,7 @@ begin
            WriteFloat(SectionName,'Outline',Core.Fol);
            WriteFloat(SectionName,'FontBlur',Core.FB);
            WriteBool  (SectionName,'Wadsp',Core.Wadsp);
-           if WideFileExists(WadspL) then
-             WriteString(SectionName,'WadspL',WideExtractShortPathName(WadspL))
-           else WriteString(SectionName,'WadspL',WadspL);
+           WriteString(SectionName,'WadspL',UTF8Decode(WadspL));
            WriteBool  (SectionName,'Lavf',Core.lavf);
            WriteBool  (SectionName,'Framedrop',Core.Fd);
            WriteBool  (SectionName,'Autosync',Core.Async);
@@ -325,12 +300,8 @@ begin
            WriteInteger(SectionName,'OnTop',Core.OnTop);
            WriteInteger(SectionName,'seekLen',Core.seekLen);
            WriteBool   (SectionName,'UseUni',Core.UseUni);
-           for h:=MainForm.MRFile.Count-1 downto 2 do begin
-             s:=TTntMenuItem(MainForm.MRFile.Items[h]).Hint;
-             if WideFileExists(s) then
-               WriteString(SectionName,'RF'+IntToStr(h-2),WideExtractShortPathName(s))
-             else WriteString(SectionName,'RF'+IntToStr(h-2),s);
-           end;
+           for h:=MainForm.MRFile.Count-1 downto 2 do
+             WriteString(SectionName,'RF'+IntToStr(h-2),UTF8Encode(TTntMenuItem(MainForm.MRFile.Items[h]).Hint));
          end;
       2: begin
            WriteBool  (SectionName,'instance',Core.oneM);
