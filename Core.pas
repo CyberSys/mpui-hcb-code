@@ -150,7 +150,7 @@ var Volume,MWC,CP,seekLen:integer;
     FormatSet:TFormatSettings;
     ExplicitStop,Rot,DefaultFontIndex:integer;
     TextColor,OutColor,LTextColor,LbgColor,LhgColor:Longint;
-    Speed,FSize,Fol,FB,dy,LyricV,Adelay,Sdelay,balance:real;
+    Speed,FSize,AFSize,Fol,FB,dy,LyricV,Adelay,Sdelay,balance:real;
     CurMonitor:TMonitor;
     HMonitorList:array of HMonitor;
     FontPaths:TTntStringList;
@@ -631,9 +631,8 @@ begin
   if not GUI then CmdLine:=CmdLine+' -nogui -noconsolecontrols';
   CmdLine:=CmdLine+' -slave -identify -noquiet -nofs -noterm-osd -hr-mp3-seek'
           +' -subalign 1 -spualign 1 -sub-fuzziness 1 -subfont-autoscale 2'
-          +' -subfont-osd-scale 4.8 -subfont-text-scale '+FloatToStr(FSize)
-          +' -subfont-outline '+FloatToStr(Fol)+' -subfont-blur '+FloatToStr(FB);
-
+          +' -subfont-osd-scale 4.8 -subfont-outline '+FloatToStr(Fol)
+          +' -subfont-blur '+FloatToStr(FB)+' -subfont-text-scale '+FloatToStr(FSize);
   if AudioFile<>'' then CmdLine:=CmdLine+' -audiofile '+EscapeParam(AudioFile);
   if Async then CmdLine:=CmdLine+' -autosync '+AsyncV;
 
@@ -675,7 +674,7 @@ begin
     if Efont then CmdLine:=CmdLine+' -embeddedfonts';
     CmdLine:=CmdLine+' -ass-color '+ColorToStr(TextColor)
             +' -ass-border-color '+ColorToStr(OutColor)
-            +' -ass-font-scale '+FloatToStr(FSize/3.2);
+            +' -ass-font-scale '+FloatToStr(AFSize);
     if ISub then CmdLine:=CmdLine+' -vf-pre ass';
   end;
   s:=CheckSubfont(subfont);
@@ -2406,7 +2405,7 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10;
-  lastP1:=''; lastFN:=''; balance:=0; sconfig:=false; Addsfiles:=false;
+  lastP1:=''; lastFN:=''; balance:=0; sconfig:=false; Addsfiles:=false; AFSize:=1.1;
   ResetStreamInfo;
 end.
 
