@@ -27,7 +27,7 @@ const PauseInfo:array[0..1]of WideString=('=  PAUSE  =','= 暂停 =');
 const CacheFill:array[0..4]of WideString=('Cache fill:','缓存填充:','缓冲填充:','緩存填充:','緩沖填充:');
 const GenIndex:array[0..2]of WideString=('Generating Index:','正在生成索引:','正在生成索引:');
 const defaultHeight=340; RFileMax=10; stopTimeout=1000; Dsubpos=96;
-const szdllCount=2;
+const szdllCount=2; Fscale=4.2;
 const szdll:array[0..szdllCount]of WideString=('7zxa.dll','7za.dll','7z.dll');
 
 const ZipTypeCount=20;
@@ -150,7 +150,7 @@ var Volume,MWC,CP,seekLen:integer;
     FormatSet:TFormatSettings;
     ExplicitStop,Rot,DefaultFontIndex:integer;
     TextColor,OutColor,LTextColor,LbgColor,LhgColor:Longint;
-    Speed,FSize,AFSize,Fol,FB,dy,LyricV,Adelay,Sdelay,balance:real;
+    Speed,FSize,Fol,FB,dy,LyricV,Adelay,Sdelay,balance:real;
     CurMonitor:TMonitor;
     HMonitorList:array of HMonitor;
     FontPaths:TTntStringList;
@@ -631,8 +631,9 @@ begin
   if not GUI then CmdLine:=CmdLine+' -nogui -noconsolecontrols';
   CmdLine:=CmdLine+' -slave -identify -noquiet -nofs -noterm-osd -hr-mp3-seek'
           +' -subalign 1 -spualign 1 -sub-fuzziness 1 -subfont-autoscale 2'
-          +' -subfont-osd-scale 4.8 -subfont-outline '+FloatToStr(Fol)
-          +' -subfont-blur '+FloatToStr(FB)+' -subfont-text-scale '+FloatToStr(FSize);
+          +' -subfont-osd-scale 4.8 -subfont-text-scale '+FloatToStr(FSize)
+          +' -subfont-outline '+FloatToStr(Fol)+' -subfont-blur '+FloatToStr(FB);
+
   if AudioFile<>'' then CmdLine:=CmdLine+' -audiofile '+EscapeParam(AudioFile);
   if Async then CmdLine:=CmdLine+' -autosync '+AsyncV;
 
@@ -674,7 +675,7 @@ begin
     if Efont then CmdLine:=CmdLine+' -embeddedfonts';
     CmdLine:=CmdLine+' -ass-color '+ColorToStr(TextColor)
             +' -ass-border-color '+ColorToStr(OutColor)
-            +' -ass-font-scale '+FloatToStr(AFSize);
+            +' -ass-font-scale '+FloatToStr(FSize/Fscale);
     if ISub then CmdLine:=CmdLine+' -vf-pre ass';
   end;
   s:=CheckSubfont(subfont);
@@ -2405,7 +2406,7 @@ begin
   ReadPipe:=0; WritePipe:=0; ExitCode:=0; UseUni:=false; HaveVideo:=false;
   LyricF:='Tahoma'; LyricS:=8; MaxLenLyricA:=''; MaxLenLyricW:=''; UseekC:=true;
   NW:=0; NH:=0; SP:=true; CT:=true; fass:=DefaultFass; HKS:=DefaultHKS; seekLen:=10;
-  lastP1:=''; lastFN:=''; balance:=0; sconfig:=false; Addsfiles:=false; AFSize:=1.1;
+  lastP1:=''; lastFN:=''; balance:=0; sconfig:=false; Addsfiles:=false;
   ResetStreamInfo;
 end.
 

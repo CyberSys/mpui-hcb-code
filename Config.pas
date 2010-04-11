@@ -94,7 +94,6 @@ begin
            Core.sconfig:=ReadBool(SectionName,'Show config windows',Core.sconfig);
            Core.Utf:=ReadBool(SectionName,'Utf8',Core.Utf);
            Core.FSize:=ReadFloat(SectionName,'FontSize',Core.FSize);
-           Core.AFSize:=ReadFloat(SectionName,'AssFontSize',Core.AFSize);
            Core.Fol:=ReadFloat(SectionName,'Outline',Core.Fol);
            Core.FB:=ReadFloat(SectionName,'FontBlur',Core.FB);
            Core.Wadsp:=ReadBool(SectionName,'Wadsp',Core.Wadsp);
@@ -249,7 +248,6 @@ begin
            WriteBool  (SectionName,'Unicode',Core.Uni);
            WriteBool  (SectionName,'Utf8',Core.Utf);
            WriteFloat(SectionName,'FontSize',Core.FSize);
-           WriteFloat(SectionName,'AssFontSize',Core.AFSize);
            WriteFloat(SectionName,'Outline',Core.Fol);
            WriteFloat(SectionName,'FontBlur',Core.FB);
            WriteBool  (SectionName,'Wadsp',Core.Wadsp);

@@ -885,19 +885,11 @@ if MVideos.Visible then begin
                     IPanel.Top:=IPanel.Top+3; IPanel.Height:=IPanel.Height-6;
                     CBHSA:=2;
                   end;
-      {+=} 187:   begin HandleCommand('sub_scale +0.1');
-                    if Ass then AFSize:=AFSize+0.1
-                    else begin
-                      FSize:=FSize+0.1; if FSize>10 then FSize:=10;
-                    end;
+      {+=} 187:   begin HandleCommand('sub_scale +0.1'); FSize:=FSize+0.1;
+                    if FSize>10 then FSize:=10;
                   end;
-      {_-} 189:   begin HandleCommand('sub_scale -0.1');
-                    if Ass then begin
-                      AFSize:=AFSize-0.1; if AFSize<0.1 then AFSize:=0.1;
-                    end
-                    else begin
-                      FSize:=FSize-0.1; if FSize<0.1 then FSize:=0.1;
-                    end;
+      {_-} 189:   begin HandleCommand('sub_scale -0.1'); FSize:=FSize-0.1;
+                    if FSize<0.1 then FSize:=0.1;
                   end;
     end;
   end
@@ -2542,16 +2534,11 @@ begin
   if abs(MouseMode)=2 then begin
     MouseMode:=-2; //在拖动时不进行单击、双击事件
     if ssCtrl in shift then begin   //Scale Subtitle
-      if ass then begin
-        AFSize:=AFSize+(p.X-OldX)/200; if AFSize<0.1 then AFSize:=0.1;
-        SendCommand('sub_scale '+FloatToStr(AFSize)+' 1');
-      end
-      else begin
-        FSize:=FSize+(p.X-OldX)/60;
-        if FSize>10 then FSize:=10; if FSize<0.1 then FSize:=0.1;
-        SendCommand('sub_scale '+FloatToStr(FSize)+' 1');
-      end;
+      FSize:=FSize+(p.X-OldX)/60;
       OldX:=p.X; OldY:=p.Y;
+      if FSize>10 then FSize:=10; if FSize<0.1 then FSize:=0.1;
+      if ass then SendCommand('sub_scale '+FloatToStr(FSize/Fscale)+' 1')
+      else SendCommand('sub_scale '+FloatToStr(FSize)+' 1');
     end
     else if not ass then begin       //Move Subtitle
       SubPos:=i;
