@@ -40,7 +40,6 @@ begin
 'faud');
       MTimeOSD.Caption:=UTF8Decode('Afficher le temps');
       MFullOSD.Caption:=UTF8Decode('Afficher le temps total');
-    LEscape.Caption:=UTF8Decode('Press Escape to exit fullscreen mode.');
     MFile.Caption:=UTF8Decode('Fichier');
       MOpenFile.Caption:=UTF8Decode('Jouer un fichier ...');
       MOpenURL.Caption:=UTF8Decode('Jouer un URL ...');

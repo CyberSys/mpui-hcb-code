@@ -39,7 +39,6 @@ begin
       MDefaultOSD.Caption:=UTF8Decode('Alapértelmezett OSD');
       MTimeOSD.Caption:=UTF8Decode('Idõ kijelzése');
       MFullOSD.Caption:=UTF8Decode('Összes idõ kijelzése');
-    LEscape.Caption:=UTF8Decode('Nyomj Escape-t a teljes képernyõs módból való kilépéshez.');
     MFile.Caption:=UTF8Decode('File');
       MOpenFile.Caption:=UTF8Decode('File lejátszása ...');
       MOpenURL.Caption:=UTF8Decode('URL lejátszása ...');

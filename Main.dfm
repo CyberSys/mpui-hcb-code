@@ -834,24 +834,6 @@ object MainForm: TMainForm
       OnMouseMove = DisplayMouseMove
       OnMouseUp = DisplayMouseUp
     end
-    object LEscape: TTntLabel
-      Left = 56
-      Top = 111
-      Width = 45
-      Height = 13
-      Caption = 'LEscape'
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWhite
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-      Visible = False
-      OnDblClick = DisplayDblClick
-      OnMouseDown = DisplayMouseDown
-      OnMouseMove = DisplayMouseMove
-      OnMouseUp = DisplayMouseUp
-    end
     object IPanel: TTntPanel
       Left = 0
       Top = 0

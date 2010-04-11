@@ -100,7 +100,6 @@ type
     OPanel: TTntPanel;
     Logo: TTntImage;
     IPanel: TTntPanel;
-    LEscape: TTntLabel;
     BPrev: TTntSpeedButton;
     BNext: TTntSpeedButton;
     MPrev: TTntMenuItem;
@@ -866,10 +865,6 @@ var i,j:integer;
   end;
 begin
 if MVideos.Visible then begin
-  if Key=VK_ESCAPE then begin
-    if MFullscreen.Checked then Key:=Ord('F')
-    else if MCompact.Checked then Key:=VK_F5;
-  end;
   if ssCtrl in Shift then begin
     case Key of
       VK_RIGHT:   if Wid then begin
@@ -1283,8 +1278,6 @@ begin
   CY:=OPanel.ClientHeight;
   Logo.Left:=(CX-Logo.Width) DIV 2;
   Logo.Top:=(CY-Logo.Height) DIV 2;
-  LEscape.Left:=(CX-LEscape.Width) DIV 2;
-  LEscape.Top:=Max(Logo.Top+Logo.Height,CY*3 DIV 4);
   UpdateDockedWindows;
   if ControlledResize then
     ControlledResize:=false
@@ -1306,7 +1299,6 @@ end;
 procedure TMainForm.SetupPlay;
 begin
   Logo.Visible:=not HaveVideo;
-  LEscape.Visible:=Logo.Visible AND MFullscreen.Checked;
   IPanel.Visible:=HaveVideo and Wid;
   Seeking:=false; LTime.Cursor:=crHandPoint;
   LTime.Font.Size:=14; LTime.Top:=-2;
@@ -1323,7 +1315,6 @@ begin
   BPause.Enabled:=false;
   BPause.Down:=false;
   Logo.Visible:=not Running;
-  LEscape.Visible:=MFullscreen.Checked;
   SetMouseV(true);
   MLoadSub.Visible:=false;
   MShowSub.Visible:=false; N17.Visible:=MShowSub.Visible;
@@ -1941,10 +1932,8 @@ begin
     SY:=Screen.Height+Height-OPanel.Height;
     ControlledResize:=true;
     SetWindowPos(Handle,HWND_TOPMOST,PX,PY,SX,SY,0);
-    LEscape.Visible:=not Running;
   end
   else begin
-    LEscape.Visible:=false;
     ControlledResize:=true;
     case OnTop of
       0:  SetWindowPos(Handle,HWND_NOTOPMOST,FS_PX,FS_PY,FS_SX,FS_SY,0);

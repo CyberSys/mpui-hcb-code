@@ -84,7 +84,6 @@ begin
       MDefaultOSD.Caption:=UTF8Decode('Pasek wyszukiwania');
       MTimeOSD.Caption:=UTF8Decode('Pokaż czas');
       MFullOSD.Caption:=UTF8Decode('Pokaż czas/całkowity');
-    LEscape.Caption:=UTF8Decode('Wciśnij Escape aby wyjść z Pełnego ekranu.');
     MFile.Caption:=UTF8Decode('Plik');
       MOpenFile.Caption:=UTF8Decode('Otwórz plik ...');
       MOpenDir.Caption:=UTF8Decode('Otwórz katalog ...');

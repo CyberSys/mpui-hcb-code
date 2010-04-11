@@ -43,7 +43,6 @@ begin
       MDefaultOSD.Caption:=UTF8Decode('OSD prédefinido');
       MTimeOSD.Caption:=UTF8Decode('Mostrar tempo');
       MFullOSD.Caption:=UTF8Decode('Mostrar tempo total');
-    LEscape.Caption:=UTF8Decode('Pressione Esc para sair do modo de écran completo');
     MFile.Caption:=UTF8Decode('Ficheiro');
       MOpenFile.Caption:=UTF8Decode('Reproduzir ficheiro...');
       MOpenURL.Caption:=UTF8Decode('Reproduzir URL...');

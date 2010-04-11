@@ -80,7 +80,6 @@ begin
       MDefaultOSD.Caption:=UTF8Decode('OSD по подразбиране');
       MTimeOSD.Caption:=UTF8Decode('Покажи времетраенето');
       MFullOSD.Caption:=UTF8Decode('Покажи позиция/времетраене');
-    LEscape.Caption:=UTF8Decode('Натиснете Escape за изход от режим на цял екран');
     MFile.Caption:=UTF8Decode('Файл');
       MOpenFile.Caption:=UTF8Decode('Отвори файл ...');
       MOpenDir.Caption:=UTF8Decode('Отвори директория ...');

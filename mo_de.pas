@@ -42,7 +42,6 @@ begin
       MTimeOSD.Caption:=UTF8Decode('Zeitanzeige');
       MFullOSD.Caption:=UTF8Decode('Gesamtzeitanzeige');
     BMute.Hint:=UTF8Decode('Stummschaltung ein/aus');
-    LEscape.Caption:=UTF8Decode('Esc drücken, um den Vollbildmodus zu verlassen');
     MFile.Caption:=UTF8Decode('Datei');
       MOpenFile.Caption:=UTF8Decode('Datei abspielen ...');
       MOpenURL.Caption:=UTF8Decode('URL abspielen ...');

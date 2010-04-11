@@ -80,7 +80,6 @@ begin
       MDefaultOSD.Caption:=UTF8Decode('預設 OSD');
       MTimeOSD.Caption:=UTF8Decode('顯示時間');
       MFullOSD.Caption:=UTF8Decode('顯示完整時間');
-    LEscape.Caption:=UTF8Decode('按 Escape 跳出全螢幕模式');
     MFile.Caption:=UTF8Decode('檔案');
       MOpenFile.Caption:=UTF8Decode('播放檔案 ...');
       MOpenDir.Caption:=UTF8Decode('播放目錄 ...');

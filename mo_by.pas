@@ -40,7 +40,6 @@ begin
       MDefaultOSD.Caption:= UTF8Decode('Дэфолтавае OSD');
       MTimeOSD.Caption:= UTF8Decode('Адлюстроўваць пазіцыю');
       MFullOSD.Caption:= UTF8Decode('Адлюстроўваць пазіцыю\працягласць');
-    LEscape.Caption:= UTF8Decode('Націскніце Escape, каб выйсці з поўнаэкраннага рэжыма');
     MFile.Caption:= UTF8Decode('Файл');
       MOpenFile.Caption:= UTF8Decode('Адчыніць файл ...');
       MOpenURL.Caption:= UTF8Decode('Адчыніць URL ...');

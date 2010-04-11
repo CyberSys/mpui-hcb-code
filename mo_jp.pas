@@ -43,7 +43,6 @@ begin
       MDefaultOSD.Caption:=UTF8Decode('デフォルト OSD');
       MTimeOSD.Caption:=UTF8Decode('時間を表示');
       MFullOSD.Caption:=UTF8Decode('総計時間を表示');
-    LEscape.Caption:=UTF8Decode('Escキーで全画面を終了.');
     MFile.Caption:=UTF8Decode('ファイル');
       MOpenFile.Caption:=UTF8Decode('ファイルから再生 ...');
       MOpenURL.Caption:=UTF8Decode('URLから再生 ...');

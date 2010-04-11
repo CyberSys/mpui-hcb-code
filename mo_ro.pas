@@ -43,7 +43,6 @@ begin
       MDefaultOSD.Caption:=UTF8Decode('OSD-ul implicit');
       MTimeOSD.Caption:=UTF8Decode('Arată durata redării');
       MFullOSD.Caption:=UTF8Decode('Arată durata totală');
-    LEscape.Caption:=UTF8Decode('Apasă tasta Escape pentru a ieşi din modul fullscreen.');
     MFile.Caption:=UTF8Decode('Fişier');
       MOpenFile.Caption:=UTF8Decode('Redă fişierul multimedia ...');
       MOpenURL.Caption:=UTF8Decode('Redă de la locaţia din Internet ...');

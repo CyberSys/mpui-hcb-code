@@ -80,7 +80,6 @@ begin
       MDefaultOSD.Caption:='Default OSD';
       MTimeOSD.Caption:='Show time';
       MFullOSD.Caption:='Show total time';
-    LEscape.Caption:='Press Escape to exit fullscreen mode.';
     MFile.Caption:='File';
       MOpenFile.Caption:='Play file ...';
       MOpenDir.Caption:='Open Directory ...';

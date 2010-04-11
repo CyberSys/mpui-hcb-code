@@ -43,7 +43,6 @@ begin
       MDefaultOSD.Caption:=UTF8Decode('Standaard OSD');
       MTimeOSD.Caption:=UTF8Decode('Verstreken speeltijd');
       MFullOSD.Caption:=UTF8Decode('Totale speeltijd');
-    LEscape.Caption:=UTF8Decode('Druk Escape om beeldvullende modus te verlaten.');
     MFile.Caption:=UTF8Decode('Bestand');
       MOpenFile.Caption:=UTF8Decode('Bestand laden ...');
       MOpenURL.Caption:=UTF8Decode('URL laden ...');

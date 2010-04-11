@@ -43,7 +43,6 @@ begin
       MDefaultOSD.Caption:=UTF8Decode('Normal OSD');
       MTimeOSD.Caption:=UTF8Decode('Vis tid');
       MFullOSD.Caption:=UTF8Decode('Vis sammenlagt tid');
-    LEscape.Caption:=UTF8Decode('Tryk Escape for at afslutte fuldskærms mode.');
     MFile.Caption:=UTF8Decode('Filer');
       MOpenFile.Caption:=UTF8Decode('Afspil fil ...');
       MOpenURL.Caption:=UTF8Decode('Afspil Internetadresse ...');

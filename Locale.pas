@@ -157,7 +157,6 @@ begin
   InfoForm.Font.Charset:=Locales[Index].Charset;
   EqualizerForm.Font.Charset:=Locales[Index].Charset;
 
-  MainForm.LEscape.Font.Charset:=Locales[Index].Charset;
   OptionsForm.LHelp.Font.Charset:=Locales[Index].Charset;
   OptionsForm.LVersionMPUI.Font.Charset:=Locales[Index].Charset;
   OptionsForm.LVersionMPlayer.Font.Charset:=Locales[Index].Charset;

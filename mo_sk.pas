@@ -43,7 +43,6 @@ begin
       MDefaultOSD.Caption:=UTF8Decode('Štandardné OSD');
       MTimeOSD.Caption:=UTF8Decode('Zobraziť odohraný čas');
       MFullOSD.Caption:=UTF8Decode('Zobraziť celkový čas');
-    LEscape.Caption:=UTF8Decode('Stlačte Escape pre ukončenie celoobrazovkového režimu.');
     MFile.Caption:=UTF8Decode('Súbor');
       MOpenFile.Caption:=UTF8Decode('Prehrať súbor ...');
       MOpenURL.Caption:=UTF8Decode('Prehrať URL ...');

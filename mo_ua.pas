@@ -46,7 +46,6 @@ begin
     MDefaultOSD.Caption := UTF8Decode('За умовчанням: OSD'); // виправлено
     MTimeOSD.Caption := UTF8Decode('Показати час');
     MFullOSD.Caption := UTF8Decode('Показати тривалість'); // виправлено
-    LEscape.Caption:= UTF8Decode('Натисніть Escape для виходу з повноекранного режиму');  // додано
     MFile.Caption := UTF8Decode('Файл');
     MOpenFile.Caption := UTF8Decode('Завантажити файл ...'); // виправлено
     OpenDialog.Title := UTF8Decode('Відкрити файл'); // додано

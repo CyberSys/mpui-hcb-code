@@ -40,7 +40,6 @@ begin
       MDefaultOSD.Caption:= UTF8Decode('OSD по умолчанию');
       MTimeOSD.Caption:= UTF8Decode('Показывать позицию');
       MFullOSD.Caption:= UTF8Decode('Показывать позицию\длительность');
-    LEscape.Caption:= UTF8Decode('Нажмите Escape чтобы выйти из полноэкранного режима');
     MFile.Caption:= UTF8Decode('Файл');
       MOpenFile.Caption:= UTF8Decode('Открыть файл ...');
       MOpenURL.Caption:= UTF8Decode('Открыть URL ...');

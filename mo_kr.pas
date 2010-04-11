@@ -43,7 +43,6 @@ begin
       MDefaultOSD.Caption:=UTF8Decode('기본 OSD');
       MTimeOSD.Caption:=UTF8Decode('시간 나타냄');
       MFullOSD.Caption:=UTF8Decode('전체시간 나타냄');
-    LEscape.Caption:=UTF8Decode('전체화면을 빠져나가려면 ESC 를 누르세요.');
     MFile.Caption:=UTF8Decode('파일');
       MOpenFile.Caption:=UTF8Decode('파일 재생 ...');
       MOpenURL.Caption:=UTF8Decode('URL 재생 ...');

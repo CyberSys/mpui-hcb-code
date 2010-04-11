@@ -43,7 +43,6 @@ begin
       MTimeOSD.Caption:=UTF8Decode('tempoindiko');
       MFullOSD.Caption:=UTF8Decode('tuttempoindiko');
     BMute.Hint:=UTF8Decode('mutigon enŝalti/elŝalti');
-    LEscape.Caption:=UTF8Decode('Prenu Esc, for forlasi la tutekrano-moduson');
     MFile.Caption:=UTF8Decode('dosiero');
       MOpenFile.Caption:=UTF8Decode('ludi dosieron ...');
       MOpenURL.Caption:=UTF8Decode('ludi adreson ...');
