@@ -122,7 +122,7 @@ var MediaURL,TmpURL,ArcMovie,Params,AddDirCP:WideString;
     MplayerLocation,WadspL,AsyncV,CacheV:widestring;
     MAspect,subcode,MaxLenLyricA,VideoOut:string;
     FirstOpen,PClear,Fd,Async,Cache,uof,oneM,FilterDrop:boolean;
-    Wid,Dreset,UpdateSkipBar,Pri,HaveChapters,HaveMsg:boolean;
+    Wid,Dreset,UpdateSkipBar,Pri,HaveChapters,HaveMsg,skip:boolean;
     CT,RP,RS,SP,AutoPlay,ETime,InSubDir,SPDIF,ML,GUI,PScroll:boolean;
     Shuffle,Loop,OneLoop,Uni,Utf,empty,UseUni:boolean;
     ControlledResize,ni,nobps,Dnav,IsDMenu,SMenu,lavf,UseekC,vsync:boolean;
@@ -299,6 +299,7 @@ begin
       end;
     end;
   end;
+  if WideFileExists(ArcName+'.sub') then Result:=ArcName;
 end;
 
 function IsLoaded(ArcType:WideString):boolean;
@@ -934,7 +935,7 @@ begin
       end;
       if Dreset then LastPos:=i else LastPos:=LastPos+i;
     end;
-    if LastPos>0 then CmdLine:=CmdLine+' -ss '+SecondsToTime(LastPos);
+    if LastPos>0 then begin SecondPos:=LastPos; CmdLine:=CmdLine+' -ss '+SecondsToTime(LastPos); end;
 
     if Dnav then begin
       CmdLine:=CmdLine+' -nocache';
@@ -2008,7 +2009,7 @@ begin
         end;
         if IsDMenu then SecondPos:=0
         else SecondPos:=p;
-        MainForm.UpdateTime;
+        MainForm.UpdateTime; if SecondPos<EP then skip:=true;
         if HaveChapters and (SecondPos=TotalTime-1) then begin
           i:=CheckMenu(MainForm.MDVDT,TID);
           r:=CheckMenu(MainForm.MDVDT.Items[i].Items[0],CID);
@@ -2030,7 +2031,8 @@ begin
               SendCommand('set_property mute 0');
             end;
           end;
-          if (EP>0) and (SecondPos=Ep) then begin
+          if (EP>0) and (SecondPos=Ep) and skip then begin
+            skip:=false;
             if HaveChapters then begin
               key:=VK_HOME;
               MainForm.FormKeyDown(nil,key,[]);

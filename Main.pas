@@ -2847,7 +2847,6 @@ begin
   if MSIE.Checked then begin
     SkipBar.Color:=$0051AEE6;
     if TotalTime>0 then begin
-      UpdateSkipBar:=false;
       if (Bp>0) and (Bp<TotalTime) then begin
         if Bp>SecondPos then begin
           if Status=sPaused then SendCommand('seek '+IntToStr(Bp-SecondPos))
@@ -2862,7 +2861,8 @@ begin
       else SkipBar.Left:=SeekBar.Left;
 
       if (Ep>0) and (Ep<TotalTime) then begin
-        if SecondPos>=Ep then begin
+        SkipBar.Width:=(SeekBar.Width*Ep DIV TotalTime)-SkipBar.Left+SeekBar.Left;
+        if SecondPos>Ep then begin
           if HaveChapters then begin
             key:=VK_HOME;
             FormKeyDown(nil,key,[]);
@@ -2871,7 +2871,6 @@ begin
             UpdateParams; NextFile(1,psPlayed);
           end
         end;
-        SkipBar.Width:=(SeekBar.Width*Ep DIV TotalTime)-SkipBar.Left+SeekBar.Left;
       end
       else SkipBar.Width:=SeekBar.Width-SkipBar.Left+SeekBar.Left;
     end;
