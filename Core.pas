@@ -44,13 +44,13 @@ const SubTypeCount=36;
             '.js','.ass','.mpsub','.idx','.sub'
       );
 
-const MediaType:array[0..213]of WideString=('.7z','.rar','.zip','.001','.arj','.bz2','.z','.lzh',
+const MediaType:array[0..212]of WideString=('.7z','.rar','.zip','.001','.arj','.bz2','.z','.lzh',
         '.cab','.lzma','.xar','.hfs','.dmg','.wim','.iso','.split','.rpm','.deb','.cpio',
         '.tar','.gz',
         '.aac','.ac3','.acc','.act','.aif','.aifc','.aiff','.alac','.amf','.amr','.amv','.ape',
         '.as','.asf','.asx',
         '.a52','.ape','.apl','.au','.avi','.avs','.bik','.bin','.cda','.cmf','.cmn','.cpk',
-        '.cue','.d2v','.dat','.drc','.dsm','.dsv','.dsa','.dss','.dts','.dtswav',
+        '.d2v','.dat','.drc','.dsm','.dsv','.dsa','.dss','.dts','.dtswav',
         '.dv','.dvr-ms','.divx','.evo','.far','.fla','.flac','.flc','.fli','.flic','.flm',
         '.flv','.grf','.hdmov',
         '.img','.iso','.ivf','.it','.itz','.jsv','.kar','.m1a','.m2a','.m2p','.m2t','.m2ts',
@@ -1821,7 +1821,10 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           Mctrl.Checked:=false; Hide_menu.Checked:=false; MPCtrl.Checked:=true;
           CPanel.Visible:=true; MenuBar.Visible:=true;
           UpdateMenuEV(false);
-          if not ds then SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX));
+          if not ds then begin
+            SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX) AND (NOT WS_MAXIMIZE));
+           // mainform.WindowState:= wsNormal;
+          end;
           r:=Left+((Width-Constraints.MinWidth) DIV 2);
           if ds then begin
             i:=Top+((Height-defaultHeight) DIV 2);
@@ -1950,7 +1953,7 @@ var r,i,j,p,len:integer; s:string; f:real; t:TTntMenuItem; key:word;
           if MCompact.Checked or MMaxW.Checked then SetCompact(false);
           Mctrl.Checked:=false; Hide_menu.Checked:=false; MPCtrl.Checked:=true;
           CPanel.Visible:=true; MenuBar.Visible:=true;
-          SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX));
+          SetWindowLong(Handle,GWL_STYLE,DWORD(GetWindowLong(Handle,GWL_STYLE)) AND (NOT WS_SIZEBOX) AND (NOT WS_MAXIMIZEBOX) AND (NOT WS_MAXIMIZE));
           r:=Left+((Width-Constraints.MinWidth) DIV 2);
           i:=screen.WorkAreaHeight-Constraints.MinHeight;
           SetBounds(r,i,Constraints.MinWidth,Constraints.MinHeight);

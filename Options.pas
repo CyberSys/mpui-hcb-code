@@ -281,7 +281,7 @@ procedure regAss();
 procedure HkToShiftKey(const Hk:integer; var Shift:TShiftState; var Key:Word);
 
 var
-  OptionsForm: TOptionsForm; IsDsLoaded:THandle=0; OptionsFormHook:HHOOK;
+  OptionsForm: TOptionsForm; IsDsLoaded:THandle=0; OptionsFormHook:HHOOK; ctrlkey:TShiftState=[];
 
 implementation
 uses Core, Config, Main, Locale, plist, unrar;
@@ -1324,7 +1324,7 @@ begin
   else t:=HK.FindData(0,Pointer(i),true,false);
   if t<>nil then begin
     if IKey then begin
-      HK.Items[sIndex].Caption:=tCap;
+      IKey:=false; HK.Items[sIndex].Caption:=tCap;
       if WideMessageDlg('"'+t.SubItems.Strings[0]+'"'^M^J+'"'+t.Caption+'"'+IKeyerror,mtInformation,[mbYes,mbNo],0)=mrYes then begin
         HK.Items[sIndex].Caption:=ShiftToStr(Shift)+KeyToStr(Key);
         HK.Items[sIndex].Data:=Pointer(i);
@@ -1336,6 +1336,7 @@ begin
     end;
   end
   else if IKey then begin
+    IKey:=false;
     HK.Items[sIndex].Caption:=ShiftToStr(Shift)+KeyToStr(Key);
     HK.Items[sIndex].Data:=Pointer(i);
   end;
@@ -1362,10 +1363,16 @@ function KeyboardHook(nCode:Integer; wParam:WPARAM; lParam:LPARAM):LResult;
 var Key:word;
 begin
   if nCode>-1 then begin
-    if (wParam=VK_TAB) and OptionsForm.IKey then begin
-      Key:=VK_TAB; Result:=1;
-      OptionsForm.HKKeyDown(OptionsForm.HK,Key,[]);
-    end
+    if (wParam in [9,16..18]) and OptionsForm.IKey then begin
+      if (wParam=9) then begin key:=9; OptionsForm.HKKeyDown(OptionsForm.HK,key,ctrlkey); end;
+      case wParam of
+        17: ctrlkey:=[ssctrl];
+        16: ctrlkey:=[ssshift];
+        18: ctrlkey:=[ssalt];
+        else ctrlkey:=[]
+      end;
+      Result:=1;
+     end
     else Result:=0;
   end
   else Result:=CallNextHookEx(OptionsFormHook,nCode,wParam,lParam);

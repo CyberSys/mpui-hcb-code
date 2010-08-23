@@ -1628,6 +1628,7 @@ begin
   Entry.FullURL:=w;
   Entry.State:=psNotPlayed;
   playlist.Add(Entry);
+  if Addsfiles then Plist.addEpisode(w);
   Playlist.Changed;
   UpdateParams;
   NextFile(0,psPlaying);
