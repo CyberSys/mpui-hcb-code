@@ -281,7 +281,7 @@ end;
 procedure TInfoForm.TntFormResize(Sender: TObject);
 begin
   ControlledMove:=true;
-  if InfoBox.Width<=MW then UpdateInfo(false);
+  UpdateInfo(false);
 end;
 
 end.
