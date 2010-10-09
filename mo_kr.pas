@@ -76,7 +76,7 @@ begin
     MExtra.Caption:=UTF8Decode('도구');
       MAudio.Caption:=UTF8Decode('음성언어선택');
       MSubtitle.Caption:=UTF8Decode('자막언어선택');
-      MAspect.Caption:=UTF8Decode('화면비율');
+      MAspects.Caption:=UTF8Decode('화면비율');
         MAutoAspect.Caption:=UTF8Decode('자동');
         MForce43.Caption:=UTF8Decode('4:3 고정');
         MForce169.Caption:=UTF8Decode('16:9 고정');

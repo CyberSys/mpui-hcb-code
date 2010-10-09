@@ -154,7 +154,7 @@ begin
       MRmMenu.Caption:=UTF8Decode('Върни се към главното меню');
       MRnMenu.Caption:=UTF8Decode('Върни се към най-близкото меню');
       MVCDT.Caption:=UTF8Decode('VCD поток от данни');
-      MAspect.Caption:=UTF8Decode('Съотношение на изображението');
+      MAspects.Caption:=UTF8Decode('Съотношение на изображението');
         MAutoAspect.Caption:=UTF8Decode('Автоматично');
         MForce43.Caption:=UTF8Decode('Съотношение 4:3');
         MForce169.Caption:=UTF8Decode('Съотношение 16:9');

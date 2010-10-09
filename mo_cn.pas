@@ -158,7 +158,7 @@ begin
       MRmMenu.Caption:=UTF8Decode('返回主菜单');
       MRnMenu.Caption:=UTF8Decode('返回最近的菜单');
       MVCDT.Caption:=UTF8Decode('VCD 轨');
-      MAspect.Caption:=UTF8Decode('纵横比');
+      MAspects.Caption:=UTF8Decode('纵横比');
         MAutoAspect.Caption:=UTF8Decode('自动');
         MForce43.Caption:=UTF8Decode('4:3');
         MForce169.Caption:=UTF8Decode('16:9');

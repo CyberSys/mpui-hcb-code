@@ -1855,7 +1855,6 @@ object MainForm: TMainForm
     object OMVideo: TTntMenuItem
       Caption = 'Video'
       GroupIndex = 1
-      Visible = False
       OnClick = UpdateMenus
       object MVideo: TTntMenuItem
         Caption = 'Video'
@@ -1981,7 +1980,7 @@ object MainForm: TMainForm
         Caption = '-'
         GroupIndex = 169
       end
-      object MAspect: TTntMenuItem
+      object MAspects: TTntMenuItem
         Caption = 'Aspect'
         GroupIndex = 169
         ImageIndex = 25

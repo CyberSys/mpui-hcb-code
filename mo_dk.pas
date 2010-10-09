@@ -77,7 +77,7 @@ begin
     MExtra.Caption:=UTF8Decode('Værktøjer');
       MAudio.Caption:=UTF8Decode('Lydspor');
       MSubtitle.Caption:=UTF8Decode('Undertextspor');
-      MAspect.Caption:=UTF8Decode('Aspekt Forhold');
+      MAspects.Caption:=UTF8Decode('Aspekt Forhold');
         MAutoAspect.Caption:=UTF8Decode('Opfang Automatisk');
         MForce43.Caption:=UTF8Decode('Tving 4:3');
         MForce169.Caption:=UTF8Decode('Tving 16:9');

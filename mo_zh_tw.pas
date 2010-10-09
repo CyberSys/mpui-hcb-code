@@ -158,7 +158,7 @@ begin
       MRmMenu.Caption:=UTF8Decode('返回主菜單');
       MRnMenu.Caption:=UTF8Decode('返回最近的菜單');
       MVCDT.Caption:=UTF8Decode('VCD 軌');
-      MAspect.Caption:=UTF8Decode('顯示比例');
+      MAspects.Caption:=UTF8Decode('顯示比例');
         MAutoAspect.Caption:=UTF8Decode('自動偵測');
         MForce43.Caption:=UTF8Decode('4:3');
         MForce169.Caption:=UTF8Decode('16:9');

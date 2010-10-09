@@ -70,7 +70,7 @@ begin
     MExtra.Caption:=UTF8Decode('Beállítások');
       MAudio.Caption:=UTF8Decode('Hangsáv');
       MSubtitle.Caption:=UTF8Decode('Felirat');
-      MAspect.Caption:=UTF8Decode('Képarány');
+      MAspects.Caption:=UTF8Decode('Képarány');
         MAutoAspect.Caption:=UTF8Decode('Automatikus detektálás');
         MForce43.Caption:=UTF8Decode('Mindig 4:3');
         MForce169.Caption:=UTF8Decode('Mindig 16:9');

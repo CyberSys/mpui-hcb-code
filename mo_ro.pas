@@ -76,7 +76,7 @@ begin
     MExtra.Caption:=UTF8Decode('Opţiuni');
       MAudio.Caption:=UTF8Decode('Canal audio');
       MSubtitle.Caption:=UTF8Decode('Canal subtitrări');
-      MAspect.Caption:=UTF8Decode('Aspectul redării');
+      MAspects.Caption:=UTF8Decode('Aspectul redării');
         MAutoAspect.Caption:=UTF8Decode('Detectează automat');
         MForce43.Caption:=UTF8Decode('Forţează 4:3');
         MForce169.Caption:=UTF8Decode('Forţează 16:9');

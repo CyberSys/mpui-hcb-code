@@ -73,7 +73,7 @@ begin
     MExtra.Caption:= UTF8Decode('Настройки');
       MAudio.Caption:= UTF8Decode('Аудиотрек');
       MSubtitle.Caption:= UTF8Decode('Субтитры');
-      MAspect.Caption:= UTF8Decode('Соотношение сторон');
+      MAspects.Caption:= UTF8Decode('Соотношение сторон');
         MAutoAspect.Caption:= UTF8Decode('Автоопределение');
         MForce43.Caption:= UTF8Decode('Принудительно 4:3');
         MForce169.Caption:= UTF8Decode('Принудительно 16:9');

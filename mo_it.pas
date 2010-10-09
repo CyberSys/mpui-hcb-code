@@ -76,7 +76,7 @@ begin
     MExtra.Caption:=UTF8Decode('Strumenti');
       MAudio.Caption:=UTF8Decode('Traccia Audio');
       MSubtitle.Caption:=UTF8Decode('Traccia Sottotitoli');
-      MAspect.Caption:=UTF8Decode('Aspetto (AR)');
+      MAspects.Caption:=UTF8Decode('Aspetto (AR)');
         MAutoAspect.Caption:=UTF8Decode('Automatico');
         MForce43.Caption:=UTF8Decode('Forza 4:3');
         MForce169.Caption:=UTF8Decode('Forza 16:9');

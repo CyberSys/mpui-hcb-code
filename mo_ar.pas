@@ -76,7 +76,7 @@ begin
     MExtra.Caption:=UTF8Decode('أدوات');
       MAudio.Caption:=UTF8Decode('تراك الصوت');
       MSubtitle.Caption:=UTF8Decode('تراك الترجمة');
-      MAspect.Caption:=UTF8Decode('نسبة المظهر');
+      MAspects.Caption:=UTF8Decode('نسبة المظهر');
         MAutoAspect.Caption:=UTF8Decode('كشف تلقائى');
         MForce43.Caption:=UTF8Decode('اجبار 4:3');
         MForce169.Caption:=UTF8Decode('اجبار 16:9');

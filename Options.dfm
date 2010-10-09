@@ -100,7 +100,7 @@ object OptionsForm: TOptionsForm
     Top = 6
     Width = 555
     Height = 397
-    ActivePage = TSystem
+    ActivePage = TSub
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 5
     OnChange = TabChange
@@ -562,10 +562,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
         TabOrder = 8
-        Items.Strings = (
-          'off'
-          'auto'
-          'max')
       end
       object CAspect: TTntComboBox
         Left = 256
@@ -576,18 +572,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
         TabOrder = 1
-        Items.Strings = (
-          'auto'
-          '4:3'
-          '16:9'
-          '2.35:1'
-          '14:9'
-          '5:4'
-          '16:10'
-          '2.21:1'
-          '1:1'
-          '1.22:1'
-          'custom')
       end
       object CDeinterlace: TTntComboBox
         Left = 256
@@ -598,10 +582,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
         TabOrder = 2
-        Items.Strings = (
-          'off'
-          'simple'
-          'adaptive')
       end
       object CDr: TTntCheckBox
         Left = 368
@@ -623,17 +603,6 @@ object OptionsForm: TOptionsForm
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
         TabOrder = 4
-        Items.Strings = (
-          'Default'
-          '4:3'
-          '16:9'
-          '2.35:1'
-          '14:9'
-          '5:4'
-          '16:10'
-          '2.21:1'
-          '1:1'
-          '1.22:1')
       end
       object double: TTntCheckBox
         Left = 8
@@ -811,7 +780,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 1
       end
       object CSPDIF: TTntCheckBox
@@ -1110,21 +1079,6 @@ object OptionsForm: TOptionsForm
         Caption = 'font outline thickness'
         TabOrder = 11
       end
-      object PShow: TTntPanel
-        Left = 8
-        Top = 88
-        Width = 532
-        Height = 135
-        Anchors = [akLeft, akTop, akRight, akBottom]
-        BevelOuter = bvNone
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -30
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        TabOrder = 15
-      end
       object BOsdfont: TButton
         Left = 514
         Top = 60
@@ -1134,7 +1088,7 @@ object OptionsForm: TOptionsForm
         Caption = '...'
         ParentShowHint = False
         ShowHint = False
-        TabOrder = 16
+        TabOrder = 15
         OnClick = BOsdfontClick
       end
       object SFontColor: TTntStaticText
@@ -1144,7 +1098,7 @@ object OptionsForm: TOptionsForm
         Height = 17
         Anchors = [akLeft, akBottom]
         Caption = 'Text color'
-        TabOrder = 17
+        TabOrder = 16
       end
       object SOutline: TTntStaticText
         Left = 282
@@ -1154,7 +1108,7 @@ object OptionsForm: TOptionsForm
         Alignment = taRightJustify
         Anchors = [akRight, akBottom]
         Caption = 'Outline color'
-        TabOrder = 18
+        TabOrder = 17
       end
       object PTc: TPanel
         Left = 133
@@ -1168,7 +1122,7 @@ object OptionsForm: TOptionsForm
         BorderWidth = 1
         Color = clYellow
         ParentBackground = False
-        TabOrder = 19
+        TabOrder = 18
         OnClick = SetColor
       end
       object POc: TPanel
@@ -1183,7 +1137,7 @@ object OptionsForm: TOptionsForm
         BorderWidth = 1
         Color = clBlack
         ParentBackground = False
-        TabOrder = 20
+        TabOrder = 19
         OnClick = SetColor
       end
       object CAss: TTntCheckBox
@@ -1195,7 +1149,7 @@ object OptionsForm: TOptionsForm
         Caption = 'Use libass for SubRender'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 21
+        TabOrder = 20
         OnClick = CAssClick
       end
       object CEfont: TTntCheckBox
@@ -1207,7 +1161,7 @@ object OptionsForm: TOptionsForm
         Caption = 'Use embedded fonts'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 22
+        TabOrder = 21
       end
       object SOsdfont: TTntCheckBox
         Left = 4
@@ -1217,7 +1171,7 @@ object OptionsForm: TOptionsForm
         Caption = 'OSD font'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 23
+        TabOrder = 22
         OnClick = SOsdfontClick
       end
       object CSubcp: TComboBox
@@ -1429,7 +1383,7 @@ object OptionsForm: TOptionsForm
         ParentFont = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 25
+        TabOrder = 24
         OnChange = CSubfontChange
         OnDrawItem = CSubfontDrawItem
         OnDropDown = CSubfontDropDown
@@ -1439,7 +1393,7 @@ object OptionsForm: TOptionsForm
         Left = 240
         Top = 32
         Width = 256
-        Height = 21
+        Height = 24
         Anchors = [akLeft, akTop, akRight]
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1449,7 +1403,7 @@ object OptionsForm: TOptionsForm
         ParentFont = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 24
+        TabOrder = 23
         OnChange = FontChange
       end
       object Cosdfont: TTntComboBox
@@ -1468,7 +1422,7 @@ object OptionsForm: TOptionsForm
         ParentFont = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 26
+        TabOrder = 25
         OnChange = CSubfontChange
         OnDrawItem = CosdfontDrawItem
         OnDropDown = CSubfontDropDown
@@ -1478,7 +1432,7 @@ object OptionsForm: TOptionsForm
         Left = 240
         Top = 60
         Width = 256
-        Height = 21
+        Height = 24
         Anchors = [akLeft, akTop, akRight]
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1488,7 +1442,7 @@ object OptionsForm: TOptionsForm
         ParentFont = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 27
+        TabOrder = 26
         OnChange = FontChange
       end
     end

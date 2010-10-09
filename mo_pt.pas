@@ -75,7 +75,7 @@ begin
     MExtra.Caption:=UTF8Decode('Preferências');
       MAudio.Caption:=UTF8Decode('Pista de áudio');
       MSubtitle.Caption:=UTF8Decode('Pista de legendas');
-      MAspect.Caption:=UTF8Decode('Formato de imagem');
+      MAspects.Caption:=UTF8Decode('Formato de imagem');
         MAutoAspect.Caption:=UTF8Decode('Autodetectar');
         MForce43.Caption:=UTF8Decode('Forçar 4:3');
         MForce169.Caption:=UTF8Decode('Forçar 16:9');

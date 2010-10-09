@@ -76,7 +76,7 @@ begin
     MExtra.Caption:=UTF8Decode('aliaĵoj');
       MAudio.Caption:=UTF8Decode('sonoŝpuro');
       MSubtitle.Caption:=UTF8Decode('subtitoloŝpuro');
-      MAspect.Caption:=UTF8Decode('rilato inter la flankoj');
+      MAspects.Caption:=UTF8Decode('rilato inter la flankoj');
         MAutoAspect.Caption:=UTF8Decode('aŭtomata');
         MForce43.Caption:=UTF8Decode('ĉiam 4:3');
         MForce169.Caption:=UTF8Decode('ĉiam 16:9');

@@ -60,7 +60,7 @@ begin
     MExtra.Caption:=UTF8Decode('Nastavení');
       MAudio.Caption:=UTF8Decode('Zvuková stopa');
       MSubtitle.Caption:=UTF8Decode('Stopa titulků');
-      MAspect.Caption:=UTF8Decode('Formát obrazu');
+      MAspects.Caption:=UTF8Decode('Formát obrazu');
         MAutoAspect.Caption:=UTF8Decode('Automatický');
         MForce43.Caption:=UTF8Decode('Vždy 4:3');
         MForce169.Caption:=UTF8Decode('Vždy 16:9');

@@ -158,7 +158,7 @@ begin
       MRmMenu.Caption:=UTF8Decode('Wróć do głównego menu DVD');
       MRnMenu.Caption:=UTF8Decode('Wróć do najbliższego menu DVD');
       MVCDT.Caption:=UTF8Decode('Ścieżka VCD');
-      MAspect.Caption:=UTF8Decode('Współczynnik proporcji');
+      MAspects.Caption:=UTF8Decode('Współczynnik proporcji');
         MAutoAspect.Caption:=UTF8Decode('Wykryj automatycznie');
         MForce43.Caption:=UTF8Decode('Wymuś 4:3');
         MForce169.Caption:=UTF8Decode('wymuś 16:9');

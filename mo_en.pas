@@ -158,7 +158,7 @@ begin
       MRmMenu.Caption:='Return to main menu';
       MRnMenu.Caption:='Return to nearest menu';
       MVCDT.Caption:='VCD Tracks';
-      MAspect.Caption:='Aspect ratio';
+      MAspects.Caption:='Aspect ratio';
         MAutoAspect.Caption:='Autodetect';
         MForce43.Caption:='Force 4:3';
         MForce169.Caption:='Force 16:9';

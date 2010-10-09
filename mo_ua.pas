@@ -84,7 +84,7 @@ begin
     MExtra.Caption := UTF8Decode('Налаштування'); //'Options (Налаштування)');
     MAudio.Caption := UTF8Decode('Звукова доріжка');
     MSubtitle.Caption := UTF8Decode('Доріжка субтитрів');
-    MAspect.Caption := UTF8Decode('Пропорції відео');
+    MAspects.Caption := UTF8Decode('Пропорції відео');
     MAutoAspect.Caption := UTF8Decode('Автовизначення');
     MForce43.Caption := UTF8Decode('Встановити як: 4:3');
     MForce169.Caption := UTF8Decode('Встановити як:  16:9');

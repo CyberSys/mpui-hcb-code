@@ -76,7 +76,7 @@ begin
     MExtra.Caption:=UTF8Decode('ツール');
       MAudio.Caption:=UTF8Decode('音声トラック');
       MSubtitle.Caption:=UTF8Decode('字幕トラック');
-      MAspect.Caption:=UTF8Decode('アスペクト比');
+      MAspects.Caption:=UTF8Decode('アスペクト比');
         MAutoAspect.Caption:=UTF8Decode('自動検知');
         MForce43.Caption:=UTF8Decode('4:3 に強制');
         MForce169.Caption:=UTF8Decode('16:9 に強制');
