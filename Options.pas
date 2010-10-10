@@ -354,10 +354,10 @@ begin
     CDeinterlace.Items[0] := MNoDeint.Caption;
     CDeinterlace.Items[1] := MSimpleDeint.Caption;
     CDeinterlace.Items[2] := MAdaptiveDeint.Caption;
-      MainForm.MPostproc.Caption:=MPostproc.Caption;
-  MainForm.MPostOff.Caption:=MPostOff.Caption;
-  MainForm.MPostAuto.Caption:=MPostAuto.Caption;
-  MainForm.MPostquality.Caption:=MPostquality.Caption;
+    MPostproc.Caption := LPostproc.Caption;
+    MPostOff.Caption := CPostproc.Items[0];
+    MPostAuto.Caption := CPostproc.Items[1];
+    MPostquality.Caption := CPostproc.Items[2];
     CAudioOut.Items[2] := LOCstr_AutoLocale;
     LLanguage.Caption := MLanguage.Caption;
     PlaylistForm.PLTC.Hint := LTCL.Caption;
@@ -423,7 +423,6 @@ begin
 end;
 
 procedure TOptionsForm.LoadValues;
-var i: Integer;
 begin
   Load(HomeDir + DefaultFileName, 1);
   CAudioOut.ItemIndex := AudioOut;
@@ -928,7 +927,7 @@ begin
   CAspect.Items.Add('');
   for o := 0 to MainForm.MPostproc.Count - 1 do
     CPostproc.Items.Add(MainForm.MPostproc.Items[o].caption);
-for o := 0 to MainForm.MDeinterlace.Count - 1 do
+  for o := 0 to MainForm.MDeinterlace.Count - 1 do
     CDeinterlace.Items.Add(MainForm.MDeinterlace.Items[o].caption);
 {$IFDEF VER150}
   // some fixes for Delphi>=7 VCLs

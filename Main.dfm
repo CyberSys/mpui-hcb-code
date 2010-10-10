@@ -1394,7 +1394,6 @@ object MainForm: TMainForm
       Caption = 'Video'
       Grouped = True
       MenuItem = OMVideo
-      Visible = False
     end
     object MAudios: TTntToolButton
       Left = 131
@@ -1855,6 +1854,7 @@ object MainForm: TMainForm
     object OMVideo: TTntMenuItem
       Caption = 'Video'
       GroupIndex = 1
+      Visible = False
       OnClick = UpdateMenus
       object MVideo: TTntMenuItem
         Caption = 'Video'
