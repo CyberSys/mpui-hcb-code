@@ -2487,7 +2487,7 @@ begin
 
   if Running and (MouseMode > -1) then begin
     if Dnav and IsDMenu then begin
-      SendCommand('dvdnav mouse');
+      SendCommand('dvdnav 6'); //'dvdnav select' or 'dvdnav mouse'
       exit;
     end;
     if SP then SendCommand('pause');
@@ -2585,7 +2585,8 @@ begin
 
   if (MouseMode = 0) and ((p.X <> OldX) or (p.Y <> OldY)) then begin
     OldX := p.X; OldY := p.Y; //Hide Cursor
-    if Dnav and (Sender = IPanel) and IsDMenu then SendCommand('set_mouse_pos ' + IntToStr(X * NativeWidth div IPanel.Width) + ' ' + IntToStr(Y * NativeHeight div IPanel.Height));
+//    if Dnav and (Sender = IPanel) and IsDMenu then SendCommand('set_mouse_pos ' + IntToStr(X * NativeWidth div IPanel.Width) + ' ' + IntToStr(Y * NativeHeight div IPanel.Height));
+    if Dnav and (Sender = IPanel) and IsDMenu then SendCommand('set_mouse_pos ' + IntToStr(X) + ' ' + IntToStr(Y));
     if (MSubtitle.Count > 0) and (not IsDMenu) and (abs(i - SubPos) <= 10) then begin
       IPanel.Cursor := crHandPoint; OPanel.Cursor := crHandPoint;
       HideMouseAt := GetTickCount + 2000;

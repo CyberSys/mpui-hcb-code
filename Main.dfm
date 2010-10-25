@@ -1394,6 +1394,7 @@ object MainForm: TMainForm
       Caption = 'Video'
       Grouped = True
       MenuItem = OMVideo
+      Visible = False
     end
     object MAudios: TTntToolButton
       Left = 131
