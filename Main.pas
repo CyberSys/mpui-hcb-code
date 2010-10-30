@@ -558,7 +558,7 @@ begin
   else begin
     OPanel.PopupMenu := MPopup; IPanel.PopupMenu := MPopup;
   end;
-  Init_MOpenDrive; Init_MLanguage;
+  Init_MLanguage;
   with Logo do ControlStyle := ControlStyle + [csOpaque];
   with IPanel do ControlStyle := ControlStyle + [csOpaque];
   MOSD.Items[OSDLevel].Checked := true; OSDMenu.Items[OSDLevel].Checked := true;
@@ -1195,7 +1195,7 @@ end;
 procedure TMainForm.UpdateTimerTimer(Sender: TObject);
 var P: Tpoint; TickCount: Cardinal; i: integer;
 begin
-  TickCount := GetTickCount;
+  TickCount := GetTickCount; Init_MOpenDrive; 
   if (CPanel.Visible or MenuBar.Visible) and (not seeking)
     and (not MPCtrl.Checked) then begin
     GetCursorPos(p);
@@ -1846,17 +1846,16 @@ end;
 
 procedure TMainForm.Init_MOpenDrive;
 var Mask: cardinal; Name: array[0..3] of char; Drive: char;
-  Item: TTntMenuItem; MDrive: WideString;
+  Item: TTntMenuItem; MDrive: WideString; i:Integer;
 begin
   NoAccess := 0;
   MDrive := Tnt_WideLowerCase(WideExtractFileDrive(HomeDir));
   if length(MDrive) > 2 then NoAccess := 1;
-  Name := '@:\';
-  Mask := GetLogicalDrives;
-  for Drive := 'A' to 'Z' do
+  Name := '@:\'; Mask := GetLogicalDrives;
+  for Drive := 'A' to 'Z' do begin
+    Name[0] := Drive; i:=CheckMenu(MOpenDrive,Ord(Drive));
     if (Mask and (1 shl (Ord(Drive) - 65))) <> 0 then begin
-      Name[0] := Drive;
-      if GetDriveType(Name) = DRIVE_CDROM then begin
+      if (i=-1) and (GetDriveType(Name) = DRIVE_CDROM) then begin
         Item := TTntMenuItem.Create(MOpenDrive);
         with Item do begin
           Caption := Drive + ':';
@@ -1867,8 +1866,11 @@ begin
         end;
         MOpenDrive.Add(Item);
       end;
-    end;
-  if MOpenDrive.Count > 0 then MOpenDrive.Visible := true;
+    end
+    else if i>-1 then MOpenDrive.Delete(i);
+  end;
+
+  MOpenDrive.Visible:=MOpenDrive.Count > 0;
 end;
 
 procedure TMainForm.MOpenDriveClick(Sender: TObject);
