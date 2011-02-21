@@ -1,5 +1,5 @@
 (* MPUI-hcb, an MPlayer frontend for Windows
-   Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
+   Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
    based on TsevenZip by Ivo Andonov and TSevenZipVCL by Rainer Geigenberger ( -> http://www.rg-software.de - SevenZipVCL@rg-software.de )
 
    Thanks to:
@@ -23,8 +23,8 @@ unit SevenZipVCL;
 interface
 
 uses
-  Windows, SysUtils, TntWideStrUtils, TntSysUtils, Tntdialogs,locale, Classes,
-  ActiveX ,core, TntWindows;
+  Windows, SysUtils, TntWideStrUtils, TntSysUtils, Tntdialogs,TntClasses, Classes,
+  TntWindows, ActiveX ,core, locale;
 
 const
 //7z internal consts
@@ -126,20 +126,6 @@ type
 //----------------------------------------------------------------------------------------------------
 
 type
-  TWideStringArray = array of WideString;
-
-  TWideStringList_ = class( TObject )
-   private
-   public
-    WStrings: array of WideString;
-    Count: Longword;
-    constructor Create;
-    procedure Clear;
-    procedure AddString( s: WideString );
-   end;
-
-
-type
   TCompressType = ( LZMA,PPMD );
   TCompressStrength = ( SAVE,FAST,NORMAL,MAXIMUM,ULTRA );
   TLZMAStrength = 0..27;
@@ -157,8 +143,8 @@ type
 //--------------Start SevenZip Interface-------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
-
-
+type
+ TWideStringArray = array of WideString;
 type
   TInterfacedObject = class( TObject, IUnknown )
   protected
@@ -174,27 +160,6 @@ type
   end;
 
 const
-//  Correct below for 7-Zip 4.23 or 4.29. Comment this line
-//  {$DEFINE 7z423}
-  {$DEFINE 7z429}
-
-  {$IFDEF 7z423}
-  CLSID_CFormat7z: TGUID = '{23170F69-40C1-278A-1000-000110050000}';
-  szIID_IInArchive = '{23170F69-40C1-278A-0000-000100080000}';
-  szIID_IOutArchive = '{23170F69-40C1-278A-0000-000100020000}';
-  szIID_ISetProperties = '{23170F69-40C1-278A-0000-000100030000}';
-  szIID_IOutStream = '{23170F69-40C1-278A-0000-000000040000}';
-  szIID_ISequentialInStream = '{23170F69-40C1-278A-0000-000000010000}';
-  szIID_IInStream = '{23170F69-40C1-278A-0000-000000030000}';
-  szIID_IStreamGetSize = '{23170F69-40C1-278A-0000-000000060000}';
-  szIID_IArchiveOpenCallback = '{23170F69-40C1-278A-0000-000100010000}';
-  szIID_IArchiveExtractCallback = '{23170F69-40C1-278A-0000-000100090000}';
-  szIID_IArchiveUpdateCallback = '{23170F69-40C1-278A-0000-000100040000}';
-  szIID_IProgress = '{23170F69-40C1-278A-0000-000000050000}';
-  szIID_ISequentialOutStream = '{23170F69-40C1-278A-0000-000000020000}';
-  {$ENDIF}
-
-  {$IFDEF 7z429}
 //000
   szIID_IProgress =                         '{23170F69-40C1-278A-0000-000000050000}';
 //30
@@ -274,8 +239,6 @@ const
 
     );
 
-  {$ENDIF}
-
  // CLSID_CFormat7z: TGUID = szCLSID_CFormat7z;
   IID_IInArchive: TGUID = szIID_IInArchive;
   IID_IOutArchive: TGUID = szIID_IOutArchive;
@@ -297,70 +260,26 @@ const
   IID_IArchiveUpdateCallback2: TGUID = szIID_IArchiveUpdateCallback2;
   IID_IProgress: TGUID = szIID_IProgress;
   IID_ISequentialOutStream: TGUID = szIID_ISequentialOutStream;
-  IID_CCrypto7zAESEncoder: TGUID = szIID_CCrypto7zAESEncoder;
-
 
 type
   HARC = THandle;
-  PInt64        = ^Int64;
+  PInt64 = ^Int64;
 
 type
-  ISetProperties = interface( IUnknown )
-    [ szIID_ISetProperties ]
-    function SetProperties( const names: PWideChar; const values: PPROPVARIANT; numProperties: Integer ): Integer; stdcall;
-  end;
-
-  ICompressProgressInfo = interface( IUnknown )
-    [ szIID_ICompressProgressInfo ]
-    function SetRatioInfo( const inSize, outSize: Int64 ): Integer; stdcall;
-  end;
 
   ISequentialOutStream = interface( IUnknown )
     [ szIID_ISequentialOutStream ]
     function Write( const data; size: DWORD; processedSize: PDWORD ): Integer; stdcall;
-    {$IFDEF 7z423}
-    function WritePart( const data; size: DWORD; processedSize: PDWORD ): Integer; stdcall;
-    {$ENDIF}
   end;
 
   ISequentialInStream = interface( IUnknown )
     [ szIID_ISequentialInStream ]
     function Read( var data; size: DWORD; processedSize: PDWORD ): Integer; stdcall;
-    {$IFDEF 7z423}
-    function ReadPart( var data; size: DWORD; processedSize: PDWORD ): Integer; stdcall;
-    {$ENDIF}
   end;
 
   ICryptoGetTextPassword = interface( IUnknown )
     [ szIID_ICryptoGetTextPassword ]
     function CryptoGetTextPassword( var Password: PWideChar ): Integer; stdcall;
-  end;
-
-  ICryptoGetTextPassword2 = interface( IUnknown )
-    [ szIID_ICryptoGetTextPassword2 ]
-    function CryptoGetTextPassword2( passwordIsDefined: PInteger; var Password: PWideChar ): Integer; stdcall;
-  end;
-
-  ICryptoProperties = interface( IUnknown )
-    [ szIID_ICryptoProperties ]
-    function SetKey( const Data; Size: DWORD ): Integer; stdcall;
-    function SetInitVector( const Data; Size: DWORD ): Integer; stdcall;
-  end;
-
-  ICompressCoder = interface( IUnknown )
-    [ szIID_ICompressCoder ]
-    function Code( inStream: ISequentialInStream; outStream: ISequentialOutStream;
-      const inSize, outSize: Int64; Progress: ICompressProgressInfo ): Integer; stdcall;
-  end;
-
-  ICryptoSetPassword = interface( IUnknown )
-    [ szIID_ICryptoSetPassword ]
-    function CryptoSetPassword( const Data; Size: DWORD ): Integer; stdcall;
-  end;
-
-  ICryptoSetCRC = interface( IUnknown )
-    [ szIID_ICryptoSetCRC ]
-    function CryptoSetCRC( CRC: DWORD ): Integer; stdcall;
   end;
 
   IInStream = interface( ISequentialInStream )
@@ -377,17 +296,6 @@ type
     [ szIID_IArchiveOpenCallback ]
     function SetTotal( const files: Int64; const bytes: Int64 ): Integer; stdcall;
     function SetCompleted( const files: Int64; const bytes: Int64 ): Integer; stdcall;
-  end;
-
-  IArchiveOpenVolumeCallback = interface( IUnknown )
-    [ szIID_IArchiveOpenVolumeCallback ]
-    function GetProperty( propID: PROPID; var value: PROPVARIANT ): Integer; stdcall;
-    function GetStream( const name:Widechar; var inStream: IInStream ): Integer; stdcall;
-  end;
-
-  IArchiveOpenSetSubArchiveName = interface( IUnknown )
-    [ szIID_IArchiveOpenSetSubArchiveName ]
-    function SetSubArchiveName( const Name: PWideString ): Integer; stdcall;
   end;
 
   IProgress = interface( IUnknown )
@@ -418,33 +326,6 @@ type
     function GetArchivePropertyInfo( index: DWORD; name: PBSTR; propID: PPROPID; varType: {PVARTYPE}PInteger ): Integer; stdcall;
   end;
 
-  IArchiveUpdateCallback = interface( IProgress )
-    [ szIID_IArchiveUpdateCallback ]
-    //function EnumProperties( var enumerator: IEnumSTATPROPSTG ): Integer; stdcall;
-    function GetUpdateItemInfo( index: DWORD;
-      newData: PInteger; // 1 - new data, 0 - old data
-      newProperties: PInteger; // 1 - new properties, 0 - old properties
-      indexInArchive: PDWORD // -1 if there is no in archive, or if doesn't matter
-      ): Integer; stdcall;
-    function GetProperty( index: DWORD; propID: PROPID; value: PPROPVARIANT ): Integer; stdcall;
-    function GetStream( index: DWORD; var inStream: ISequentialInStream ): Integer; stdcall;
-    function SetOperationResult( operationResult: Integer ): Integer; stdcall;
-  end;
-
-
-  IArchiveUpdateCallback2 = interface( IProgress )
-    [ szIID_IArchiveUpdateCallback2 ]
-    //function EnumProperties( var enumerator: IEnumSTATPROPSTG ): Integer; stdcall;
-    function GetVolumeSize( index: DWORD; Size:DWord ): Integer; stdcall;
-    function GetVolumeStream( index: DWORD; var volumeStream: ISequentialInStream ): Integer; stdcall;
-  end;
-
-  IOutArchive = interface( IUnknown )
-    [ szIID_IOutArchive ]
-    function UpdateItems( outStream: ISequentialOutStream; numItems: DWORD; updateCallback: IArchiveUpdateCallback ): Integer; stdcall;
-    function GetFileTimeType( var _type: DWORD ): Integer; stdcall;
-  end;
-
   IOutStream = interface( ISequentialOutStream )
     [ szIID_IOutStream ]
     function Seek( offset: Int64; seekOrigin: DWORD; newPosition: PInt64 ): Integer; stdcall;
@@ -461,32 +342,25 @@ type
     Handle: cardinal; //Integer;                              //FHO  20.01.2007
     Size: Int64;//DWORD;                                      // RG  26.01.2007
     OnRemovableDrive: Boolean;
-  end;
+  end;                           //FHO 17.01.2007
 
   TArrayOfFiles = array of TFiles;                             //FHO 17.01.2007
 
   TMyStreamWriter = class( TInterfacedObject, ISequentialOutStream, IOutStream )
   private
     arcName: WideString;
-    arcDate: Tdatetime;
-    arcAttr: DWORD;
-    arcCreateSFX: Boolean;
-    arcVolumeSize: DWORD;
     arcPosition, arcSize: int64; // DWORD;                     // RG  26.01.2007
     FPLastError:PInteger;                                      //FHO 22.01.2007
     MyLastError: Integer;                                      //FHO 22.01.2007
-    Files: TArrayOfFiles;
+    Files: TFiles;
 
     function CreateNewFile: Boolean;
   protected
-    property TheFiles: TArrayOfFiles read Files;
+    property TheFiles: TFiles read Files;
   public
     destructor Destroy; override;
-    constructor Create( PLastError:PInteger;sz: Widestring;    //FHO 22.01.2007
-                        szDate: Tdatetime; FAttr: Cardinal;
-                        VolumeSize: Integer = 0; CreateSFX: Boolean = FALSE );
+    constructor Create( PLastError:PInteger;sz: Widestring);
     function Write( const Data; Size: DWORD; ProcessedSize: PDWORD ): Integer; stdcall;
-    function WritePart( const Data; Size: DWORD; ProcessedSize: PDWORD ): Integer; stdcall;
     function Seek( Offset: Int64; SeekOrigin: DWORD; NewPosition: PInt64 ): Integer; stdcall;
     function SetSize( newSize: Int64 ): Integer; stdcall;
   end;
@@ -510,7 +384,6 @@ type
     destructor Destroy; override;
     function Seek( Offset: Int64; SeekOrigin: DWORD; NewPosition: PInt64 ): Integer; stdcall;
     function Read( var Data; Size: DWORD; ProcessedSize: PDWORD ): Integer; stdcall;
-    function ReadPart( var Data; Size: DWORD; ProcessedSize: PDWORD ): Integer; stdcall;
     function GetSize( var Size: Int64 ): Integer; stdcall;
   end;
 
@@ -554,9 +427,6 @@ type
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 
-
-
-
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 //--------------Start SevenZip VCL -------------------------------------------------------------
@@ -569,10 +439,11 @@ type
     FLastError:Integer;                                        //FHO 22.01.2007
     FHandle: HWND;
     FExtrBaseDir: Widestring;
+    FExtrOutName: Widestring;
     FSevenZipFileName: Widestring;
     FComment: Widestring;
     FRootDir: Widestring;
-    Ffiles: TWideStringList_;
+    Ffiles:  TTntStringList;
     FAddOptions: Addopts;
     FExtractOptions: Extractopts;
     FNumberOfFiles: Integer;
@@ -593,7 +464,7 @@ type
   protected
     inA: IInArchive;
   public
-    constructor Create( AOwner: TComponent; ArcType:WideString );// override;
+    constructor Create( AOwner: TComponent; ArcType:WideString ); overload;
     destructor Destroy; override;
 
     { Public Properties ( run-time only ) }
@@ -602,13 +473,12 @@ type
     property LastError:Integer read FLastError write SetLastError;// FLastError;//FHO 22.01.2007
 
     property SevenZipComment: Widestring read Fcomment write FComment;
-    property Files: TWideStringList_ read Ffiles write ffiles;
+    property Files: TTntStringList read Ffiles write ffiles;
     property NamesOfVolumesWritten: TWideStringArray read FNamesOfVolumesWritten;  //FHO 17.01.2007
 
     { Public Methods }
     function Extract( TestArchive:Boolean=False ): Integer;
     function List: Integer;
-    function GetIndexByFilename( FileToExtract:Widestring ): Integer;
     
   published
     { Public properties that also show on Object Inspector }
@@ -617,6 +487,7 @@ type
     property AddOptions: AddOpts read FAddOptions write FAddOptions;
     property ExtractOptions: ExtractOpts read FExtractOptions write FExtractOptions;
     property ExtrBaseDir: Widestring read FExtrBaseDir write FExtrBaseDir;
+    property ExtrOutName: Widestring read FExtrOutName write FExtrOutName;
     property LZMACompressType: TCompresstype read FCompresstype write FCompresstype;
     property LZMACompressStrength: TCompressStrength read FCompstrength write FCompstrength;
     property LZMAStrength: TLZMAStrength read FLZMAStrength write FLZMAstrength;
@@ -725,16 +596,10 @@ begin
 end;
 
 function ForceDirectoriesW( Path: WideString; Attr: Word ): Boolean;
-var
-  E: EInOutError;
 begin
   Result := TRUE;
 
-  if Path = '' then begin
-    E := EInOutError.Create( 'Unable to create directory' );
-    E.ErrorCode := 3;
-    raise E;
-  end;
+  if Path = '' then exit;
 
   Path := WideExcludeTrailingBackslash( Path );
   if WideDirectoryExists( Path ) then Exit;
@@ -748,37 +613,6 @@ end;
 
 //--------------------------------------------------------------------------------------------------
 //-------------------End UniCode procedures---------------------------------------------------------
-//--------------------------------------------------------------------------------------------------
-
-//--------------------------------------------------------------------------------------------------
-//-------------------Start Twidestringlist_-----------------------------------------------------------
-//--------------------------------------------------------------------------------------------------
-
-procedure TWideStringList_.AddString( s: WideString );
-var i:Longword;
-begin
- i := length( WStrings );
- Setlength( WStrings,i+1 );
- WStrings[ i ] := s;
- Count := i+1;
-end;
-
-
-
-
-Procedure TWideStringList_.Clear;
-begin
- Setlength( WStrings,0 );
- Count := 0;
-end;
-
-Constructor TWideStringList_.Create;
-begin
- clear;
-end;
-
-//--------------------------------------------------------------------------------------------------
-//-------------------END Twidestringlist_-------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------------------------
@@ -892,10 +726,17 @@ begin
   Case askExtractMode of
     kExtract:  begin
                  FSevenzip.inA.GetProperty(index,kpidPath,path);
-                 if ExtractNoPath in FSevenzip.FExtractOptions then
-                   sz:=FExtractDirectory+'hcb428'+Wideextractfileext(path.bstrVal)
-                 else
-                   sz:=FExtractDirectory+path.bstrVal;
+                 if ExtractNoPath in FSevenzip.FExtractOptions then begin
+                   if FSevenzip.FExtrOutName='' then
+                     sz:=FExtractDirectory + WideExtractFileName(path.bstrVal)
+                   else sz:=FExtractDirectory + FSevenzip.FExtrOutName;
+                 end
+                 else begin
+                   if FSevenzip.FExtrOutName='' then
+                     sz:=FExtractDirectory + path.bstrVal
+                   else
+                     sz:=FExtractDirectory + WideExtractFileDir(path.bstrVal) + FSevenzip.FExtrOutName;
+                 end;
 
                  FFilestoextract:=FFilestoextract-1;
                  if FFilestoextract=0 then FLastFileToExt:=true;
@@ -905,7 +746,7 @@ begin
                  else
                    ForceDirectories(extractfilepath(String(sz)));
                  try
-                   outStream:=TMyStreamWriter.Create(@MyLastError,sz,Now,FILE_ATTRIBUTE_NORMAL);
+                   outStream:=TMyStreamWriter.Create(@MyLastError,sz);
                  except
                    outStream := nil;
                    Result := S_FALSE;
@@ -950,9 +791,9 @@ end;
 function TMyArchiveExtractCallback.SetTotal( total: Int64 ): Integer; stdcall;
 begin
 //all filesizes also skipped ones
-  if FFilestoextract = 0 then // we extract all files, so we set FMaxProgress here
-     Result := S_OK
-  else Result:=S_FAlSE;
+  //if FFilestoextract = 0 then // we extract all files, so we set FMaxProgress here
+     Result := S_OK;
+  //else Result:=S_FAlSE;
 end;
 
 function TMyArchiveExtractCallback.SetCompleted( const completeValue: PInt64 ): Integer; stdcall;
@@ -1103,11 +944,6 @@ begin
     Result := S_False;  
 end;
 
-function TMyStreamReader.ReadPart( var data; size: DWORD; processedSize: PDWORD ): Integer; stdcall;
-begin
-  Result := Read( Data, Size, ProcessedSize );
-end;
-
 function TMyStreamReader.GetSize(var size:Int64):Integer; stdcall;
 begin
   if arcSize>0 then begin
@@ -1252,40 +1088,14 @@ end;
 {============ TMyStreamWriter =================================================}
 
 function TMyStreamWriter.Write( const Data; Size: DWORD; ProcessedSize: PDWORD ): Integer; stdcall;
-var
-  fIdx: Integer;
-  fPos: Int64;                                                                //RG26.01.2007
-  pSize, Written: DWORD;
-  Buff: PChar;
+var Written: DWORD;
 begin
-  if arcVolumeSize > 0 then begin
-    fIdx := ( arcPosition + Size ) div arcVolumeSize;
-    while Length( Files ) < Integer( Succ( fIdx ) ) do CreateNewFile;
-
-    fIdx := arcPosition div arcVolumeSize;
-    fPos := arcPosition mod arcVolumeSize;
-    Buff := @Data;
+  FileSeek( Files.Handle, arcPosition, soFromBeginning );
+  if not WriteFile( Files.Handle, Data, Size, Written, nil ) then begin
+    MyLastError:=GetLastError;                              //FHO 22.01.2007
     Written := 0;
-    while Written < Size do begin
-      FileSeek( Files[ fIdx ].Handle, fPos, soFromBeginning );
-      pSize := Size - Written;
-      if arcVolumeSize < fPos + pSize then pSize := arcVolumeSize - fPos;
-      if not WriteFile( Files[ fIdx ].Handle, Buff[ Written ], pSize, pSize, nil ) then begin
-        MyLastError:=GetLastError;                             //FHO 22.01.2007
-        Written := 0;
-        Break;
-      end;
-      Inc( Written, pSize );
-      Inc( fIdx );
-      fPos := 0;
-    end;
-  end else begin
-    FileSeek( Files[ 0 ].Handle, arcPosition, soFromBeginning );
-    if not WriteFile( Files[ 0 ].Handle, Data, Size, Written, nil ) then begin
-      MyLastError:=GetLastError;                              //FHO 22.01.2007
-      Written := 0;
-    end;
   end;
+
   Inc( arcPosition, Written );
   if arcPosition > arcSize then arcSize := arcPosition;
   if Assigned( ProcessedSize ) then ProcessedSize^ := Written;
@@ -1293,11 +1103,6 @@ begin
     Result := S_OK
   else
     Result := S_FALSE;
-end;
-
-function TMyStreamWriter.WritePart( const Data; Size: DWORD; ProcessedSize: PDWORD ): Integer; stdcall;
-begin
-  Result := Write( Data, Size, ProcessedSize );
 end;
 
 function TMyStreamWriter.Seek( Offset: Int64; SeekOrigin: DWORD; NewPosition: PInt64 ): Integer; stdcall;
@@ -1318,66 +1123,30 @@ begin
 end;
 
 destructor TMyStreamWriter.Destroy;
-var
-  i: Integer;
 begin
   if Assigned(FPLastError) and
     (MyLastError<>ERROR_SUCCESS) then                          //FHO 22.01.2007
     FPLastError^:=MyLastError;                                 //FHO 22.01.2007
-  for i := Low( Files ) to High( Files ) do begin
-    FileClose( Files[ i ].Handle );                            //FHO 17.01.2007
-    Files[ i ].Name:='';                                       //FHO 17.01.2007
-  end;
-  SetLength( Files, 0 );                                       //FHO 17.01.2007
-
+    FileClose( Files.Handle );                            //FHO 17.01.2007
+    Files.Name:='';                                       //FHO 17.01.2007
   inherited;
 end;
 
 function TMyStreamWriter.CreateNewFile: Boolean;
-var i:Integer; s:WideString;
 begin
-  i := Length( Files );
-  SetLength( Files, i + 1 );
-  if arcVolumeSize > 0 then begin
-    s := IntToStr( i + 1 );
-    while Length( s ) < 3 do s := '0' + s;
-    s := arcName + '.' + s;
-  end else s := arcName;
+  Files.Name:=arcName;                                        //FHO 17.01.2007
+  Files.Handle := Tnt_CreateFileW( PwideChar( arcName ), GENERIC_READ or GENERIC_WRITE, FILE_SHARE_READ, nil, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0 );
 
-  if arcCreateSFX and ( i = 0 ) then begin
-// Shadow 27.11.2006
-    Files[ 0 ].Name:=arcName;                                  //FHO 17.01.2007
-    Files[ 0 ].Handle := Tnt_CreateFileW( PwideChar( arcName ), GENERIC_READ or GENERIC_WRITE, 0, nil, OPEN_EXISTING, arcAttr, 0 );
-    if Files[ 0 ].Handle <> INVALID_HANDLE_VALUE then arcPosition := FileSeek( Files[ 0 ].Handle, int64(0), soFromEnd );  //FHO 20.01.2007
-  end else begin
-    Files[ i ].Name:=s;                                        //FHO 17.01.2007
-    Files[ i ].Handle := Tnt_CreateFileW( PwideChar( s ), GENERIC_READ or GENERIC_WRITE, FILE_SHARE_READ, nil, CREATE_ALWAYS, arcAttr, 0 );
-  end;
-
-  if Files[ i ].Handle = INVALID_HANDLE_VALUE then begin       //FHO 20.01.2007
-     MyLastError:=GetLastError;                                //FHO 22.01.2007
-     Abort;
-  end;
-
-  MyLastError:=FileSetDate( Files[ i ].Handle, DateTimeToFileDate( arcDate ) );      //FHO 22.01.2007
-  if MyLastError<>0 then                                       //FHO 22.01.2007
-    Abort;
-  Result := TRUE;
+  Result := Files.Handle <> INVALID_HANDLE_VALUE;
 end;
 
-constructor TMyStreamWriter.Create(PLastError:PInteger; sz: Widestring; //FHO 22.01.2007
-                                 szDate: Tdatetime; FAttr: Cardinal; VolumeSize: Integer; CreateSFX: Boolean );
+constructor TMyStreamWriter.Create(PLastError:PInteger; sz: Widestring);
 begin
   inherited Create;
   FPLastError:=PLastError;                                     //FHO 22.01.2007
   arcName := sz;
-  arcDate := szDate;
-  arcAttr := FAttr;
-  arcCreateSFX := CreateSFX;
-  arcVolumeSize := VolumeSize;
   arcPosition := 0;
   arcSize := 0;
-  SetLength( Files, 0 );
   if not CreateNewFile then Abort;
 end;
 
@@ -1400,9 +1169,10 @@ constructor TSevenZip.Create( AOwner: TComponent ; ArcType:WideString );
 var i:integer;
 begin
   inherited Create( AOwner );
-  ffiles := TWideStringList_.Create;
+  ffiles := TTntStringList.Create;
   FNumberOfFiles := -1;
   FPassword := '';
+  FExtrOutName:='';
   FMainCancel := False;
   FCreateObject := nil;
   if F7zaLibh <> 0 then begin                                   //FHO 25.01.2007
@@ -1464,11 +1234,7 @@ end;
 //	the Extract function to translate filenames into indices correctly
 //	without closing 'inA'
 function TSevenZip.InternalGetIndexByFilename( FileToExtract: Widestring ): Integer;
-var
-  n: Integer;
-  w: DWORD;
-  fnameprop: PROPVARIANT;
-  fileInArchive: widestring;
+var n: Integer; w: DWORD; fnameprop: PROPVARIANT; fileInArchive: widestring;
 begin
   Result := -1;
   inA.GetNumberOfItems( w ); //1..end
@@ -1476,27 +1242,12 @@ begin
   for n := 0 to w-1 do begin
     fnameprop.vt := VT_EMPTY;
     inA.GetProperty( n, kpidPath, fnameprop );
-    fileInArchive := Tnt_WideUpperCase( OleStrToString( fnameprop.bstrVal ) );
+    fileInArchive := Tnt_WideUpperCase( fnameprop.bstrVal  );
     if ( fileInArchive = FileToExtract ) then begin
       Result := n;
       Break;
     end;
   end;
-end;
-
-function TSevenZip.GetIndexByFilename( FileToExtract: Widestring ): Integer;
-var
-  ms: TMyStreamReader;
-begin
-  try
-    Result := -1;
-    ms := TMyStreamReader.Create( Self, FSevenZipFileName, TRUE );
-    inA.Close;
-    inA.Open( ms, nil, nil );
-    Result := InternalGetIndexByFilename( FileToExtract );
-  finally
-    inA.close;
-  end
 end;
 
 function TSevenZip.List:integer;
@@ -1525,7 +1276,7 @@ begin
       inA.GetProperty(i,kpidEncrypted,Encrypted);
       try    // isn't a directory or 0byte file
         if not (((attr.uiVal and $10)<>0) or (size.uhVal.QuadPart=0)) then
-          ffiles.AddString(Widestring(path.bstrVal))
+          ffiles.Add(path.bstrVal)
         else dec(FNumberOfFiles);
         if Encrypted.boolVal and (FPassword='') then WideInputQuery(LOCstr_SetPW_Caption,self.SZFileName,FPassword);
       except
@@ -1562,8 +1313,8 @@ begin
     if FFiles.Count>0 then begin
       SetLength(filesDW,Ffiles.Count);
       for i:=0 to FFiles.count-1 do begin
-        if not TryStrToInt(Ffiles.WStrings[i],fileIndex) then
-          fileIndex:=InternalGetIndexByFilename(Ffiles.WStrings[i]);//don't need close ms
+        if not TryStrToInt(Ffiles.Strings[i],fileIndex) then
+          fileIndex:=InternalGetIndexByFilename(Ffiles.Strings[i]);//don't need close ms
           //fileIndex:=GetINdexbyFilename( Ffiles.WStrings[ i ] );
         if (fileIndex<0) or (abs(fileIndex)>abs(w)) then begin
           Result:=-1; Exit;
@@ -1589,6 +1340,7 @@ begin
   finally
     inA.close;
 	  FMainCancel := False;
+    FExtrOutName:= '';
   end;
 end;
 

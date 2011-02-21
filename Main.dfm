@@ -1481,23 +1481,41 @@ object MainForm: TMainForm
         Caption = '-'
       end
       object MLoadlyric: TTntMenuItem
-        Caption = 'Load LyricFile'
+        Caption = 'Load Lyric File...'
         OnClick = MLoadlyricClick
+      end
+      object MDownloadLyric: TTntMenuItem
+        Caption = 'Download Lyric...'
+        GroupIndex = 1
+        OnClick = MDownloadLyricClick
+      end
+      object N16: TTntMenuItem
+        Caption = '-'
+        GroupIndex = 1
+      end
+      object Mdownloadsubtitle: TTntMenuItem
+        Caption = 'Download Subtitle'
+        GroupIndex = 1
+        OnClick = MdownloadsubtitleClick
       end
       object N27: TTntMenuItem
         Caption = '-'
+        GroupIndex = 1
       end
       object MClose: TTntMenuItem
         Caption = 'Close'
+        GroupIndex = 1
         ImageIndex = 3
         OnClick = MCloseClick
       end
       object N1: TTntMenuItem
         Caption = '-'
+        GroupIndex = 1
       end
       object MQuit: TTntMenuItem
         Tag = 81
         Caption = 'Quit'
+        GroupIndex = 1
         ImageIndex = 4
         OnClick = MQuitClick
       end
@@ -2317,7 +2335,7 @@ object MainForm: TMainForm
         ImageIndex = 24
         Visible = False
       end
-      object N16: TTntMenuItem
+      object N38: TTntMenuItem
         Caption = '-'
         GroupIndex = 1
       end

@@ -1,4 +1,4 @@
-object OpenDevices: TOpenDevices
+object OpenDevicesForm: TOpenDevicesForm
   Left = 245
   Top = 108
   BorderStyle = bsDialog

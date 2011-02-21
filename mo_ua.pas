@@ -2,7 +2,7 @@
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
     Copyright (C) 2005 vadim-l@foxtrot.kiev.ua
     Copyright (C) 2006 Andriy Zhouck <juksoft@ukr.net>
-    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify

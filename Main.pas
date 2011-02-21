@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ uses
   Forms, TntForms, Dialogs, TntDialogs, ComCtrls, TntComCtrls, Buttons, TntButtons,
   ExtCtrls, TntExtCtrls, Menus, TntMenus, StdCtrls, TntStdCtrls, ShellAPI, AppEvnts,
   Math, ImgList, TntClipBrd, ToolWin, jpeg, Controls, MultiMon, TntSystem,
-  TntFileCtrl, INIFiles, Core, plist;
+  TntFileCtrl, INIFiles, plist;
 
 const
   ES_SYSTEM_REQUIRED = $01;
@@ -299,6 +299,9 @@ type
     Imagery: TImageList;
     M8ch: TTntMenuItem;
     MOpenDevices: TTntMenuItem;
+    Mdownloadsubtitle: TTntMenuItem;
+    N38: TTntMenuItem;
+    MDownloadLyric: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -412,6 +415,8 @@ type
     procedure MSCSClick(Sender: TObject);
     procedure MFClearClick(Sender: TObject);
     procedure MOpenDevicesClick(Sender: TObject);
+    procedure MdownloadsubtitleClick(Sender: TObject);
+    procedure MDownloadLyricClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -464,25 +469,30 @@ type
     procedure CreateParams(var Params: TCreateParams); override;
   end;
 
-  PDDEnumCallbackEx = function(lpGuid: PGUID; lpDriverDescription, lpDriverName: PChar; lpContext: pointer; hm: HMONITOR): LongBool; stdcall;
+  TDDEnumCallbackEx = function(lpGuid: PGUID; lpDriverDescription, lpDriverName: PChar; lpContext: pointer; hm: HMONITOR): LongBool; stdcall;
+  TDownSubtitle_CallBackFinish = procedure(number, bad_number: Integer); stdcall;
+  TDownSubtitle_CallBackW = procedure(const sub_path: PWChar; is_eng, sub_delay: Integer); stdcall;
 
-var
-  MainForm: TMainForm;
+var MainForm: TMainForm; IsDrLoaded: THandle = 0; IsSLoaded: THandle = 0;
+  DirectDrawEnumerateEx: function(lpDDEnumCallbackEx: TDDEnumCallbackEx; lpContelxt: pointer; dwFlags: DWORD): HRESULT; stdcall;
+  DownloaderSubtitleW: function(const filepath: PWChar; eng_sub: Boolean; Callback: TDownSubtitle_CallBackW; callbf: TDownSubtitle_CallBackFinish): Integer; stdcall;
+
+procedure DownSubtitle_CallBackFinish(number, bad_number: integer); stdcall;
+procedure DownSubtitle_CallBackW(const sub_path: PWChar; is_eng, sub_delay: Integer); stdcall;
+procedure LoadSLibrary;
+procedure UnLoadSLibrary;
 
 implementation
-uses Locale, Config, Options, Info,
-  UnRAR, Equalizer, SevenZip, tv;
+uses Locale, Config, Options, Info, UnRAR, Equalizer, SevenZip, tv, Core, DLyric;
 
 {$R *.dfm}
-var IsDrLoaded: THandle = 0;
-  DirectDrawEnumerateEx: function(lpDDEnumCallbackEx: PDDEnumCallbackEx; lpContelxt: pointer; dwFlags: DWORD): HRESULT; stdcall;
 
 function SetThreadExecutionState(esFlags: Cardinal): Cardinal; stdcall; external kernel32;
 
 procedure LoadDrLibrary;
 begin
   if IsDrLoaded <> 0 then exit;
-  IsDrLoaded := LoadLibrary('ddraw.dll');
+  IsDrLoaded := Tnt_LoadLibraryW('ddraw.dll');
   if IsDrLoaded <> 0 then
     @DirectDrawEnumerateEx := GetProcAddress(IsDrLoaded, 'DirectDrawEnumerateExA');
 end;
@@ -496,6 +506,24 @@ begin
   end;
 end;
 
+procedure LoadSLibrary;
+begin
+  if IsSLoaded <> 0 then exit;
+  IsSLoaded := Tnt_LoadLibraryW(sddll);
+  if IsSLoaded <> 0 then begin
+    @DownloaderSubtitleW := GetProcAddress(IsSLoaded, 'DownloaderSubtitleW');
+  end;
+end;
+
+procedure UnLoadSLibrary;
+begin
+  if IsSLoaded <> 0 then begin
+    FreeLibrary(IsSLoaded);
+    IsSLoaded := 0;
+    DownloaderSubtitleW := nil;
+  end;
+end;
+
 function DDrawEnumCallbackEx(lpGUID: PGUID; lpDriverDescription, lpDriverName: PChar; lpContext: pointer; hm: HMONITOR): LongBool; stdcall;
 var len: integer;
 begin
@@ -504,6 +532,51 @@ begin
   HMonitorList[len] := hm;
   if hm = CurMonitor.Handle then MonitorID := len;
   Result := True;
+end;
+
+procedure DownSubtitle_CallBackFinish(number, bad_number: integer); stdcall;
+begin
+  //if number > bad_number then Restart;
+end;
+
+procedure DownSubtitle_CallBackW(const sub_path: PWChar; is_eng, sub_delay: Integer); stdcall;
+var s: integer; j: WideString;
+begin
+  VobFileCount := 0; s := 0;
+  Loadsub := 1; j := Tnt_WideLowerCase(WideExtractFileExt(sub_path));
+  if j = '.idx' then begin
+    j := loadArcSub(sub_path, playlist.FindPW(sub_path));
+    if j <> '' then begin
+      inc(VobFileCount);
+      if VobFileCount = 1 then begin
+        Vobfile := j; LoadVob := 1; Restart;
+      end;
+    end;
+  end
+  else begin
+    if CheckInfo(ZipType, j) > -1 then begin
+      if IsLoaded(j) then begin
+        j := ExtractSub(sub_path, playlist.FindPW(sub_path), j);
+        if j <> '' then begin
+          Vobfile := j; inc(VobFileCount);
+          if VobFileCount = 1 then begin
+            LoadVob := 1; Restart;
+          end;
+        end;
+      end;
+    end
+    else begin
+      j := sub_path;
+      if (not IsWideStringMappableToAnsi(j)) or (pos(',', j) > 0) then j := WideExtractShortPathName(j);
+      if not Win32PlatformIsUnicode then begin
+        Loadsub := 2; Loadsrt := 2;
+        AddChain(s, substring, Tnt_WideStringReplace(EscapeParam(j), '\', '/', [rfReplaceAll]));
+      end
+      else
+        SendCommand('sub_load ' + Tnt_WideStringReplace(EscapeParam(j), '\', '/', [rfReplaceAll]));
+    end;
+  end;
+  if (not Win32PlatformIsUnicode) and (s > 0) then Restart;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -574,6 +647,7 @@ begin
   Config.Save(HomeDir + DefaultFileName, 1);
   UnLoadRarLibrary; UnLoadZipLibrary; UnLoad7zLibrary;
   UnLoadShell32Library; UnLoadDsLibrary; UnLoadDrLibrary;
+  UnLoadSLibrary; UnLoadCLibrary;
   FontPaths.Free; SetErrorMode(0);
 end;
 
@@ -585,7 +659,7 @@ begin
     FirstShow := false; MonitorID := 0;
     CurMonitor := Screen.MonitorFromWindow(Handle);
     if Win32PlatformIsUnicode then begin
-      if IsDrLoaded = 0 then LoadDrLibrary;
+      LoadDrLibrary;
       if IsDrLoaded <> 0 then DirectDrawEnumerateEx(DDrawEnumCallbackEx, nil, 1);
     end
     else begin
@@ -785,7 +859,7 @@ begin
   Application.ProcessMessages; // let the VCL process the finish messages
   if Firstrun then MediaURL := URL; //MakeURL(URL,DisplayURL);
   if DisplayURL <> DisplayName then begin
-    LyricURL := ''; DisplayURL := DisplayName;
+    DisplayURL := DisplayName; //LyricURL := ''; 
   end;
   UpdateCaption;
   FirstOpen := true;
@@ -1195,7 +1269,7 @@ end;
 procedure TMainForm.UpdateTimerTimer(Sender: TObject);
 var P: Tpoint; TickCount: Cardinal; i: integer;
 begin
-  TickCount := GetTickCount; Init_MOpenDrive; 
+  TickCount := GetTickCount; Init_MOpenDrive;
   if (CPanel.Visible or MenuBar.Visible) and (not seeking)
     and (not MPCtrl.Checked) then begin
     GetCursorPos(p);
@@ -1749,7 +1823,7 @@ begin
   MSubScale.Visible := MShowSub.Visible; N30.Visible := MShowSub.Visible;
   MSubDelay.Visible := MShowSub.Visible; MLoadSub.Visible := Running;
   MSubStep.Visible := MShowSub.Visible; N15.Visible := MShowSub.Visible;
-  N17.Visible := MShowSub.Visible; MLoadlyric.Visible := Running;
+  N17.Visible := MShowSub.Visible;
 end;
 
 procedure TMainForm.MPopupPopup(Sender: TObject);
@@ -1846,16 +1920,16 @@ end;
 
 procedure TMainForm.Init_MOpenDrive;
 var Mask: cardinal; Name: array[0..3] of char; Drive: char;
-  Item: TTntMenuItem; MDrive: WideString; i:Integer;
+  Item: TTntMenuItem; MDrive: WideString; i: Integer;
 begin
   NoAccess := 0;
   MDrive := Tnt_WideLowerCase(WideExtractFileDrive(HomeDir));
   if length(MDrive) > 2 then NoAccess := 1;
   Name := '@:\'; Mask := GetLogicalDrives;
   for Drive := 'A' to 'Z' do begin
-    Name[0] := Drive; i:=CheckMenu(MOpenDrive,Ord(Drive));
+    Name[0] := Drive; i := CheckMenu(MOpenDrive, Ord(Drive));
     if (Mask and (1 shl (Ord(Drive) - 65))) <> 0 then begin
-      if (i=-1) and (GetDriveType(Name) = DRIVE_CDROM) then begin
+      if (i = -1) and (GetDriveType(Name) = DRIVE_CDROM) then begin
         Item := TTntMenuItem.Create(MOpenDrive);
         with Item do begin
           Caption := Drive + ':';
@@ -1867,10 +1941,10 @@ begin
         MOpenDrive.Add(Item);
       end;
     end
-    else if i>-1 then MOpenDrive.Delete(i);
+    else if i > -1 then MOpenDrive.Delete(i);
   end;
 
-  MOpenDrive.Visible:=MOpenDrive.Count > 0;
+  MOpenDrive.Visible := MOpenDrive.Count > 0;
 end;
 
 procedure TMainForm.MOpenDriveClick(Sender: TObject);
@@ -3104,10 +3178,7 @@ begin
       if CheckInfo(ZipType, j) > -1 then begin
         if IsLoaded(j) then ExtractLyric(FileName, playlist.FindPW(FileName), j);
       end
-      else begin
-        LyricURL := fileName;
-        Lyric.ParseLyric(LyricURL);
-      end;
+      else Lyric.ParseLyric(fileName);
     end;
   end;
 end;
@@ -3135,7 +3206,21 @@ end;
 
 procedure TMainForm.MOpenDevicesClick(Sender: TObject);
 begin
-  if not OpenDevices.Visible then OpenDevices.ShowModal;
+  if not OpenDevicesForm.Visible then OpenDevicesForm.ShowModal;
+end;
+
+procedure TMainForm.MdownloadsubtitleClick(Sender: TObject);
+begin
+  DLyricForm.Show; DLyricForm.PLS.ActivePageIndex:=1;
+  DLyricForm.PLSChange(nil);
+  LoadSLibrary;
+  if IsSLoaded <> 0 then
+    DownloaderSubtitleW(PWChar(MediaURL), True, DownSubtitle_CallBackW, DownSubtitle_CallBackFinish);
+end;
+
+procedure TMainForm.MDownloadLyricClick(Sender: TObject);
+begin
+  PlaylistForm.MDownloadLyricClick(nil);
 end;
 
 end.

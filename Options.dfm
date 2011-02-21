@@ -100,7 +100,7 @@ object OptionsForm: TOptionsForm
     Top = 6
     Width = 555
     Height = 397
-    ActivePage = TSystem
+    ActivePage = TAudio
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 5
     OnChange = TabChange
@@ -1863,7 +1863,7 @@ object OptionsForm: TOptionsForm
           'This is free software, licensed under the terms of the'
           'GNU General Public License, Version 2.'
           ''
-          '(C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>'
+          '(C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>'
           'based on work by Martin J. Fiedler <martin.fiedler@gmx.net>'
           ''
           'Code contributions and hints:'

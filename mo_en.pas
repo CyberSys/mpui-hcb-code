@@ -1,6 +1,6 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
-    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 unit mo_en;
 interface
 implementation
-uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer,TV;
+uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer,TV,DLyric;
 
 procedure Activate;
 begin
@@ -59,6 +59,7 @@ begin
       OSD_Reset_Prompt:='Reset';
       OSD_AudioDelay_Prompt:='Audio Delay';
       OSD_SubDelay_Prompt:='Subtitle Delay';
+      OSD_DownSubtitle_Prompt := 'Download Subtitle...';
       SubFilter:='Subtitle Files';
       AudioFilter:='Audio File';
       AnyFilter:='Any File';
@@ -90,7 +91,8 @@ begin
       MOpenDevices.Caption:='Open Devices';
       MRFile.Caption:='Recent files';
       MFClear.Caption:='Clear list';
-      MLoadLyric.Caption:='Load Lyric File';
+      MLoadLyric.Caption:='Load Lyric File...';
+      MDownloadLyric.Caption:='Download Lyric...';
       MLoadSub.Caption:='Load Subtitle...';
       FontTitle:='OSD Font...';
       MSubfont.Caption:='Subtitle Font...';
@@ -199,6 +201,7 @@ begin
    MPan.Caption:=OSD_Reset_Prompt+' '+OSD_Balance_Prompt;
      MPan0.Caption:=OSD_Balance_Prompt+' +';
      MPan1.Caption:=OSD_Balance_Prompt+' -';
+   Mdownloadsubtitle.Caption:=OSD_DownSubtitle_Prompt;
    MSubStep.Caption:='Subtitle Step';
      MSubStep0.Caption:='Step backward';
      MSubStep1.Caption:='Step forward';
@@ -499,6 +502,9 @@ begin
     TntTabSheet1.Caption:=Caption;
     TntTabSheet2.Caption:='Lyric';
     TMLyric.Hint:='Change codePage of lyric with popup menu';
+    MDownloadLyric.Caption:=MainForm.MDownloadLyric.Caption;
+    MLoadLyric.Caption:=MainForm.MLoadlyric.Caption;
+    CPA.Caption:='Auto Detect';
     CP0.Caption:='System Default';
     CPO.Caption:='Other';
     SC.Caption:=UTF8Decode('简体中文 (Simplified Chinese)');
@@ -548,12 +554,37 @@ begin
     SSat.Caption:=OSD_Saturation_Prompt;
     SHue.Caption:=OSD_Hue_Prompt;
   end;
-  with OpenDevices do begin
+  with OpenDevicesForm do begin
     LVideoDevices.Caption:='Video Devices';
     LAudioDevices.Caption:='Audio Devices';
     LCountryCode.Caption:='Country Code';
     OKBtn.Caption:='OK';
     CancelBtn.Caption:='Cancel';
+  end;
+  with DLyricForm do begin
+    LyricListView.Column[1].Caption:='Artist';
+    LyricListView.Column[2].Caption:='Title';
+    SubListView.Column[1].Caption:='Movie Name';
+    SubListView.Column[2].Caption:='Language';
+    SubListView.Column[3].Caption:='Format';
+    SubListView.Column[4].Caption:='CD Sum';
+    SubListView.Column[5].Caption:='Download Count';
+    SubListView.Column[6].Caption:='Add Date';
+    SSubtitle.Caption:=MainForm.MSub.Caption;
+    slyric.Caption:='Lyric';
+    LArtist.Caption:=LyricListView.Column[1].Caption + ':';
+    LTitle.Caption:=LyricListView.Column[2].Caption + ':';
+    LSLang.Caption:=SubListView.Column[2].Caption + ':';
+    LSTitle.Caption:=LTitle.Caption;
+    BApply.Caption:=OptionsForm.BApply.Caption;
+    BSave.Caption:=OptionsForm.BSave.Caption;
+    BLSave.Caption:=BSave.Caption;
+    BSave.Hint:='Save Lyric';
+    BLSave.Hint:='Save Subtitle';
+    BClose.Caption:=OptionsForm.BClose.Caption;
+    BLClose.Caption:=BClose.Caption;
+    BSearch.Caption:='Search';
+    BSSearch.Caption:=BSearch.Caption;
   end;
   InfoForm.Caption:='Clip information';
   InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;

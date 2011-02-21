@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@ const CacheFill: array[0..4] of WideString = ('Cache fill:', '»º´æÌî³ä:', '»º³åÌ
 const GenIndex: array[0..2] of WideString = ('Generating Index:', 'ÕýÔÚÉú³ÉË÷Òý:', 'ÕýÔÚÉú³ÉË÷Òý:');
 const defaultHeight = 340; RFileMax = 10; stopTimeout = 1000; Dsubpos = 96;
 const szdllCount = 2; Fscale = 4.2;
+const sddll = 'SubDownloader.dll';
 const szdll: array[0..szdllCount] of WideString = ('7zxa.dll', '7za.dll', '7z.dll');
 
 const ZipTypeCount = 20;
@@ -116,8 +117,8 @@ var Status: TStatus;
 var HomeDir, SystemDir, TempDir, AppdataDir: WideString;
 var MediaURL, TmpURL, ArcMovie, Params, AddDirCP: WideString;
   ArcPW, TmpPW, DisplayURL, AudioFile, MaxLenLyricW: WideString;
-  Duration, LyricF, fass, HKS, lastP1: string;
-  substring, Vobfile, ShotDir, LyricDir, LyricURL, lastFN: WideString;
+  Duration, LyricF, fass, HKS, lastP1, lastFN: string;
+  substring, Vobfile, ShotDir, LyricDir, LyricURL: WideString;
   subfont, osdfont, Ccap, Acap, DemuxerName: WideString;
   MplayerLocation, WadspL, AsyncV, CacheV: widestring;
   MAspect, subcode, MaxLenLyricA, VideoOut: string;
@@ -207,11 +208,15 @@ procedure ResetStreamInfo;
 function ExpandName(const BasePath, FileName: WideString): WideString;
 procedure HandleInputLine(Line: string);
 function GetFileName(const fileName: WideString): WideString;
-procedure loadArcLyric(ArcName, psw: WideString);
-function loadArcSub(ArcName, psw: WideString): WideString;
+procedure loadLyricSub(path: WideString); overload;
+procedure loadLyricSub(folder,filename: WideString); overload;
+procedure loadArcLyric(path, psw: WideString); overload;
+procedure loadArcLyric(folder,ArcName, psw: WideString); overload;
+function loadArcSub(path, psw: WideString):WideString; overload;
+function loadArcSub(folder,ArcName, psw: WideString):WideString; overload;
 
 implementation
-uses Main, config, plist, Info, UnRAR, Equalizer, Locale, Options, SevenZip;
+uses Main, config, plist, Info, UnRAR, Equalizer, Locale, Options, SevenZip, DLyric;
 
 type TClientWaitThread = class(TThread)
   private procedure ClientDone;
@@ -273,10 +278,47 @@ begin
   Result := WideChangeFileExt(fileName, '');
 end;
 
-procedure loadArcLyric(ArcName, psw: WideString);
+procedure loadLyricSub(path: WideString);
+begin
+  loadLyricSub(WideExtractFileDir(path),WideExtractFileName(path));
+end;
+
+procedure loadLyricSub(folder, filename: WideString);
+var t,i: integer; m,n:WideString;
+begin
+  m:=WideIncludeTrailingBackslash(folder) + GetFileName(filename);
+
+  if (LoadVob=0) and WideFileExists(m + '.idx') and WideFileExists(m + '.sub') then begin //idx
+    LoadVob := 1; Vobfile := m; end;
+
+  for i := ZipTypeCount + 2 to SubTypeCount - 2 do begin  //srt,etc
+    n := m + SubType[i];
+    if WideFileExists(n) then begin
+      if (not IsWideStringMappableToAnsi(n)) or (pos(',', n) > 0) then n := WideExtractShortPathName(n);
+      Loadsub := 2; Loadsrt := 2;
+      AddChain(t, substring, Tnt_WideStringReplace(EscapeParam(n), '\', '/', [rfReplaceAll]));
+    end;
+  end;
+
+  if HaveLyric = 0 then begin
+    n := m + '.lrc';
+    if not WideFileExists(n) then begin
+      n:=WideIncludeTrailingPathDelimiter(ExpandName(HomeDir, LyricDir));
+      n := n + WideExtractFileName(m) + '.lrc';
+    end;
+    if WideFileExists(n) then Lyric.ParseLyric(n);
+  end;
+end;
+
+procedure loadArcLyric(path, psw: WideString);
+begin
+  loadArcLyric(WideExtractFileDir(path),WideExtractFileName(path),psw);
+end;
+
+procedure loadArcLyric(folder, ArcName, psw: WideString);
 var i: integer;
 begin
-  ArcName := GetFileName(ArcName);
+  ArcName := WideIncludeTrailingBackslash(folder) + GetFileName(ArcName);
   for i := Low(ZipType) to High(ZipType) do begin
     if WideFileExists(ArcName + ZipType[i]) then begin
       if IsLoaded(ZipType[i]) then begin
@@ -287,10 +329,15 @@ begin
   end;
 end;
 
-function loadArcSub(ArcName, psw: WideString): WideString;
+function loadArcSub(path, psw: WideString):WideString;
+begin
+  Result:=loadArcSub(WideExtractFileDir(path),WideExtractFileName(path),psw);
+end;
+
+function loadArcSub(folder, ArcName, psw: WideString):WideString;
 var i: integer;
 begin
-  Result := ''; ArcName := GetFileName(ArcName);
+  Result := ''; ArcName := WideIncludeTrailingBackslash(folder) + GetFileName(ArcName);
   for i := Low(ZipType) to High(ZipType) do begin
     if WideFileExists(ArcName + ZipType[i]) then begin
       if IsLoaded(ZipType[i]) then begin
@@ -299,33 +346,32 @@ begin
       end;
     end;
   end;
-  if WideFileExists(ArcName + '.sub') then Result := ArcName;
 end;
 
 function IsLoaded(ArcType: WideString): boolean;
 begin
   if ArcType = '.rar' then begin
-    if IsRarLoaded = 0 then LoadRarLibrary;
+    LoadRarLibrary;
     Result := IsRarLoaded <> 0;
     if not Result then begin
-      if Is7zLoaded = 0 then Load7zLibrary;
+      Load7zLibrary;
       Result := Is7zLoaded > 2;
     end;
   end
   else if ArcType = '.zip' then begin
-    if IsZipLoaded = 0 then LoadZipLibrary;
+    LoadZipLibrary;
     Result := IsZipLoaded <> 0;
     if not Result then begin
-      if Is7zLoaded = 0 then Load7zLibrary;
+      Load7zLibrary;
       Result := Is7zLoaded > 2;
     end;
   end
   else begin
-    if Is7zLoaded = 0 then Load7zLibrary;
+    Load7zLibrary;
     if (ArcType = '.7z') or (ArcType = '.001') then begin
       Result := Is7zLoaded <> 0;
       if not Result then begin
-        if IsZipLoaded = 0 then LoadZipLibrary;
+        LoadZipLibrary;
         Result := IsZipLoaded <> 0;
       end;
     end
@@ -612,7 +658,7 @@ var DummyPipe1, DummyPipe2: THandle;
   si: TStartupInfoW;
   pi: TProcessInformation;
   sec: TSecurityAttributes;
-  CmdLine, S, j, k, g, afChain: WideString;
+  CmdLine, S, a,n, afChain: WideString;
   Success: boolean; Error: DWORD;
   ErrorMessage: array[0..1023] of Char;
   ErrorMessageW: array[0..1023] of WideChar;
@@ -744,63 +790,48 @@ begin
 
   if Firstrun then begin
     ClearTmpFiles(TempDir); Lyric.ClearLyric; procArc := true;
-
-    if WideFileExists(LyricURL) then begin //ÍÏ·ÅµÄ¸è´Ê»òÓÃ»§Ö¸¶¨µÄ¸è´Ê
-      TmpURL := WideExtractFileName(MediaURL);
-      TmpURL := Tnt_WideLowerCase(GetFileName(TmpURL));
-      s := WideExtractFileName(LyricURL);
-      s := Tnt_WideLowerCase(GetFileName(s));
-      if TmpURL = s then Lyric.ParseLyric(LyricURL);
-    end;
-
+    a:=WideIncludeTrailingPathDelimiter(ExpandName(HomeDir, LyricDir));
     s := Tnt_WideLowerCase(WideExtractFileExt(MediaURL));
-    j := ExpandName(HomeDir, LyricDir); ArcMovie := DisplayURL;
+    n:= WideExtractFileName(MediaURL);
+    ArcMovie := DisplayURL;
     if CheckInfo(ZipType, s) > -1 then begin
       i := Pos(':', DisplayURL);
       if i > 0 then ArcPW := copy(DisplayURL, i + 1, length(DisplayURL) - i)
       else ArcPW := '';
       i := Pos(' <-- ', DisplayURL);
       if i > 0 then ArcMovie := copy(DisplayURL, 1, i - 1);
-      TmpURL := GetFileName(ArcMovie);
-      g := WideIncludeTrailingPathDelimiter(WideExtractFilePath(MediaURL)) + TmpURL; //²¥·ÅµÄArcÎÄ¼þËùÔÚµÄÄ¿Â¼ÏÂÓÐ°üÄÚµ±Ç°²¥·ÅÎÄ¼þÍ¬ÃûµÄsub
-      if WideFileExists(g + '.idx') and WideFileExists(g + '.sub') then begin
-        LoadVob := 1; Vobfile := g; end; //idx
-
-      for t := ZipTypeCount + 2 to SubTypeCount - 2 do begin
-        k := g + SubType[t];
-        if WideFileExists(k) then begin
-          if (not IsWideStringMappableToAnsi(k)) or (pos(',', k) > 0) then k := WideExtractShortPathName(k);
-          Loadsub := 2; Loadsrt := 2;
-          AddChain(h, substring, Tnt_WideStringReplace(EscapeParam(k), '\', '/', [rfReplaceAll]));
-        end;
-      end;
-
-      if HaveLyric = 0 then begin //²¥·ÅµÄArcÎÄ¼þËùÔÚµÄÄ¿Â¼ÏÂÓÐ°üÄÚµ±Ç°²¥·ÅÎÄ¼þÍ¬ÃûµÄ¸è´Ê
-        TmpURL := TmpURL + '.lrc';
-        LyricURL := WideIncludeTrailingPathDelimiter(WideExtractFilePath(MediaURL)) + TmpURL;
-        if not WideFileExists(LyricURL) then
-          LyricURL := WideIncludeTrailingPathDelimiter(j) + TmpURL;
-        if WideFileExists(LyricURL) then Lyric.ParseLyric(LyricURL);
-      end;
     end
     else i := -1;
 
-    g := getFileName(MediaURL);
-    if HaveLyric = 0 then begin //µ±Ç°²¥·ÅÎÄ¼þËùÔÚµÄÄ¿Â¼ÏÂÓÐÍ¬ÃûµÄ¸è´Ê
-      LyricURL := g + '.lrc';
-      if not WideFileExists(LyricURL) then begin
-        LyricURL := WideExtractFileName(MediaURL);
-        LyricURL := WideIncludeTrailingPathDelimiter(j)
-          + GetFileName(LyricURL) + '.lrc';
-      end;
-      if WideFileExists(LyricURL) then Lyric.ParseLyric(LyricURL);
+    TmpURL := WideExtractFileName(ArcMovie);
+    TmpURL := Tnt_WideLowerCase(GetFileName(TmpURL));
+    if WideFileExists(LyricURL) then begin //ÍÏ·ÅµÄ¸è´Ê»òÓÃ»§Ö¸¶¨µÄ¸è´Ê
+      s := WideExtractFileName(LyricURL);
+      s := Tnt_WideLowerCase(GetFileName(s));
+      if TmpURL = s then Lyric.ParseLyric(LyricURL);
     end;
 
-    if HaveLyric = 0 then loadArcLyric(g, ArcPW);
+    loadLyricSub(MediaURL);
+    loadLyricSub(a + n);
+    
+    if HaveLyric = 0 then loadArcLyric(MediaURL, ArcPW);
     if LoadVob = 0 then begin
-      TmpURL := loadArcSub(g, ArcPW);
+      TmpURL := loadArcSub(MediaURL, ArcPW);
       if TmpURL <> '' then begin
         Vobfile := TmpURL; LoadVob := 1; end;
+    end;
+
+    if HaveLyric = 0 then loadArcLyric(a,n, ArcPW);
+    if LoadVob = 0 then begin
+      TmpURL := loadArcSub(a,n, ArcPW);
+      if TmpURL <> '' then begin
+        Vobfile := TmpURL; LoadVob := 1; end;
+    end;
+
+    if i>0 then begin
+      n:= WideExtractFileName(ArcMovie);
+      loadLyricSub(WideExtractFileDir(MediaURL),n);
+      loadLyricSub(a,n);
     end;
 
     MainForm.UpdateMRF;
@@ -808,9 +839,10 @@ begin
     if (i > 0) and IsLoaded(s) then begin
       tEnd := false;
       TmpURL := MediaURL; //±ÜÃâÏµÍ³µ÷¶ÈUNRARTÏß³ÌµÄ²»È·¶¨ÐÔÔì³ÉÏß³ÌÖ´ÐÐÊ±»ñÈ¡µÄÊÇÒÑ¾­±ä»¯µÄMediaURL
-      if ((s = '.zip') and (IsZipLoaded <> 0)) or ((s = '.7z') and (Is7zLoaded = 0)) then
-        MediaURL := TempDir + ArcMovie
-      else MediaURL := TempDir + 'hcb428' + WideExtractFileExt(ArcMovie);
+      //if ((s = '.zip') and (IsZipLoaded <> 0)) or ((s = '.7z') and (Is7zLoaded = 0)) then
+      // else MediaURL := TempDir + 'hcb428' + WideExtractFileExt(ArcMovie);
+
+      MediaURL := TempDir + ArcMovie;
       UnRART := TUnRARThread.Create(true);
       UnRART.FreeOnTerminate := true;
       UnRART.Priority := tpTimeCritical;
@@ -894,16 +926,16 @@ begin
 
   if Wadsp then begin
     s := ExpandName(HomeDir, WadspL);
-    h := pos(':', s); g := '';
+    h := pos(':', s); a := '';
     if h > 0 then begin
       t := pos(':', copy(s, h + 1, MaxInt));
       if t > 0 then begin
-        g := copy(s, h + t, MaxInt); s := copy(s, 1, h + t - 1);
+        a := copy(s, h + t, MaxInt); s := copy(s, 1, h + t - 1);
       end;
     end;
     if WideFileExists(s) then begin
       if (not IsWideStringMappableToAnsi(s)) or (pos(',', s) > 0) then s := WideExtractShortPathName(s);
-      if sconfig or (g <> '') then AddChain(h, afChain, 'wadsp=' + EscapeParam(s) + ':cfg=1')
+      if sconfig or (a <> '') then AddChain(h, afChain, 'wadsp=' + EscapeParam(s) + ':cfg=1')
       else AddChain(h, afChain, 'wadsp=' + EscapeParam(s));
     end;
   end;
@@ -1215,7 +1247,8 @@ end;
 
 
 procedure HandleInputLine(Line: string);
-var r, i, j, p, len: integer; s: string; f: real; t: TTntMenuItem; key: word;
+var r, i, j, p, len: integer; s: string; f: real;
+    t: TTntMenuItem; key: word; a:TDownLoadLyric;
 
   function SubMenu_Add(Menu: TMenuItem; ID, SelectedID: integer; Handler: TNotifyEvent): integer;
   begin
@@ -1834,6 +1867,7 @@ var r, i, j, p, len: integer; s: string; f: real; t: TTntMenuItem; key: word;
             SetBounds(r, i, Constraints.MinWidth, Constraints.MinHeight);
           end;
         end;
+        if HaveLyric = 0 then Lyric.DownloadLyric;
       end;
     end;
   end;
@@ -1973,7 +2007,18 @@ var r, i, j, p, len: integer; s: string; f: real; t: TTntMenuItem; key: word;
         if SubID < 0 then SubID := 0;
         SendCommand('set_property sub ' + IntToStr(SubID));
         if not MShowSub.Checked then SendCommand('set_property sub_visibility 0');
+      end
+      else begin
+        a := TDownLoadLyric.Create(true);
+        a.title:= GetFileName(WideExtractFileName(MediaURL));
+        a.FN:=WideIncludeTrailingPathDelimiter(LyricDir) + a.title + '.zip';
+        a.FreeOnTerminate := true; a.mode:=4; a.Lang:=DLyricForm.CLang.ItemIndex;
+        a.Resume;
+        LoadSLibrary;
+        if IsSLoaded <> 0 then
+          DownloaderSubtitleW(PWChar(MediaURL), True, DownSubtitle_CallBackW, DownSubtitle_CallBackFinish);
       end;
+
       LastEq2 := Eq2; LastDda := Dda; HaveVideo := true;
       if (NativeWidth / NativeHeight) = (Screen.Width / Screen.Height) then begin
         LastScale := 100; Scale := 100;

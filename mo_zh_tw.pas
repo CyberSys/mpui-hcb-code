@@ -1,6 +1,6 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
-    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 unit mo_zh_tw;
 interface
 implementation
-uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer,TV;
+uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer,TV,DLyric;
 
 procedure Activate;
 begin
@@ -59,6 +59,7 @@ begin
       OSD_Reset_Prompt:='重置';
       OSD_AudioDelay_Prompt:='音頻延遲';
       OSD_SubDelay_Prompt:='字幕延遲';
+      OSD_DownSubtitle_Prompt := '下載 字幕';
       SubFilter:=UTF8Decode('字幕文件');
       AudioFilter:=UTF8Decode('音頻文件');
       AnyFilter:=UTF8Decode('所有文件');
@@ -90,7 +91,8 @@ begin
       MOpenDevices.Caption:=UTF8Decode('打開 設備');
       MRFile.Caption:=UTF8Decode('最近打開的檔案');
       MFClear.Caption:=UTF8Decode('清除列表');
-      MLoadLyric.Caption:=UTF8Decode('載入歌詞');
+      MLoadLyric.Caption:=UTF8Decode('載入歌詞...');
+      MDownloadLyric.Caption:=UTF8Decode('下載歌詞...');
       MLoadSub.Caption:=UTF8Decode('載入字幕...');
       MSubfont.Caption:=UTF8Decode('字幕字體...');
 	  FontTitle:=UTF8Decode('OSD字體...');
@@ -116,8 +118,8 @@ begin
         MSubExpand.Caption:=UTF8Decode('Sub字幕');
       Hide_menu.Caption:=UTF8Decode('自動隱藏 主菜單');
       Mctrl.Caption:=UTF8Decode('自動隱藏 控制面板');
-    MSeek.Caption:=UTF8Decode('播放');
-      MPlay.Caption:=MSeek.Caption;
+    MSeek.Caption:=LOCstr_Status_Playing;
+      MPlay.Caption:=LOCstr_Status_Playing;
       MPause.Caption:=LOCstr_Status_Paused;
       MStop.Caption:=UTF8Decode('停止');
       MPrev.Caption:=UTF8Decode('上一個主題');
@@ -135,7 +137,7 @@ begin
         MStereo.Caption:=UTF8Decode('立體聲');
         MLchannels.Caption:=UTF8Decode('左聲道');
         MRchannels.Caption:=UTF8Decode('右聲道');
-        MMute.Caption:=UTF8Decode('靜音');
+        MMute.Caption:=BMute.Hint;
       MWheelControl.Caption:=UTF8Decode('鼠標滾輪控制');
         MVol.Caption:=UTF8Decode(OSD_Volume_Prompt);
         MSize.Caption:=UTF8Decode(OSD_Size_Prompt);
@@ -199,6 +201,7 @@ begin
     MPan.Caption:=UTF8Decode(OSD_Reset_Prompt+' '+OSD_Balance_Prompt);
       MPan0.Caption:=UTF8Decode(OSD_Balance_Prompt+' 向右');
       MPan1.Caption:=UTF8Decode(OSD_Balance_Prompt+' 向左');
+    Mdownloadsubtitle.Caption:=UTF8Decode(OSD_DownSubtitle_Prompt);
     MSubStep.Caption:=UTF8Decode('字幕 語句');
       MSubStep0.Caption:=UTF8Decode('上一句');
       MSubStep1.Caption:=UTF8Decode('下一句');
@@ -218,7 +221,6 @@ begin
      MKeyHelp.Caption:=UTF8Decode('快速鍵說明 ...');
      MAbout.Caption:=UTF8Decode('關於 ...');
   end;
-  OptionsForm.Caption:=UTF8Decode('MPlayer 輸出');
   OptionsForm.HelpText.Text:=UTF8Decode(
 '雙擊左鍵'^I'切換全屏'^M^J+
 '÷/*,0'^I'調節音量'^M^J+
@@ -499,8 +501,11 @@ begin
     BSave.Hint:=UTF8Decode('儲存播放清單為 ...');
     TntTabSheet1.Caption:=Caption;
     TntTabSheet2.Caption:=UTF8Decode('歌詞');
+    CPA.Caption:=UTF8Decode('自動選擇');
     CP0.Caption:=UTF8Decode('系統默認');
     MGB.Caption:=UTF8Decode('简体<-->繁體');
+    MDownloadLyric.Caption:=MainForm.MDownloadLyric.Caption;
+    MLoadLyric.Caption:=MainForm.MLoadlyric.Caption;
     CPO.Caption:=UTF8Decode('其他');
     SC.Caption:=UTF8Decode('簡體中文');
     TC.Caption:=UTF8Decode('繁體中文');
@@ -549,7 +554,7 @@ begin
     SSat.Caption:=UTF8Decode(OSD_Saturation_Prompt);
     SHue.Caption:=UTF8Decode(OSD_Hue_Prompt);
   end;
-  with OpenDevices do begin
+  with OpenDevicesForm do begin
     LVideoDevices.Caption:=UTF8Decode('視頻設備');
     LAudioDevices.Caption:=UTF8Decode('音頻設備');
     LCountryCode.Caption:=UTF8Decode('國家代碼');
@@ -557,6 +562,31 @@ begin
     CancelBtn.Caption:=UTF8Decode('取消');
   end;
   InfoForm.Caption:=UTF8Decode('影片資訊');
+  with DLyricForm do begin
+    BSearch.Caption:=UTF8Decode('搜索');
+    LyricListView.Column[1].Caption:=UTF8Decode('歌手');
+    LyricListView.Column[2].Caption:=UTF8Decode('標題');
+    SubListView.Column[1].Caption:=UTF8Decode('片名');
+    SubListView.Column[2].Caption:=UTF8Decode('語言');
+    SubListView.Column[3].Caption:=UTF8Decode('格式');
+    SubListView.Column[4].Caption:=UTF8Decode('CD數');
+    SubListView.Column[5].Caption:=UTF8Decode('下載數');
+    SubListView.Column[6].Caption:=UTF8Decode('添加日期');
+    SSubtitle.Caption:=MainForm.MSub.Caption;
+    slyric.Caption:=UTF8Decode('歌詞');
+    LArtist.Caption:=LyricListView.Column[1].Caption + ':';
+    LTitle.Caption:=LyricListView.Column[2].Caption + ':';
+    LSLang.Caption:=SubListView.Column[2].Caption + ':';
+    LSTitle.Caption:=LTitle.Caption;
+    BApply.Caption:=OptionsForm.BApply.Caption;
+    BSave.Caption:=OptionsForm.BSave.Caption;
+    BLSave.Caption:=BSave.Caption;
+    BSave.Hint:=UTF8Decode('保存 歌詞');
+    BLSave.Hint:=UTF8Decode('保存 字幕');
+    BClose.Caption:=OptionsForm.BClose.Caption;
+    BLClose.Caption:=BClose.Caption;
+    BSSearch.Caption:=BSearch.Caption;
+  end;
   InfoForm.BClose.Caption:=OptionsForm.BClose.Caption;
   InfoForm.TCB.Caption:=UTF8Decode('拷貝資訊');
   LOCstr_NoInfo:=UTF8Decode('目前沒有可用的影片資訊');

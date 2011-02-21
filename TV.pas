@@ -6,7 +6,7 @@ uses Windows, SysUtils, Classes, Graphics, Forms, TntForms, Controls, StdCtrls,
   Buttons, ExtCtrls, TntStdCtrls, ActiveX;
 
 type
-  TOpenDevices = class(TTntForm)
+    TOpenDevicesForm = class(TTntForm)
     OKBtn: TButton;
     CancelBtn: TButton;
     Bevel1: TBevel;
@@ -32,7 +32,7 @@ type
   end;
 
 var
-  OpenDevices: TOpenDevices; SysDevEnum:ICreateDevEnum; EnumCat:IEnumMoniker;
+  OpenDevicesForm: TOpenDevicesForm; SysDevEnum:ICreateDevEnum; EnumCat:IEnumMoniker;
   Moniker:IMoniker; cFetched:Longint; PropBag:IPropertyBag; varName:oleVariant;
 
 const  IID_IPropertyBag:TGUID='{55272A00-42CB-11CE-8135-00AA004BB851}';
@@ -58,7 +58,7 @@ begin SysDevEnum:=nil;
       if Succeeded(hr) then begin
         VariantInit(varName);
         hr:=PropBag.Read('FriendlyName',varName,nil);
-        if Succeeded(hr) then opendevices.CVideoDevices.items.add(varname);
+        if Succeeded(hr) then opendevicesForm.CVideoDevices.items.add(varname);
         VariantClear(varName);
         //PropBag._Release;
       end;
@@ -75,7 +75,7 @@ begin SysDevEnum:=nil;
       if Succeeded(hr) then begin
         VariantInit(varName);
         hr:=PropBag.Read('FriendlyName',varName,nil);
-        if Succeeded(hr) then opendevices.CAudioDevices.items.add(varname);
+        if Succeeded(hr) then opendevicesForm.CAudioDevices.items.add(varname);
         VariantClear(varName);
         //PropBag._Release;
       end;
@@ -86,14 +86,14 @@ begin SysDevEnum:=nil;
  // SysDevEnum._Release;
 end;
 
-procedure TOpenDevices.FormShow(Sender: TObject);
+procedure TOpenDevicesForm.FormShow(Sender: TObject);
 begin
   CVideoDevices.Clear; CAudioDevices.Clear; CreateDevEnum;
   if CVideoDevices.Items.Count>0 then CVideoDevices.ItemIndex:=0;
   if CAudioDevices.Items.Count>0 then CAudioDevices.ItemIndex:=0;
 end;
 
-procedure TOpenDevices.OKBtnClick(Sender: TObject);
+procedure TOpenDevicesForm.OKBtnClick(Sender: TObject);
 var Entry:TPlaylistEntry;
 begin
 if CVideoDevices.ItemIndex=-1 then exit;

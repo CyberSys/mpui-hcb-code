@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -68,6 +68,7 @@ var LOCstr_Title: WideString;
   OSD_Reset_Prompt: string;
   OSD_AudioDelay_Prompt: string;
   OSD_SubDelay_Prompt: string;
+  OSD_DownSubtitle_Prompt: string;
   SubFilter: WideString;
   MediaFilter: WideString;
   AudioFilter: WideString;
@@ -245,7 +246,9 @@ begin
   OSD_Reset_Prompt := 'Reset';
   OSD_AudioDelay_Prompt := 'Audio Delay';
   OSD_SubDelay_Prompt := 'Subtitle Delay';
+  OSD_DownSubtitle_Prompt := 'Download Subtitle';
   IKeyHint := 'Please press hotkey';
   IKeyerror := ' ,Shortcut already exists';
   FontTitle := 'OSD font ...';
 end.
+

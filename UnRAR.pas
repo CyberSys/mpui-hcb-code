@@ -1,5 +1,5 @@
 {  MPUI-hcb, an MPlayer frontend for Windows
-   Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
+   Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
    based on TDFUnRAR by <dfrischalowski@del-net.com>
    
    see UNRARDLL.TXT for Informations about UnRar.dll - Functions and structures
@@ -10,7 +10,7 @@ unit UnRar;
 interface
 
 uses
-  Windows,SysUtils,TntSysUtils,TntWindows,Classes,TntDialogs,ComObj;
+  Windows, SysUtils, TntSysUtils, TntWindows, Classes, TntDialogs, ComObj,ActiveX;
 
 const
   // Constants from UnRar.h
@@ -22,6 +22,8 @@ const
   UCM_CHANGEVOLUME     = 0;
 
 type
+  TUnrarCallback = function(Msg: UINT; UserData, P1, P2: LPARAM): Integer; stdcall;
+
   // Header for every file in an archive
   TRARHeaderData = record
     ArcName      : array[0..1023] of char;
@@ -43,7 +45,7 @@ type
     CmtBufSize   : cardinal;
     CmtSize      : cardinal;
     CmtState     : cardinal;
-    Reserved     : array[1..1024] of cardinal;
+    Reserved     : array[0..1023] of cardinal;
   end;
 
   // Archive-Data for opening rar-archive
@@ -57,21 +59,20 @@ type
     CmtSize    : cardinal;
     CmtState   : cardinal;
     Flags      : cardinal;
-    Reserved   : array[1..32] of cardinal;
+    //Callback: TUnrarCallback;
+    //UserData: LPARAM;
+    //Reserved: array[0..27] of cardinal;
+    Reserved   : array[0..31] of cardinal;
   end;
 
-  TUnrarCallback = function (Msg: UINT; UserData, P1, P2: LPARAM) :Integer; stdcall;
   TUnRARThread = class(TThread)
                   private
-                    procedure SetName;
                   protected
                     procedure Execute; override;
                 end;
 
 var
-  // Flag for: Is Dll loaded...
   IsRarLoaded:THandle=0; IsShell32Loaded:THandle = 0;
-  // function Pointer - Dll is always dynamicly loaded
   RAROpenArchive        : function(var ArchiveData: TRAROpenArchiveData): THandle; stdcall;
   RARCloseArchive       : function(hArcData: THandle): integer; stdcall;
   RARReadHeader         : function(hArcData: THandle; var HeaderData: TRARHeaderData): Integer; stdcall;
@@ -79,9 +80,8 @@ var
   RARSetPassword        : procedure(hArcData: THandle; Password: PChar); stdcall;
   RARSetCallback        : procedure(hArcData: THandle; UnrarCallback: TUnrarCallback; UserData: LPARAM); stdcall;
   SHGetKnownFolderPath  : function(rfid:PGUID; dwFlags:DWord; hToken:THandle; out ppszPath:PPWideChar):HRESULT; stdcall;
-  IsUserAnAdmin         : function(): BOOL; stdcall;
+  IsUserAnAdmin         : function : BOOL; stdcall;
 
-// helper functions for (un)loading the Dll and check for loaded
 procedure LoadRarLibrary;
 procedure UnLoadRarLibrary;
 procedure LoadShell32Library;
@@ -91,63 +91,20 @@ function AddRarMovies(ArcName,PW:widestring; Add:boolean):integer;
 procedure ExtractRarMovie(ArcName,MovieName,PW:widestring);
 procedure ExtractRarLyric(ArcName,PW:WideString);
 function ExtractRarSub(ArcName,PW:WideString):WideString;
-Procedure CoTaskMemFree(pv:Pointer); stdcall; external 'ole32.dll';
 function GetShellPath(rfid:TGUID):WideString;
-function IsAdmin():boolean;
+function IsAdmin:boolean;
 
 implementation
 uses Main,Core,plist,locale,SevenZip;
-{ Important: Methods and properties of objects in visual components can only be
-  used in a method called using Synchronize, for example,
-
-      Synchronize(UpdateCaption);
-
-  and UpdateCaption could look like,
-
-    procedure UNRAR.UpdateCaption;
-    begin
-      Form1.Caption := 'Updated in a thread';
-    end; }
-
-type
-  TThreadNameInfo = record
-    FType: LongWord;     // must be 0x1000
-    FName: PChar;        // pointer to name (in user address space)
-    FThreadID: LongWord; // thread ID (-1 indicates caller thread)
-    FFlags: LongWord;    // reserved for future use, must be zero
-  end;
-
-procedure TUnRARThread.SetName;
-var ThreadNameInfo: TThreadNameInfo;
-begin
-  ThreadNameInfo.FType := $1000;
-  ThreadNameInfo.FName := PChar('HCB428');
-  ThreadNameInfo.FThreadID := $FFFFFFFF;
-  ThreadNameInfo.FFlags := 0;
-
-  try
-    RaiseException( $406D1388, 0, sizeof(ThreadNameInfo) div sizeof(LongWord), @ThreadNameInfo );
-  except
-  end;
-end;
 
 procedure TUnRARThread.Execute;
 begin
-  SetName;
-  { Place thread code here }
   ExtractMovie(TmpURL,ArcMovie,ArcPW,Tnt_WideLowerCase(WideExtractFileExt(TmpURL)));
   tEnd:=true;
 end;
 
-// Loads the UnRar.dll
 procedure LoadRarLibrary;
 begin
-  // UnRar.dll must exists in typically dll-paths
-  // 1. Application-Directory
-  // 2. Current Directory
-  // 3. System-Directory
-  // 4. Windows-Direcory
-  // 5. Directories from PATH-Variable
   if IsRarLoaded <> 0 then exit;
   IsRarLoaded := Tnt_LoadLibraryW('unrar.dll');
   if IsRarLoaded <> 0 then begin
@@ -160,7 +117,6 @@ begin
   end;
 end;
 
-// Unloading Library
 procedure UnLoadRarLibrary;
 begin
   if IsRarLoaded <> 0 then begin
@@ -195,12 +151,11 @@ begin
   end;
 end;
 
-
 function GetShellPath(rfid:TGUID):WideString;
 var PathBuf:PPWideChar; APIResult:HRESULT;
 begin //http://msdn.microsoft.com/en-us/library/bb762188(VS.85).aspx
   Result:='';
-  if IsShell32Loaded=0 then LoadShell32Library;
+  LoadShell32Library;
   if IsShell32Loaded=0 then exit;
   APIResult:=SHGetKnownFolderPath(@rfid,0,0,PathBuf);
   OleCheck(APIResult);
@@ -211,9 +166,8 @@ end;
 function IsAdmin():boolean;
 begin
   Result:=false;
-  if IsShell32Loaded=0 then LoadShell32Library;
-  if IsShell32Loaded=0 then exit;
-  Result:=IsUserAnAdmin();
+  LoadShell32Library;
+  if IsShell32Loaded<>0 then Result:=IsUserAnAdmin();
 end;
 
 procedure ClearTmpFiles(Directory:WideString);
@@ -244,18 +198,17 @@ begin
     if P2=RAR_VOL_ASK then begin
       s:=LowerCase(PChar(P1));
       if lastP1=s then begin
-        StrPCopy(PChar(P1),WideExtractShortPathName(lastFN));
-        Result:=1; exit;
+        StrPCopy(PChar(P1), lastFN);
+        exit;
       end;
       lastP1:=s;
       s:=copy(s,Pos('.part',s)+1,MaxInt);
-      FileName:=Tnt_WideLowerCase(PWChar(UserData));
-      FileName:=copy(FileName,1,Pos('.part',FileName));
-      FileName:=FileName+s;
-      if WidePromptForFileName(FileName,'RAR file(*.rar)|*.rar|Any file(*.*)|*.*','',LOCstr_VolAsk_Caption) then begin
-        lastFN:=FileName;
-        StrPCopy(PChar(P1),WideExtractShortPathName(lastFN));
-        Result:=1;
+      FileName := Tnt_WideLowerCase(PWChar(UserData));
+      FileName := copy(FileName, 1, Pos('.part', FileName));
+      FileName := FileName + s;
+      if WidePromptForFileName(FileName, 'RAR file(*.rar)|*.rar|Any file(*.*)|*.*', '', LOCstr_VolAsk_Caption) then begin
+        lastFN := Tnt_WideLowerCase((FileName));
+        StrPCopy(PChar(P1), lastFN);
       end
       else Result:=-1;
     end;
@@ -320,11 +273,14 @@ begin
   FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
   OpenArchiveData.ArcNameW := PWideChar(ArcName);
   OpenArchiveData.OpenMode := RAR_OM_EXTRACT;
+  //OpenArchiveData.UserData := LPARAM(OpenArchiveData.ArcNameW);
+  //OpenArchiveData.Callback := UnRARCallback;
   hArcData := RAROpenArchive(OpenArchiveData);
   if (hArcData = 0) OR (OpenArchiveData.OpenResult <> 0) then begin
     RARCloseArchive(hArcData); exit;
   end;
   First:=true;
+  // Obsolete, use TRAROpenArchiveData's callback and UserData fields above.
   RARSetCallback(hArcData,UnRARCallback,LPARAM(OpenArchiveData.ArcNameW));
   if (OpenArchiveData.Flags and $00000080) = $00000080 then begin
     First:=false; RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
@@ -335,7 +291,7 @@ begin
     if ((HeaderData.Flags and $00000070) <> $00000070) and
        (HeaderData.FileNameW=MovieName) then begin
       if First and ((HeaderData.Flags and $00000004) = $00000004) then RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
-      RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(TempDir+'hcb428'+WideExtractFileExt(HeaderData.FileNameW)));
+      RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(TempDir+MovieName));
       Break;
     end
     else if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
@@ -343,36 +299,38 @@ begin
   RARCloseArchive(hArcData);
 end;
 
-
 procedure ExtractRarLyric(ArcName,PW:widestring);
-var hArcData:THandle; First:boolean; FName:widestring;
+var hArcData:THandle; First:boolean; FName,t:widestring;
     HeaderData:TRARHeaderData; OpenArchiveData:TRAROpenArchiveData;
 begin
   FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
   OpenArchiveData.ArcNameW := PWideChar(ArcName);
   OpenArchiveData.OpenMode := RAR_OM_EXTRACT;
+  //OpenArchiveData.UserData := LPARAM(OpenArchiveData.ArcNameW);
+  //OpenArchiveData.Callback := UnRARCallback;
   hArcData := RAROpenArchive(OpenArchiveData);
   if (hArcData = 0) OR (OpenArchiveData.OpenResult <> 0) then begin
     RARCloseArchive(hArcData); exit;
   end;
   First:=true;
+  // Obsolete, use TRAROpenArchiveData's callback and UserData fields above.
   RARSetCallback(hArcData,UnRARCallback,LPARAM(OpenArchiveData.ArcNameW));
   if (OpenArchiveData.Flags and $00000080) = $00000080 then begin
     First:=false; RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
   end;
   FillChar(HeaderData ,sizeof(HeaderData),0);
-  FName:=Tnt_WideLowerCase(GetFileName(ArcMovie))+'.lrc';
+  FName:=Tnt_WideLowerCase(getFileName(WideExtractFileName(ArcMovie)))+'.lrc';
 
   repeat
     if RARReadHeader(hArcData,HeaderData) <> 0 then Break;
     if ((HeaderData.Flags and $00000070) <> $00000070) and
        (FName=Tnt_WideLowerCase(WideExtractFileName(HeaderData.FileNameW))) then begin
       if First and ((HeaderData.Flags and $00000004) = $00000004) then RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
-      if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(TempDir+'hcb428.lrc'))<>0 then
+      t:= TempDir+HeaderData.FileNameW;
+      if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(t))<>0 then
         Break
       else begin
-        LyricURL:=TempDir+'hcb428.lrc';
-        Lyric.ParseLyric(LyricURL);
+        Lyric.ParseLyric(t);
         if HaveLyric<>0 then Break;
       end;
     end
@@ -382,11 +340,11 @@ begin
 end;
 
 function ExtractRarSub(ArcName,PW:widestring):widestring;
-var i,j,HaveIdx,HaveSub,DirHIdx,DirHSub:integer; FName,FExt,g:widestring;
+var i,j,HaveIdx,HaveSub,DirHIdx,DirHSub:integer; FName,FExt,g,t:widestring;
     First:boolean; hArcData:THandle; HeaderData:TRARHeaderData;
     OpenArchiveData:TRAROpenArchiveData;
 begin
-  g:=GetFileName(ArcName);
+  g:=GetFileName(ArcName); t:= TempDir+'hcb428';
   DirHIdx:=integer(WideFileExists(g+'.idx'));
   DirHSub:=integer(WideFileExists(g+'.sub'));
   if (DirHIdx+DirHSub)=2 then begin result:=g; exit; end;
@@ -395,12 +353,15 @@ begin
   HaveIdx:=0; HaveSub:=0;
   FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
   OpenArchiveData.ArcNameW := PWideChar(ArcName);
+  //OpenArchiveData.UserData := LPARAM(OpenArchiveData.ArcNameW);
+  //OpenArchiveData.Callback := UnRARCallback;
   if (DirHIdx+DirHSub)=1 then begin
     OpenArchiveData.OpenMode := RAR_OM_LIST;
     hArcData := RAROpenArchive(OpenArchiveData);
     if (hArcData = 0) OR (OpenArchiveData.OpenResult <> 0) then begin
       RARCloseArchive(hArcData); exit;
     end;
+    // Obsolete, use TRAROpenArchiveData's callback and UserData fields above.
     RARSetCallback(hArcData,UnRARCallback,LPARAM(OpenArchiveData.ArcNameW));
     if (OpenArchiveData.Flags and $00000080) = $00000080 then begin
       First:=false;
@@ -427,6 +388,7 @@ begin
   if (hArcData = 0) OR (OpenArchiveData.OpenResult <> 0) then begin
     RARCloseArchive(hArcData); exit;
   end;
+  // Obsolete, use TRAROpenArchiveData's callback and UserData fields above.
   RARSetCallback(hArcData,UnRARCallback,LPARAM(OpenArchiveData.ArcNameW));
   if First then begin
     if (OpenArchiveData.Flags and $00000080) = $00000080 then begin
@@ -452,7 +414,7 @@ begin
       end
       else begin
         if i<SubTypeCount-1 then begin
-          FName:=TempDir+HeaderData.FileName;
+          FName:=TempDir+HeaderData.FileNameW;
           if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(FName))<>0 then
             Break
           else begin
@@ -467,19 +429,21 @@ begin
         end
         else begin
           if (DirHIdx+DirHSub=0) OR (HaveIdx+HaveSub=2) then begin
-            if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(TempDir+'hcb428'+FExt))<>0 then
+            if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(t+FExt))<>0 then
               Break
             else
-              Result:=TempDir+'hcb428';
+              Result:=t;
           end
           else begin
             if ((HaveIdx+DirHSub=2) and (FExt='.idx')) OR
                ((DirHIdx+HaveSub=2) and (FExt='.sub')) then begin
-              FName:=GetFileName(ArcName);
-              if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(FName+FExt))<>0 then
+              if RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(t+FExt))<>0 then
                 Break
-              else
-                Result:=FName;
+              else begin
+                if WideCopyFile(t+FExt,g+FExt,false) then
+                  Result:=g
+                else Result:=t;
+              end;
             end
             else if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
           end;
@@ -493,105 +457,3 @@ begin
 end;
 
 end.
-
-
-
-
-
-{// Delphi interface unit for UnRAR.dll
-// Translated from unrar.h
-// Use Delphi 2.0 and higher to compile this module
-//
-// Ported to Delphi by Eugene Kotlyarov, fidonet: 2:5058/26.9 ek@oris.ru
-// Fixed version by Alexey Torgashin <alextp@mail.ru>, 2:5020/604.24@fidonet
-//
-// Revisions:
-// Aug 2001 - changed call convention for TChangeVolProc and TProcessDataProc
-//          - added RARGetDllVersion function, see comment below
-//
-// Jan 2002 - Added RARSetCallback  // eugene
-//
-// Oct 2002 - Added RARHeaderDataEx, RAROpenArchiveDataEx // eugene
-// 静态载入UnRAR.dll，如果找不到UnRAR.dll,程序将报错并无法启动
-
-unit UnRAR;
-
-interface
-
-uses Windows,SysUtils,core;
-
-const
-  RAR_OM_LIST         =  0;
-  RAR_OM_EXTRACT      =  1;
-  RAR_SKIP            =  0;
-  RAR_EXTRACT         =  2;
-
-type
-  RARHeaderData = packed record
-    ArcName: packed array[0..Pred(260)] of Char;
-    FileName: packed array[0..Pred(260)] of Char;
-    Flags: UINT;
-    PackSize: UINT;
-    UnpSize: UINT;
-    HostOS: UINT;
-    FileCRC: UINT;
-    FileTime: UINT;
-    UnpVer: UINT;
-    Method: UINT;
-    FileAttr: UINT;
-    CmtBuf: PChar;
-    CmtBufSize: UINT;
-    CmtSize: UINT;
-    CmtState: UINT;
-  end;
-
-  RAROpenArchiveData = packed record
-    ArcName: PChar;
-    OpenMode: UINT;
-    OpenResult: UINT;
-    CmtBuf: PChar;
-    CmtBufSize: UINT;
-    CmtSize: UINT;
-    CmtState: UINT;
-  end;
-
-function RAROpenArchive(var ArchiveData: RAROpenArchiveData): THandle;
-  stdcall; external 'unrar.dll';
-function RARCloseArchive(hArcData: THandle): Integer;
-  stdcall; external 'unrar.dll';
-function RARReadHeader(hArcData: THandle; var HeaderData: RARHeaderData): Integer;
-  stdcall; external 'unrar.dll';
-function RARProcessFile(hArcData: THandle; Operation: Integer; DestPath, DestName: PChar): Integer;
-  stdcall; external 'unrar.dll';
-function ExtractArchive(ArcName: PChar):string;
-
-implementation
-
-function ExtractArchive(ArcName: PChar):string;
-var hArcData: THandle; FExt,FName: string;
-  HeaderData: RARHeaderData; Haveidx,Havesub:boolean;
-  OpenArchiveData: RAROpenArchiveData;
-begin
-  Result:='';
-  OpenArchiveData.ArcName := ArcName;
-  OpenArchiveData.OpenMode := RAR_OM_EXTRACT;
-  hArcData := RAROpenArchive(OpenArchiveData);
-  if (OpenArchiveData.OpenResult <> 0) then Exit;
-  HeaderData.CmtBuf := nil;
-  repeat
-    if RARReadHeader(hArcData, HeaderData) <> 0 then Break;
-    FExt:=LowerCase(ExtractFileExt(HeaderData.FileName));
-    if (FExt='.idx') or (FExt='.sub') then begin
-      FName:=ExtractFileName(ArcName);
-      FName:=TempDir+GetFileName(FName);
-      if RARProcessFile(hArcData, RAR_EXTRACT, nil, PChar(FName+FExt))<>0 then Break
-      else Result:=FName;
-    end
-    else RARProcessFile(hArcData, RAR_SKIP, nil, nil);
-  until False;
-  RARCloseArchive(hArcData);
-end;
-
-end.
-
-}

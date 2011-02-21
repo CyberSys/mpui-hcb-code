@@ -2,7 +2,7 @@ object PlaylistForm: TPlaylistForm
   Left = 437
   Top = 267
   Width = 365
-  Height = 251
+  Height = 255
   BorderIcons = [biSystemMenu]
   Caption = 'PlaylistForm'
   Color = clBtnFace
@@ -20,19 +20,18 @@ object PlaylistForm: TPlaylistForm
   OnDblClick = FormDblClick
   OnHide = FormHide
   OnKeyDown = FormKeyDown
-  OnResize = FormResize
   OnShow = FormShow
   DesignSize = (
     357
-    224)
+    228)
   PixelsPerInch = 96
   TextHeight = 13
   object TntPageControl1: TTntPageControl
     Left = -5
     Top = 0
     Width = 368
-    Height = 233
-    ActivePage = TntTabSheet1
+    Height = 237
+    ActivePage = TntTabSheet2
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
     object TntTabSheet1: TTntTabSheet
@@ -40,7 +39,7 @@ object PlaylistForm: TPlaylistForm
       ImageIndex = 16
       DesignSize = (
         360
-        205)
+        209)
       object CShuffle: TTntSpeedButton
         Left = 200
         Top = 1
@@ -223,7 +222,7 @@ object PlaylistForm: TPlaylistForm
         Left = 0
         Top = 26
         Width = 360
-        Height = 176
+        Height = 180
         Style = lbVirtualOwnerDraw
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 16
@@ -238,7 +237,16 @@ object PlaylistForm: TPlaylistForm
       ImageIndex = 24
       DesignSize = (
         360
-        205)
+        209)
+      object TMLyric: TPaintBox
+        Left = 0
+        Top = 24
+        Width = 360
+        Height = 181
+        Anchors = [akLeft, akTop, akRight, akBottom]
+        PopupMenu = TntCP
+        OnPaint = TMLyricPaint
+      end
       object LScroll: TTntCheckBox
         Left = 240
         Top = 2
@@ -248,7 +256,7 @@ object PlaylistForm: TPlaylistForm
         Caption = 'Smooth scroll'
         ParentShowHint = False
         ShowHint = False
-        TabOrder = 6
+        TabOrder = 5
         OnClick = LScrollClick
       end
       object PLBC: TTntPanel
@@ -264,7 +272,7 @@ object PlaylistForm: TPlaylistForm
         ParentBackground = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 1
+        TabOrder = 0
         OnClick = PLBCClick
       end
       object PLHC: TTntPanel
@@ -280,7 +288,7 @@ object PlaylistForm: TPlaylistForm
         ParentBackground = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 2
+        TabOrder = 1
         OnClick = PLHCClick
       end
       object PLTC: TTntPanel
@@ -296,7 +304,7 @@ object PlaylistForm: TPlaylistForm
         ParentBackground = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 3
+        TabOrder = 2
         OnClick = PLTCClick
       end
       object CLyricS: TComboBox
@@ -305,7 +313,7 @@ object PlaylistForm: TPlaylistForm
         Width = 34
         Height = 21
         ItemHeight = 13
-        TabOrder = 4
+        TabOrder = 3
         OnChange = CLyricSChange
         Items.Strings = (
           '8'
@@ -330,24 +338,9 @@ object PlaylistForm: TPlaylistForm
         Top = 0
         Width = 102
         Height = 21
-        ItemHeight = 0
-        TabOrder = 5
+        ItemHeight = 13
+        TabOrder = 4
         OnChange = CLyricFChange
-      end
-      object TMLyric: TTntListBox
-        Left = 0
-        Top = 23
-        Width = 360
-        Height = 185
-        Style = lbVirtualOwnerDraw
-        Anchors = [akLeft, akTop, akRight, akBottom]
-        ItemHeight = 16
-        ParentShowHint = False
-        PopupMenu = TntCP
-        ShowHint = True
-        TabOrder = 0
-        OnDrawItem = TMLyricDrawItem
-        OnEnter = TMLyricEnter
       end
     end
   end
@@ -362,6 +355,22 @@ object PlaylistForm: TPlaylistForm
   end
   object TntCP: TTntPopupMenu
     Left = 224
+    object MLoadLyric: TTntMenuItem
+      Caption = 'Load Lyric...'
+      OnClick = MLoadLyricClick
+    end
+    object MDownloadLyric: TTntMenuItem
+      Caption = 'Download Lyric...'
+      OnClick = MDownloadLyricClick
+    end
+    object N2: TTntMenuItem
+      Caption = '-'
+    end
+    object CPA: TTntMenuItem
+      Caption = 'Auto Detect'
+      RadioItem = True
+      OnClick = TntCPClick
+    end
     object CP0: TTntMenuItem
       Caption = 'System default'
       Checked = True

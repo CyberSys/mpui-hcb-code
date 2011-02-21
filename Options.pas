@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -291,7 +291,7 @@ var DirectSoundEnumerate: function(lpDSEnumCallback: PDSEnumCallback; lpContext:
 procedure LoadDsLibrary;
 begin
   if IsDsLoaded <> 0 then exit;
-  IsDsLoaded := LoadLibrary('dsound.dll');
+  IsDsLoaded := Tnt_LoadLibraryW('dsound.dll');
   if IsDsLoaded <> 0 then
     @DirectSoundEnumerate := GetProcAddress(IsDsLoaded, 'DirectSoundEnumerateA');
 end;
@@ -1120,10 +1120,9 @@ begin
     if FontDialog1.Execute then begin
       BFont.Caption := FontDialog1.Font.Name;
       BFont.Font.Name := FontDialog1.Font.Name;
-      TMLyric.Font.Name := FontDialog1.Font.Name;
-      TMLyric.Font.Size := FontDialog1.Font.Size;
-      TMLyric.ItemHeight := FontDialog1.Font.Size * 2;
-      TMLyric.Count := round(TMLyric.Height / TMLyric.ItemHeight) - 1;
+      Lyric.BitMap.Canvas.Font.Name := FontDialog1.Font.Name;
+      Lyric.BitMap.Canvas.Font.Size := FontDialog1.Font.Size;
+      Lyric.ItemHeight:= WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;
       UpdatePW := True;
     end;
   end;

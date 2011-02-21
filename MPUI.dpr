@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2010 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -58,8 +58,8 @@ uses
   SevenZip in 'SevenZip.pas',
   SevenZipVCL in 'SevenZipVCL.pas',
   Equalizer in 'Equalizer.pas' {EqualizerForm},
-  TV in 'TV.pas' {OpenDevices};
-
+  TV in 'TV.pas' {OpenDevicesForm},
+  DLyric in 'DLyric.pas' {DLyricForm};
 {$R *.res}
 {$R XPStyle.res}
 var hAppMutex: Thandle; Mf: hWnd; s: WideString; t: string; i, PCount: integer;
@@ -99,7 +99,8 @@ begin
     Application.CreateForm(TInfoForm, InfoForm);
     Application.CreateForm(TEqualizerForm, EqualizerForm);
     Application.CreateForm(TOptionsForm, OptionsForm);
-    Application.CreateForm(TOpenDevices, OpenDevices);
+    Application.CreateForm(TOpenDevicesForm, OpenDevicesForm);
+    Application.CreateForm(TDLyricForm, DLyricForm);
     Application.Run;
     ReleaseMutex(hAppMutex);
   end;
