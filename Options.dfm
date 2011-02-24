@@ -100,7 +100,7 @@ object OptionsForm: TOptionsForm
     Top = 6
     Width = 555
     Height = 397
-    ActivePage = TAudio
+    ActivePage = TSystem
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 5
     OnChange = TabChange
@@ -118,14 +118,14 @@ object OptionsForm: TOptionsForm
       end
       object TseekL: TTntLabel
         Left = 319
-        Top = 248
+        Top = 274
         Width = 25
         Height = 13
         Caption = 'Jump'
       end
       object TUnit: TTntLabel
         Left = 464
-        Top = 248
+        Top = 274
         Width = 66
         Height = 13
         Caption = 'seconds/Seek'
@@ -464,7 +464,7 @@ object OptionsForm: TOptionsForm
       end
       object Eseek: TTntEdit
         Left = 408
-        Top = 244
+        Top = 270
         Width = 49
         Height = 21
         TabOrder = 29
@@ -489,6 +489,16 @@ object OptionsForm: TOptionsForm
         ParentShowHint = False
         ShowHint = False
         TabOrder = 34
+      end
+      object CLS: TTntCheckBox
+        Left = 318
+        Top = 248
+        Width = 229
+        Height = 17
+        Caption = 'Auto Download Lyric/Subtitle'
+        ParentShowHint = False
+        ShowHint = False
+        TabOrder = 35
       end
     end
     object TVideo: TTntTabSheet
@@ -560,7 +570,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 8
       end
       object CAspect: TTntComboBox
@@ -570,7 +580,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 1
       end
       object CDeinterlace: TTntComboBox
@@ -580,7 +590,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 2
       end
       object CDr: TTntCheckBox
@@ -601,7 +611,7 @@ object OptionsForm: TOptionsForm
         Width = 288
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 4
       end
       object double: TTntCheckBox
@@ -780,7 +790,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 1
       end
       object CSPDIF: TTntCheckBox

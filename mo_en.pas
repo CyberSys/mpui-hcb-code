@@ -248,6 +248,7 @@ begin
     Csubfont.Hint:=Esubfont.Hint;
     Cosdfont.Hint:=Esubfont.Hint;
     Eosdfont.Hint:=Esubfont.Hint;
+    CLS.Caption:='Auto Download Lyric/Subtitle';
     THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:='About';
     LVersionMPUI.Caption:='MPUI-hcb version:';

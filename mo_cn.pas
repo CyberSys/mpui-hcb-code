@@ -300,6 +300,7 @@ begin
     CSPDIF.Caption:=UTF8Decode('通过S/PDIF输出AC3/DTS');
     LCh.Caption:=UTF8Decode('立体声输出模式');
     LRot.Caption:=UTF8Decode('旋转视频');
+	CLS.Caption:=UTF8Decode('自动下载 歌词/字幕');
     SSubcode.Caption:=UTF8Decode('字幕编码:');
     SSubfont.Caption:=UTF8Decode('字幕字体:');
     SOsdfont.Caption:=UTF8Decode('OSD字体:');

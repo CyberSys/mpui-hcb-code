@@ -146,6 +146,7 @@ begin
           Core.AutoQuit := ReadBool(SectionName, 'AutoQuit', Core.AutoQuit);
           Core.Addsfiles := ReadBool(SectionName, 'Add sequence files', Core.Addsfiles);
           Core.WantCompact := ReadBool(SectionName, 'Compact', Core.WantCompact);
+          Core.ADls := ReadBool(SectionName, 'Auto Download Lyric/Subtitle', Core.ADls);
           Core.PScroll := ReadBool(SectionName, 'Scroll', Core.PScroll);
           s := ReadString(SectionName, 'LyricFont', '');
           if s <> '' then Core.LyricF := s;
@@ -205,7 +206,7 @@ begin
   INI := TMemIniFile.Create(FileName);
   with INI do try
     case mode of
-      0: begin
+      0: begin  //save all setting on optional panel
           WriteInteger(SectionName, 'LyricSize', Core.LyricS);
           WriteString(SectionName, 'LyricFont', Core.LyricF);
           WriteInteger(SectionName, 'Locale', DefaultLocale);
@@ -275,8 +276,9 @@ begin
           WriteBool(SectionName, 'DTime', Core.CT);
           WriteString(SectionName, 'Params', Core.Params);
           WriteBool(SectionName, 'Add sequence files', Core.Addsfiles);
+          WriteBool(SectionName, 'Auto Download Lyric/Subtitle', Core.ADls);
         end;
-      1: begin
+      1: begin  //save some setting when mpui quit
           WriteInteger(SectionName, 'IPanelWidth', Core.InterW);
           WriteInteger(SectionName, 'IPanelHeight', Core.InterH);
           if ds then begin
@@ -303,18 +305,18 @@ begin
           for h := MainForm.MRFile.Count - 1 downto 2 do
             WriteString(SectionName, 'RF' + IntToStr(h - 2), UTF8Encode(TTntMenuItem(MainForm.MRFile.Items[h]).Hint));
         end;
-      2: begin
+      2: begin  //immediately save setting
           WriteBool(SectionName, 'instance', Core.oneM);
           WriteBool(SectionName, 'RSize', Core.RS);
           WriteBool(SectionName, 'RPostion', Core.RP);
           WriteBool(SectionName, 'DSize', Core.ds);
           WriteString(SectionName, 'HotKey', Core.HKS);
         end;
-      3: begin
-          WriteInteger(SectionName, 'CWidth', Core.NW);
-          WriteInteger(SectionName, 'CHeight', Core.NH);
-        end;
-      4: WriteString(SectionName, 'fileAss', Core.Fass);
+      3: begin  //save customize view
+           WriteInteger(SectionName, 'CWidth', Core.NW);
+           WriteInteger(SectionName, 'CHeight', Core.NH);
+         end;
+      4: WriteString(SectionName, 'fileAss', Core.Fass);  //save file assiociate
     end;
     INI.UpdateFile;
   finally

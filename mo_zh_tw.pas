@@ -260,6 +260,7 @@ begin
     TAudio.Caption:=MainForm.MAudios.Caption;
     TSub.Caption:=MainForm.MSub.Caption;
     TAbout.Caption:=UTF8Decode('關於');
+	CLS.Caption:=UTF8Decode('自動下載 歌詞/字幕');
     THelp.Caption:=MainForm.MHelp.Caption;
     CSP.Caption:=UTF8Decode('單擊畫面暫停');
     CRS.Caption:=UTF8Decode('啟動時使用上次的窗體大小');

@@ -31,7 +31,7 @@ object PlaylistForm: TPlaylistForm
     Top = 0
     Width = 368
     Height = 237
-    ActivePage = TntTabSheet2
+    ActivePage = TntTabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
     object TntTabSheet1: TTntTabSheet

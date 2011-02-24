@@ -180,6 +180,7 @@ type
     Eosdfont: TTntEdit;
     Cconfig: TTntCheckBox;
     CAddsfiles: TTntCheckBox;
+    CLS: TTntCheckBox;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -432,6 +433,7 @@ begin
   CSoftVol.Checked := SoftVol;
   CRFScr.Checked := RFScr;
   CAddsfiles.Checked := Addsfiles;
+  CLS.Checked := ADls;
   CDr.Checked := Dr;
   Double.Checked := dbbuf;
   CVolnorm.Checked := Volnorm;
@@ -572,10 +574,6 @@ begin
 
   if Volnorm <> CVolnorm.Checked then begin
     Volnorm := CVolnorm.Checked; changed := true;
-  end;
-
-  if Addsfiles <> CAddsfiles.Checked then begin
-    Addsfiles := CAddsfiles.Checked; changed := true;
   end;
 
   if nfc <> nfconf.Checked then begin
@@ -819,7 +817,9 @@ begin
   PlaylistForm.PLBC.Color := LbgColor;
   PlaylistForm.PLHC.Color := LhgColor;
   PlaylistForm.LScroll.Checked := PScroll;
-  if PlaylistForm.Visible then PlaylistForm.TMLyric.Invalidate;
+  ADls:=CLS.Checked;
+  Addsfiles := CAddsfiles.Checked;
+  if PlaylistForm.Visible then PlaylistForm.TMLyricPaint(nil);
   MainForm.UpdateMenuCheck; SaveHotKey;
   Save(HomeDir + DefaultFileName, 2);
 end;
