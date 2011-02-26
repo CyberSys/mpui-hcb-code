@@ -260,7 +260,8 @@ begin
     TAudio.Caption:=MainForm.MAudios.Caption;
     TSub.Caption:=MainForm.MSub.Caption;
     TAbout.Caption:=UTF8Decode('關於');
-	CLS.Caption:=UTF8Decode('自動下載 歌詞/字幕');
+	CLS.Caption:=UTF8Decode('彈出 “下載 歌詞/字幕” 對話框');
+	CLS.Hint:=UTF8Decode('當mpui不能找到合適的歌詞、字幕時，彈出 “下載 歌詞/字幕” 對話框');
     THelp.Caption:=MainForm.MHelp.Caption;
     CSP.Caption:=UTF8Decode('單擊畫面暫停');
     CRS.Caption:=UTF8Decode('啟動時使用上次的窗體大小');
@@ -580,6 +581,7 @@ begin
     LSLang.Caption:=SubListView.Column[2].Caption + ':';
     LSTitle.Caption:=LTitle.Caption;
     BApply.Caption:=OptionsForm.BApply.Caption;
+    BLApply.Caption:=OptionsForm.BApply.Caption;
     BSave.Caption:=OptionsForm.BSave.Caption;
     BLSave.Caption:=BSave.Caption;
     BSave.Hint:=UTF8Decode('保存 歌詞');

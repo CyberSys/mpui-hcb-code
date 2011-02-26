@@ -248,7 +248,8 @@ begin
     Csubfont.Hint:=Esubfont.Hint;
     Cosdfont.Hint:=Esubfont.Hint;
     Eosdfont.Hint:=Esubfont.Hint;
-    CLS.Caption:='Auto Download Lyric/Subtitle';
+    CLS.Caption:='Popup "Download Lyric/Subtitle" dialog';
+    CLS.Hint:='When mpui don''t find suitable lyric/subtitle, popup "DownLoad Lyric/Subtitle" dialog';
     THelp.Caption:=MainForm.MHelp.Caption;
     TAbout.Caption:='About';
     LVersionMPUI.Caption:='MPUI-hcb version:';
@@ -578,6 +579,7 @@ begin
     LSLang.Caption:=SubListView.Column[2].Caption + ':';
     LSTitle.Caption:=LTitle.Caption;
     BApply.Caption:=OptionsForm.BApply.Caption;
+    BLApply.Caption:=OptionsForm.BApply.Caption;
     BSave.Caption:=OptionsForm.BSave.Caption;
     BLSave.Caption:=BSave.Caption;
     BSave.Hint:='Save Lyric';

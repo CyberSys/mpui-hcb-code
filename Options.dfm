@@ -495,9 +495,9 @@ object OptionsForm: TOptionsForm
         Top = 248
         Width = 229
         Height = 17
-        Caption = 'Auto Download Lyric/Subtitle'
+        Caption = 'Popup Download Lyric/Subtitle dialog'
         ParentShowHint = False
-        ShowHint = False
+        ShowHint = True
         TabOrder = 35
       end
     end
@@ -570,7 +570,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 8
       end
       object CAspect: TTntComboBox
@@ -580,7 +580,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 1
       end
       object CDeinterlace: TTntComboBox
@@ -590,7 +590,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 2
       end
       object CDr: TTntCheckBox
@@ -611,7 +611,7 @@ object OptionsForm: TOptionsForm
         Width = 288
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 4
       end
       object double: TTntCheckBox
@@ -790,7 +790,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 1
       end
       object CSPDIF: TTntCheckBox

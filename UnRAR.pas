@@ -419,12 +419,14 @@ begin
             Break
           else begin
             if (not IsWideStringMappableToAnsi(FName)) or (pos(',',FName)>0) then FName:=WideExtractShortPathName(FName);
-            if Firstrun or (not Win32PlatformIsUnicode) then begin
-              Loadsub:=2; Loadsrt:=2;
-              AddChain(j,substring,Tnt_WideStringReplace(EscapeParam(FName),'\','/',[rfReplaceAll]));
-            end
-            else
-              SendCommand('sub_load '+Tnt_WideStringReplace(EscapeParam(FName),'\','/',[rfReplaceAll]));
+            if pos(FName,substring)=0 then begin
+              if Firstrun or (not Win32PlatformIsUnicode) then begin
+                Loadsub:=2; Loadsrt:=2;
+                AddChain(j,substring,FName);
+              end
+              else
+                SendCommand('sub_load ' + Tnt_WideStringReplace(EscapeParam(FName), '\', '/', [rfReplaceAll]));
+            end;
           end;
         end
         else begin

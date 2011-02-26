@@ -536,7 +536,7 @@ end;
 
 procedure DownSubtitle_CallBackFinish(number, bad_number: integer); stdcall;
 begin
-  //if number > bad_number then Restart;
+  if number > bad_number then dsEnd:=true;
 end;
 
 procedure DownSubtitle_CallBackW(const sub_path: PWChar; is_eng, sub_delay: Integer); stdcall;
@@ -568,13 +568,15 @@ begin
     else begin
       j := sub_path;
       if (not IsWideStringMappableToAnsi(j)) or (pos(',', j) > 0) then j := WideExtractShortPathName(j);
-      if not Win32PlatformIsUnicode then begin
-        Loadsub := 2; Loadsrt := 2;
-        AddChain(s, substring, Tnt_WideStringReplace(EscapeParam(j), '\', '/', [rfReplaceAll]));
-      end
-      else
-        SendCommand('sub_load ' + Tnt_WideStringReplace(EscapeParam(j), '\', '/', [rfReplaceAll]));
-    end;
+      if pos(j,substring)=0 then begin
+        if not Win32PlatformIsUnicode then begin
+          Loadsub := 2; Loadsrt := 2;
+          AddChain(s, substring, j);
+        end
+        else
+          SendCommand('sub_load ' +  Tnt_WideStringReplace(EscapeParam(j), '\', '/', [rfReplaceAll]));
+      end;
+	end;
   end;
   if (not Win32PlatformIsUnicode) and (s > 0) then Restart;
 end;
@@ -786,12 +788,14 @@ begin
               Loadsub := 1;
               t := fnbuf;
               if (not IsWideStringMappableToAnsi(t)) or (pos(',', t) > 0) then t := WideExtractShortPathName(t);
-              if not Win32PlatformIsUnicode then begin
-                Loadsub := 2; Loadsrt := 2;
-                AddChain(s, substring, Tnt_WideStringReplace(EscapeParam(t), '\', '/', [rfReplaceAll]));
-              end
-              else
-                SendCommand('sub_load ' + Tnt_WideStringReplace(EscapeParam(t), '\', '/', [rfReplaceAll]));
+              if pos(t,substring)=0 then begin
+                if not Win32PlatformIsUnicode then begin
+                  Loadsub := 2; Loadsrt := 2;
+                  AddChain(s, substring, t);
+                end
+                else
+                  SendCommand('sub_load ' + Tnt_WideStringReplace(EscapeParam(t), '\', '/', [rfReplaceAll]));
+			        end;
             end;
           end;
         end;
@@ -2373,7 +2377,7 @@ begin
   AudioID := -1; SubID := -1; VideoID := -1; TID := 1; CID := 1; AID := 1; CDID := 1;
   subcount := 0; Lastsubcount := 0; VobsubCount := 0; procArc := false; Dreset := false;
   LastPos := 0; SecondPos := -1; TotalTime := 0; Duration := '0:00:00'; ppoint.x := -1;
-  ppoint.y := -1; SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible;
+  ppoint.y := -1; SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; dsEnd:=false;
   if AudioFile <> '' then begin
     AudioFile := ''; MUloadAudio.Visible := false; end;
 end;
@@ -2902,12 +2906,14 @@ begin
           else begin
             j := Files[i];
             if (not IsWideStringMappableToAnsi(j)) or (pos(',', j) > 0) then j := WideExtractShortPathName(j);
-            if not Win32PlatformIsUnicode then begin
-              Loadsub := 2; Loadsrt := 2;
-              AddChain(s, substring, Tnt_WideStringReplace(EscapeParam(j), '\', '/', [rfReplaceAll]));
-            end
-            else
-              SendCommand('sub_load ' + Tnt_WideStringReplace(EscapeParam(j), '\', '/', [rfReplaceAll]));
+            if pos(j,substring)=0 then begin
+              if not Win32PlatformIsUnicode then begin
+                Loadsub := 2; Loadsrt := 2;
+                AddChain(s, substring, j);
+              end
+              else
+                SendCommand('sub_load ' + Tnt_WideStringReplace(EscapeParam(j), '\', '/', [rfReplaceAll]));
+			      end;
           end;
         end;
       end;
@@ -3213,6 +3219,7 @@ procedure TMainForm.MdownloadsubtitleClick(Sender: TObject);
 begin
   DLyricForm.Show; DLyricForm.PLS.ActivePageIndex:=1;
   DLyricForm.PLSChange(nil);
+  if dsEnd then exit;
   LoadSLibrary;
   if IsSLoaded <> 0 then
     DownloaderSubtitleW(PWChar(MediaURL), True, DownSubtitle_CallBackW, DownSubtitle_CallBackFinish);

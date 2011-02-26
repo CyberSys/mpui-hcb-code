@@ -300,7 +300,8 @@ begin
     CSPDIF.Caption:=UTF8Decode('通过S/PDIF输出AC3/DTS');
     LCh.Caption:=UTF8Decode('立体声输出模式');
     LRot.Caption:=UTF8Decode('旋转视频');
-	CLS.Caption:=UTF8Decode('自动下载 歌词/字幕');
+	CLS.Caption:=UTF8Decode('弹出 “下载 歌词/字幕” 对话框');
+	CLS.Hint:=UTF8Decode('当mpui不能找到合适的歌词、字幕时，弹出 “下载 歌词/字幕” 对话框');
     SSubcode.Caption:=UTF8Decode('字幕编码:');
     SSubfont.Caption:=UTF8Decode('字幕字体:');
     SOsdfont.Caption:=UTF8Decode('OSD字体:');
@@ -576,6 +577,7 @@ begin
     LSLang.Caption:=SubListView.Column[2].Caption + ':';
     LSTitle.Caption:=LTitle.Caption;
     BApply.Caption:=OptionsForm.BApply.Caption;
+    BLApply.Caption:=OptionsForm.BApply.Caption;
     BSave.Caption:=OptionsForm.BSave.Caption;
     BLSave.Caption:=BSave.Caption;
     BSave.Hint:=UTF8Decode('保存 歌词');
