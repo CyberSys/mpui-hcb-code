@@ -296,7 +296,10 @@ begin
     end
     else if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
   until False;
+try
   RARCloseArchive(hArcData);
+except
+end;
 end;
 
 procedure ExtractRarLyric(ArcName,PW:widestring);

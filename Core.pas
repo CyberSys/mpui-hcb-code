@@ -146,7 +146,7 @@ var HaveAudio, HaveVideo, LastHaveVideo, ChkAudio, ChkVideo, ChkStartPlay: boole
   NativeWidth, NativeHeight, MonitorID, MonitorW, MonitorH: integer;
   LastPos, SecondPos, OSDLevel, DefaultOSDLevel, MSecPos: integer;
 var Volume, MWC, CP, seekLen: integer;
-  ds, tEnd, procArc, Mute, Ass, Efont, ISub, AutoNext, UpdatePW, sconfig: boolean;
+  ds, tEnd, procArc, Mute, Ass, Efont, ISub, AutoNext, UpdatePW, sconfig, EndOpenDir: boolean;
   DTFormat: string;
   FormatSet: TFormatSettings;
   ExplicitStop, Rot, DefaultFontIndex: integer;

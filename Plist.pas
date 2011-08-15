@@ -28,28 +28,14 @@ uses
   ComCtrls, TntComCtrls, Classes, TntClasses, TntSystem, ExtCtrls,
   TntExtCtrls, TntFileCtrl;
 
-const
-  NS_OK = 0;
-  NS_ERROR_OUT_OF_MEMORY = $8007000e;
-
- type
-	rCharsetInfo = record
-  	Name: pChar;
-    CodePage: integer;
-    Language: pChar;
+type
+  TOpenDir = class(TThread)
+    private
+      Directory: Widestring;
+    protected
+      procedure Execute; override;
+    public
   end;
-  prCharsetInfo = ^rCharsetInfo; 
-
-  eBOMKind =(
-    BOM_Not_Found,
-    BOM_UCS4_BE,    // 00 00 FE FF           UCS-4,    big-endian machine    (1234 order)
-    BOM_UCS4_LE,    // FF FE 00 00           UCS-4,    little-endian machine (4321 order)
-    BOM_UCS4_2143,  // 00 00 FF FE           UCS-4,    unusual octet order   (2143)
-    BOM_UCS4_3412,  // FE FF 00 00           UCS-4,    unusual octet order   (3412)
-    BOM_UTF16_BE,   // FE FF ## ##           UTF-16,   big-endian
-    BOM_UTF16_LE,   // FF FE ## ##           UTF-16,   little-endian
-    BOM_UTF8        // EF BB BF              UTF-8
-  );
 
 type
   TPlaybackState = (psNotPlayed, psPlaying, psPlayed, psSkipped);
@@ -75,6 +61,7 @@ type TPlaylist = class
     procedure Add(const Entry: TPlaylistEntry);
     procedure AddFiles(const URL: widestring);
     function AddM3U(const FileName: WideString; FileExtIndex: integer): boolean;
+    procedure AddDir(Directory: WideString);
     procedure AddDirectory(Directory: WideString);
     property Count: integer read GetCount;
     property Items[Index: integer]: TPlaylistEntry read GetItem; default;
@@ -270,6 +257,8 @@ type
     MDownloadLyric: TTntMenuItem;
     TMLyric: TPaintBox;
     CPA: TTntMenuItem;
+    dLyric: TTntBitBtn;
+    dlyric1: TTntBitBtn;
     procedure BAddDirClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormHide(Sender: TObject);
@@ -316,12 +305,8 @@ var
   LDocked, RDocked, TDocked, BDocked: boolean;
   LL, TT: integer;
   IsCLoaded:THandle = 0;
-  csd_Reset              : procedure ; stdcall;
-  csd_HandleData         : function (aBuf: PChar; aLen: integer): integer; stdcall;
-  csd_Done               : function : Boolean; stdcall;
-  csd_DataEnd            : procedure ; stdcall;
-  csd_GetDetectedCharset : function : rCharsetInfo; stdcall;
-  
+  GuessStrChardet  : function(str:PChar; strlen:integer):PChar; stdcall;
+
 procedure addEpisode(s: widestring);
 procedure LoadCLibrary;
 procedure UnLoadCLibrary; 
@@ -338,11 +323,7 @@ begin
   if IsCLoaded <> 0 then exit;
   IsCLoaded := Tnt_LoadLibraryW('chsdet.dll');
   if IsCLoaded <> 0 then begin
-    @csd_Reset              := GetProcAddress(IsCLoaded, 'csd_Reset');
-    @csd_HandleData         := GetProcAddress(IsCLoaded, 'csd_HandleData');
-    @csd_Done               := GetProcAddress(IsCLoaded, 'csd_Done');
-    @csd_DataEnd            := GetProcAddress(IsCLoaded, 'csd_DataEnd');
-    @csd_GetDetectedCharset := GetProcAddress(IsCLoaded, 'csd_GetDetectedCharset');
+    @GuessStrChardet  := GetProcAddress(IsCLoaded, 'GuessStrChardet');
   end;
 end;
 
@@ -351,11 +332,7 @@ begin
   if IsCLoaded <> 0 then begin
     FreeLibrary(IsCLoaded);
     IsCLoaded := 0;
-    csd_Reset              := nil;
-    csd_HandleData         := nil;
-    csd_Done               := nil;
-    csd_DataEnd            := nil;
-    csd_GetDetectedCharset := nil;
+    GuessStrChardet  :=nil;
   end;
 end; 
 
@@ -368,12 +345,7 @@ begin
     BeginUpdate;
     try
       DataLeft := Stream.Size - Stream.Position;
-      if CharSet = csUtf8 then begin
-        SetLength(SA, DataLeft div SizeOf(AnsiChar));
-        Stream.Read(PAnsiChar(SA)^, DataLeft);
-        SetTextStr(UTF8ToWideString(SA));
-      end
-      else if (CharSet in [csUnicode, csUnicodeSwapped]) then begin
+      if (CharSet in [csUnicode, csUnicodeSwapped]) then begin
         if DataLeft < SizeOf(WideChar) then SW := ''
         else begin
           SetLength(SW, DataLeft div SizeOf(WideChar));
@@ -386,7 +358,8 @@ begin
       else begin
         SetLength(SA, DataLeft div SizeOf(AnsiChar));
         Stream.Read(PAnsiChar(SA)^, DataLeft);
-        SetTextStr(SA);
+        if CharSet = csUtf8 then SetTextStr(UTF8Decode(SA))
+        else SetTextStr(SA);
       end;
     finally
       EndUpdate;
@@ -420,7 +393,7 @@ begin
       2: begin if LyricStringsA <> nil then LyricStringsA.Free; MaxLenLyricA := ''; end;
     end;
   end;
-  HaveLyric := 0;
+  HaveLyric := 0; PlaylistForm.CPA.Tag:=0;
   PlaylistForm.TMLyricPaint(nil);
 end;
 
@@ -459,13 +432,28 @@ begin
   end;
 end;
 
+procedure TOpenDir.Execute;
+begin
+  Playlist.AddDir(Directory);
+end;
+
 procedure TPlaylist.AddDirectory(Directory: Widestring);
+var t:TOpenDir;
+begin
+    t:=TOpenDir.Create(True);
+    t.FreeOnTerminate:=True;
+    t.Directory:=Directory;  EndOpenDir:=false;
+    t.Resume;       
+end;
+
+
+procedure TPlaylist.AddDir(Directory: Widestring);
 var SR: TSearchRecW; Entry: TPlaylistEntry;
 begin
   Directory := WideIncludeTrailingPathDelimiter(WideExpandUNCFileName(Directory));
 
   // check for DVD directory
-  if WideDirectoryExists(Directory + 'VIDEO_TS') then begin
+  if WideDirectoryExists(Directory + 'VIDEO_TS') and (not EndOpenDir) then begin
    // Directory:=WideExcludeTrailingPathDelimiter(Directory);
     with Entry do begin
       State := psNotPlayed;
@@ -480,24 +468,24 @@ begin
   end;
 
   // no DVD ->is it a (S)VCD directory?
-  if WideDirectoryExists(Directory + 'MPEGAV') then Directory := Directory + 'MPEGAV\'
+  if WideDirectoryExists(Directory + 'MPEGAV') and (not EndOpenDir) then Directory := Directory + 'MPEGAV\'
   else if WideDirectoryExists(Directory + 'MPEG2') then Directory := Directory + 'MPEG2\';
 
   // no (S)VCD -> search the directory recursively
-  if WideFindFirst(Directory + '*.*', faAnyFile, SR) = 0 then begin
+  if (WideFindFirst(Directory + '*.*', faAnyFile, SR) = 0) and (not EndOpenDir) then begin
     repeat
       if SR.Name[1] <> '.' then begin // exclude . or .. Directory
         empty := false;
-        if (SR.Attr and faDirectory) <> 0 then AddDirectory(Directory + SR.Name)
+        if (SR.Attr and faDirectory) <> 0 then AddDir(Directory + SR.Name)
         else if CheckInfo(MediaType, Tnt_WideLowerCase(WideExtractFileExt(SR.Name))) > -1 then
           AddFiles(Directory + SR.Name);
       end;
-    until WideFindNext(SR) <> 0;
+    until (WideFindNext(SR) <> 0) and EndOpenDir;
     WideFindClose(SR);
   end;
 
   // directory is empty, or no filesystem -> try use TrackMode to access directory
-  if empty then begin
+  if empty and (not EndOpenDir) then begin
     with Entry do begin
       State := psNotPlayed;
       if IsWideStringMappableToAnsi(Directory) then
@@ -757,13 +745,13 @@ begin
 end;
 
 procedure TLyric.ParseLyricA(const FileName: WideString);
-var s: string; TimeEntry: TLyricTimeCodeEntry; ChSInfo:rCharsetInfo;
+var s: string; TimeEntry: TLyricTimeCodeEntry;
   lc, rc, lo, ro, offset, mins, secs, ms, len, Lyricindex, sMaxLen, i, j: integer;
   First: boolean; a: TStringList; NoTag: boolean;
 begin
   if IsParsed then exit;
   a := TStringList.Create;
-  a.LoadFromFile(WideExtractShortPathName(FileName));
+  a.LoadFromFile(FileName);
   if a.Count < 1 then begin a.Free; exit; end;
   Lyricindex := 0; offset := 0; len := -1; sMaxLen := 0; First := true;
   for j := 0 to a.Count - 1 do begin
@@ -830,23 +818,25 @@ begin
   if PlaylistForm.CPA.Visible then begin
     LoadCLibrary;
     if IsCLoaded <> 0 then begin
-      csd_Reset;
-      csd_HandleData(LyricStringsA.GetText, Length(LyricStringsA.Text));
-      if not csd_Done then csd_DataEnd;
-      ChSInfo := csd_GetDetectedCharset;
-      CP:=ChSInfo.CodePage; PlaylistForm.CPA.Tag:=CP;
-      i:= Pos('(', PlaylistForm.CPA.Caption);
-      if i>1 then
-        PlaylistForm.CPA.Caption := Copy(PlaylistForm.CPA.Caption, 1, i-2) + ' ('+ChSInfo.Language+'_'+ChSInfo.Name +')'
-      else PlaylistForm.CPA.Caption :=PlaylistForm.CPA.Caption + ' ('+ChSInfo.Language+'_'+ChSInfo.Name +')';
-      PlaylistForm.TntCPClick(PlaylistForm.CPA);
+      s:=GuessStrChardet(LyricStringsA.GetText,Length(LyricStringsA.Text));
+      i:= Pos(' ',s);
+      if i<>0 then begin
+        CP:=StrToIntDef(Copy(s,i,MaxInt),CP); PlaylistForm.CPA.Tag:=CP;
+        s:=Copy(s,0,i-1);
+        i:= Pos('(', PlaylistForm.CPA.Caption);
+        if i>1 then
+          PlaylistForm.CPA.Caption := Copy(PlaylistForm.CPA.Caption, 1, i-2) + ' ('+ s +')'
+        else PlaylistForm.CPA.Caption :=PlaylistForm.CPA.Caption + ' ('+ s +')';
+        PlaylistForm.TntCPClick(PlaylistForm.CPA);
+      end;
     end;
   end;
 
   HaveLyric := 2; LyricURL := FileName; IsParsed := true;
   with PlaylistForm do begin
     UpdatePW := True;
-    if not Visible then begin
+    if Visible then PlaylistForm.TMLyricPaint(nil)
+    else begin
       TntPageControl1.TabIndex := 1;
       Show;
     end;
@@ -926,7 +916,8 @@ begin
   HaveLyric := 1; LyricURL := FileName; IsParsed := true;
   with PlaylistForm do begin
     UpdatePW := True;
-    if not Visible then begin
+    if Visible then PlaylistForm.TMLyricPaint(nil)
+    else begin
       TntPageControl1.TabIndex := 1;
       Show;
     end;
@@ -1435,7 +1426,7 @@ end;
 
 procedure TPlaylistForm.BClearClick(Sender: TObject);
 begin
-  SetLength(Playlist.Data, 0); CurPlay := -1;
+  SetLength(Playlist.Data, 0); CurPlay := -1; EndOpenDir:=true;
   Playlist.Changed;
 end;
 
@@ -1458,6 +1449,7 @@ begin
     end;
   end;
   UpdatePW := True;
+  TMLyricPaint(nil);
   (Sender as TTntMenuItem).Checked := true;
 end;
 
