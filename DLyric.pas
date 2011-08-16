@@ -455,7 +455,7 @@ begin
       Filter:= LyricFilter + ' (*.lrc)|*.lrc|' + AnyFilter + ' (*.*)|*.*';
       if LyricListView.Items.Count=0 then Exit;
       if LyricListView.ItemIndex=-1 then LyricListView.ItemIndex:=0;
-      FileName:=LyricListView.Selected.SubItems[0] + ' - ' + LyricListView.Selected.SubItems[1];
+      FileName:=GetFileName(WideExtractFileName(MediaURL));
       if Execute then begin
         BLSave.Enabled:=False; BLApply.Enabled:=False;
         t:=TDownLoadLyric.Create(True);
@@ -469,7 +469,7 @@ begin
       Filter:= SubFilter + ' (*.zip)|*.zip|' + AnyFilter + ' (*.*)|*.*';
       if SubListView.Items.Count=0 then Exit;
       if SubListView.ItemIndex=-1 then SubListView.ItemIndex:=0;
-      FileName:=SubListView.Selected.SubItems[0] + ' - ' + SubListView.Selected.SubItems[1];
+      FileName:=GetFileName(WideExtractFileName(MediaURL));
       if Execute then begin
         BSave.Enabled:=False; BApply.Enabled:=False;
         t:=TDownLoadLyric.Create(True);
