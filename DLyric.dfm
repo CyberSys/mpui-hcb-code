@@ -21,17 +21,17 @@ object DLyricForm: TDLyricForm
   object PLS: TTntPageControl
     Left = 0
     Top = 0
-    Width = 593
-    Height = 451
-    ActivePage = SSubtitle
+    Width = 585
+    Height = 440
+    ActivePage = SLyric
     Align = alClient
     TabOrder = 0
     OnChange = PLSChange
     object SLyric: TTntTabSheet
       Caption = 'Lyric'
       DesignSize = (
-        585
-        423)
+        577
+        412)
       object LArtist: TTntLabel
         Left = 16
         Top = 16
@@ -131,8 +131,8 @@ object DLyricForm: TDLyricForm
     object SSubtitle: TTntTabSheet
       Caption = 'Subtitle'
       DesignSize = (
-        585
-        423)
+        577
+        412)
       object LSTitle: TTntLabel
         Left = 228
         Top = 11

@@ -28,14 +28,6 @@ uses
   ComCtrls, TntComCtrls, Classes, TntClasses, TntSystem, ExtCtrls,
   TntExtCtrls, TntFileCtrl;
 
-type
-  TOpenDir = class(TThread)
-    private
-      Directory: Widestring;
-    protected
-      procedure Execute; override;
-    public
-  end;
 
 type
   TPlaybackState = (psNotPlayed, psPlaying, psPlayed, psSkipped);
@@ -61,7 +53,6 @@ type TPlaylist = class
     procedure Add(const Entry: TPlaylistEntry);
     procedure AddFiles(const URL: widestring);
     function AddM3U(const FileName: WideString; FileExtIndex: integer): boolean;
-    procedure AddDir(Directory: WideString);
     procedure AddDirectory(Directory: WideString);
     property Count: integer read GetCount;
     property Items[Index: integer]: TPlaylistEntry read GetItem; default;
@@ -432,28 +423,13 @@ begin
   end;
 end;
 
-procedure TOpenDir.Execute;
-begin
-  Playlist.AddDir(Directory);
-end;
-
 procedure TPlaylist.AddDirectory(Directory: Widestring);
-var t:TOpenDir;
-begin
-    t:=TOpenDir.Create(True);
-    t.FreeOnTerminate:=True;
-    t.Directory:=Directory;  EndOpenDir:=false;
-    t.Resume;       
-end;
-
-
-procedure TPlaylist.AddDir(Directory: Widestring);
 var SR: TSearchRecW; Entry: TPlaylistEntry;
 begin
   Directory := WideIncludeTrailingPathDelimiter(WideExpandUNCFileName(Directory));
 
   // check for DVD directory
-  if WideDirectoryExists(Directory + 'VIDEO_TS') and (not EndOpenDir) then begin
+  if WideDirectoryExists(Directory + 'VIDEO_TS') then begin
    // Directory:=WideExcludeTrailingPathDelimiter(Directory);
     with Entry do begin
       State := psNotPlayed;
@@ -468,24 +444,24 @@ begin
   end;
 
   // no DVD ->is it a (S)VCD directory?
-  if WideDirectoryExists(Directory + 'MPEGAV') and (not EndOpenDir) then Directory := Directory + 'MPEGAV\'
+  if WideDirectoryExists(Directory + 'MPEGAV') then Directory := Directory + 'MPEGAV\'
   else if WideDirectoryExists(Directory + 'MPEG2') then Directory := Directory + 'MPEG2\';
 
   // no (S)VCD -> search the directory recursively
-  if (WideFindFirst(Directory + '*.*', faAnyFile, SR) = 0) and (not EndOpenDir) then begin
+  if WideFindFirst(Directory + '*.*', faAnyFile, SR) = 0 then begin
     repeat
       if SR.Name[1] <> '.' then begin // exclude . or .. Directory
         empty := false;
-        if (SR.Attr and faDirectory) <> 0 then AddDir(Directory + SR.Name)
+        if (SR.Attr and faDirectory) <> 0 then AddDirectory(Directory + SR.Name)
         else if CheckInfo(MediaType, Tnt_WideLowerCase(WideExtractFileExt(SR.Name))) > -1 then
           AddFiles(Directory + SR.Name);
       end;
-    until (WideFindNext(SR) <> 0) and EndOpenDir;
+    until WideFindNext(SR) <> 0;
     WideFindClose(SR);
   end;
 
   // directory is empty, or no filesystem -> try use TrackMode to access directory
-  if empty and (not EndOpenDir) then begin
+  if empty then begin
     with Entry do begin
       State := psNotPlayed;
       if IsWideStringMappableToAnsi(Directory) then
@@ -1426,7 +1402,7 @@ end;
 
 procedure TPlaylistForm.BClearClick(Sender: TObject);
 begin
-  SetLength(Playlist.Data, 0); CurPlay := -1; EndOpenDir:=true;
+  SetLength(Playlist.Data, 0); CurPlay := -1;
   Playlist.Changed;
 end;
 
@@ -1625,7 +1601,7 @@ procedure TPlaylistForm.TMLyricPaint(Sender: TObject);
 begin
   Lyric.Draw;
   PlaylistForm.TMLyric.Canvas.Lock;
-  PlaylistForm.TMLyric.Canvas.Draw(0, 0, Lyric.BitMap);
+  PlaylistForm.TMLyric.Canvas.Draw(0, -Lyric.ItemHeight, Lyric.BitMap);
   //BitBlt(PlaylistForm.TMLyric.Canvas.Handle, 0, 0, BitMap.Width, BitMap.Height, BitMap.Canvas.Handle, 0, 0, SRCCOPY);
   PlaylistForm.TMLyric.Canvas.Unlock;
 end;

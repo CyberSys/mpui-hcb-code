@@ -350,11 +350,12 @@ begin
     end;
   end;
 
-  if mode mod 2=1 then begin
+  if abs(mode mod 2)=1 then begin
     DLyricForm.BSearch.Enabled := true;
+    DLyricForm.BLSave.Enabled:=True; DLyricForm.BLApply.Enabled:=True;
     if Len=0 then Exit;
     DLyricForm.EArtist.Text:= artist; DLyricForm.ETitle.Text:= title;
-    DLyricForm.BLSave.Enabled:=True; DLyricForm.BLApply.Enabled:=True;
+
     DLyricForm.PLS.ActivePageIndex:=0;
     DLyricForm.LyricListView.Clear;
     for i:=0 to Len-1 do begin
@@ -367,9 +368,10 @@ begin
   end
   else begin
     DLyricForm.BSSearch.Enabled := true;
+    DLyricForm.BSave.Enabled:=True; DLyricForm.BApply.Enabled:=True;
     if Len=0 then Exit;
     DLyricForm.ESTitle.Text:= title;
-    DLyricForm.BSave.Enabled:=True; DLyricForm.BApply.Enabled:=True;
+
     DLyricForm.CLang.ItemIndex:=Lang; stList:=SubList;
     DLyricForm.PLS.ActivePageIndex:=1;
     DLyricForm.SubListView.Clear;

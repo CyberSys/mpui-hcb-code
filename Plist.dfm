@@ -22,8 +22,8 @@ object PlaylistForm: TPlaylistForm
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   DesignSize = (
-    349
-    217)
+    357
+    221)
   PixelsPerInch = 96
   TextHeight = 13
   object TntPageControl1: TTntPageControl
@@ -31,7 +31,7 @@ object PlaylistForm: TPlaylistForm
     Top = 0
     Width = 368
     Height = 237
-    ActivePage = TntTabSheet2
+    ActivePage = TntTabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
     object TntTabSheet1: TTntTabSheet
@@ -219,10 +219,10 @@ object PlaylistForm: TPlaylistForm
           0000}
       end
       object PlaylistBox: TTntListBox
-        Left = 0
+        Left = 2
         Top = 26
-        Width = 360
-        Height = 180
+        Width = 355
+        Height = 170
         Style = lbVirtualOwnerDraw
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 16
@@ -381,9 +381,9 @@ object PlaylistForm: TPlaylistForm
       end
       object dlyric1: TTntBitBtn
         Left = 238
-        Top = 1
+        Top = 0
         Width = 23
-        Height = 21
+        Height = 20
         ParentShowHint = False
         ShowHint = True
         TabOrder = 6
