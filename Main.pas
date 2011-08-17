@@ -679,10 +679,8 @@ begin
         if not CheckOption(FileName) then begin
           if IsFirst then begin
             PClear := true; IsFirst := false; end;
-          if WideDirectoryExists(FileName) then begin
-            Playlist.AddDirectory(FileName);
-            empty := true;
-          end
+          if WideDirectoryExists(FileName) then 
+            Playlist.AddDirectory(FileName)
           else Playlist.AddFiles(FileName);
         end;
       end;
@@ -691,7 +689,6 @@ begin
       if AutoPlay then begin
         PClear := true;
         Playlist.AddDirectory('.');
-        empty := true;
       end;
     end;
     Playlist.Changed;
@@ -724,7 +721,6 @@ begin
     if WideDirectoryExists(fnbuf) then begin
       if i = 0 then PClear := true;
       Playlist.AddDirectory(fnbuf);
-      empty := true;
       Loadsub := 0;
     end
     else begin
@@ -848,7 +844,6 @@ begin
       PClear := true; HaveMsg := true; end;
     if WideDirectoryExists(OpenFileName) then begin
       Playlist.AddDirectory(OpenFileName);
-      empty := true;
     end
     else Playlist.AddFiles(OpenFileName);
     Playlist.Changed;
@@ -1891,13 +1886,13 @@ begin
   if WideSelectDirectory(AddDirCp, '', s) then begin
     PClear := true;
     Playlist.AddDirectory(s);
-    empty := true; Playlist.Changed;
+    Playlist.Changed;
     PlaylistForm.BPlayClick(Sender);
   end;
   {  if AddDirForm.Execute(true) then begin
     PClear:=true;
     Playlist.AddDirectory(AddDirForm.DirView.SelectedFolder.PathName);
-    empty:=true; Playlist.Changed;
+    Playlist.Changed;
     PlaylistForm.BPlayClick(Sender);
   end;}
 end;
@@ -1911,10 +1906,8 @@ begin
     then s := '';
   if (WideInputQuery(LOCstr_OpenURL_Caption, LOCstr_OpenURL_Prompt, s)) and (s <> '') then begin
     PClear := true;
-    if WideDirectoryExists(s) then begin
-      Playlist.AddDirectory(s);
-      empty := true;
-    end
+    if WideDirectoryExists(s) then
+      Playlist.AddDirectory(s)
     else Playlist.AddFiles(s);
     Playlist.Changed;
     UpdateParams;
@@ -1955,7 +1948,6 @@ procedure TMainForm.MOpenDriveClick(Sender: TObject);
 begin
   PClear := true;
   Playlist.AddDirectory(char((Sender as TTntMenuItem).Tag) + ':');
-  empty := true;
   Playlist.Changed;
   UpdateParams;
   NextFile(0, psPlaying);
