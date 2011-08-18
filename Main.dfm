@@ -1459,15 +1459,22 @@ object MainForm: TMainForm
         ImageIndex = 2
         Visible = False
       end
+      object MObr: TTntMenuItem
+        Caption = 'Open BlueRay'
+        GroupIndex = 1
+      end
       object MOpenDevices: TTntMenuItem
         Caption = 'Open Devices'
+        GroupIndex = 1
         OnClick = MOpenDevicesClick
       end
       object N33: TTntMenuItem
         Caption = '-'
+        GroupIndex = 1
       end
       object MRFile: TTntMenuItem
         Caption = 'Recent files'
+        GroupIndex = 1
         Visible = False
         object MFClear: TTntMenuItem
           Caption = 'Clear list'
@@ -1479,9 +1486,11 @@ object MainForm: TMainForm
       end
       object N36: TTntMenuItem
         Caption = '-'
+        GroupIndex = 1
       end
       object MLoadlyric: TTntMenuItem
         Caption = 'Load Lyric File...'
+        GroupIndex = 1
         OnClick = MLoadlyricClick
       end
       object MDownloadLyric: TTntMenuItem

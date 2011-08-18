@@ -100,7 +100,7 @@ object OptionsForm: TOptionsForm
     Top = 6
     Width = 555
     Height = 397
-    ActivePage = TSystem
+    ActivePage = TOther
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 5
     OnChange = TabChange

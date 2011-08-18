@@ -58,8 +58,9 @@ uses
   SevenZip in 'SevenZip.pas',
   SevenZipVCL in 'SevenZipVCL.pas',
   Equalizer in 'Equalizer.pas' {EqualizerForm},
-  TV in 'TV.pas' {OpenDevicesForm},
+  OpenDevice in 'OpenDevice.pas' {OpenDevicesForm},
   DLyric in 'DLyric.pas' {DLyricForm};
+
 {$R *.res}
 {$R XPStyle.res}
 var hAppMutex: Thandle; Mf: hWnd; s: WideString; t: string; i, PCount: integer;
@@ -95,13 +96,13 @@ begin
     Application.Initialize;
     TntApplication.Title := 'MPUI-hcb';
     Application.CreateForm(TMainForm, MainForm);
-    Application.CreateForm(TPlaylistForm, PlaylistForm);
-    Application.CreateForm(TInfoForm, InfoForm);
-    Application.CreateForm(TEqualizerForm, EqualizerForm);
-    Application.CreateForm(TOptionsForm, OptionsForm);
-    Application.CreateForm(TOpenDevicesForm, OpenDevicesForm);
-    Application.CreateForm(TDLyricForm, DLyricForm);
-    Application.Run;
+  Application.CreateForm(TPlaylistForm, PlaylistForm);
+  Application.CreateForm(TInfoForm, InfoForm);
+  Application.CreateForm(TEqualizerForm, EqualizerForm);
+  Application.CreateForm(TOptionsForm, OptionsForm);
+  Application.CreateForm(TOpenDevicesForm, OpenDevicesForm);
+  Application.CreateForm(TDLyricForm, DLyricForm);
+  Application.Run;
     ReleaseMutex(hAppMutex);
   end;
   CloseHandle(hAppMutex);

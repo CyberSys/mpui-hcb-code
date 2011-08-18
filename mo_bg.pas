@@ -87,6 +87,7 @@ begin
         LOCstr_OpenURL_Caption:=UTF8Decode('Отвори URL');
         LOCstr_OpenURL_Prompt:=UTF8Decode('Въведете желаното от вас URL');
       MOpenDrive.Caption:=UTF8Decode('Отвори CD/DVD');
+      MObr.Caption:=UTF8Decode('Отвори BlueRay');
       MLoadLyric.Caption:=UTF8Decode('Зареди файл с говор ...');
       MLoadSub.Caption:=UTF8Decode('Зареди субтитри ...');
       FontTitle:=UTF8Decode('OSD шрифт ...');

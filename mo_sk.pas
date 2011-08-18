@@ -49,6 +49,7 @@ begin
         LOCstr_OpenURL_Caption:=UTF8Decode('Prehrať URL');
         LOCstr_OpenURL_Prompt:=UTF8Decode('Zadajte URL, ktoré chcete prehrať');
       MOpenDrive.Caption:=UTF8Decode('Prehrať CD/DVD');
+      MObr.Caption := UTF8Decode('Prehrať BlueRay');
       MClose.Caption:=UTF8Decode('Zatvoriť');
       MQuit.Caption:=UTF8Decode('Koniec');
     MView.Caption:=UTF8Decode('Zobraziť');

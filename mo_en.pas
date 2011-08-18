@@ -20,7 +20,7 @@
 unit mo_en;
 interface
 implementation
-uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer,TV,DLyric;
+uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer,DLyric,OpenDevice;
 
 procedure Activate;
 begin
@@ -560,8 +560,15 @@ begin
     LVideoDevices.Caption:='Video Devices';
     LAudioDevices.Caption:='Audio Devices';
     LCountryCode.Caption:='Country Code';
-    OKBtn.Caption:='OK';
-    CancelBtn.Caption:='Cancel';
+    TOpen.Caption:='Open';
+    TScan.Caption:='Scan';
+    TStop.Caption:='Stop';
+    TView.Caption:='View';
+    TPrev.Caption:='Prev';
+    TNext.Caption:='Next';
+    TClear.Caption:='Clear';
+    TLoad.Caption:='Load';
+    TSave.Caption:='Save';
   end;
   with DLyricForm do begin
     LyricListView.Column[1].Caption:='Artist';

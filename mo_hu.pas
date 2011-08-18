@@ -45,6 +45,7 @@ begin
         LOCstr_OpenURL_Caption:=UTF8Decode('URL lejátszása');
         LOCstr_OpenURL_Prompt:=UTF8Decode('A lejátszandó URL');
       MOpenDrive.Caption:=UTF8Decode('CD/DVD lejátszása');
+      MObr.Caption:=UTF8Decode('BlueRay lejátszása');
       MClose.Caption:=UTF8Decode('Bezárás');
       MQuit.Caption:=UTF8Decode('Kilépés');
     MView.Caption:=UTF8Decode('Nézet');

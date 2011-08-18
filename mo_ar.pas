@@ -49,6 +49,7 @@ begin
         LOCstr_OpenURL_Caption:= UTF8Decode('عرض عنوان ويب');
         LOCstr_OpenURL_Prompt:=UTF8Decode('ما عنوان الانترنت الذى تريد عرضه؟');
       MOpenDrive.Caption:=UTF8Decode('عرض CD/DVD');
+      MObr.Caption:=UTF8Decode('عرض BlueRay');
       MClose.Caption:=UTF8Decode('اغلاق');
       MQuit.Caption:=UTF8Decode('خروج');
     MView.Caption:=UTF8Decode('مظهر');

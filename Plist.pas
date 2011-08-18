@@ -451,7 +451,7 @@ begin
 end;
 
 procedure TPlaylist.AddDir(Directory: Widestring);
-var SR: TSearchRecW; Entry: TPlaylistEntry;
+var SR: TSearchRecW; Entry: TPlaylistEntry; a,s,d:WideString;
 begin
   Directory := WideIncludeTrailingPathDelimiter(WideExpandUNCFileName(Directory));
 
@@ -459,12 +459,18 @@ begin
   if WideDirectoryExists(Directory + 'VIDEO_TS') and (not EndOpenDir) then begin
    // Directory:=WideExcludeTrailingPathDelimiter(Directory);
     with Entry do begin
-      State := psNotPlayed;
+      State := psNotPlayed; 
+      if br then begin
+      	s:=' -bluray-device '; a:='BlueRay-1 <-- '; d:=' br';
+      end
+      else begin
+      	s:=' -dvd-device '; a:='DVD-1 <-- '; d:=' dvd';
+      end;
       if IsWideStringMappableToAnsi(Directory) then
-        FullURL := ' -dvd-device ' + EscapeParam(Directory + 'VIDEO_TS') + ' dvd'
+        FullURL := s + EscapeParam(Directory + 'VIDEO_TS') + d
       else
-        FullURL := ' -dvd-device ' + EscapeParam(WideExtractShortPathName(Directory + 'VIDEO_TS')) + ' dvd';
-      DisplayURL := 'DVD-1 <-- ' + Directory;
+        FullURL := s + EscapeParam(WideExtractShortPathName(Directory + 'VIDEO_TS')) + d;
+      DisplayURL := a + Directory;
     end;
     Add(Entry);
     exit;

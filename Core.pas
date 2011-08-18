@@ -123,7 +123,7 @@ var MediaURL, TmpURL, ArcMovie, Params, AddDirCP: WideString;
   MplayerLocation, WadspL, AsyncV, CacheV: widestring;
   MAspect, subcode, MaxLenLyricA, VideoOut: string;
   FirstOpen, PClear, Fd, Async, Cache, uof, oneM, FilterDrop: boolean;
-  Wid, Dreset, UpdateSkipBar, Pri, HaveChapters, HaveMsg, skip: boolean;
+  Wid, Dreset, UpdateSkipBar, Pri, HaveChapters, HaveMsg, skip,br: boolean;
   CT, RP, RS, SP, AutoPlay, ETime, InSubDir, SPDIF, ML, GUI, PScroll: boolean;
   Shuffle, Loop, OneLoop, Uni, Utf, empty, UseUni,ADls: boolean;
   ControlledResize, ni, nobps, Dnav, IsDMenu, SMenu, lavf, UseekC, vsync: boolean;
@@ -216,7 +216,7 @@ function loadArcSub(path, psw: WideString):WideString; overload;
 function loadArcSub(folder,ArcName, psw: WideString):WideString; overload;
 
 implementation
-uses Main, config, plist, Info, UnRAR, Equalizer, Locale, Options, SevenZip, DLyric;
+uses Main, config, plist, Info, UnRAR, Equalizer, Locale, Options, SevenZip, DLyric,OpenDevice;
 
 type TClientWaitThread = class(TThread)
   private procedure ClientDone;
@@ -951,7 +951,7 @@ begin
       i := Bp - 5;
     if i > LastPos then LastPos := i;
   end;
-  if Copy(MediaURL, 1, 12) = ' -dvd-device' then begin
+  if (Copy(MediaURL, 1, 12) = ' -dvd-device') or (Copy(MediaURL, 1, 15) = ' ?bluray?device') then begin
     if TotalTime > 0 then begin
       i := 0;
       if HaveChapters and (CID > 1) then begin
@@ -977,14 +977,21 @@ begin
     end;
 
     if Firstrun then begin
-      i := StrToIntDef(copy(DisplayURL, 5, Pos(' <-- ', DisplayURL) - 5), TID);
+      if br then i := StrToIntDef(copy(DisplayURL, 9, Pos(' <-- ', DisplayURL) - 5), TID)
+      else i := StrToIntDef(copy(DisplayURL, 5, Pos(' <-- ', DisplayURL) - 5), TID);
       if Dnav and SMenu and (i = 1) then TID := 0
       else TID := i;
     end;
     if (not Dnav) and (TID = 0) then TID := 1; tmpTID := TID;
     if TID > 0 then CmdLine := CmdLine + IntToStr(TID);
-    if CID > 1 then CmdLine := CmdLine + ' -chapter ' + IntToStr(CID);
-    if AID > 1 then CmdLine := CmdLine + ' -dvdangle ' + IntToStr(AID);
+    if CID > 1 then begin
+      if br then CmdLine := CmdLine + ' -bluray?chapter ' + IntToStr(CID)
+      else CmdLine := CmdLine + ' -chapter ' + IntToStr(CID);
+    end;
+    if AID > 1 then begin
+      if br then CmdLine := CmdLine + ' -bluray?angle ' + IntToStr(AID)
+      else CmdLine := CmdLine + ' -dvdangle ' + IntToStr(AID);
+    end;
   end
   else begin
     if LastPos > 0 then CmdLine := CmdLine + ' -ss ' + SecondsToTime(LastPos);
@@ -993,7 +1000,7 @@ begin
       CmdLine := CmdLine + MediaURL;
       if CDID > 1 then CmdLine := CmdLine + IntToStr(CDID);
     end
-    else if Pos('tv:///', MediaURL) > 0 then CmdLine := CmdLine + #32 + MediaURL
+    else if Pos('tv://', MediaURL) > 0 then CmdLine := CmdLine + #32 + MediaURL
     else if (Pos('://', MediaURL) > 1) or IsWideStringMappableToAnsi(MediaURL) then
       CmdLine := CmdLine + #32 + EscapeParam(MediaURL)
     else CmdLine := CmdLine + #32 + EscapeParam(WideExtractShortPathName(MediaURL));
@@ -1018,7 +1025,7 @@ begin
   VobsubCount := 0; IntersubCount := 0;
   with MainForm do begin
     for i := MDVDT.Count - 1 downto 3 do MDVDT.delete(i);
-    MDVDT.Visible := (Copy(MediaURL, 1, 12) = ' -dvd-device');
+    MDVDT.Visible := (Copy(MediaURL, 1, 12) = ' -dvd-device') or (Copy(MediaURL, 1, 15) = ' ?bluray?device');
     MVideo.Clear; MVideo.Visible := false;
     MAudio.Clear; MAudio.Visible := false;
     MSubtitle.Clear; MSubtitle.Visible := false;
@@ -1328,7 +1335,8 @@ var r, i, j, p, len: integer; s: string; f: real;
       if (r = 0) and (i > 0) and (i < 8191) then begin
         for a := 1 to i do begin
           if FirstOpen then begin
-            s := 'DVD-' + IntToStr(a) + Copy(DisplayURL, Pos(' <-- ', DisplayURL), MaxInt);
+            if br then s := 'BlueRay-' + IntToStr(a) + Copy(DisplayURL, Pos(' <-- ', DisplayURL), MaxInt)
+            else s := 'DVD-' + IntToStr(a) + Copy(DisplayURL, Pos(' <-- ', DisplayURL), MaxInt);
             if playlist.FindItem('', s) < 0 then begin
               with Entry do begin
                 State := psNotPlayed;
@@ -1796,6 +1804,19 @@ var r, i, j, p, len: integer; s: string; f: real;
     end;
   end;
 
+  function CheckTVScan: boolean;
+  begin
+    Result:=false;
+    if (len > 12) and (Copy(Line, 1, 8) = 'Trying: ') then begin
+      i:= pos('(',Line);
+      with OpenDevicesForm.HK.Items.Add do begin
+        Caption:=Copy(Line, 9, i-10);
+        SubItems.add(Copy(Line, i+1,pos(').',Line)-i-2));
+      end;
+      Result:=true;
+    end;
+  end;
+  
   function CheckICYInfo: boolean;
   begin
     Result := False;
@@ -2354,6 +2375,7 @@ begin
                                           if not CheckAudio then
                                             if not CheckNativeResolutionLine then // modifies Line, should be last
                                               if not CheckDVDNavTL then
+                                              if not CheckTVScan then
                                                 ;
   // check for generic ID_ pattern
   if (len > 3) and (Copy(Line, 1, 3) = 'ID_') then begin
@@ -2466,7 +2488,7 @@ begin
   LyricF := 'Tahoma'; LyricS := 8; MaxLenLyricA := ''; MaxLenLyricW := ''; UseekC := true;
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
   lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := false; ADls:=true;
-  dsEnd:=false;
+  dsEnd:=false; br:=false;
   ResetStreamInfo;
 end.
 

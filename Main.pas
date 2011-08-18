@@ -302,6 +302,7 @@ type
     Mdownloadsubtitle: TTntMenuItem;
     N38: TTntMenuItem;
     MDownloadLyric: TTntMenuItem;
+    MObr: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -417,6 +418,7 @@ type
     procedure MOpenDevicesClick(Sender: TObject);
     procedure MdownloadsubtitleClick(Sender: TObject);
     procedure MDownloadLyricClick(Sender: TObject);
+    procedure MObrClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -483,7 +485,8 @@ procedure LoadSLibrary;
 procedure UnLoadSLibrary;
 
 implementation
-uses Locale, Config, Options, Info, UnRAR, Equalizer, SevenZip, tv, Core, DLyric;
+uses Locale, Config, Options, Info, UnRAR, Equalizer, SevenZip, Core, DLyric,
+  OpenDevice;
 
 {$R *.dfm}
 
@@ -1753,7 +1756,8 @@ var t: TTntMenuItem; s: WideString;
 begin
   s := MediaURL + '|' + DisplayURL;
   if (MRfile.Count > 2) and (TTntMenuItem(MRFile.Items[2]).Hint = s) then exit;
-  if (Copy(MediaURL, 1, 12) = ' -dvd-device') or (Copy(MediaURL, 1, 14) = ' -cdrom-device') then exit;
+  if (Copy(MediaURL, 1, 12) = ' -dvd-device') or (Copy(MediaURL, 1, 14) = ' -cdrom-device') 
+    or (Copy(MediaURL, 1, 15) = ' ?bluray?device') then exit;
   if MRFile.Count = (RFileMax + 2) then MRFile.Delete(RFileMax + 1);
   t := TTntMenuItem.Create(MRFile);
   t.Caption := DisplayURL; t.Hint := s;
@@ -1771,11 +1775,14 @@ begin
   CID := (Sender as TTntMenuItem).Tag;
   index := (Sender as TTntMenuItem).Parent.Parent.Tag;
   (Sender as TTntMenuItem).Checked := True;
-  if UseekC and (TID = index) and Win32PlatformIsUnicode then
+  if UseekC and (TID = index) and Win32PlatformIsUnicode then begin
+    if Dnav then SendCommand('switch_title ' + IntToStr(TID));
     SendCommand('seek_chapter ' + IntToStr(CID - 1) + ' 1')
+  end
   else begin
     TID := index; Dreset := true;
-    Restart;
+    if Dnav then SendCommand('switch_title ' + IntToStr(TID))
+    else Restart;
   end;
 end;
 
@@ -1788,7 +1795,7 @@ begin
   (Sender as TTntMenuItem).Parent.Items[index].Checked := false;
   AID := (Sender as TTntMenuItem).Tag;
   (Sender as TTntMenuItem).Checked := True;
-  if UseekC and Win32PlatformIsUnicode then
+  if UseekC and Win32PlatformIsUnicode and (not Dnav)then
     SendCommand('switch_angle ' + IntToStr(AID))
   else begin
     Dreset := true; Restart;
@@ -1837,7 +1844,8 @@ procedure TMainForm.MDeinterlaceClick(Sender: TObject);
 begin
   if (Sender as TTntMenuItem).Checked then exit;
   Deinterlace := (Sender as TTntMenuItem).Tag;
-  Restart;
+  if Deinterlace = 2 then SendCommand('step_property deinterlace')
+  else Restart;
   (Sender as TTntMenuItem).Checked := true;
 end;
 
@@ -1936,12 +1944,25 @@ begin
           if MDrive = Tnt_WideLowerCase(Caption) then NoAccess := 2;
         end;
         MOpenDrive.Add(Item);
+
+        Item := TTntMenuItem.Create(MObr);
+        with Item do begin
+          Caption := Drive + ':';
+          Tag := Ord(Drive);
+          RadioItem := true;
+          OnClick := MObrClick;
+          if MDrive = Tnt_WideLowerCase(Caption) then NoAccess := 2;
+        end;
+        MObr.Add(Item);
       end;
     end
-    else if i > -1 then MOpenDrive.Delete(i);
+    else if i > -1 then begin
+      MOpenDrive.Delete(i); MObr.Delete(i);
+    end;
   end;
 
   MOpenDrive.Visible := MOpenDrive.Count > 0;
+  MObr.Visible := MOpenDrive.Visible;
 end;
 
 procedure TMainForm.MOpenDriveClick(Sender: TObject);
@@ -3220,6 +3241,11 @@ end;
 procedure TMainForm.MDownloadLyricClick(Sender: TObject);
 begin
   PlaylistForm.MDownloadLyricClick(nil);
+end;
+
+procedure TMainForm.MObrClick(Sender: TObject);
+begin
+  br:=true; MOpenDriveClick(nil);
 end;
 
 end.

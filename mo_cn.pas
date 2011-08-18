@@ -20,7 +20,7 @@
 unit mo_cn;
 interface
 implementation
-uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer,TV,DLyric;
+uses SysUtils,Windows,Locale,Main,Options,plist,Info,Core,Equalizer,DLyric,OpenDevice;
 
 procedure Activate;
 begin
@@ -88,6 +88,7 @@ begin
         LOCstr_OpenURL_Caption:=UTF8Decode('打开 URL');
         LOCstr_OpenURL_Prompt:=UTF8Decode('你想要打开的 URL 是？');
       MOpenDrive.Caption:=UTF8Decode('播放 光盘');
+      MObr.Caption:=UTF8Decode('播放 蓝光(BlueRay)光盘');
       MOpenDevices.Caption:=UTF8Decode('打开 设备');
       MRFile.Caption:=UTF8Decode('最近打开的文件');
       MFClear.Caption:=UTF8Decode('清除列表');
@@ -556,8 +557,15 @@ begin
     LVideoDevices.Caption:=UTF8Decode('视频设备');
     LAudioDevices.Caption:=UTF8Decode('音频设备');
     LCountryCode.Caption:=UTF8Decode('国家代码');
-    OKBtn.Caption:=UTF8Decode('确定');
-    CancelBtn.Caption:=UTF8Decode('取消');
+    TOpen.Caption:=UTF8Decode('打开');
+    TScan.Caption:=UTF8Decode('扫描');
+    TStop.Caption:=UTF8Decode('停止');
+    TView.Caption:=UTF8Decode('查看');
+    TPrev.Caption:=UTF8Decode('上一个');
+    TNext.Caption:=UTF8Decode('下一个');
+    TClear.Caption:=UTF8Decode('清空列表');
+    TLoad.Caption:=UTF8Decode('载入列表');
+    TSave.Caption:=UTF8Decode('保存列表');
   end;
   InfoForm.Caption:=UTF8Decode('文件信息');
   with DLyricForm do begin

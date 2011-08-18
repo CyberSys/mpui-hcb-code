@@ -46,6 +46,7 @@ begin
         LOCstr_OpenURL_Caption:= UTF8Decode('Адчыніць URL');
         LOCstr_OpenURL_Prompt:= UTF8Decode('Увядзіце жадаемы URL');
       MOpenDrive.Caption:= UTF8Decode('Прайграць CD/DVD');
+      MObr.Caption:= UTF8Decode('Прайграць BlueRay');
       MClose.Caption:= UTF8Decode('Зачыніць');
       MQuit.Caption:= UTF8Decode('Выхад');
     MView.Caption:= UTF8Decode('Выгляд');
