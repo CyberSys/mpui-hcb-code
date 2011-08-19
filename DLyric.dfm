@@ -23,7 +23,7 @@ object DLyricForm: TDLyricForm
     Top = 0
     Width = 585
     Height = 440
-    ActivePage = SLyric
+    ActivePage = SSubtitle
     Align = alClient
     TabOrder = 0
     OnChange = PLSChange

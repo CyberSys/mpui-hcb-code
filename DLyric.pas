@@ -404,6 +404,11 @@ begin
     t.mode:=1; t.Resume;
   end
   else begin
+    if not dsEnd then begin
+      LoadSLibrary;
+      if IsSLoaded <> 0 then
+        DownloaderSubtitleW(PWChar(MediaURL), True, DownSubtitle_CallBackW, DownSubtitle_CallBackFinish);
+    end;
     if ESTitle.Text='' then Exit;
     BSSearch.Enabled := False;
     t:=TDownLoadLyric.Create(True);
