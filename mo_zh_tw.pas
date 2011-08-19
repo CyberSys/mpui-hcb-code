@@ -501,7 +501,7 @@ begin
     CShuffle.Hint:=UTF8Decode('隨機播放');
     CLoop.Hint:=UTF8Decode('重複播放');
     COneLoop.Hint:=UTF8Decode('循環播放當前');
-    BSave.Hint:=UTF8Decode('儲存播放清單為 ...');
+    BSave.Hint:=UTF8Decode('儲存清單為 ...');
     TntTabSheet1.Caption:=Caption;
     TntTabSheet2.Caption:=UTF8Decode('歌詞');
     CPA.Caption:=UTF8Decode('自動選擇');
@@ -570,6 +570,8 @@ begin
     TClear.Caption:=UTF8Decode('清空列表');
     TLoad.Caption:=UTF8Decode('載入列表');
     TSave.Caption:=UTF8Decode('保存列表');
+    HK.Columns[0].Caption:=UTF8Decode('頻道');
+    HK.Columns[1].Caption:=UTF8Decode('頻率');
   end;
   InfoForm.Caption:=UTF8Decode('影片資訊');
   with DLyricForm do begin

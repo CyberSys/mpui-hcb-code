@@ -498,7 +498,7 @@ begin
     CShuffle.Hint:=UTF8Decode('随机播放');
     CLoop.Hint:=UTF8Decode('循环播放全部');
     COneLoop.Hint:=UTF8Decode('循环播放当前');
-    BSave.Hint:=UTF8Decode('保存播放列表...');
+    BSave.Hint:=UTF8Decode('保存列表...');
     TntTabSheet1.Caption:=Caption;
     TntTabSheet2.Caption:=UTF8Decode('歌词');
 	CPA.Caption:=UTF8Decode('自动选择');;
@@ -566,6 +566,8 @@ begin
     TClear.Caption:=UTF8Decode('清空列表');
     TLoad.Caption:=UTF8Decode('载入列表');
     TSave.Caption:=UTF8Decode('保存列表');
+    HK.Columns[0].Caption:=UTF8Decode('频道');
+    HK.Columns[1].Caption:=UTF8Decode('频率');
   end;
   InfoForm.Caption:=UTF8Decode('文件信息');
   with DLyricForm do begin

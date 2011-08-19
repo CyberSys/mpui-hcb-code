@@ -1454,19 +1454,20 @@ object MainForm: TMainForm
         ImageIndex = 1
         OnClick = MOpenURLClick
       end
+      object MOpenDevices: TTntMenuItem
+        Caption = 'Open Devices'
+        GroupIndex = 1
+        OnClick = MOpenDevicesClick
+      end
       object MOpenDrive: TTntMenuItem
         Caption = 'Open drive'
+        GroupIndex = 1
         ImageIndex = 2
         Visible = False
       end
       object MObr: TTntMenuItem
         Caption = 'Open BlueRay'
         GroupIndex = 1
-      end
-      object MOpenDevices: TTntMenuItem
-        Caption = 'Open Devices'
-        GroupIndex = 1
-        OnClick = MOpenDevicesClick
       end
       object N33: TTntMenuItem
         Caption = '-'

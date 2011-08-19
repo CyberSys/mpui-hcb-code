@@ -287,7 +287,7 @@ type
     procedure MDownloadLyricClick(Sender: TObject);
     procedure MLoadLyricClick(Sender: TObject);
     procedure TMLyricPaint(Sender: TObject);
-
+    
   private
     { Private declarations }
     BMPpsPlaying, BMPpsPlayed, BMPpsSkipped: TBitmap;

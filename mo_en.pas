@@ -500,7 +500,7 @@ begin
     CShuffle.Hint:='Shuffle';
     CLoop.Hint:='Repeat All';
     COneLoop.Hint:='Repeat Current';
-    BSave.Hint:='Save Playlist...';
+    BSave.Hint:='Save list...';
     TntTabSheet1.Caption:=Caption;
     TntTabSheet2.Caption:='Lyric';
     TMLyric.Hint:='Change codePage of lyric with popup menu';
@@ -569,6 +569,8 @@ begin
     TClear.Caption:='Clear';
     TLoad.Caption:='Load';
     TSave.Caption:='Save';
+    HK.Columns[0].Caption:='Channel';
+    HK.Columns[1].Caption:='Freq';
   end;
   with DLyricForm do begin
     LyricListView.Column[1].Caption:='Artist';
