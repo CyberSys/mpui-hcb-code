@@ -21,8 +21,8 @@ object DLyricForm: TDLyricForm
   object PLS: TTntPageControl
     Left = 0
     Top = 0
-    Width = 585
-    Height = 440
+    Width = 593
+    Height = 451
     ActivePage = SSubtitle
     Align = alClient
     TabOrder = 0
@@ -30,8 +30,8 @@ object DLyricForm: TDLyricForm
     object SLyric: TTntTabSheet
       Caption = 'Lyric'
       DesignSize = (
-        577
-        412)
+        585
+        423)
       object LArtist: TTntLabel
         Left = 16
         Top = 16
@@ -94,6 +94,7 @@ object DLyricForm: TDLyricForm
         RowSelect = True
         TabOrder = 2
         ViewStyle = vsReport
+        OnDblClick = BApplyClick
       end
       object BLSave: TTntButton
         Left = 9
@@ -131,8 +132,8 @@ object DLyricForm: TDLyricForm
     object SSubtitle: TTntTabSheet
       Caption = 'Subtitle'
       DesignSize = (
-        577
-        412)
+        585
+        423)
       object LSTitle: TTntLabel
         Left = 228
         Top = 11
@@ -187,6 +188,7 @@ object DLyricForm: TDLyricForm
         SortType = stText
         TabOrder = 0
         ViewStyle = vsReport
+        OnDblClick = BApplyClick
       end
       object CLang: TTntComboBox
         Left = 83
