@@ -28,6 +28,9 @@ uses
   ComCtrls, TntComCtrls, Classes, TntClasses, TntSystem, ExtCtrls,
   TntExtCtrls, TntFileCtrl;
 
+const
+  chsdetDll='uchardet.dll';
+
 type
   TOpenDir = class(TThread)
     private
@@ -305,7 +308,7 @@ var
   LDocked, RDocked, TDocked, BDocked: boolean;
   LL, TT: integer;
   IsCLoaded:THandle = 0;
-  GuessStrChardet  : function(str:PChar; strlen:integer):PChar; stdcall;
+  GuessStrChardet  : function(str,nameBuf:PChar):PChar; stdcall;
 
 procedure addEpisode(s: widestring);
 procedure LoadCLibrary;
@@ -321,7 +324,7 @@ uses Main, Core, UnRAR, Locale, Options, SevenZip, DLyric;
 procedure LoadCLibrary;
 begin
   if IsCLoaded <> 0 then exit;
-  IsCLoaded := Tnt_LoadLibraryW('chsdet.dll');
+  IsCLoaded := Tnt_LoadLibraryW(chsdetDll);
   if IsCLoaded <> 0 then begin
     @GuessStrChardet  := GetProcAddress(IsCLoaded, 'GuessStrChardet');
   end;
@@ -824,7 +827,8 @@ begin
   if PlaylistForm.CPA.Visible then begin
     LoadCLibrary;
     if IsCLoaded <> 0 then begin
-      s:=GuessStrChardet(LyricStringsA.GetText,Length(LyricStringsA.Text));
+      setLength(s,129);
+      GuessStrChardet(LyricStringsA.GetText,PChar(s));
       i:= Pos(' ',s);
       if i<>0 then begin
         CP:=StrToIntDef(Copy(s,i,MaxInt),CP); PlaylistForm.CPA.Tag:=CP;
@@ -919,6 +923,24 @@ begin
   if len = -1 then exit;
   LyricCount := len;
   SortLyric; TY:=0;
+  if PlaylistForm.CPA.Visible then begin
+      case mode of
+        csUtf8: s:='UTF-8 65001';
+        csUnicode: s:='UTF-16LE 1200';
+        csUnicodeSwapped: s:='UTF-16BE 1201';
+      end;
+      i:= Pos(' ',s);
+      if i<>0 then begin
+        CP:=StrToIntDef(Copy(s,i,MaxInt),CP); PlaylistForm.CPA.Tag:=CP;
+        s:=Copy(s,0,i-1);
+        i:= Pos('(', PlaylistForm.CPA.Caption);
+        if i>1 then
+          PlaylistForm.CPA.Caption := Copy(PlaylistForm.CPA.Caption, 1, i-2) + ' ('+ s +')'
+        else PlaylistForm.CPA.Caption :=PlaylistForm.CPA.Caption + ' ('+ s +')';
+        PlaylistForm.TntCPClick(PlaylistForm.CPA);
+      end;
+    end;
+
   HaveLyric := 1; LyricURL := FileName; IsParsed := true;
   with PlaylistForm do begin
     UpdatePW := True;
@@ -1027,7 +1049,7 @@ begin
   Lyric.BitMap.Canvas.Brush.Color := LbgColor; Lyric.BitMap.Canvas.Font.Color := LTextColor;
   Lyric.BitMap.Canvas.Font.Name := LyricF; Lyric.BitMap.Canvas.Font.Size := LyricS;
   Lyric.ItemHeight := WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;
-  CPA.Visible:= WideFileExists(homedir+'chsdet.dll');
+  CPA.Visible:= WideFileExists(homedir+chsdetDll);
 end;
 
 procedure TPlaylistForm.FormShow(Sender: TObject);
@@ -1106,7 +1128,8 @@ begin
       end
       else begin
         if data[iOld].State = psPlaying then begin
-          CurPlay := -1; Firstrun := true;
+          dec(CurPlay);
+          //CurPlay := -1; Firstrun := true;
         end;
       end;
     end;
@@ -1555,7 +1578,7 @@ end;
 begin
   Lyric.BitMap.Canvas.Lock;
   Lyric.BitMap.Width := PlaylistForm.TMLyric.Width;
-  Lyric.BitMap.Height := PlaylistForm.TMLyric.Height;
+  Lyric.BitMap.Height := PlaylistForm.TMLyric.Height+Lyric.ItemHeight;
   Lyric.BitMap.Canvas.Brush.Color := LbgColor;
   Lyric.BitMap.Canvas.FillRect(Lyric.BitMap.Canvas.ClipRect);
 
@@ -1628,8 +1651,8 @@ procedure TPlaylistForm.TMLyricPaint(Sender: TObject);
 begin
   Lyric.Draw;
   PlaylistForm.TMLyric.Canvas.Lock;
-  PlaylistForm.TMLyric.Canvas.Draw(0, -Lyric.ItemHeight, Lyric.BitMap);
-  //BitBlt(PlaylistForm.TMLyric.Canvas.Handle, 0, 0, BitMap.Width, BitMap.Height, BitMap.Canvas.Handle, 0, 0, SRCCOPY);
+  //PlaylistForm.TMLyric.Canvas.Draw(0, 0, Lyric.BitMap);
+  BitBlt(PlaylistForm.TMLyric.Canvas.Handle, 0, 0, Lyric.BitMap.Width, Lyric.BitMap.Height, Lyric.BitMap.Canvas.Handle, 0, Lyric.ItemHeight, SRCCOPY);
   PlaylistForm.TMLyric.Canvas.Unlock;
 end;
 
