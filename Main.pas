@@ -534,7 +534,7 @@ begin
   SetLength(HMonitorList, len + 1);
   HMonitorList[len] := hm;
   if hm = CurMonitor.Handle then MonitorID := len;
-  Result := True;
+  Result := True; 
 end;
 
 procedure DownSubtitle_CallBackFinish(number, bad_number: integer); stdcall;
@@ -1290,7 +1290,7 @@ begin
       SetForegroundWindow(Application.Handle);
     end;
   end;
-
+  
   if Running then begin
     if Status = sPlaying then begin
       if TickCount >= UpdateSeekBarAt then UpdateSeekBar;
@@ -1301,6 +1301,7 @@ begin
             if HMonitorList[i] = CurMonitor.Handle then begin
               if MonitorID <> i then begin
                 MonitorID := i; MonitorW := CurMonitor.Width; MonitorH := CurMonitor.Height;
+                UpdatePos:=False;
                 if IsDx then Restart;
               end;
               break;
@@ -1309,6 +1310,7 @@ begin
         end;
         if (CurMonitor.Width <> MonitorW) or (CurMonitor.Height <> MonitorH) then begin
           MonitorW := CurMonitor.Width; MonitorH := CurMonitor.Height;
+          UpdatePos:=False; 
           if IsDx then Restart;
         end;
       end;
@@ -1558,12 +1560,12 @@ begin
   SX := Width - (OPanel.Width - SX);
   SY := Height - (OPanel.Height - SY);
   if PX < 0 then PX := 0; if PY < 0 then PY := 0;
-  if SX > Screen.Width then begin
-    SX := Screen.Width; MSizeAny.Checked := True; MSizeAny.Checked := false; end;
-  if SY > Screen.WorkAreaHeight then begin
-    SY := Screen.WorkAreaHeight; MSizeAny.Checked := True; MSizeAny.Checked := false; end;
-  if (PX + SX) > Screen.Width then PX := Screen.Width - SX;
-  if (PY + SY) > Screen.WorkAreaHeight then PY := Screen.WorkAreaHeight - SY;
+  if (SX > Screen.Width) and UpdatePos then begin
+    SX := Screen.Width; MSizeAny.Checked := True; MSizeAny.Checked := false; UpdatePos:=True; end;
+  if (SY > Screen.WorkAreaHeight) and UpdatePos then begin
+    SY := Screen.WorkAreaHeight; MSizeAny.Checked := True; MSizeAny.Checked := false; UpdatePos:=True; end;
+  if ((PX + SX) > Screen.Width) and UpdatePos then begin PX := Screen.Width - SX;  UpdatePos:=True; end;
+  if ((PY + SY) > Screen.WorkAreaHeight) and UpdatePos then begin PY := Screen.WorkAreaHeight - SY; UpdatePos:=True; end;
   SetWindowLong(Handle, GWL_STYLE, DWORD(GetWindowLong(Handle, GWL_STYLE)) and (not WS_MAXIMIZE));
   ControlledResize := true; LastScale := 100; SetBounds(PX, PY, SX, SY);
   if WantCompact then begin

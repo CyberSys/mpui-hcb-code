@@ -128,7 +128,7 @@ var MediaURL, TmpURL, ArcMovie, Params, AddDirCP: WideString;
   Shuffle, Loop, OneLoop, Uni, Utf, empty, UseUni,ADls: boolean;
   ControlledResize, ni, nobps, Dnav, IsDMenu, SMenu, lavf, UseekC, vsync: boolean;
   Flip, Mirror, Yuy2, Eq2, LastEq2, Dda, LastDda, Wadsp, addsFiles: boolean;
-  WantFullscreen, WantCompact, AutoQuit, IsPause, IsDx, dsEnd: boolean;
+  WantFullscreen, WantCompact, AutoQuit, IsPause, IsDx, dsEnd, fup: boolean;
 var VideoID, Ch, CurPlay, LyricS, HaveLyric: integer;
   AudioID, MouseMode, SubPos, NoAccess: integer;
   SubID, TID, tmpTID, CID, AID, VCDST, VCDET, CDID: integer;
@@ -140,7 +140,7 @@ var VideoID, Ch, CurPlay, LyricS, HaveLyric: integer;
   IL, IT, EL, ET, EW, EH, InterW, InterH, NW, NH, OldX, OldY, Scale, LastScale: integer;
   MFunc, CBHSA, bri, briD, contr, contrD, hu, huD, sat, satD, gam, gamD: integer;
 var AudioOut, AudioDev, Postproc, Deinterlace, Aspect: integer;
-  ReIndex, SoftVol, RFScr, dbbuf, nfc, nmsg, Firstrun, Volnorm, Dr: boolean;
+  ReIndex, SoftVol, RFScr, dbbuf, nfc, nmsg, Firstrun, Volnorm, Dr, UpdatePos: boolean;
   Loadsrt, LoadVob, Loadsub, Expand, TotalTime, TTime: integer;
 var HaveAudio, HaveVideo, LastHaveVideo, ChkAudio, ChkVideo, ChkStartPlay: boolean;
   NativeWidth, NativeHeight, MonitorID, MonitorW, MonitorH: integer;
@@ -693,7 +693,21 @@ begin
   end
   else SetPriorityClass(GetCurrentProcess, ABOVE_NORMAL_PRIORITY_CLASS);
 
+  CurMonitor := Screen.MonitorFromWindow(MainForm.Handle);
+  for i := low(HMonitorList) to high(HMonitorList) do begin
+    if HMonitorList[i] = CurMonitor.Handle then begin
+      MonitorID := i; MonitorW := CurMonitor.Width; MonitorH := CurMonitor.Height;
+      break;
+    end;
+  end;
+
+  if fup then begin
+    UpdatePos:=CurMonitor.Primary;
+    fup:=false;
+  end;
+
   if (not CurMonitor.Primary) and (MonitorID > 0) then CmdLine := CmdLine + ' -adapter ' + IntToStr(MonitorID);
+
   if nmsg then CmdLine := CmdLine + ' -nomsgmodule';
   if UseUni then CmdLine := CmdLine + ' -msgcharset noconv';
   if Fd then CmdLine := CmdLine + ' -framedrop';
@@ -2488,7 +2502,7 @@ begin
   LyricF := 'Tahoma'; LyricS := 8; MaxLenLyricA := ''; MaxLenLyricW := ''; UseekC := true;
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
   lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := false; ADls:=true;
-  dsEnd:=false; br:=false;
+  dsEnd:=false; br:=false; UpdatePos:=true; fup:=true; 
   ResetStreamInfo;
 end.
 
