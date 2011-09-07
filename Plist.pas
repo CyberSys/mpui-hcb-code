@@ -1578,7 +1578,7 @@ end;
 begin
   Lyric.BitMap.Canvas.Lock;
   Lyric.BitMap.Width := PlaylistForm.TMLyric.Width;
-  Lyric.BitMap.Height := PlaylistForm.TMLyric.Height+Lyric.ItemHeight;
+  Lyric.BitMap.Height := PlaylistForm.TMLyric.Height + 2*Lyric.ItemHeight;
   Lyric.BitMap.Canvas.Brush.Color := LbgColor;
   Lyric.BitMap.Canvas.FillRect(Lyric.BitMap.Canvas.ClipRect);
 

@@ -222,7 +222,7 @@ object PlaylistForm: TPlaylistForm
         Left = 2
         Top = 26
         Width = 355
-        Height = 175
+        Height = 177
         Style = lbVirtualOwnerDraw
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 16

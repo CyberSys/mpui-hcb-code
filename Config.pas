@@ -122,6 +122,7 @@ begin
           Core.uof := ReadBool(SectionName, 'UseOSDfont', Core.uof);
           Core.GUI := ReadBool(SectionName, 'GUI', Core.GUI);
           Core.DS := ReadBool(SectionName, 'DSize', Core.DS);
+          Core.UAV := ReadBool(SectionName, 'UAV', Core.UAV);
           Core.RS := ReadBool(SectionName, 'RSize', Core.RS);
           Core.RP := ReadBool(SectionName, 'RPostion', Core.RP);
           Core.SP := ReadBool(SectionName, 'SPause', Core.SP);
@@ -150,6 +151,8 @@ begin
           Core.PScroll := ReadBool(SectionName, 'Scroll', Core.PScroll);
           s := ReadString(SectionName, 'LyricFont', '');
           if s <> '' then Core.LyricF := s;
+          s := ReadString(SectionName, 'AVThread', '');
+          if s <> '' then Core.AVThread := s;
           Core.LyricS := ReadInteger(SectionName, 'LyricSize', Core.LyricS);
           Core.seekLen := ReadInteger(SectionName, 'seekLen', Core.seekLen);
           s := ReadString(SectionName, 'HotKey', '');
@@ -257,6 +260,7 @@ begin
           WriteBool(SectionName, 'Framedrop', Core.Fd);
           WriteBool(SectionName, 'Autosync', Core.Async);
           WriteString(SectionName, 'AutosyncV', Core.AsyncV);
+          WriteString(SectionName, 'AVThread', Core.AVThread);
           WriteBool(SectionName, 'Cache', Core.Cache);
           WriteString(SectionName, 'CacheV', Core.CacheV);
           WriteBool(SectionName, 'ASS', Core.Ass);
@@ -277,6 +281,7 @@ begin
           WriteString(SectionName, 'Params', Core.Params);
           WriteBool(SectionName, 'Add sequence files', Core.Addsfiles);
           WriteBool(SectionName, 'Auto Download Lyric/Subtitle', Core.ADls);
+          WriteBool(SectionName, 'UAV', Core.UAV);
         end;
       1: begin  //save some setting when mpui quit
           WriteInteger(SectionName, 'IPanelWidth', Core.InterW);

@@ -134,7 +134,7 @@ begin
 end;
 
 procedure TOpenDevicesForm.TOpenClick(Sender: TObject);
-var Entry:TPlaylistEntry; i:integer; s:WideString;
+var Entry:TPlaylistEntry; s:WideString;
 begin
   if CVideoDevices.ItemIndex=-1 then exit;
   with Entry do begin
@@ -157,7 +157,6 @@ begin
 end;
 
 procedure TOpenDevicesForm.TViewClick(Sender: TObject);
-var Entry:TPlaylistEntry;
 begin
   SendCommand('tv_set_channel '+IntToStr(HK.ItemIndex+1));
 end;
@@ -170,7 +169,6 @@ end;
 procedure TOpenDevicesForm.TLoadClick(Sender: TObject);
 var NameList: TWStringList; i,a: integer; s:WideString;
 begin
-  NameList := TWStringList.Create;
   with MainForm.OpenDialog do begin
     Title := MainForm.MOpenFile.Caption;
     Options := Options - [ofAllowMultiSelect] - [ofoldstyledialog];

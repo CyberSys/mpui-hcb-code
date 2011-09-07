@@ -181,6 +181,9 @@ type
     Cconfig: TTntCheckBox;
     CAddsfiles: TTntCheckBox;
     CLS: TTntCheckBox;
+    EAV: TTntEdit;
+    UDAV: TTntUpDown;
+    CAV: TTntCheckBox;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -237,6 +240,7 @@ type
     procedure CosdfontDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
     procedure CSubfontDropDown(Sender: TObject);
+    procedure CAVClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -441,6 +445,8 @@ begin
   nmsgm.Checked := nmsg;
   CSubcp.Text := subcode;
   oML := ML;
+  EAV.Text:=avThread;
+  CAV.Checked:=UAV;
   RMplayer.Checked := ML;
   RCMplayer.Checked := not ML;
   EMplayerLocation.Enabled := ML;
@@ -725,6 +731,15 @@ begin
   if AsyncV <> EAsync.Text then begin
     AsyncV := EAsync.Text;
     if EAsync.Enabled then changed := true;
+  end;
+
+  if UAV <> CAV.Checked then begin
+    UAV := CAV.Checked; changed := true;
+  end;
+
+  if AVThread <> EAV.Text then begin
+    AVThread := EAV.Text;
+    if CAV.Enabled then changed := true;
   end;
 
   if Cache <> CCache.Checked then begin
@@ -1502,6 +1517,11 @@ begin
   for i := 0 to (Sender as TTntCombobox).Items.Count - 1 do
     MaxWidth := Max(MaxWidth, 50 + WideCanvasTextWidth((Sender as TTntCombobox).Canvas, (Sender as TTntCombobox).Items[i]));
   (Sender as TTntCombobox).Perform(CB_SETDROPPEDWIDTH, MaxWidth, 0);
+end;
+
+procedure TOptionsForm.CAVClick(Sender: TObject);
+begin
+  EAV.Enabled:=CAV.Checked; UDAV.Enabled:=CAV.Checked;
 end;
 
 end.

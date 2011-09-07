@@ -382,6 +382,8 @@ begin
     HK.Columns[1].Caption:=UTF8Decode('操作');
     TUnit.Caption:=UTF8Decode('秒/查寻');
     TseekL.Caption:=UTF8Decode('跳跃');
+    CAV.Caption:=UTF8Decode('libavcodec解码线程数');
+    
     HK.Hint:=UTF8Decode('按下快捷键去查找对应的记录，双击记录去修改快捷键');
     HK.Items[0].SubItems.Strings[0]:=UTF8Decode('增加视频高度');
     HK.Items[1].SubItems.Strings[0]:=UTF8Decode('减小视频高度');

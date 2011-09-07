@@ -115,7 +115,7 @@ type TStatus = (sNone, sOpening, sClosing, sPlaying, sPaused, sStopped, sError);
 var Status: TStatus;
 
 var HomeDir, SystemDir, TempDir, AppdataDir: WideString;
-var MediaURL, TmpURL, ArcMovie, Params, AddDirCP: WideString;
+var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread: WideString;
   ArcPW, TmpPW, DisplayURL, AudioFile, MaxLenLyricW: WideString;
   Duration, LyricF, fass, HKS, lastP1, lastFN: string;
   substring, Vobfile, ShotDir, LyricDir, LyricURL: WideString;
@@ -128,7 +128,7 @@ var MediaURL, TmpURL, ArcMovie, Params, AddDirCP: WideString;
   Shuffle, Loop, OneLoop, Uni, Utf, empty, UseUni,ADls: boolean;
   ControlledResize, ni, nobps, Dnav, IsDMenu, SMenu, lavf, UseekC, vsync: boolean;
   Flip, Mirror, Yuy2, Eq2, LastEq2, Dda, LastDda, Wadsp, addsFiles: boolean;
-  WantFullscreen, WantCompact, AutoQuit, IsPause, IsDx, dsEnd, fup: boolean;
+  WantFullscreen, WantCompact, AutoQuit, IsPause, IsDx, dsEnd, fup,uav: boolean;
 var VideoID, Ch, CurPlay, LyricS, HaveLyric: integer;
   AudioID, MouseMode, SubPos, NoAccess: integer;
   SubID, TID, tmpTID, CID, AID, VCDST, VCDET, CDID: integer;
@@ -684,6 +684,7 @@ begin
     + ' -subfont-osd-scale 4.8 -subfont-text-scale ' + FloatToStr(FSize)
     + ' -subfont-outline ' + FloatToStr(Fol) + ' -subfont-blur ' + FloatToStr(FB);
 
+  if uav then CmdLine := CmdLine + ' -lavdopts threads=' + avThread;
   if AudioFile <> '' then CmdLine := CmdLine + ' -audiofile ' + EscapeParam(AudioFile);
   if Async then CmdLine := CmdLine + ' -autosync ' + AsyncV;
 
@@ -999,11 +1000,11 @@ begin
     if (not Dnav) and (TID = 0) then TID := 1; tmpTID := TID;
     if TID > 0 then CmdLine := CmdLine + IntToStr(TID);
     if CID > 1 then begin
-      if br then CmdLine := CmdLine + ' -bluray?chapter ' + IntToStr(CID)
+      if br then CmdLine := CmdLine + ' -bluray-chapter ' + IntToStr(CID)
       else CmdLine := CmdLine + ' -chapter ' + IntToStr(CID);
     end;
     if AID > 1 then begin
-      if br then CmdLine := CmdLine + ' -bluray?angle ' + IntToStr(AID)
+      if br then CmdLine := CmdLine + ' -bluray-angle ' + IntToStr(AID)
       else CmdLine := CmdLine + ' -dvdangle ' + IntToStr(AID);
     end;
   end
@@ -1039,7 +1040,7 @@ begin
   VobsubCount := 0; IntersubCount := 0;
   with MainForm do begin
     for i := MDVDT.Count - 1 downto 3 do MDVDT.delete(i);
-    MDVDT.Visible := (Copy(MediaURL, 1, 12) = ' -dvd-device') or (Copy(MediaURL, 1, 15) = ' ?bluray?device');
+    MDVDT.Visible := (Copy(MediaURL, 1, 12) = ' -dvd-device') or (Copy(MediaURL, 1, 15) = ' -bluray-device');
     MVideo.Clear; MVideo.Visible := false;
     MAudio.Clear; MAudio.Visible := false;
     MSubtitle.Clear; MSubtitle.Visible := false;
@@ -2502,7 +2503,7 @@ begin
   LyricF := 'Tahoma'; LyricS := 8; MaxLenLyricA := ''; MaxLenLyricW := ''; UseekC := true;
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
   lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := false; ADls:=true;
-  dsEnd:=false; br:=false; UpdatePos:=true; fup:=true; 
+  dsEnd:=false; br:=false; UpdatePos:=true; fup:=true; avThread:='1'; uav:=false;
   ResetStreamInfo;
 end.
 

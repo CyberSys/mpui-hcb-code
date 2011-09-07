@@ -1,6 +1,6 @@
 object DLyricForm: TDLyricForm
   Left = 305
-  Top = 54
+  Top = 69
   Width = 601
   Height = 478
   Color = clBtnFace

@@ -382,6 +382,7 @@ begin
     HK.Columns[0].Caption:='HotKey';
     HK.Columns[1].Caption:='Action';
     TUnit.Caption:='seconds/seek';
+    CAV.Caption:='libavcodec decoding threads';
     TseekL.Caption:='Jump';
     CAddsFiles.Caption:='Add sequence files';
     HK.Hint:='Press hotKey to search related entry.'^M^J+

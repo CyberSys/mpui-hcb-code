@@ -385,6 +385,7 @@ begin
     TUnit.Caption:=UTF8Decode('秒/查尋');
     TseekL.Caption:=UTF8Decode('跳躍');
     CDs.Caption:=UTF8Decode('總是顯示視頻界面');
+    CAV.Caption:=UTF8Decode('libavcodec解碼線程數');
     
     HK.Hint:=UTF8Decode('按下快捷鍵去查找對應的記錄，雙擊記錄去修改快捷鍵');
     HK.Items[0].SubItems.Strings[0]:=UTF8Decode('增加視頻高度');
