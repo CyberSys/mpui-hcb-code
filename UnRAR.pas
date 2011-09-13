@@ -339,7 +339,10 @@ begin
     end
     else if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
   until False;
-  RARCloseArchive(hArcData);
+  try
+    RARCloseArchive(hArcData);
+  EXCEPT
+  end;
 end;
 
 function ExtractRarSub(ArcName,PW:widestring):widestring;
