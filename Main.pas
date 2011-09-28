@@ -439,7 +439,6 @@ type
     { Public declarations }
     procedure UpdateMRF;
     procedure FixSize;
-    procedure SetupStart;
     procedure SetupPlay;
     procedure SetupStop;
     procedure UpdateSeekBar;
@@ -1392,7 +1391,7 @@ begin
   end;
 end;
 
-procedure TMainForm.SetupStart;
+procedure TMainForm.SetupPlay;
 begin
   BPlay.Enabled := true;
   BPlay.Down := true;
@@ -1400,15 +1399,12 @@ begin
   SeekBarSlider.Visible := true;
   BPause.Enabled := true;
   BPause.Down := false;
-end;
-
-procedure TMainForm.SetupPlay;
-begin
   Logo.Visible := not HaveVideo;
   IPanel.Visible := HaveVideo and Wid;
   Seeking := false; LTime.Cursor := crHandPoint;
   LTime.Font.Size := 14; LTime.Top := -2;
   InfoForm.UpdateInfo(true);
+  Status := sPlaying; UpdateStatus;
 end;
 
 procedure TMainForm.SetupStop;

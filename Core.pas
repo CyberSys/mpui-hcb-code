@@ -1100,8 +1100,6 @@ begin
 
   ClientWaitThread.Resume;
   Processor.Resume;
-  MainForm.SetupStart;
-
 end;
 
 procedure TClientWaitThread.ClientDone;
@@ -1912,10 +1910,7 @@ var r, i, j, p, len: integer; s: string; f: real;
   begin
     if ChkStartPlay then begin
       ChkStartPlay := false;
-      if not (HaveVideo) then begin
-        Status := sPlaying; MainForm.UpdateStatus;
-        MainForm.SetupPlay;
-      end;
+      if not (HaveVideo) then MainForm.SetupPlay;
     end;
   end;
 
@@ -1933,7 +1928,6 @@ var r, i, j, p, len: integer; s: string; f: real;
       if not Win32PlatformIsUnicode then begin
         HaveVideo := false; LastHaveVideo := false;
         MVideos.Visible := true; MSub.Visible := true;
-        Status := sPlaying; UpdateStatus;
         SetupPlay;
         Result := true;
         exit;
@@ -2060,7 +2054,6 @@ var r, i, j, p, len: integer; s: string; f: real;
         LastScale := 100; Scale := 100;
       end;
       VideoSizeChanged; SetupPlay;
-      Status := sPlaying; UpdateStatus;
       Result := true;
     end;
   end;

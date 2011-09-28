@@ -123,6 +123,8 @@ end;
 
 procedure TOpenDevicesForm.TPrevClick(Sender: TObject);
 begin
+  if (not Running) or (Pos('tv://', MediaURL) = 0) then TOpenClick(nil);
+  if Status <> sPaused then MainForm.BPlayClick(nil);
   SendCommand('tv_step_channel '+IntToStr((Sender as TTntButton).tag));
 end;
 
@@ -137,6 +139,7 @@ procedure TOpenDevicesForm.TOpenClick(Sender: TObject);
 var Entry:TPlaylistEntry; s:WideString;
 begin
   if CVideoDevices.ItemIndex=-1 then exit;
+  PClear := true;
   with Entry do begin
     State:=psNotPlayed;
     if CCountryCode.Text='' then s:='us-bcast'
@@ -158,12 +161,14 @@ end;
 
 procedure TOpenDevicesForm.TViewClick(Sender: TObject);
 begin
+  if (not Running) or (Pos('tv://', MediaURL) = 0) then TOpenClick(nil);
+  if Status <> sPaused then MainForm.BPlayClick(nil);
   SendCommand('tv_set_channel '+IntToStr(HK.ItemIndex+1));
 end;
 
 procedure TOpenDevicesForm.TStopClick(Sender: TObject);
 begin
-  SendCommand('stop');
+  MainForm.BStopClick(nil);
 end;
 
 procedure TOpenDevicesForm.TLoadClick(Sender: TObject);
@@ -198,7 +203,10 @@ end;
 
 procedure TOpenDevicesForm.TScanClick(Sender: TObject);
 begin
-  SendCommand('tv_set_freq 0'); SendCommand('tv_start_scan');
+  if (not Running) or (Pos('tv://', MediaURL) = 0) then TOpenClick(nil);
+  if Status <> sPaused then MainForm.BPlayClick(nil);
+  SendCommand('tv_set_freq 0');
+  SendCommand('tv_start_scan');
 end;
 
 end.
