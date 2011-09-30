@@ -243,7 +243,7 @@ procedure HandleIDLine(ID: string; Content: WideString); forward;
 function ExpandName(const BasePath, FileName: WideString): WideString;
 begin
   Result := FileName;
-  if Pos(':', FileName) > 0 then exit;
+  if (Pos(':', FileName) > 0) or (length(FileName)>515) then exit;
   if (length(FileName) > 1) and ((FileName[1] = '/') or (FileName[1] = '\')) then exit;
   Result := WideExpandUNCFileName(BasePath + FileName);
 end;
