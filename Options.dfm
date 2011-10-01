@@ -752,7 +752,7 @@ object OptionsForm: TOptionsForm
           'directx:noaccel'
           'direct3d'
           'gl'
-	  'gl:nomanyfmts'
+          'gl:nomanyfmts'
           'gl:yuv=2:force-pbo'
           'gl:yuv=2:force-pbo:ati-hack'
           'gl:yuv=3'

@@ -115,7 +115,7 @@ type TStatus = (sNone, sOpening, sClosing, sPlaying, sPaused, sStopped, sError);
 var Status: TStatus;
 
 var HomeDir, SystemDir, TempDir, AppdataDir: WideString;
-var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread: WideString;
+var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread,cl: WideString;
   ArcPW, TmpPW, DisplayURL, AudioFile, MaxLenLyricW: WideString;
   Duration, LyricF, fass, HKS, lastP1, lastFN: string;
   substring, Vobfile, ShotDir, LyricDir, LyricURL: WideString;

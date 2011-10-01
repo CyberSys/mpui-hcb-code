@@ -32,6 +32,7 @@ type
     procedure TSaveClick(Sender: TObject);
     procedure TClearClick(Sender: TObject);
     procedure TScanClick(Sender: TObject);
+    procedure TntFormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -98,12 +99,12 @@ var FList: TStringList; i, h: integer; FN: WideString;
 begin
   with playlistform.SaveDialog do begin
     Title := playlistform.BSave.Hint;
-    Filter:='Channel list [UTF-8] (*.cl)|*.cl|Anyfile (*.*)|*.*';
+    Filter:='Channel list [UTF-8] (*.cl)|*.cl';
     if Execute then begin
       FList := TStringList.Create;
       if Tnt_WideLowerCase(WideExtractFileExt(FileName)) = '.cl' then
-        for i := 0 to Hk.items.Count - 1 do FList.Add(UTF8Encode(HK.items[i].caption+' '+HK.items[i].SubItems.Strings[0]))
-      else for i := 0 to Playlist.Count - 1 do FList.Add(HK.items[i].caption+' '+HK.items[i].SubItems.Strings[0]);
+        for i := 0 to Hk.items.Count - 1 do
+          FList.Add(UTF8Encode(HK.items[i].caption+' '+HK.items[i].SubItems.Strings[0]));
       if not WideFileExists(FileName) then begin
         h := WideFileCreate(FileName);
         if GetLastError = 0 then FN := WideExtractShortPathName(FileName);
@@ -117,6 +118,7 @@ begin
       end;
       FList.SaveToFile(FN);
       FList.Free;
+      cl:=FN;
     end;
   end;
 end;
@@ -177,7 +179,7 @@ begin
   with MainForm.OpenDialog do begin
     Title := MainForm.MOpenFile.Caption;
     Options := Options - [ofAllowMultiSelect] - [ofoldstyledialog];
-    filter := 'Channel list [UTF-8] (*.cl)|*.cl|Anyfile (*.*)|*.*';
+    filter := 'Channel list [UTF-8] (*.cl)|*.cl';
     if Execute then begin
       NameList := TWStringList.Create;
       NameList.LoadFile(FileName, csutf8);
@@ -192,6 +194,7 @@ begin
         end;
       end;
       NameList.Free;
+      cl:=FileName;
     end;
   end;
 end;
@@ -207,6 +210,28 @@ begin
   if Status <> sPaused then MainForm.BPlayClick(nil);
   SendCommand('tv_set_freq 0');
   SendCommand('tv_start_scan');
+end;
+
+procedure TOpenDevicesForm.TntFormCreate(Sender: TObject);
+var NameList: TWStringList; i,a: integer; s,FileName:WideString;
+begin
+  FileName := HomeDir + 'MPUI.cl';
+  if not WideFileExists(FileName) then
+    FileName := cl;
+  if not WideFileExists(FileName) then exit;
+  NameList := TWStringList.Create;
+  NameList.LoadFile(FileName, csutf8);
+  if NameList.Count > 0 then begin
+    HK.Items.Clear;
+    for i := 0 to NameList.Count - 1 do begin
+      s:=Trim(NameList[i]); a:= pos(' ',s);
+      with HK.Items.Add do begin
+        Caption:=Copy(s, 1, a-1);
+        SubItems.add(Copy(s, a+1,maxint));
+      end;
+    end;
+  end;
+  NameList.Free;
 end;
 
 end.

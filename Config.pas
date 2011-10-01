@@ -102,6 +102,8 @@ begin
           Core.lavf := ReadBool(SectionName, 'Lavf', Core.lavf);
           Core.Fd := ReadBool(SectionName, 'Framedrop', Core.Fd);
           Core.Async := ReadBool(SectionName, 'Autosync', Core.Async);
+          s := ReadString(SectionName, 'channellist', '');
+          if s <> '' then Core.cl := UTF8Decode(s);
           s := ReadString(SectionName, 'AutosyncV', '');
           if s <> '' then Core.AsyncV := s;
           Core.Cache := ReadBool(SectionName, 'Cache', Core.Cache);
@@ -284,6 +286,7 @@ begin
           WriteBool(SectionName, 'UAV', Core.UAV);
         end;
       1: begin  //save some setting when mpui quit
+          WriteString(SectionName, 'channellist', UTF8Encode(cl));
           WriteInteger(SectionName, 'IPanelWidth', Core.InterW);
           WriteInteger(SectionName, 'IPanelHeight', Core.InterH);
           if ds then begin

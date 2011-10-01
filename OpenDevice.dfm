@@ -9,6 +9,7 @@ object OpenDevicesForm: TOpenDevicesForm
   ParentFont = True
   OldCreateOrder = True
   Position = poScreenCenter
+  OnCreate = TntFormCreate
   OnShow = FormShow
   DesignSize = (
     438
@@ -106,6 +107,7 @@ object OpenDevicesForm: TOpenDevicesForm
     ShowHint = True
     TabOrder = 6
     ViewStyle = vsReport
+    OnDblClick = TViewClick
   end
   object TScan: TTntButton
     Left = 3
