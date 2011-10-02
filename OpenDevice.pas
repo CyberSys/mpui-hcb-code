@@ -57,7 +57,9 @@ const  IID_IPropertyBag:TGUID='{55272A00-42CB-11CE-8135-00AA004BB851}';
        CLSID_AudioInputDeviceCategory:TGUID='{33D9A762-90C8-11D0-BD43-00A0C911CE86}';
                                                                                   
 implementation
+
 uses main, plist, Core;
+
 {$R *.dfm}
 procedure CreateDevEnum;
 var hr:HResult;
@@ -140,26 +142,37 @@ begin
   CVideoDevices.Clear; CAudioDevices.Clear; CreateDevEnum;
   if CVideoDevices.Items.Count>0 then CVideoDevices.ItemIndex:=0;
   if CAudioDevices.Items.Count>0 then CAudioDevices.ItemIndex:=0;
+  TOpen.Enabled:=CVideoDevices.Items.Count>0;
+  TScan.Enabled:=TOpen.Enabled;
+  TStop.Enabled:=TOpen.Enabled;
+  TView.Enabled:=TOpen.Enabled;
+  TPrev.Enabled:=TOpen.Enabled;
+  TNext.Enabled:=TOpen.Enabled;
+  TClear.Enabled:=TOpen.Enabled;
+  TLoad.Enabled:=TOpen.Enabled;
+  TSave.Enabled:=TOpen.Enabled;
 end;
 
 procedure TOpenDevicesForm.TOpenClick(Sender: TObject);
-var Entry:TPlaylistEntry; s:WideString;
+var Entry:TPlaylistEntry; s,a,i:WideString;
 begin
   if CVideoDevices.ItemIndex=-1 then exit;
   PClear := true;
+  if HK.Items.Count>0 then begin
+    if (HK.ItemIndex<0) then HK.ItemIndex:=0;
+    a:=':freq='+HK.Items[HK.ItemIndex].SubItems.Strings[0]
+  end
+  else a:='';
   with Entry do begin
     State:=psNotPlayed;
     if CCountryCode.Text='' then s:='us-bcast'
     else s:=CCountryCode.Text;
-    if CVideoDevices.ItemIndex>-1 then
-      FullURL:='tv://'+IntToStr(HK.ItemIndex+1)
+    if CVideoDevices.ItemIndex<0 then i:='0'
+    else i:=IntToStr(CVideoDevices.ItemIndex);
+    FullURL:='tv:///'+i
               +' -tv automute=100:audioid='+IntToStr(CAudioDevices.ItemIndex)
-              +':input='+IntToStr(CVideoDevices.ItemIndex)
-              +':chanlist='+s
-    else FullURL:='tv://'+IntToStr(HK.ItemIndex+1)
-              +' -tv automute=100:audioid='+IntToStr(CAudioDevices.ItemIndex)
-              +':input=0:chanlist='+s;
-    DisplayURL:='TV-'+IntToStr(CVideoDevices.ItemIndex);
+              +':chanlist='+s +a;
+    DisplayURL:='TV-'+i;
   end;
   Playlist.Add(Entry);
   Playlist.Changed; MainForm.UpdateParams;
