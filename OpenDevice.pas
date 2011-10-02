@@ -124,10 +124,15 @@ begin
 end;
 
 procedure TOpenDevicesForm.TPrevClick(Sender: TObject);
+var i:integer;
 begin
   if (not Running) or (Pos('tv://', MediaURL) = 0) then TOpenClick(nil);
   if Status <> sPaused then MainForm.BPlayClick(nil);
-  SendCommand('tv_step_channel '+IntToStr((Sender as TTntButton).tag));
+  i:=(Sender as TTntButton).tag;
+  if (HK.ItemIndex<0) then HK.ItemIndex:=0;
+  if (HK.ItemIndex=0) and (i=-1) then i:=1;
+  SendCommand('tv_set_freq '+ HK.Items[HK.ItemIndex+i].SubItems.Strings[0]);
+  HK.Items[HK.ItemIndex+i].Selected:=true;
 end;
 
 procedure TOpenDevicesForm.FormShow(Sender: TObject);
@@ -165,7 +170,7 @@ procedure TOpenDevicesForm.TViewClick(Sender: TObject);
 begin
   if (not Running) or (Pos('tv://', MediaURL) = 0) then TOpenClick(nil);
   if Status <> sPaused then MainForm.BPlayClick(nil);
-  SendCommand('tv_set_channel '+IntToStr(HK.ItemIndex+1));
+  SendCommand('tv_set_freq '+HK.Selected.SubItems.Strings[0]);
 end;
 
 procedure TOpenDevicesForm.TStopClick(Sender: TObject);
@@ -208,7 +213,7 @@ procedure TOpenDevicesForm.TScanClick(Sender: TObject);
 begin
   if (not Running) or (Pos('tv://', MediaURL) = 0) then TOpenClick(nil);
   if Status <> sPaused then MainForm.BPlayClick(nil);
-  SendCommand('tv_set_freq 0');
+  HK.Items.Clear;
   SendCommand('tv_start_scan');
 end;
 
