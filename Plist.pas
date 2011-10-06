@@ -385,7 +385,6 @@ end;
 procedure TPlaylist.Clear;
 begin
   SetLength(Data, 0); CurPlay := -1; EndOpenDir:=true;
-  PlaylistForm.PlaylistBox.ScrollWidth:=0;
 end;
 
 procedure TLyric.ClearLyric;
@@ -402,14 +401,12 @@ begin
 end;
 
 procedure TPlaylist.Add(const Entry: TPlaylistEntry);
-var len,i: integer;
+var len: integer;
 begin
   if PClear then begin PClear := false; Clear; end;
   len := length(Data);
   SetLength(Data, len + 1);
   Data[len] := Entry;
-  i:=WideCanvasTextWidth(PlaylistForm.PlaylistBox.Canvas,Entry.DisplayURL)+100;
-  if i> PlaylistForm.PlaylistBox.ScrollWidth then PlaylistForm.PlaylistBox.ScrollWidth:=i;
   //  Changed;
 end;
 
