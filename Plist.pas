@@ -384,7 +384,8 @@ end;
 
 procedure TPlaylist.Clear;
 begin
-  SetLength(Data, 0); CurPlay := -1;
+  SetLength(Data, 0); CurPlay := -1; EndOpenDir:=true;
+  PlaylistForm.PlaylistBox.ScrollWidth:=0;
 end;
 
 procedure TLyric.ClearLyric;
@@ -401,13 +402,15 @@ begin
 end;
 
 procedure TPlaylist.Add(const Entry: TPlaylistEntry);
-var len: integer;
+var len,i: integer;
 begin
   if PClear then begin PClear := false; Clear; end;
   len := length(Data);
   SetLength(Data, len + 1);
   Data[len] := Entry;
-//  Changed;
+  i:=WideCanvasTextWidth(PlaylistForm.PlaylistBox.Canvas,Entry.DisplayURL)+100;
+  if i> PlaylistForm.PlaylistBox.ScrollWidth then PlaylistForm.PlaylistBox.ScrollWidth:=i;
+  //  Changed;
 end;
 
 procedure TPlaylist.AddFiles(const URL: widestring);
@@ -1452,7 +1455,7 @@ end;
 
 procedure TPlaylistForm.BClearClick(Sender: TObject);
 begin
-  SetLength(Playlist.Data, 0); CurPlay := -1; EndOpenDir:=true;
+  Playlist.Clear;
   Playlist.Changed;
 end;
 
