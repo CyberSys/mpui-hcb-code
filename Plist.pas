@@ -384,7 +384,7 @@ end;
 
 procedure TPlaylist.Clear;
 begin
-  SetLength(Data, 0); CurPlay := -1; EndOpenDir:=true;
+  SetLength(Data, 0); CurPlay := -1; 
 end;
 
 procedure TLyric.ClearLyric;
@@ -1078,6 +1078,7 @@ end;
 
 procedure TPlaylistForm.PlaylistBoxDrawItem(Control: TWinControl;
   Index: Integer; Rect: TRect; State: TOwnerDrawState);
+var i:integer;
 begin
   with PlaylistBox.Canvas do begin
     FillRect(Rect);
@@ -1089,6 +1090,8 @@ begin
         psSkipped: Draw(Rect.Left + 3, Rect.Top + 1, BMPpsSkipped);
       end;
       WideCanvasTextOut(PlaylistBox.Canvas, Rect.Left + 16, Rect.Top + 1, DisplayURL);
+      i:=WideCanvasTextWidth(playlistForm.PlaylistBox.Canvas,DisplayURL)+100;
+      if i>playlistForm.PlaylistBox.ScrollWidth then playlistForm.PlaylistBox.ScrollWidth:=i;
     end;
   end;
 end;
@@ -1248,7 +1251,7 @@ begin
       + AnyFilter + '(*.*)|*.*';
 
     if Execute then begin
-      PClear := (Sender <> BAdd);
+      PClear := (Sender <> BAdd); EndOpenDir:=PClear;
       sfiles := TTntSTringList.Create;
       sfiles.AddStrings(files);
       sfiles.CustomSort(mysort);
@@ -1452,8 +1455,10 @@ end;
 
 procedure TPlaylistForm.BClearClick(Sender: TObject);
 begin
+  EndOpenDir:=true;
   Playlist.Clear;
   Playlist.Changed;
+  playlistForm.PlaylistBox.ScrollWidth:=0;
 end;
 
 procedure TPlaylistForm.FormDblClick(Sender: TObject);

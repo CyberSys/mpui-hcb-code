@@ -157,7 +157,7 @@ procedure TOpenDevicesForm.TOpenClick(Sender: TObject);
 var Entry:TPlaylistEntry; s,a,i:WideString;
 begin
   if CVideoDevices.ItemIndex=-1 then exit;
-  PClear := true;
+  PClear := true; EndOpenDir:=true;
   if HK.Items.Count>0 then begin
     if (HK.ItemIndex<0) then HK.ItemIndex:=0;
     a:=':freq='+HK.Items[HK.ItemIndex].SubItems.Strings[0]
