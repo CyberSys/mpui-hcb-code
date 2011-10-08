@@ -907,7 +907,7 @@ end;
 
 procedure TMainForm.SetVolumeRel(Increment: integer);
 begin
-  if mute or (Status = sPaused) then exit;
+  if mute then exit;
   if (Volume > 100) or ((Volume = 100) and (Increment > 0))
     then Increment := Increment * 10 div 3; // bigger volume change steps if >100%
   inc(Volume, Increment);
