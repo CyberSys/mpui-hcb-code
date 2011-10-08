@@ -445,12 +445,14 @@ end;
 procedure TPlaylist.AddDirectory(Directory: Widestring);
 var t:TOpenDir;
 begin
-  t:=TOpenDir.Create(True);
+  {t:=TOpenDir.Create(True);
   t.FreeOnTerminate:=True;
   t.Directory:=Directory; t.EOpenDir:=false;
   t.Resume;
   while not t.EOpenDir do
-    WaitForSingleObject(t.Handle, 100);
+    WaitForSingleObject(t.Handle, 100); }
+  EndOpenDir:=false;
+  AddDir(Directory);
 end;
 
 procedure TPlaylist.AddDir(Directory: Widestring);
