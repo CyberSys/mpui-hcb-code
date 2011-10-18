@@ -87,8 +87,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('播放網址 ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('播放網址');
         LOCstr_OpenURL_Prompt:=UTF8Decode('請輸入您想播放的網址');
-      MOpenDrive.Caption:=UTF8Decode('播放 鐳射光碟');
-      MObr.Caption:=UTF8Decode('播放 BlueRay光碟');
+      MOpenDrive.Caption:=UTF8Decode('播放 CD/DVD/BlueRay 鐳射光碟');
       MOpenDevices.Caption:=UTF8Decode('打開 設備');
       MRFile.Caption:=UTF8Decode('最近打開的檔案');
       MFClear.Caption:=UTF8Decode('清除列表');
@@ -161,6 +160,7 @@ begin
       MRmMenu.Caption:=UTF8Decode('返回主菜單');
       MRnMenu.Caption:=UTF8Decode('返回最近的菜單');
       MVCDT.Caption:=UTF8Decode('VCD 軌');
+      MCDT.Caption:=UTF8Decode('CD 軌');
       MAspects.Caption:=UTF8Decode('顯示比例');
         MAutoAspect.Caption:=UTF8Decode('自動偵測');
         MForce43.Caption:=UTF8Decode('4:3');

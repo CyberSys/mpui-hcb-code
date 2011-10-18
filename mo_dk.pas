@@ -48,8 +48,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('Afspil Internetadresse ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('Afspil Internetadresse');
         LOCstr_OpenURL_Prompt:=UTF8Decode('Hvilken Internetadresse vil du gerne afspille?');
-      MOpenDrive.Caption:=UTF8Decode('Afspil CD/DVD');
-      MObr.Caption:=UTF8Decode('Afspil BlueRay');
+      MOpenDrive.Caption:=UTF8Decode('Afspil CD/DVD/BlueRay');
       MClose.Caption:=UTF8Decode('Luk');
       MQuit.Caption:=UTF8Decode('Afslut');
     MView.Caption:=UTF8Decode('Vis');

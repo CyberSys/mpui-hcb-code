@@ -44,8 +44,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('Reproducir URL ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('Reproducir URL');
         LOCstr_OpenURL_Prompt:=UTF8Decode(''+'Cuál es el URL a reproducir?');
-      MOpenDrive.Caption:=UTF8Decode('Reproducir CD/DVD');
-      MObr.Caption:=UTF8Decode('Reproducir BlueRay');
+      MOpenDrive.Caption:=UTF8Decode('Reproducir CD/DVD/BlueRay');
       MClose.Caption:=UTF8Decode('Cerrar');
       MQuit.Caption:=UTF8Decode('Salir');
     MView.Caption:=UTF8Decode('Ver');

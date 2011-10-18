@@ -443,7 +443,7 @@ begin
 end;
 
 procedure TPlaylist.AddDirectory(Directory: Widestring);
-var t:TOpenDir;
+//var t:TOpenDir;
 begin
   {t:=TOpenDir.Create(True);
   t.FreeOnTerminate:=True;
@@ -465,12 +465,7 @@ begin
    // Directory:=WideExcludeTrailingPathDelimiter(Directory);
     with Entry do begin
       State := psNotPlayed; 
-      if br then begin
-      	s:=' -bluray-device '; a:='BlueRay-1 <-- '; d:=' br';
-      end
-      else begin
-      	s:=' -dvd-device '; a:='DVD-1 <-- '; d:=' dvd';
-      end;
+     	s:=' -dvd-device '; a:='DVD-1 <-- '; d:=' dvd';
       if IsWideStringMappableToAnsi(Directory) then
         FullURL := s + EscapeParam(Directory + 'VIDEO_TS') + d
       else
@@ -480,8 +475,37 @@ begin
     Add(Entry);
     exit;
   end;
-
-  // no DVD ->is it a (S)VCD directory?
+  // check for BlueRay directory
+  if WideDirectoryExists(Directory + 'BDMV') and (not EndOpenDir) then begin
+    //Directory:=WideExcludeTrailingPathDelimiter(Directory);
+    with Entry do begin
+      State := psNotPlayed; 
+     	s:=' -bluray-device '; a:='BlueRay-1 <-- '; d:=' br';
+      if IsWideStringMappableToAnsi(Directory) then
+        FullURL := s + EscapeParam(Directory+'BDMV') + d
+      else
+        FullURL := s + EscapeParam(WideExtractShortPathName(Directory+'BDMV')) + d;
+      DisplayURL := a + Directory;
+    end;
+    Add(Entry);
+    exit;
+  end;
+  // check for CD directory
+  if WideFileExists(Directory + 'Track01.cda') and (not EndOpenDir) then begin
+    Directory:=WideExcludeTrailingPathDelimiter(Directory);
+    with Entry do begin
+      State := psNotPlayed; 
+     	s:=' -cdrom-device '; a:='CD-1 <-- '; d:=' cdda://';
+      if IsWideStringMappableToAnsi(Directory) then
+        FullURL := s + EscapeParam(Directory) + d
+      else
+        FullURL := s + EscapeParam(WideExtractShortPathName(Directory)) + d;
+      DisplayURL := a + Directory;
+    end;
+    Add(Entry);
+    exit;
+  end;
+  // no CD ->is it a (S)VCD directory?
   if WideDirectoryExists(Directory + 'MPEGAV') and (not EndOpenDir) then Directory := Directory + 'MPEGAV\'
   else if WideDirectoryExists(Directory + 'MPEG2') then Directory := Directory + 'MPEG2\';
 
@@ -500,6 +524,7 @@ begin
 
   // directory is empty, or no filesystem -> try use TrackMode to access directory
   if empty and (not EndOpenDir) then begin
+    Directory:=WideExcludeTrailingPathDelimiter(Directory);
     with Entry do begin
       State := psNotPlayed;
       if IsWideStringMappableToAnsi(Directory) then

@@ -87,8 +87,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('打开 URL ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('打开 URL');
         LOCstr_OpenURL_Prompt:=UTF8Decode('你想要打开的 URL 是？');
-      MOpenDrive.Caption:=UTF8Decode('播放 光盘');
-      MObr.Caption:=UTF8Decode('播放 蓝光(BlueRay)光盘');
+      MOpenDrive.Caption:=UTF8Decode('播放 CD/DVD/BlueRay(蓝光)光盘');
       MOpenDevices.Caption:=UTF8Decode('打开 设备');
       MRFile.Caption:=UTF8Decode('最近打开的文件');
       MFClear.Caption:=UTF8Decode('清除列表');
@@ -161,6 +160,7 @@ begin
       MRmMenu.Caption:=UTF8Decode('返回主菜单');
       MRnMenu.Caption:=UTF8Decode('返回最近的菜单');
       MVCDT.Caption:=UTF8Decode('VCD 轨');
+      MCDT.Caption:=UTF8Decode('CD 轨');
       MAspects.Caption:=UTF8Decode('纵横比');
         MAutoAspect.Caption:=UTF8Decode('自动');
         MForce43.Caption:=UTF8Decode('4:3');

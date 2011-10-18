@@ -638,7 +638,7 @@ begin
   if Win32PlatformIsVista then ShotDir := GetShellPath(RFID_PERSONAL)
   else ShotDir := GetFolderPath(CSIDL_PERSONAL);
   if ShotDir = '' then ShotDir := TempDir + 'MPUISnap' else ShotDir := WideIncludeTrailingPathDelimiter(ShotDir) + 'MPUISnap';
-
+  WadspL:= HomeDir + 'plugins\dsp_enh.dll';
   LyricDir := ShotDir;
   MplayerLocation := HomeDir + 'mplayer.exe';
 
@@ -966,7 +966,8 @@ begin
       i := Bp - 5;
     if i > LastPos then LastPos := i;
   end;
-  if (Copy(MediaURL, 1, 12) = ' -dvd-device') or (Copy(MediaURL, 1, 15) = ' ?bluray?device') then begin
+  br:= Copy(MediaURL, 1, 15) = ' -bluray-device';
+  if (Copy(MediaURL, 1, 12) = ' -dvd-device') or br then begin
     if TotalTime > 0 then begin
       i := 0;
       if HaveChapters and (CID > 1) then begin
@@ -982,7 +983,7 @@ begin
     if LastPos > 0 then begin
       SecondPos := LastPos; CmdLine := CmdLine + ' -ss ' + SecondsToTime(LastPos); end;
 
-    if Dnav then begin
+    if Dnav and (not br) then begin
       CmdLine := CmdLine + ' -nocache';
       CmdLine := CmdLine + MediaURL + 'nav://';
     end
@@ -1543,6 +1544,42 @@ var r, i, j, p, len: integer; s: string; f: real;
     end;
   end;
 
+
+  function CheckCDTL: boolean;
+  begin
+    Result := false;
+    if (len > 14) and (Copy(Line, 1, 14) = 'ID_CDDA_TRACK_') then begin
+      s := Copy(Line, 15, MaxInt);
+      p := Pos('_MSF=', s);
+      if p <= 0 then exit;
+      Val(Copy(s, 1, p - 1), i, r);
+      if (r = 0) and (i > 0) and (i < 8191) then begin
+        if CheckMenu(MainForm.MCDT, i) < 0 then
+          SubMenu_Add(MainForm.MCDT, i, CDID, MainForm.MVCDTClick);
+        SubMenu_SetNameLang(MainForm.MCDT, i, copy(s, p + 5, MaxInt));
+      end;
+      Result := true;
+    end;
+  end;
+
+  function CheckCDT: boolean;
+  var k: integer;
+  begin
+    Result := false;
+    if (len > 20) and (Copy(Line, 1, 20) = 'Found audio CD with ') then begin
+      s:= Copy(Line, 21, Maxint);
+      s:= Copy(s, 1, length(s)-8);
+      Val(s, i, r);
+      if (r = 0) and (i >= 0) and (i < 8191) then begin
+        for k := 1 to i do begin
+          if CheckMenu(MainForm.MCDT, k) < 0 then
+            SubMenu_Add(MainForm.MCDT, k, CDID, MainForm.MVCDTClick);
+        end;
+      end;
+      Result := true; exit;
+    end;
+  end;
+  
   function CheckVCDT: boolean;
   var k: integer;
   begin
@@ -1556,8 +1593,10 @@ var r, i, j, p, len: integer; s: string; f: real;
     if (len > 17) and (Copy(Line, 1, 17) = 'ID_VCD_END_TRACK=') then begin
       Val(Copy(Line, 18, MaxInt), i, r);
       if (r = 0) and (i >= 0) and (i < 8191) then begin
-        for k := VCDST to i - 1 do
-          SubMenu_Add(MainForm.MVCDT, k, CDID, MainForm.MVCDTClick);
+        for k := VCDST to i do begin
+          if CheckMenu(MainForm.MVCDT, k) < 0 then
+            SubMenu_Add(MainForm.MVCDT, k, CDID, MainForm.MVCDTClick);
+        end;
       end;
       Result := true;
     end;
@@ -2367,6 +2406,8 @@ begin
           if not CheckDVDA then
             if not CheckDVDTL then
               if not CheckVCDT then
+              if not CheckCDTL then
+              if not CheckCDT then
                 if not CheckChapterLen then
                   if not CheckVideoID then
                     if not CheckVideoName then

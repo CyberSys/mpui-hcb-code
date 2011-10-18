@@ -48,8 +48,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('ludi adreson ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('ludi adreson');
         LOCstr_OpenURL_Prompt:=UTF8Decode('Kiun adreson ekludu?');
-      MOpenDrive.Caption:=UTF8Decode('ludi CD/DVD');
-      MObr.Caption:=UTF8Decode('ludi BlueRay');
+      MOpenDrive.Caption:=UTF8Decode('ludi CD/DVD/BlueRay');
       MClose.Caption:=UTF8Decode('fermi');
       MQuit.Caption:=UTF8Decode('eliro');
     MView.Caption:=UTF8Decode('vidaĵo');

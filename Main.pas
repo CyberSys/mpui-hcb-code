@@ -302,7 +302,7 @@ type
     Mdownloadsubtitle: TTntMenuItem;
     N38: TTntMenuItem;
     MDownloadLyric: TTntMenuItem;
-    MObr: TTntMenuItem;
+    MCDT: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -418,7 +418,6 @@ type
     procedure MOpenDevicesClick(Sender: TObject);
     procedure MdownloadsubtitleClick(Sender: TObject);
     procedure MDownloadLyricClick(Sender: TObject);
-    procedure MObrClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -1844,8 +1843,11 @@ procedure TMainForm.MDeinterlaceClick(Sender: TObject);
 begin
   if (Sender as TTntMenuItem).Checked then exit;
   Deinterlace := (Sender as TTntMenuItem).Tag;
-  if Deinterlace = 2 then SendCommand('step_property deinterlace')
-  else Restart;
+ // if Deinterlace = 2 then SendCommand('set_property deinterlace 1')
+  //else begin
+  //  SendCommand('set_property deinterlace 0');
+    Restart;
+ // end;
   (Sender as TTntMenuItem).Checked := true;
 end;
 
@@ -1944,25 +1946,14 @@ begin
           if MDrive = Tnt_WideLowerCase(Caption) then NoAccess := 2;
         end;
         MOpenDrive.Add(Item);
-
-        Item := TTntMenuItem.Create(MObr);
-        with Item do begin
-          Caption := Drive + ':';
-          Tag := Ord(Drive);
-          RadioItem := true;
-          OnClick := MObrClick;
-          if MDrive = Tnt_WideLowerCase(Caption) then NoAccess := 2;
-        end;
-        MObr.Add(Item);
       end;
     end
     else if i > -1 then begin
-      MOpenDrive.Delete(i); MObr.Delete(i);
+      MOpenDrive.Delete(i);
     end;
   end;
 
   MOpenDrive.Visible := MOpenDrive.Count > 0;
-  MObr.Visible := MOpenDrive.Visible;
 end;
 
 procedure TMainForm.MOpenDriveClick(Sender: TObject);
@@ -3241,11 +3232,6 @@ end;
 procedure TMainForm.MDownloadLyricClick(Sender: TObject);
 begin
   PlaylistForm.MDownloadLyricClick(nil);
-end;
-
-procedure TMainForm.MObrClick(Sender: TObject);
-begin
-  br:=true; MOpenDriveClick(nil);
 end;
 
 end.

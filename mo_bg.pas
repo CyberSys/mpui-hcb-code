@@ -86,8 +86,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('Отвори URL ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('Отвори URL');
         LOCstr_OpenURL_Prompt:=UTF8Decode('Въведете желаното от вас URL');
-      MOpenDrive.Caption:=UTF8Decode('Отвори CD/DVD');
-      MObr.Caption:=UTF8Decode('Отвори BlueRay');
+      MOpenDrive.Caption:=UTF8Decode('Отвори CD/DVD/BlueRay');
       MLoadLyric.Caption:=UTF8Decode('Зареди файл с говор ...');
       MLoadSub.Caption:=UTF8Decode('Зареди субтитри ...');
       FontTitle:=UTF8Decode('OSD шрифт ...');
@@ -155,6 +154,7 @@ begin
       MRmMenu.Caption:=UTF8Decode('Върни се към главното меню');
       MRnMenu.Caption:=UTF8Decode('Върни се към най-близкото меню');
       MVCDT.Caption:=UTF8Decode('VCD поток от данни');
+      MCDT.Caption:=UTF8Decode('CD поток от данни');
       MAspects.Caption:=UTF8Decode('Съотношение на изображението');
         MAutoAspect.Caption:=UTF8Decode('Автоматично');
         MForce43.Caption:=UTF8Decode('Съотношение 4:3');

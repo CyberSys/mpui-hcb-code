@@ -48,8 +48,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('URL 재생 ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('URL 재생');
         LOCstr_OpenURL_Prompt:=UTF8Decode('재생할 URL 을 입력하세요.');
-      MOpenDrive.Caption:=UTF8Decode('CD/DVD 재생');
-      MObr.Caption:=UTF8Decode('BlueRay 재생');
+      MOpenDrive.Caption:=UTF8Decode('CD/DVD/BlueRay 재생');
       MClose.Caption:=UTF8Decode('닫기');
       MQuit.Caption:=UTF8Decode('종료');
     MView.Caption:=UTF8Decode('보기');

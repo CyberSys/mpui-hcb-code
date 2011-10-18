@@ -90,8 +90,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('Otórz URL ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('Odtwarzaj URL');
         LOCstr_OpenURL_Prompt:=UTF8Decode('Który URL chcesz odtwarzać?');
-      MOpenDrive.Caption:=UTF8Decode('Otwórz CD/DVD');
-      MObr.Caption:=UTF8Decode('Otwórz BlueRay');
+      MOpenDrive.Caption:=UTF8Decode('Otwórz CD/DVD/BlueRay');
       MLoadLyric.Caption:=UTF8Decode('Wczytaj plik Lyric');
       MLoadSub.Caption:=UTF8Decode('Wczytaj napisy...');
       FontTitle:=UTF8Decode('Czcionka OSD...');
@@ -159,6 +158,7 @@ begin
       MRmMenu.Caption:=UTF8Decode('Wróć do głównego menu DVD');
       MRnMenu.Caption:=UTF8Decode('Wróć do najbliższego menu DVD');
       MVCDT.Caption:=UTF8Decode('Ścieżka VCD');
+      MCDT.Caption:=UTF8Decode('Ścieżka CD');
       MAspects.Caption:=UTF8Decode('Współczynnik proporcji');
         MAutoAspect.Caption:=UTF8Decode('Wykryj automatycznie');
         MForce43.Caption:=UTF8Decode('Wymuś 4:3');

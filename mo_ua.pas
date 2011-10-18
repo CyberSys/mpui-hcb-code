@@ -52,8 +52,7 @@ begin
     MOpenURL.Caption := UTF8Decode('Відтворити інтернет ярлик ...'); // виправлено
     LOCstr_OpenURL_Caption := UTF8Decode('Відтворити URL ...');
     LOCstr_OpenURL_Prompt := UTF8Decode('Який URL Ви хочете завантажити?'); // виправлено
-    MOpenDrive.Caption := UTF8Decode('Грати CD/DVD');
-    MObr.Caption := UTF8Decode('Грати BlueRay');
+    MOpenDrive.Caption := UTF8Decode('Грати CD/DVD/BlueRay');
     MClose.Caption := UTF8Decode('Закрити');
     MQuit.Caption := UTF8Decode('Вийти');
     MView.Caption := UTF8Decode('Перегляд');

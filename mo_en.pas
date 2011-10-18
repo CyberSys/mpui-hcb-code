@@ -87,7 +87,7 @@ begin
       MOpenURL.Caption:='Play URL ...';
         LOCstr_OpenURL_Caption:='Play URL';
         LOCstr_OpenURL_Prompt:='Which URL do you want to play?';
-      MOpenDrive.Caption:='Play Media CD';
+      MOpenDrive.Caption:='Play CD/DVD/BlueRay disk';
       MOpenDevices.Caption:='Open Devices';
       MRFile.Caption:='Recent files';
       MFClear.Caption:='Clear list';
@@ -160,6 +160,7 @@ begin
       MRmMenu.Caption:='Return to main menu';
       MRnMenu.Caption:='Return to nearest menu';
       MVCDT.Caption:='VCD Tracks';
+      MCDT.Caption:='CD Tracks';
       MAspects.Caption:='Aspect ratio';
         MAutoAspect.Caption:='Autodetect';
         MForce43.Caption:='Force 4:3';

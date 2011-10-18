@@ -1465,10 +1465,6 @@ object MainForm: TMainForm
         ImageIndex = 2
         Visible = False
       end
-      object MObr: TTntMenuItem
-        Caption = 'Open BlueRay'
-        GroupIndex = 1
-      end
       object N33: TTntMenuItem
         Caption = '-'
         GroupIndex = 1
@@ -2201,6 +2197,11 @@ object MainForm: TMainForm
         Caption = 'Audio'
         GroupIndex = 1
         ImageIndex = 23
+        Visible = False
+      end
+      object MCDT: TTntMenuItem
+        Caption = 'CD Tracks'
+        GroupIndex = 169
         Visible = False
       end
       object N22: TTntMenuItem
