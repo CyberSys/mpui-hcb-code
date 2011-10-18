@@ -505,6 +505,21 @@ begin
     Add(Entry);
     exit;
   end;
+
+  {if WideDirectoryExists(Directory + 'MPEGAV') and (not EndOpenDir) then begin
+    Directory:=WideExcludeTrailingPathDelimiter(Directory);
+    with Entry do begin
+      State := psNotPlayed;
+      if IsWideStringMappableToAnsi(Directory) then
+        FullURL := ' -cdrom-device ' + EscapeParam(Directory) + ' vcd://'
+      else
+        FullURL := ' -cdrom-device ' + EscapeParam(WideExtractShortPathName(Directory)) + ' vcd://';
+      DisplayURL := 'VCD <-- ' + Directory;
+    end;
+    Add(Entry);
+    exit;
+  end; }
+
   // no CD ->is it a (S)VCD directory?
   if WideDirectoryExists(Directory + 'MPEGAV') and (not EndOpenDir) then Directory := Directory + 'MPEGAV\'
   else if WideDirectoryExists(Directory + 'MPEG2') then Directory := Directory + 'MPEG2\';

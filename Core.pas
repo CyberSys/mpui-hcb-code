@@ -1579,7 +1579,24 @@ var r, i, j, p, len: integer; s: string; f: real;
       Result := true; exit;
     end;
   end;
-  
+
+  function CheckVCDTL: boolean;
+  begin
+    Result := false;
+    if (len > 13) and (Copy(Line, 1, 13) = 'ID_VCD_TRACK_') then begin
+      s := Copy(Line, 14, MaxInt);
+      p := Pos('_MSF=', s);
+      if p <= 0 then exit;
+      Val(Copy(s, 1, p - 1), i, r);
+      if (r = 0) and (i > 0) and (i < 8191) then begin
+        if CheckMenu(MainForm.MVCDT, i) < 0 then
+          SubMenu_Add(MainForm.MVCDT, i, CDID, MainForm.MVCDTClick);
+        SubMenu_SetNameLang(MainForm.MVCDT, i, copy(s, p + 5, MaxInt));
+      end;
+      Result := true;
+    end;
+  end;
+
   function CheckVCDT: boolean;
   var k: integer;
   begin
@@ -2405,6 +2422,7 @@ begin
         if not CheckDVDC then
           if not CheckDVDA then
             if not CheckDVDTL then
+              if not CheckVCDTL then
               if not CheckVCDT then
               if not CheckCDTL then
               if not CheckCDT then
