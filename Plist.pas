@@ -1098,8 +1098,8 @@ begin
   COneLoop.Down := OneLoop; MainForm.MOneLoop.Checked := COneLoop.Down;
   CLoop.Down := Loop;
   MainForm.MLoopAll.Checked := CLoop.Down;
-  CLoop.Down := Loop;
-  MainForm.MLoopAll.Checked := CLoop.Down;
+  CShuffle.Down := Shuffle;
+  MainForm.MShuffle.Checked := CShuffle.Down;
 
 end;
 
