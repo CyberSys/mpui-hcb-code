@@ -58,6 +58,9 @@ begin
           s := ReadString(SectionName, 'Subcode', '');
           if s <> '' then Core.subcode := s;
           Core.ReIndex := ReadBool(SectionName, 'ReIndex', Core.ReIndex);
+          Core.Shuffle := ReadBool(SectionName, 'Shuffle', Core.Shuffle);
+          Core.Loop := ReadBool(SectionName, 'Loop', Core.Loop);
+          Core.OneLoop := ReadBool(SectionName, 'OneLoop', Core.OneLoop);
           Core.SoftVol := ReadBool(SectionName, 'SoftVol', Core.SoftVol);
           Core.RFScr := ReadBool(SectionName, 'MBRFullScreen', Core.RFScr);
           Core.UseekC := ReadBool(SectionName, 'Seek_Chapter', Core.UseekC);
@@ -310,6 +313,9 @@ begin
           WriteInteger(SectionName, 'OnTop', Core.OnTop);
           WriteInteger(SectionName, 'seekLen', Core.seekLen);
           WriteBool(SectionName, 'UseUni', Core.UseUni);
+          WriteBool(SectionName, 'Shuffle', Core.Shuffle);
+          WriteBool(SectionName, 'Loop', Core.Loop);
+          WriteBool(SectionName, 'OneLoop', Core.OneLoop);
           for h := MainForm.MRFile.Count - 1 downto 2 do
             WriteString(SectionName, 'RF' + IntToStr(h - 2), UTF8Encode(TTntMenuItem(MainForm.MRFile.Items[h]).Hint));
         end;

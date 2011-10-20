@@ -1092,6 +1092,15 @@ begin
   Lyric.BitMap.Canvas.Font.Name := LyricF; Lyric.BitMap.Canvas.Font.Size := LyricS;
   Lyric.ItemHeight := WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;
   CPA.Visible:= WideFileExists(homedir+chsdetDll);
+
+  CShuffle.Enabled := not OneLoop; CLoop.Enabled := not OneLoop;
+  MainForm.MShuffle.Enabled := not OneLoop; MainForm.MLoopAll.Enabled := not OneLoop;
+  COneLoop.Down := OneLoop; MainForm.MOneLoop.Checked := COneLoop.Down;
+  CLoop.Down := Loop;
+  MainForm.MLoopAll.Checked := CLoop.Down;
+  CLoop.Down := Loop;
+  MainForm.MLoopAll.Checked := CLoop.Down;
+
 end;
 
 procedure TPlaylistForm.FormShow(Sender: TObject);
