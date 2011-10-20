@@ -1071,7 +1071,8 @@ begin
               end;
             Ord('V'): if MSubtitle.Count > 0 then begin
                 MShowSub.Checked := not MShowSub.Checked;
-                HandleCommand('sub_visibility');
+                if MShowSub.Checked then HandleCommand('sub_visibility 1')
+                else HandleCommand('sub_visibility 0');
               end;
             Ord('S'): HandleCommand('screenshot 0');
             Ord('Y'): if MSubtitle.Count > 0 then HandleCommand('sub_step -1');
