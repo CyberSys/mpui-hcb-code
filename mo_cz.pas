@@ -37,7 +37,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('Otevřít URL ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('Otevřít URL');
         LOCstr_OpenURL_Prompt:=UTF8Decode('Zadejte URL, která má být otevřena');
-      MOpenDrive.Caption:=UTF8Decode('Otevřít disk CD/DVD/BlueRay');
+      MOpenDrive.Caption:=UTF8Decode('Otevřít disk (V)CD/DVD/BlueRay');
       MClose.Caption:=UTF8Decode('Zavřít');
       MQuit.Caption:=UTF8Decode('Ukončit');
     MView.Caption:=UTF8Decode('Zobrazit');

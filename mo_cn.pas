@@ -87,7 +87,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('打开 URL ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('打开 URL');
         LOCstr_OpenURL_Prompt:=UTF8Decode('你想要打开的 URL 是？');
-      MOpenDrive.Caption:=UTF8Decode('播放 CD/DVD/BlueRay(蓝光)光盘');
+      MOpenDrive.Caption:=UTF8Decode('播放 (V)CD/DVD/BlueRay(蓝光)光盘');
       MOpenDevices.Caption:=UTF8Decode('打开 设备');
       MRFile.Caption:=UTF8Decode('最近打开的文件');
       MFClear.Caption:=UTF8Decode('清除列表');

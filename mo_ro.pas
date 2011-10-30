@@ -48,7 +48,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('Redă de la locaţia din Internet ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('Redă de la locaţia din Internet');
         LOCstr_OpenURL_Prompt:=UTF8Decode('De la care locaţie din Internet doriţi sa se efectueze redarea?');
-      MOpenDrive.Caption:=UTF8Decode('Redă CD/DVD/BlueRay');
+      MOpenDrive.Caption:=UTF8Decode('Redă (V)CD/DVD/BlueRay');
       MClose.Caption:=UTF8Decode('Închide');
       MQuit.Caption:=UTF8Decode('Ieşire');
     MView.Caption:=UTF8Decode('Vizualizare');

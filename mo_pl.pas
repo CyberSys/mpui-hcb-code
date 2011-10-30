@@ -90,7 +90,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('Otórz URL ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('Odtwarzaj URL');
         LOCstr_OpenURL_Prompt:=UTF8Decode('Który URL chcesz odtwarzać?');
-      MOpenDrive.Caption:=UTF8Decode('Otwórz CD/DVD/BlueRay');
+      MOpenDrive.Caption:=UTF8Decode('Otwórz (V)CD/DVD/BlueRay');
       MLoadLyric.Caption:=UTF8Decode('Wczytaj plik Lyric');
       MLoadSub.Caption:=UTF8Decode('Wczytaj napisy...');
       FontTitle:=UTF8Decode('Czcionka OSD...');

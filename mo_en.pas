@@ -87,7 +87,7 @@ begin
       MOpenURL.Caption:='Play URL ...';
         LOCstr_OpenURL_Caption:='Play URL';
         LOCstr_OpenURL_Prompt:='Which URL do you want to play?';
-      MOpenDrive.Caption:='Play CD/DVD/BlueRay disk';
+      MOpenDrive.Caption:='Play (V)CD/DVD/BlueRay disk';
       MOpenDevices.Caption:='Open Devices';
       MRFile.Caption:='Recent files';
       MFClear.Caption:='Clear list';

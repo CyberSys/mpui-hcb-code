@@ -48,7 +48,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('URLから再生 ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('URLから再生');
         LOCstr_OpenURL_Prompt:=UTF8Decode('どのURLから再生しますか?');
-      MOpenDrive.Caption:=UTF8Decode('CD/DVD/BlueRayから再生');
+      MOpenDrive.Caption:=UTF8Decode('(V)CD/DVD/BlueRayから再生');
       MClose.Caption:=UTF8Decode('閉じる');
       MQuit.Caption:=UTF8Decode('終了');
     MView.Caption:=UTF8Decode('表示');

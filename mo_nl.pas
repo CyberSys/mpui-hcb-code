@@ -48,7 +48,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('URL laden ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('URL afspelen');
         LOCstr_OpenURL_Prompt:=UTF8Decode('Welke URL wenst u af te spelen?');
-      MOpenDrive.Caption:=UTF8Decode('Laad CD/DVD/BlueRay');
+      MOpenDrive.Caption:=UTF8Decode('Laad (V)CD/DVD/BlueRay');
       MClose.Caption:=UTF8Decode('Media sluiten');
       MQuit.Caption:=UTF8Decode('Afsluiten');
     MView.Caption:=UTF8Decode('Beeld');

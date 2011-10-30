@@ -45,7 +45,7 @@ begin
       MOpenURL.Caption:=UTF8Decode('Jouer un URL ...');
         LOCstr_OpenURL_Caption:=UTF8Decode('Jouer un URL');
         LOCstr_OpenURL_Prompt:=UTF8Decode('Quel URL voulez-vous jouer?');
-      MOpenDrive.Caption:=UTF8Decode('Jouer un CD/DVD/BlueRay');
+      MOpenDrive.Caption:=UTF8Decode('Jouer un (V)CD/DVD/BlueRay');
       MClose.Caption:=UTF8Decode('Fermer');
       MQuit.Caption:=UTF8Decode('Quitter');
     MView.Caption:=UTF8Decode('Affichage');
