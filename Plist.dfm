@@ -3,7 +3,6 @@ object PlaylistForm: TPlaylistForm
   Top = 267
   Width = 365
   Height = 255
-  BorderIcons = [biSystemMenu]
   Caption = 'PlaylistForm'
   Color = clBtnFace
   Constraints.MinHeight = 105
@@ -23,7 +22,7 @@ object PlaylistForm: TPlaylistForm
   OnShow = FormShow
   DesignSize = (
     357
-    228)
+    221)
   PixelsPerInch = 96
   TextHeight = 13
   object TntPageControl1: TTntPageControl
