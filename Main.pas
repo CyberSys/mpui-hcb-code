@@ -2595,7 +2595,7 @@ begin
     else if ssShift in Shift then MouseMode := 3 //Scale video
     else if ssCtrl in Shift then MouseMode := 4 //Adjust aspect ratio
     else if ssAlt in Shift then MouseMode := 5 //Adjust bright,contrast
-    else if ((Width < Screen.Width) or (Height < Screen.WorkAreaHeight))
+    else if ((Width <= Screen.Width) or (Height <= Screen.WorkAreaHeight))
       and (WindowState = wsNormal) then begin
       GetCursorPos(p); OldX := p.X; OldY := p.Y;
       MouseMode := 1; //Drag window
