@@ -1151,7 +1151,10 @@ procedure TPlaylistForm.BPlayClick(Sender: TObject);
 var Index: integer;
 begin
   if Playlist.Count > 0 then begin
-    if (Sender <> BPlay) and (Sender <> PlaylistBox) then Index := 0
+    if (Sender <> BPlay) and (Sender <> PlaylistBox) then begin
+      if Shuffle and (not OneLoop) then Index:=Playlist.GetNext(psPlayed,1)
+      else Index:=0;
+    end
     else begin
       if PlaylistBox.SelCount > 0 then begin
         Index := PlaylistBox.ItemIndex - (PlaylistBox.SelCount - 1);
