@@ -33,10 +33,12 @@ const LangList:array[0..56] of string=('all','alb','ara','arm','ben','bos','pob'
           'urd','vie');
           
 type
+    Tbytes = array of Byte;
     TLyricEntry = record
       id: widestring;
       artist: widestring;
       title: widestring;
+      searchID: Integer;
     end;
     TLyricEntryList = array of TLyricEntry;
 
@@ -98,6 +100,25 @@ type
 
 var DLyricForm: TDLyricForm; stList:TSubEntryList;
 
+const
+SearchPath: array[0..2] of string = (
+    'http://ttlrcct.qianqian.com/dll/lyricsvr.dll?sh?Artist=%s&Title=%s&Flags=0',
+    'http://ttlrccnc.qianqian.com/dll/lyricsvr.dll?sh?Artist=%s&Title=%s&Flags=0',
+    '<?xml version="1.0" encoding=''utf-8''?><search filetype="lyrics" artist="%s" title="%s"/>'
+
+    );
+
+DownloadPath : array[0..2] of string = (
+    'http://ttlrcct.qianqian.com/dll/lyricsvr.dll?dl?Id=%s&Code=%s',
+    'http://ttlrccnc.qianqian.com/dll/lyricsvr.dll?dl?Id=%s&Code=%s',
+    ''
+    );
+
+function ToHexString(s, encode: WideString): string;
+function CreateLyricCode(singer, title: WideString; lrcId: integer): string;
+function Conv(i: Integer): int64;
+function findID(id:WideString; list:TLyricEntryList):Boolean;
+
 implementation
 uses Plist, Core, Locale, Main;
 
@@ -124,7 +145,14 @@ begin
       Exit;
     end
     else if (Len=1) and (mode>2) then begin
-      if mode=3 then GetLyric(FN, LyricList[0].id)
+      if mode=3 then begin
+        if LyricList[0].searchID<2 then begin
+          Url := DownloadPath[LyricList[0].searchID];
+          Url := Format(Url, [LyricList[0].id, CreateLyricCode(LyricList[0].artist, LyricList[0].title, StrToInt(LyricList[0].id))]);
+        end
+        else Url:= LyricList[0].id;
+        GetLyric(FN,Url);
+      end
       else GetLyric(FN, SubList[0].IDSubtitle);
     end;
   end
@@ -157,11 +185,11 @@ begin
 end;
 
 procedure TDownLoadLyric.GetLyricList;
-var XMLString, MyUrl: string; artistV, titleV,linkV,s:OleVariant;
-    XDOC: IXMLDocument; XmlNd,nd,nd1: IXMLNode; i,j,Len:Integer;
+var XMLString, MyUrl: string; artistV, titleV,idV,linkV,s:OleVariant;
+    XDOC: IXMLDocument; XmlNd,nd,nd1: IXMLNode; i,j,Len,searchID:Integer;
     IdHTTP1: TIdhttp; SList: TStringList;
     IDSubtitle,LanguageName,SubFormat,SubSumCD,MovieName,
-    SubAddDate,SubEnabled,SubDownloadsCnt,SubBad:WideString;
+    SubAddDate,SubEnabled,SubDownloadsCnt,SubBad,a,t:WideString;
 
 begin
   IdHTTP1:=TIdhttp.Create(nil);
@@ -173,61 +201,106 @@ begin
     title := Tnt_WideLowerCase(Tnt_WideStringReplace(title, '''', '', [rfReplaceAll]));
     title := Tnt_WideLowerCase(Tnt_WideStringReplace(title, '"', '', [rfReplaceAll]));
 
-    SList:=TStringList.Create;
-    SList.Text:=Format('<?xml version="1.0" encoding=''utf-8''?><search filetype="lyrics" artist="%s" title="%s"/>', [UTF8Encode(artist), UTF8Encode(title)]);
-    try   //http://www.viewlyrics.com:1212/searchlyrics.htm
-    //http://search.crintsoft.com//searchlyrics.htm
-      XMLString:=IdHTTP1.Post('http://search.crintsoft.com/searchlyrics.htm',SList);
-      SList.Free;
-    except
+    for searchID:=High(SearchPath) downto Low(SearchPath) do begin
+      IdHTTP1:=TIdhttp.Create(nil);
+      IdHTTP1.HTTPOptions:=[hoKeepOrigProtocol];
+
+      if searchID<2 then begin  //IdHTTP1.Free;  Exit;
+        a:= Tnt_WideStringReplace(artist, ' ', '', [rfReplaceAll]);
+        t:= Tnt_WideStringReplace(title, ' ', '', [rfReplaceAll]);
+        a:= ToHexString(a, 'Unicode'); t:= ToHexString(t, 'Unicode');
+        MyUrl:= Format(SearchPath[searchID], [a,t]);
+        try
+          XMLString := IdHTTP1.Get(MyUrl);
+        except
+          IdHTTP1.Free;
+          Continue;
+        end;
+      end
+      else begin  // IdHTTP1.Free;  Exit;
+        SList:=TStringList.Create;
+        SList.Text:=Format(SearchPath[searchID], [UTF8Encode(artist), UTF8Encode(title)]);
+        try            //http://www.viewlyrics.com:1212/searchlyrics.htm
+        //IdHTTP1.Host:='search.crintsoft.com';
+        IdHTTP1.Request.UserAgent:='MiniLyrics';
+       // IdHTTP1.Port:='1212';
+          XMLString:=IdHTTP1.Post('http://search.crintsoft.com/searchlyrics.htm',SList);
+          SList.Free;
+        except
+           IdHTTP1.Free;
+           SList.Free;
+           Continue;
+        end;
+      end;
       IdHTTP1.Free;
-      SList.Free;
-      Exit;
+      if XMLString='' then Continue;
+
+      try
+        OleInitialize(nil);
+        XDOC:= LoadXMLData(XMLString);
+      except
+          XDOC:=nil;
+          OleUninitialize;
+          Continue;
+      end;
+      OleUninitialize;
+      XDOC.Options:= XDOC.Options - [doAttrNull];
+      XmlNd := xdoc.DocumentElement;
+
+      for i := 0 to XmlNd.ChildNodes.Count - 1 do begin
+          idV:=XmlNd.ChildNodes[i].Attributes['id'];
+          artistV:=XmlNd.ChildNodes[i].Attributes['artist'];
+          titleV:=XmlNd.ChildNodes[i].Attributes['title'];
+          linkV:=XmlNd.ChildNodes[i].Attributes['link'];
+          if (artistV<>Null) and (artistV<>'') and
+             (titleV<>Null) and (titleV<>'') then begin
+            if (idV<>Null) and (StrToIntDef(idV,-1)>-1) and (not findID(idV,LyricList)) then begin
+                Len:=Length(LyricList);
+                SetLength(LyricList,Len + 1);
+                LyricList[Len].id := idV;
+                LyricList[Len].artist:=artistV;
+                LyricList[Len].title:=titleV;
+                LyricList[Len].searchID:=searchID;
+            end
+            else if (linkV<>Null) and (Tnt_WideLowerCase(WideExtractFileExt(linkV))='.lrc') and
+              (not findID(linkV,LyricList)) then begin
+                Len:=Length(LyricList);
+                SetLength(LyricList,Len + 1);
+                LyricList[Len].id := linkV;
+                LyricList[Len].artist:=artistV;
+                LyricList[Len].title:=titleV;
+                LyricList[Len].searchID:=searchID;
+            end;
+          end;
+      end;
+      XDOC := nil;
     end;
   end
   else begin
     IdHTTP1.Host:='www.opensubtitles.org';
-    MyUrl:= Format('/en/search2/sublanguageid-%s/moviename-%s/xml', [LangList[Lang],UTF8Encode(title)]);
+    MyUrl:= Format('/en/search/sublanguageid-%s/moviename-%s/xml', [LangList[Lang],UTF8Encode(title)]);
     try
       XMLString:=IdHTTP1.Get(MyUrl);
     except
       IdHTTP1.Free;
       Exit;
     end;
-  end;
 
-  IdHTTP1.Free;
-  if XMLString='' then Exit;
+    IdHTTP1.Free;
+    if XMLString='' then Exit;
 
-  try
-    OleInitialize(nil);
-    XDOC := XMLDoc.LoadXMLData(UTF8Decode(XMLString));
-  except
-    XDOC:=nil;
-    OleUninitialize;
-    Exit;
-  end;
-  OleUninitialize;
-  XDOC.Options:= XDOC.Options - [doAttrNull];
-  XmlNd := XDOC.DocumentElement;
-  if Abs(mode mod 2)=1 then begin
-    SetLength(LyricList,0);
-    for i := 0 to XmlNd.ChildNodes.Count - 1 do begin
-      artistV:=XmlNd.ChildNodes[i].Attributes['artist'];
-      titleV:=XmlNd.ChildNodes[i].Attributes['title'];
-      linkV:=XmlNd.ChildNodes[i].Attributes['link'];
-      if (artistV<>Null) and (artistV<>'') and
-         (titleV<>Null) and (titleV<>'') and
-         (linkV<>Null) and (Tnt_WideLowerCase(WideExtractFileExt(linkV))='.lrc')  then begin
-        Len:=Length(LyricList);
-        SetLength(LyricList,Len + 1);
-        LyricList[Len].id := linkV;
-        LyricList[Len].artist:=artistV;
-        LyricList[Len].title:=titleV;
-      end;
+    try
+      OleInitialize(nil);
+      XDOC := XMLDoc.LoadXMLData(UTF8Decode(XMLString));
+    except
+      XDOC:=nil;
+      OleUninitialize;
+      Exit;
     end;
-  end
-  else begin
+    OleUninitialize;
+    XDOC.Options:= XDOC.Options - [doAttrNull];
+    XmlNd := XDOC.DocumentElement;
+
     SList:= TStringList.Create;
     SetLength(SubList,0);
     nd:= XmlNd.ChildNodes.FindNode('search');
@@ -363,6 +436,7 @@ begin
         Caption:=LyricList[i].id;
         SubItems.Add(LyricList[i].artist);
         SubItems.Add(LyricList[i].title);
+        Data:= Pointer(LyricList[i].searchID);
       end;
     end;
   end
@@ -419,7 +493,7 @@ begin
 end;
 
 procedure TDLyricForm.BApplyClick(Sender: TObject);
-var t:TDownLoadLyric;
+var t:TDownLoadLyric; i:Integer;
 begin
   Application.ProcessMessages;
   if PLS.ActivePageIndex=0 then begin
@@ -429,7 +503,12 @@ begin
     t:=TDownLoadLyric.Create(True);
     t.FreeOnTerminate:=True;
     t.FN:=WideIncludeTrailingPathDelimiter(LyricDir) + GetFileName(WideExtractFileName(MediaURL)) + '.lrc';
-    t.URL:= LyricListView.Selected.Caption;
+    i:=Integer(LyricListView.Selected.Data);
+    if i<2 then begin
+      t.URL := DownloadPath[i];
+      t.URL := Format(t.URL, [LyricListView.Selected.Caption, CreateLyricCode(LyricListView.Selected.SubItems[0], LyricListView.Selected.SubItems[1], StrToInt(LyricListView.Selected.Caption))]);
+    end
+    else t.URL:= LyricListView.Selected.Caption;
     t.mode:=-3; t.Resume;
   end
   else begin
@@ -451,7 +530,7 @@ begin
 end;
 
 procedure TDLyricForm.BSaveClick(Sender: TObject);
-var t:TDownLoadLyric;
+var t:TDownLoadLyric; i:integer;
 begin
   Application.ProcessMessages;
   with PlaylistForm.SaveDialog do begin
@@ -464,7 +543,13 @@ begin
       if Execute then begin
         BLSave.Enabled:=False; BLApply.Enabled:=False;
         t:=TDownLoadLyric.Create(True);
-        t.FN:=FileName; t.URL:=LyricListView.Selected.Caption;
+        t.FN:=FileName;
+        i:=Integer(LyricListView.Selected.Data);
+        if i<2 then begin
+          t.URL := DownloadPath[i];
+          t.URL := Format(t.URL, [LyricListView.Selected.Caption, CreateLyricCode(LyricListView.Selected.SubItems[0], LyricListView.Selected.SubItems[1], StrToInt(LyricListView.Selected.Caption))]);
+        end
+        else t.URL:= LyricListView.Selected.Caption;
         t.mode:=-1;
         t.Resume;
       end;
@@ -524,91 +609,6 @@ begin
         SubItems.Add(stList[i].SubAddDate);
       end;
     end;
-  end;
-end;
-
-end.
-
-(*
-unit Lyric;
-
-interface
-
-uses
-    Windows, Messages, SysUtils,TntSysUtils, Variants, Classes, Graphics, Controls, Forms,
-    Dialogs, StdCtrls, ComCtrls,TntComCtrls,TntControls,TntForms, IdBaseComponent, IdComponent, IdTCPConnection,
-    IdTCPClient, IdHTTP, XMLDoc, XMLIntf, ImgList, TntDialogs, TntStdCtrls;
-
-type
-    Tbytes = array of Byte;
-    TLyricEntry = record
-      id: widestring;
-      artist: widestring;
-      title: widestring;
-      searchID: Integer;
-    end;
-    TLyricEntryList = array of TLyricEntry;
-
-    TDownLoadLyric = class(TThread)
-    private
-      { Private declarations }
-    protected
-      procedure Execute; override;
-    end;
-
-    TLyricForm = class(TTntForm)
-    Artist_Label: TTntLabel;
-        edt_arts:  TTntEdit;
-    edt_title: TTntEdit;
-    Title_Lable: TTntLabel;
-        btn_Search: TTntButton;
-    Lyric_ListView: TTntListView;
-        dlgSave1: TTntSaveDialog;
-        procedure btn_SearchClick(Sender: TObject);
-        procedure Lyric_ListViewDblClick(Sender: TObject);
-    private
-    { Private declarations }
-    public
-    { Public declarations }
-    end;
-
-var
-    LyricForm: TLyricForm;
-    
-const
-SearchPath: array[0..2] of string = (
-    'ttlrcct.qianqian.com/dll/lyricsvr.dll?sh?Artist=%s&Title=%s&Flags=0',
-    'ttlrccnc.qianqian.com/dll/lyricsvr.dll?sh?Artist=%s&Title=%s&Flags=0',
-    '<?xml version="1.0" encoding=''utf-8''?><search filetype="lyrics" artist="%s" title="%s"/>'
-
-    );
-
-DownloadPath : array[0..2] of string = (
-    'ttlrcct.qianqian.com/dll/lyricsvr.dll?dl?Id=%s&Code=%s',
-    'ttlrccnc.qianqian.com/dll/lyricsvr.dll?dl?Id=%s&Code=%s',
-    ''
-    );
-
-function ToHexString(s, encode: WideString): string;
-function GetLyricList(singer, title: WideString):TLyricEntryList;
-procedure GetLyric(FN:WideString; LyricEntry:TLyricEntry);
-procedure UpdateListView(ListView:TTntListView; list:TLyricEntryList);
-function CreateLyricCode(singer, title: WideString; lrcId: integer): string;
-function Conv(i: Integer): int64;
-function findID(id:WideString; list:TLyricEntryList):Boolean;
-
-implementation
-
-{$R *.dfm}
-procedure TDownLoadLyric.Execute;
-var list:TLyricEntryList; Len:Integer;
-begin
-  list:=GetLyricList('','');
-  Len:= Length(list);
-  if Len=1 then GetLyric('', list[0])
-  else if Len>0 then begin
-    LyricForm.Show;
-    UpdateListView(LyricForm.Lyric_ListView,list);
   end;
 end;
 
@@ -726,155 +726,4 @@ begin
      end;
 end;
 
-function GetLyricList(singer, title: WideString):TLyricEntryList;
-var XMLString, MyUrl: string; artistV, titleV,idV,linkV:OleVariant;
-    XMLDOC: IXMLDocument;  XmlNd: IXMLNode; i,Len,searchID:Integer;
-    PostText: TStringList; IdHTTP1: TIdhttp; a,t:WideString;
-    lvitem:TLyricEntry;
-begin
-    singer := Tnt_WideLowerCase(Tnt_WideStringReplace(singer, '''', '', [rfReplaceAll]));
-    singer := Tnt_WideLowerCase(Tnt_WideStringReplace(singer, '"', '', [rfReplaceAll]));
-
-    title := Tnt_WideLowerCase(Tnt_WideStringReplace(title, '''', '', [rfReplaceAll]));
-    title := Tnt_WideLowerCase(Tnt_WideStringReplace(title, '"', '', [rfReplaceAll]));
-
-    a:= Tnt_WideStringReplace(singer, ' ', '', [rfReplaceAll]);
-    t:= Tnt_WideStringReplace(title, ' ', '', [rfReplaceAll]);
-    a:= ToHexString(a, 'Unicode'); t:= ToHexString(t, 'Unicode');
-
-    for searchID:=High(SearchPath) downto Low(SearchPath) do begin
-      IdHTTP1:=TIdhttp.Create(nil);
-      IdHTTP1.HTTPOptions:=[hoKeepOrigProtocol];
-
-      if searchID<2 then begin  //IdHTTP1.Free;  Exit;
-         MyUrl:= Format(SearchPath[searchID], [a,t]);
-         try
-          XMLString := IdHTTP1.Get(MyUrl);
-        except
-          IdHTTP1.Free;
-          Continue;
-        end;
-      end
-      else begin  // IdHTTP1.Free;  Exit;
-        PostText:=TStringList.Create;
-        PostText.Text:=Format(SearchPath[searchID], [UTF8Encode(singer), UTF8Encode(title)]);
-        try            //http://www.viewlyrics.com:1212/searchlyrics.htm
-        //IdHTTP1.Host:='search.crintsoft.com';
-        IdHTTP1.Request.UserAgent:='MiniLyrics';
-       // IdHTTP1.Port:='1212';
-          XMLString:=IdHTTP1.Post('http://search.crintsoft.com/searchlyrics.htm',PostText);
-          PostText.Free;
-        except
-           IdHTTP1.Free;
-           PostText.Free;
-           Continue;
-        end;
-      end;
-      IdHTTP1.Free;
-      if XMLString='' then Continue;
-
-      try
-        XMLDOC := LoadXMLData(XMLString);
-      except
-          XMLDOC:=nil;
-          Continue;
-      end;
-
-      XMLDOC.Options:= XMLDOC.Options - [doAttrNull];
-      XmlNd := xmldoc.DocumentElement;
-
-      for i := 0 to XmlNd.ChildNodes.Count - 1 do begin
-          idV:=XmlNd.ChildNodes[i].Attributes['id'];
-          artistV:=XmlNd.ChildNodes[i].Attributes['artist'];
-          titleV:=XmlNd.ChildNodes[i].Attributes['title'];
-          linkV:=XmlNd.ChildNodes[i].Attributes['link'];
-          if (artistV<>Null) and (artistV<>'') and
-             (titleV<>Null) and (titleV<>'') then begin
-            if (idV<>Null) and (StrToIntDef(idV,-1)>-1) and (not findID(idV,Result)) then begin
-                lvitem.id := idV;
-                lvitem.artist:=artistV;
-                lvitem.title:=titleV;
-                lvitem.searchID:=searchID;
-                Len:=Length(Result);
-                SetLength(Result,Len + 1);
-                Result[Len]:= lvitem;
-            end
-            else if (linkV<>Null) and (Tnt_WideLowerCase(WideExtractFileExt(linkV))='.lrc') and
-              (not findID(linkV,Result)) then begin
-                lvitem.id := linkV;
-                lvitem.artist:=artistV;
-                lvitem.title:=titleV;
-                lvitem.searchID:=searchID;
-                Len:=Length(Result);
-                SetLength(Result,Len + 1);
-                Result[Len]:= lvitem;
-            end;
-          end;
-      end;
-      XMLDOC := nil;
-    end;
-end;
-
-procedure UpdateListView(ListView:TTntListView; list:TLyricEntryList);
-var i:Integer; lvitem:TLyricEntry;
-begin
-    ListView.Clear;
-    for i:=Low(list) to High(list) do begin
-      lvitem:= list[i];
-      with ListView.Items.Add do begin
-        Caption:=lvitem.id;
-        SubItems.Add(lvitem.artist);
-        SubItems.Add(lvitem.title);
-        Data:= Pointer(lvitem.searchID);
-      end;
-    end;
-end;
-
-procedure TLyricForm.btn_SearchClick(Sender: TObject);
-begin
-    btn_Search.Enabled := False;
-
-    UpdateListView(Lyric_ListView, GetLyricList(edt_arts.Text,edt_title.Text));
-    
-    if Lyric_ListView.Items.Count = 1 then begin
-        Lyric_ListView.Items.Item[0].Selected := True;
-        Lyric_ListViewDblClick(Sender);
-    end;
-    btn_Search.Enabled := true;
-end;
-
-procedure GetLyric(FN:WideString;  LyricEntry:TLyricEntry);
-var TmpUrl: string; IdHTTP1: TIdhttp; fs:TFileStream;
-begin
-    IdHTTP1:=TIdhttp.Create(nil);
-    //IdHTTP1.HTTPOptions:=[hoKeepOrigProtocol];
-    fs:=TFileStream.Create(FN,fmCreate or fmShareDenyNone);
-    if LyricEntry.searchID<2 then begin
-      TmpUrl := DownloadPath[LyricEntry.searchID];
-      TmpUrl := Format(TmpUrl, [LyricEntry.id, CreateLyricCode(LyricEntry.artist, LyricEntry.title, StrToInt(LyricEntry.id))]);
-    end
-    else TmpUrl:= LyricEntry.id;
-
-    try
-      IdHTTP1.Get(TmpUrl,fs);
-    except
-    end;
-    IdHTTP1.Free;
-    fs.Free;
-end;
-
-procedure TLyricForm.Lyric_ListViewDblClick(Sender: TObject);
-var LyricEntry:TLyricEntry; t:TTntListItem;
-begin
-    if Lyric_ListView.Items.Count=0 then Exit;
-    if Lyric_ListView.ItemIndex=-1 then Lyric_ListView.ItemIndex:=0;
-    t:=Lyric_ListView.Selected;
-    dlgSave1.FileName := Format('%s - %s.lrc', [edt_arts.Text, edt_title.text]);
-    if not dlgSave1.Execute then Exit;
-    LyricEntry.id:= t.Caption; LyricEntry.artist:=t.SubItems[0];
-    LyricEntry.title:=t.SubItems[1]; LyricEntry.searchID:=Integer(t.Data);
-    GetLyric(dlgSave1.FileName,LyricEntry);
-end;
-
 end.
-*)
