@@ -101,6 +101,7 @@ procedure TUnRARThread.Execute;
 begin
   ExtractMovie(TmpURL,ArcMovie,ArcPW,Tnt_WideLowerCase(WideExtractFileExt(TmpURL)));
   tEnd:=true;
+  Restart;
 end;
 
 procedure LoadRarLibrary;

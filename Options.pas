@@ -538,7 +538,7 @@ begin
 end;
 
 procedure TOptionsForm.ApplyValues;
-var s: string; ws: WideString; i: integer; f: real; b: boolean;
+var s: string; ws: WideString; i,a: integer; f: real; b: boolean;
 begin
   if AudioOut <> CAudioOut.ItemIndex then begin
     AudioOut := CAudioOut.ItemIndex; changed := true;
@@ -837,6 +837,16 @@ begin
   if PlaylistForm.Visible then PlaylistForm.TMLyricPaint(nil);
   MainForm.UpdateMenuCheck; SaveHotKey;
   Save(HomeDir + DefaultFileName, 2);
+  for i := 0 to MainForm.SCodepage.Count - 3 do begin
+    s:= MainForm.SCodepage.Items[i].Caption;
+    a:=Pos('&',s);
+    s:=Copy(s,1,a-1)+ Copy(s,a+1,MaxInt);
+    if s=subcode then begin
+      MainForm.SCodepage.Items[i].Checked:=True;
+      Break;
+    end
+    else MainForm.SCodepage.Items[i].Checked:=false;
+  end;
 end;
 
 procedure TOptionsForm.BApplyClick(Sender: TObject);

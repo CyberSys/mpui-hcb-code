@@ -303,6 +303,36 @@ type
     N38: TTntMenuItem;
     MDownloadLyric: TTntMenuItem;
     MCDT: TTntMenuItem;
+    SCodepage: TTntMenuItem;
+    SSD: TTntMenuItem;
+    UTF1: TTntMenuItem;
+    UT1: TTntMenuItem;
+    UTF16BE1: TTntMenuItem;
+    GB180301: TTntMenuItem;
+    BIG51: TTntMenuItem;
+    SHIFTJIS1: TTntMenuItem;
+    ISO2022JP1: TTntMenuItem;
+    ISO2022CN1: TTntMenuItem;
+    ISO2022KR1: TTntMenuItem;
+    ISO885951: TTntMenuItem;
+    ISO885971: TTntMenuItem;
+    ISO885981: TTntMenuItem;
+    EUCJP1: TTntMenuItem;
+    EUCKR1: TTntMenuItem;
+    EUCTW1: TTntMenuItem;
+    KOI8R1: TTntMenuItem;
+    IBM8551: TTntMenuItem;
+    IBM8552: TTntMenuItem;
+    WINDOWS12511: TTntMenuItem;
+    WINDOWS12521: TTntMenuItem;
+    WINDOWS12531: TTntMenuItem;
+    WINDOWS12551: TTntMenuItem;
+    N39: TTntMenuItem;
+    N40: TTntMenuItem;
+    more1: TTntMenuItem;
+    HZ1: TTntMenuItem;
+    ISO885921: TTntMenuItem;
+    WINDOWS12501: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -418,6 +448,8 @@ type
     procedure MOpenDevicesClick(Sender: TObject);
     procedure MdownloadsubtitleClick(Sender: TObject);
     procedure MDownloadLyricClick(Sender: TObject);
+    procedure SSDClick(Sender: TObject);
+    procedure more1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -449,6 +481,7 @@ type
     procedure NextAudio;
     procedure NextVideo;
     procedure NextSub;
+    procedure NextSubCP;
     procedure NextAspect;
     procedure NextAngle;
     procedure NextOnTop;
@@ -598,7 +631,8 @@ begin
   WantFullscreen := false; WantCompact := false;
   Constraints.MinWidth := Width; Constraints.MinHeight := Height;
   Load(HomeDir + 'autorun.inf', 0); Load(HomeDir + DefaultFileName, 0);
-  if subcode = '' then subcode := 'CP' + IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT)); //AnsiCodePage
+  SSD.Caption:= 'CP' + IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT));
+  if subcode = '' then subcode := SSD.Caption; //AnsiCodePage
   UpdateVolSlider;
   if Wid and Win32PlatformIsUnicode and ds then begin
     SetWindowLong(Handle, GWL_STYLE, DWORD(GetWindowLong(Handle, GWL_STYLE)) or WS_SIZEBOX or WS_MAXIMIZEBOX);
@@ -1222,6 +1256,7 @@ begin
                 else
                   SetCompact(MCompact.Checked);
               end;
+            VK_F6: NextSubCP;
             VK_TAB: if Wid then MPCtrlClick(nil);
             VK_RETURN: if Wid then begin
                 if MCompact.Checked then begin
@@ -2275,6 +2310,20 @@ begin
   SendCommand('sub_select ' + IntToStr(SubID));
 end;
 
+procedure TMainForm.NextSubCP;
+var i,CPindex:Integer;
+begin
+  if MSubtitle.Count < 1 then exit;
+  for i := 0 to SCodepage.Count - 3 do begin
+    if SCodepage.Items[i].Checked then begin
+      SCodepage.Items[i].Checked:=false;
+      CPindex := (i + 1) mod (SCodepage.Count-2);
+      SSDClick(SCodepage.Items[CPindex]);
+      Break;
+    end;
+  end;
+end;
+
 procedure TMainForm.NextFile(Direction: integer; ExitState: TPlaybackState);
 var Index: integer;
 begin
@@ -2595,7 +2644,7 @@ begin
     else if ssShift in Shift then MouseMode := 3 //Scale video
     else if ssCtrl in Shift then MouseMode := 4 //Adjust aspect ratio
     else if ssAlt in Shift then MouseMode := 5 //Adjust bright,contrast
-    else if ((Width <= Screen.Width) or (Height <= Screen.WorkAreaHeight))
+    else if ((Width < Screen.Width) or (Height < Screen.WorkAreaHeight))
       and (WindowState = wsNormal) then begin
       GetCursorPos(p); OldX := p.X; OldY := p.Y;
       MouseMode := 1; //Drag window
@@ -2798,6 +2847,7 @@ begin
 end;
 
 procedure TMainForm.UpdateMenuCheck;
+var i,a:Integer; s:string;
 begin
   MChannels.Items[Ch].Checked := true;
   MRotate.Items[Rot].Checked := true;
@@ -2810,6 +2860,16 @@ begin
   MSpdif.Checked := SPDIF;
   MSoftVol.Checked := SoftVol;
   MUseASS.Checked := Ass;
+  for i := 0 to SCodepage.Count - 3 do begin
+    s:= SCodepage.Items[i].Caption;
+    a:=Pos('&',s);
+    s:=Copy(s,1,a-1)+ Copy(s,a+1,MaxInt);
+    if s=subcode then begin
+      SCodepage.Items[i].Checked:=True;
+      Break;
+    end
+    else MainForm.SCodepage.Items[i].Checked:=false;
+  end;
 end;
 
 procedure TMainForm.UpdateMenuEV(Mode: boolean);
@@ -3233,6 +3293,25 @@ end;
 procedure TMainForm.MDownloadLyricClick(Sender: TObject);
 begin
   PlaylistForm.MDownloadLyricClick(nil);
+end;
+
+procedure TMainForm.SSDClick(Sender: TObject);
+var s:string; i:Integer;
+begin
+  if (Sender as TTntMenuItem).Checked or (not Running) then Exit;
+  (Sender as TTntMenuItem).Checked:=true;
+  s:= (Sender as TTntMenuItem).Caption;
+  i:=Pos('&',s);
+  subcode:=Copy(s,1,i-1)+ Copy(s,i+1,MaxInt);
+  Restart;
+end;
+
+procedure TMainForm.more1Click(Sender: TObject);
+begin
+  if not OptionsForm.Visible then begin
+    OptionsForm.Tab.ActivePage := OptionsForm.TSub;
+    OptionsForm.Showmodal;
+  end;
 end;
 
 end.

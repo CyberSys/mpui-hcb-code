@@ -2346,29 +2346,222 @@ object MainForm: TMainForm
         ImageIndex = 24
         Visible = False
       end
+      object N39: TTntMenuItem
+        Caption = '-'
+        GroupIndex = 169
+      end
+      object SCodepage: TTntMenuItem
+        Caption = 'Subtitle codepage'
+        GroupIndex = 169
+        object SSD: TTntMenuItem
+          Caption = 'System default'
+          Checked = True
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object UTF1: TTntMenuItem
+          Tag = 1
+          Caption = 'UTF-8'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object UT1: TTntMenuItem
+          Tag = 2
+          Caption = 'UTF-16LE'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object UTF16BE1: TTntMenuItem
+          Tag = 3
+          Caption = 'UTF-16BE'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object GB180301: TTntMenuItem
+          Tag = 4
+          Caption = 'GB18030'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object HZ1: TTntMenuItem
+          Caption = 'HZ'
+          GroupIndex = 1
+          RadioItem = True
+        end
+        object BIG51: TTntMenuItem
+          Tag = 5
+          Caption = 'BIG5'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object SHIFTJIS1: TTntMenuItem
+          Tag = 6
+          Caption = 'SHIFT_JIS'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object ISO2022JP1: TTntMenuItem
+          Tag = 7
+          Caption = 'ISO-2022-JP'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object ISO2022CN1: TTntMenuItem
+          Tag = 8
+          Caption = 'ISO-2022-CN'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object ISO2022KR1: TTntMenuItem
+          Tag = 9
+          Caption = 'ISO-2022-KR'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object ISO885921: TTntMenuItem
+          Caption = 'ISO-8859-2'
+          GroupIndex = 1
+          RadioItem = True
+        end
+        object ISO885951: TTntMenuItem
+          Tag = 10
+          Caption = 'ISO-8859-5'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object ISO885971: TTntMenuItem
+          Tag = 11
+          Caption = 'ISO-8859-7'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object ISO885981: TTntMenuItem
+          Tag = 12
+          Caption = 'ISO-8859-8'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object EUCJP1: TTntMenuItem
+          Tag = 13
+          Caption = 'EUC-JP'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object EUCKR1: TTntMenuItem
+          Tag = 14
+          Caption = 'EUC-KR'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object EUCTW1: TTntMenuItem
+          Tag = 15
+          Caption = 'EUC-TW'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object KOI8R1: TTntMenuItem
+          Tag = 16
+          Caption = 'KOI8-R'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object IBM8551: TTntMenuItem
+          Tag = 17
+          Caption = 'IBM855'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object IBM8552: TTntMenuItem
+          Tag = 18
+          Caption = 'IBM866'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object WINDOWS12501: TTntMenuItem
+          Caption = 'WINDOWS-1250'
+          GroupIndex = 1
+          RadioItem = True
+        end
+        object WINDOWS12511: TTntMenuItem
+          Tag = 19
+          Caption = 'WINDOWS-1251'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object WINDOWS12521: TTntMenuItem
+          Tag = 20
+          Caption = 'WINDOWS-1252'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object WINDOWS12531: TTntMenuItem
+          Tag = 21
+          Caption = 'WINDOWS-1253'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object WINDOWS12551: TTntMenuItem
+          Tag = 22
+          Caption = 'WINDOWS-1255'
+          GroupIndex = 1
+          RadioItem = True
+          OnClick = SSDClick
+        end
+        object N40: TTntMenuItem
+          Caption = '-'
+          GroupIndex = 1
+        end
+        object more1: TTntMenuItem
+          Caption = 'more'
+          GroupIndex = 1
+          OnClick = more1Click
+        end
+      end
       object N38: TTntMenuItem
         Caption = '-'
-        GroupIndex = 1
+        GroupIndex = 169
       end
       object MLoadSub: TTntMenuItem
         Caption = 'Load Subtitle...'
-        GroupIndex = 1
+        GroupIndex = 169
         ImageIndex = 24
         OnClick = MLoadsubClick
       end
       object MSubfont: TTntMenuItem
         Caption = 'Set Subtitle Font'
-        GroupIndex = 1
+        GroupIndex = 169
         ImageIndex = 35
         OnClick = MSubfontClick
       end
       object N30: TTntMenuItem
         Caption = '-'
-        GroupIndex = 1
+        GroupIndex = 169
       end
       object MSubDelay: TTntMenuItem
         Caption = 'Subtitle Delay'
-        GroupIndex = 1
+        GroupIndex = 169
         object MSubDelay0: TTntMenuItem
           Tag = 88
           Caption = 'Delay +'
@@ -2389,7 +2582,7 @@ object MainForm: TMainForm
       end
       object MSubStep: TTntMenuItem
         Caption = 'Subtitle Step'
-        GroupIndex = 1
+        GroupIndex = 169
         object MSubStep0: TTntMenuItem
           Tag = 89
           Caption = 'Previous'

@@ -227,7 +227,7 @@ const
 {  CLSID_CFormatDmg: TGUID =    }                  '{23170F69-40C1-278A-1000-000110e40000}',
 //  CLSID_CFormatCompound: TGUID =                 '{23170F69-40C1-278A-1000-000110e50000}';
 {  CLSID_CFormatWim: TGUID =  }                    '{23170F69-40C1-278A-1000-000110e60000}',
-{  CLSID_CFormatIso: TGUID =  }                    '{23170F69-40C1-278A-1000-000110e70000}',
+//{  CLSID_CFormatIso: TGUID =  }                   '{23170F69-40C1-278A-1000-000110e70000}',  
 //  CLSID_CFormatBkf: TGUID =                      '{23170F69-40C1-278A-1000-000110e80000}';
 //  CLSID_CFormatChm: TGUID =                      '{23170F69-40C1-278A-1000-000110e90000}';
 {  CLSID_CFormatSplit: TGUID = }                   '{23170F69-40C1-278A-1000-000110ea0000}',

@@ -31,9 +31,9 @@ const szdllCount = 2; Fscale = 4.2;
 const sddll = 'SubDownloader.dll';
 const szdll: array[0..szdllCount] of WideString = ('7zxa.dll', '7za.dll', '7z.dll');
 
-const ZipTypeCount = 20;
+const ZipTypeCount = 19;
 const ZipType: array[0..ZipTypeCount] of WideString = ('.7z', '.rar', '.zip', '.001', '.arj', '.bz2', '.z', '.lzh',
-    '.cab', '.lzma', '.xar', '.hfs', '.dmg', '.wim', '.iso', '.split', '.rpm', '.deb', '.cpio',
+    '.cab', '.lzma', '.xar', '.hfs', '.dmg', '.wim', '.split', '.rpm', '.deb', '.cpio',
     '.tar', '.gz'
     );
 
@@ -84,7 +84,7 @@ const AudioDemuxer: array[0..12] of WideString = (
     );
 
 const DefaultFass = '0aac,1ac3,1acc,1act,1aif,1aifc,1aiff,0amf,1amr,1amv,0ape,0as,1asf,1asx,'
-  + '0a52,0apl,1au,1avi,0avs,1bik,0bin,0cda,0cmf,0cmn,0cpk,0cue,1d2v,0dat,0drc,'
+    + '0a52,0apl,1au,1avi,0avs,1bik,0bin,0cda,0cmf,0cmn,0cpk,0cue,1d2v,0dat,0drc,'
     + '1dsm,1dsv,1dsa,1dss,1dts,0dtswav,0dv,0dvr-ms,0divx,1evo,0far,0fla,0flac,1flc,'
     + '1fli,1flic,0flm,1flv,0grf,0hdmov,0img,0iso,1ivf,0it,0itz,0jsv,0kar,0m1a,0m2a,'
     + '1m2p,1m2ts,1m1v,1m2v,1m3u,1m3u8,1m4a,1m4b,1m4p,1m4v,0mac,0mdz,0miz,'
@@ -96,18 +96,18 @@ const DefaultFass = '0aac,1ac3,1acc,1act,1aif,1aifc,1aiff,0amf,1amr,1amv,0ape,0a
     + '1vid,0vivo,1vob,0voc,0vp3,0vp4,0vp5,1vp6,1vp7,1vqf,0wav,1wax,1wm,1wma,1wmp,1wmv,1wmx,'
     + '0wpl,1wv,1wvx,0xm,0xmz,0xspf,0261,0264,13g2,13gp,13gpp,13gp2,0669';
 
-const DefaultHotKey: array[0..100] of Integer = (
+const DefaultHotKey: array[0..101] of Integer = (
     262182, 262184, 262181, 262183, 262331, 262333, 131123, 131264, 131121, 131122,
     65601, 65605, 65728, 65619, 65626, 109, 107, 79, 192, 222, 69, 87, 49, 50, 51, 52, 53,
     54, 55, 56, 57, 48, 46, 45, 68, 70, 67, 84, 82, 86, 83, 89, 85, 90, 88, 71, 72, 73, 75, 74,
-    76, 186, 113, 114, 115, 116, 9, 13, 262223, 262220, 262231, 262227, 262336, 262225,
+    76, 186, 113, 114, 115, 116,117, 9, 13, 262223, 262220, 262231, 262227, 262336, 262225,
     262212, 262152, 131187, 65604, 65612, 65618, 37, 39, 38, 40, 33, 34, 36, 35, 8, 189,
     187, 77, 78, 66, 81, 80, 188, 190, 65, 112, 120, 121, 122, 123, 219, 221, 220, 191, 32, 118, 119);
 
 const DefaultHKS = '262182,262184,262181,262183,262331,262333,131123,131264,131121,131122,'
-  + '65601,65605,65728,65619,65626,109,107,79,192,222,69,87,49,50,51,52,53,'
+    + '65601,65605,65728,65619,65626,109,107,79,192,222,69,87,49,50,51,52,53,'
     + '54,55,56,57,48,46,45,68,70,67,84,82,86,83,89,85,90,88,71,72,73,75,74,'
-    + '76,186,113,114,115,116,9,13,262223,262220,262231,262227,262336,262225,'
+    + '76,186,113,114,115,116,117,9,13,262223,262220,262231,262227,262336,262225,'
     + '262212,262152,131187,65604,65612,65618,37,39,38,40,33,34,36,35,8,189,'
     + '187,77,78,66,81,80,188,190,65,112,120,121,122,123,219,221,220,191,32,118,119';
 
@@ -768,7 +768,8 @@ begin
   s := Trim(LowerCase(VideoOut));
   if s <> '' then begin
     if s = 'novideo' then CmdLine := CmdLine + ' -novideo'
-    else if s <> 'auto' then CmdLine := CmdLine + ' -vo ' + s + ',';
+    else if s <> 'auto' then CmdLine := CmdLine + ' -vo ' + s + ','
+    else if (s = 'auto') and Win32PlatformIsVista then CmdLine := CmdLine + ' -vo direct3d,';
   end;
 
   if not Dda then begin
