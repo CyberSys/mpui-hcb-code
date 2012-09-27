@@ -184,6 +184,7 @@ type
     EAV: TTntEdit;
     UDAV: TTntUpDown;
     CAV: TTntCheckBox;
+    ads: TTntCheckBox;
     procedure BCloseClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LHelpClick(Sender: TObject);
@@ -534,6 +535,7 @@ begin
   Cone.Checked := oneM;
   CGUI.Checked := GUI;
   Eseek.Text := IntToStr(seekLen);
+  ads.Checked:= AutoDs;
   fontchange(EOsdfont); fontchange(ESubfont);
 end;
 
@@ -833,6 +835,7 @@ begin
   PlaylistForm.PLHC.Color := LhgColor;
   PlaylistForm.LScroll.Checked := PScroll;
   ADls:=CLS.Checked;
+  AutoDs:=ads.Checked;
   Addsfiles := CAddsfiles.Checked;
   if PlaylistForm.Visible then PlaylistForm.TMLyricPaint(nil);
   MainForm.UpdateMenuCheck; SaveHotKey;

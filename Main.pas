@@ -3284,7 +3284,7 @@ procedure TMainForm.MdownloadsubtitleClick(Sender: TObject);
 begin
   DLyricForm.Show; DLyricForm.PLS.ActivePageIndex:=1;
   DLyricForm.PLSChange(nil);
-  if dsEnd then exit;
+  if dsEnd or (not AutoDs) then exit;
   LoadSLibrary;
   if IsSLoaded <> 0 then
     DownloaderSubtitleW(PWChar(MediaURL), True, DownSubtitle_CallBackW, DownSubtitle_CallBackFinish);

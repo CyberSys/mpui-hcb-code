@@ -154,6 +154,7 @@ begin
           Core.WantCompact := ReadBool(SectionName, 'Compact', Core.WantCompact);
           Core.ADls := ReadBool(SectionName, 'Auto Download Lyric/Subtitle', Core.ADls);
           Core.PScroll := ReadBool(SectionName, 'Scroll', Core.PScroll);
+          Core.AutoDs := ReadBool(SectionName, 'AutoDs', Core.AutoDs);
           s := ReadString(SectionName, 'LyricFont', '');
           if s <> '' then Core.LyricF := s;
           s := ReadString(SectionName, 'AVThread', '');
@@ -287,6 +288,7 @@ begin
           WriteBool(SectionName, 'Add sequence files', Core.Addsfiles);
           WriteBool(SectionName, 'Auto Download Lyric/Subtitle', Core.ADls);
           WriteBool(SectionName, 'UAV', Core.UAV);
+          WriteBool(SectionName, 'AutoDs', Core.AutoDs);
         end;
       1: begin  //save some setting when mpui quit
           WriteString(SectionName, 'channellist', UTF8Encode(cl));

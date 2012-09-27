@@ -1,6 +1,6 @@
 object OptionsForm: TOptionsForm
-  Left = 395
-  Top = 202
+  Left = 349
+  Top = 111
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'OptionsForm'
@@ -100,7 +100,7 @@ object OptionsForm: TOptionsForm
     Top = 6
     Width = 555
     Height = 417
-    ActivePage = TSub
+    ActivePage = TSystem
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 5
     OnChange = TabChange
@@ -535,6 +535,16 @@ object OptionsForm: TOptionsForm
         ShowHint = True
         TabOrder = 38
         OnClick = CAVClick
+      end
+      object ads: TTntCheckBox
+        Left = 12
+        Top = 296
+        Width = 290
+        Height = 17
+        Caption = 'Auto download subtitle as playing a video'
+        ParentShowHint = False
+        ShowHint = False
+        TabOrder = 39
       end
     end
     object TVideo: TTntTabSheet

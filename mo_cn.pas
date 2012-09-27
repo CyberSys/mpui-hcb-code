@@ -244,6 +244,7 @@ begin
 'MPUI将以DVD、VCD或SVCD的方式打开包含''VIDEO_TS''、''MPEGAV''或''MPEG2''子目录的目录');
 
   with OptionsForm do begin
+  	ads.Caption:=UTF8Decode('播放视频时自动下载字幕');
     Cconfig.Caption:=UTF8Decode('在播放的时候打开配置面板');
     Cconfig.Hint:=UTF8Decode('勾选它或添加":cfg=1"到winamp插件路径后，在播放的时候将打开配置面板');
     Esubfont.Hint:=UTF8Decode('输入字体的完整路径或系统字体目录下字体的字体名、字体文件名');

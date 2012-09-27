@@ -226,6 +226,7 @@ begin
   end;
   with OptionsForm do begin
     BClose.Caption:='Close';
+    ads.Caption:='Auto download subtitle as playing a video';
     HelpText.Text:=UTF8Decode(
 '//*'^I'Adjust volume'^M^J+
 'DblClick'^I'Toggle fullscreen'^M^J+

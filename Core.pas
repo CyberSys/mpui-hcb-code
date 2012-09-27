@@ -122,7 +122,7 @@ var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread,cl: WideString;
   subfont, osdfont, Ccap, Acap, DemuxerName: WideString;
   MplayerLocation, WadspL, AsyncV, CacheV: widestring;
   MAspect, subcode, MaxLenLyricA, VideoOut: string;
-  FirstOpen, PClear, Fd, Async, Cache, uof, oneM, FilterDrop: boolean;
+  FirstOpen, PClear, Fd, Async, Cache, uof, oneM, FilterDrop,AutoDs: boolean;
   Wid, Dreset, UpdateSkipBar, Pri, HaveChapters, HaveMsg, skip,br: boolean;
   CT, RP, RS, SP, AutoPlay, ETime, InSubDir, SPDIF, ML, GUI, PScroll: boolean;
   Shuffle, Loop, OneLoop, Uni, Utf, empty, UseUni,ADls: boolean;
@@ -2095,7 +2095,7 @@ var r, i, j, p, len: integer; s: string; f: real;
         SendCommand('set_property sub ' + IntToStr(SubID));
         if not MShowSub.Checked then SendCommand('set_property sub_visibility 0');
       end
-      else if FirstOpen then begin
+      else if FirstOpen and AutoDs then begin
         a := TDownLoadLyric.Create(true);
         a.title:= GetFileName(WideExtractFileName(MediaURL));
         a.FN:=WideIncludeTrailingPathDelimiter(LyricDir) + a.title + '.zip';
@@ -2556,7 +2556,7 @@ begin
   LyricF := 'Tahoma'; LyricS := 8; MaxLenLyricA := ''; MaxLenLyricW := ''; UseekC := true;
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
   lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := false; ADls:=true;
-  dsEnd:=false; br:=false; UpdatePos:=true; fup:=true; avThread:='1'; uav:=false;
+  dsEnd:=false; br:=false; UpdatePos:=true; fup:=true; avThread:='1'; uav:=false; AutoDs:=True;
   ResetStreamInfo;
 end.
 
