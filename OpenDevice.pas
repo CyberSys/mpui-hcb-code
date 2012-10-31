@@ -169,9 +169,10 @@ begin
     else s:=CCountryCode.Text;
     if CVideoDevices.ItemIndex<0 then i:='0'
     else i:=IntToStr(CVideoDevices.ItemIndex);
-    FullURL:='tv:///'+i
-              +' -tv automute=100:audioid='+IntToStr(CAudioDevices.ItemIndex)
-              +':chanlist='+s +a;
+    FullURL:='tv:// -tv device='+i+':automute=100:';
+    if CAudioDevices.ItemIndex<0 then i:='0'
+    else i:=IntToStr(CAudioDevices.ItemIndex);
+    FullURL:=FullURL+'adevice='+i+':chanlist='+s+a;
     DisplayURL:='TV-'+i;
   end;
   Playlist.Add(Entry);
