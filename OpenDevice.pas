@@ -106,7 +106,7 @@ begin
       FList := TStringList.Create;
       if Tnt_WideLowerCase(WideExtractFileExt(FileName)) = '.cl' then
         for i := 0 to Hk.items.Count - 1 do
-          FList.Add(UTF8Encode(HK.items[i].caption+' '+HK.items[i].SubItems.Strings[0]));
+          FList.Add(UTF8Encode(HK.items[i].caption+'@'+HK.items[i].SubItems.Strings[0]));
       if not WideFileExists(FileName) then begin
         h := WideFileCreate(FileName);
         if GetLastError = 0 then FN := WideExtractShortPathName(FileName);
@@ -169,11 +169,11 @@ begin
     else s:=CCountryCode.Text;
     if CVideoDevices.ItemIndex<0 then i:='0'
     else i:=IntToStr(CVideoDevices.ItemIndex);
+    DisplayURL:='TV-'+i;
     FullURL:='tv:// -tv device='+i+':automute=100:';
     if CAudioDevices.ItemIndex<0 then i:='0'
     else i:=IntToStr(CAudioDevices.ItemIndex);
     FullURL:=FullURL+'adevice='+i+':chanlist='+s+a;
-    DisplayURL:='TV-'+i;
   end;
   Playlist.Add(Entry);
   Playlist.Changed; MainForm.UpdateParams;
@@ -205,7 +205,7 @@ begin
       if NameList.Count > 0 then begin
         HK.Items.Clear;
         for i := 0 to NameList.Count - 1 do begin
-          s:=Trim(NameList[i]); a:= pos(' ',s);
+          s:=Trim(NameList[i]); a:= pos('@',s);
           with HK.Items.Add do begin
             Caption:=Copy(s, 1, a-1);
             SubItems.add(Copy(s, a+1,maxint));
@@ -243,7 +243,7 @@ begin
   if NameList.Count > 0 then begin
     HK.Items.Clear;
     for i := 0 to NameList.Count - 1 do begin
-      s:=Trim(NameList[i]); a:= pos(' ',s);
+      s:=Trim(NameList[i]); a:= pos('@',s);
       with HK.Items.Add do begin
         Caption:=Copy(s, 1, a-1);
         SubItems.add(Copy(s, a+1,maxint));
