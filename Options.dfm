@@ -1512,7 +1512,8 @@ object OptionsForm: TOptionsForm
         Left = 4
         Top = 4
         Width = 161
-        Height = 211
+        Height = 259
+        Anchors = [akLeft, akTop, akRight, akBottom]
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
@@ -1584,7 +1585,8 @@ object OptionsForm: TOptionsForm
         Left = 172
         Top = 4
         Width = 372
-        Height = 300
+        Height = 348
+        Anchors = [akLeft, akTop, akRight, akBottom]
         Columns = <
           item
             Caption = 'Shortcut'
