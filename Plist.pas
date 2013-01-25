@@ -1264,7 +1264,6 @@ begin
     result:=0;
     for i:=11 downto 0 do
       result:=result*10+t[i];
-  //if (result<0) and (s<>'¡„') then result:=-1;
 end;}
 
 function mysort(s: TTntStringList; P1, P2: Integer): Integer;
@@ -1287,7 +1286,7 @@ begin
         result := ord(s1[k + j]) - ord(s2[k])
       else if (g <> 0) and ((k + g) <= ne) and (j = 0) and (StrToInt(copy(s2, k, g)) = 0) then
         result := ord(s1[k]) - ord(s2[k + g])
-      else if j * g >= 0 then result := StrToInt(copy(s1, k, j)) - StrToInt(copy(s2, k, g))
+      else if j * g > 0 then result := StrToInt(copy(s1, k, j)) - StrToInt(copy(s2, k, g))
       else result := ord(s1[k]) - ord(s2[k]);
       exit;
     end
@@ -1330,7 +1329,7 @@ var index, a: integer; s1, s2, path: WideString;
 
     cd := copy(c, bl, cc - br - bl + 2); nd := copy(n, bl, nc - br - bl + 2);
     Val(cd, cc, ce); Val(nd, nc, ne);
-    if ((cd = '') and (ne = 0)) or
+    if ((cd = '') and ((nd = '') or (ne = 0))) or
        ((ce = 0) and (ne = 0) and (nc >= cc)) then begin
       result := 1; exit;
     end;
@@ -1390,8 +1389,10 @@ begin
       sfiles.CustomSort(mysort);
       for i := 0 to Files.Count - 1 do begin
         if Addsfiles then begin
-          if playlist.FindItem('', WideExtractFileName(sfiles[i])) < 0 then Playlist.AddFiles(sfiles[i]);
-          addEpisode(sfiles[i]);
+          if playlist.FindItem('', WideExtractFileName(sfiles[i])) < 0 then begin
+            Playlist.AddFiles(sfiles[i]);
+            addEpisode(sfiles[i]);
+          end;
         end
         else Playlist.AddFiles(sfiles[i]);
       end;
