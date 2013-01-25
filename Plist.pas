@@ -100,8 +100,8 @@ type TLyric = class
   end;
 
 type TWStringList = class(TTntStringList)
-  private
   public
+    //procedure SortStr;
     procedure LoadFile(const FileName: WideString; CharSet: TTntStreamCharSet);
   end;
 
@@ -338,6 +338,17 @@ begin
     GuessStrChardet  :=nil;
   end;
 end; 
+
+{procedure TWStringList.SortStr;
+var i, j: integer;
+begin
+  for i := 0 to Count - 2 do begin
+    for j := 1 to Count - i -1 do begin
+      if mysort(Tnt_WideLowerCase(Strings[j]),Tnt_WideLowerCase(Strings[j - 1]))<0 then
+        Exchange(j - 1,j);
+    end;
+  end;
+end;}
 
 procedure TWStringList.LoadFile(const FileName: WideString; CharSet: TTntStreamCharSet);
 var Stream: TStream; DataLeft: Integer; SW: WideString; SA: AnsiString;
@@ -1192,6 +1203,70 @@ begin
   end;
 end;
 
+{function GBKtoNum(s:WideString):integer;
+var t: array of integer; i,a:integer;
+label Lab0,Lab1,Lab2,Lab3,Lab4,Lab5;
+function okStr(str:WideString):boolean;
+begin
+  SetLength(t, 12);
+  for i:=0 to 11 do t[i]:=0;
+  a:=1;
+  Lab0:
+    if s[a]='零' then goto Lab4
+    else if s[a]='一' then begin i:=1; goto Lab1; end
+    else if s[a]='二' then begin i:=2; goto Lab1; end
+    else if s[a]='三' then begin i:=3; goto Lab1; end
+    else if s[a]='四' then begin i:=4; goto Lab1; end
+    else if s[a]='五' then begin i:=5; goto Lab1; end
+    else if s[a]='六' then begin i:=6; goto Lab1; end
+    else if s[a]='七' then begin i:=7; goto Lab1; end
+    else if s[a]='八' then begin i:=8; goto Lab1; end
+    else if s[a]='九' then begin i:=9; goto Lab1; end;
+    goto Lab2;
+  Lab1:
+    inc(a);
+    goto Lab3;
+  Lab2:
+    i:=0;
+    goto Lab3;
+  Lab3:
+    if s[a]='十' then begin
+      if i>0 then t[1]:=i else t[i]:=1;//十
+    end
+    else if s[a]='百' then begin
+       if i>0 then t[2]:=i else t[2]:=1;//百
+    end
+    else if s[a]='千' then begin
+      if i>0 then t[3]:=i else t[3]:=1;//千
+    end
+    else if s[a]='万' then begin //万
+      t[0]:=i;
+      t[4]:=t[0]; t[0]:=0;
+      t[5]:=t[1]; t[1]:=0;
+      t[6]:=t[2]; t[2]:=0;
+      t[7]:=t[3]; t[3]:=0;
+    end
+    else if s[a]='亿' then begin//亿
+      t[0]:=i;
+      t[8]:=t[0]; t[0]:=0;
+      t[9]:=t[1]; t[1]:=0;
+      t[10]:=t[2]; t[2]:=0;
+      t[11]:=t[3]; t[3]:=0;
+    end
+    else begin
+      t[0]:=i;
+      goto Lab5;
+    end;
+  Lab4:
+    inc(a);
+    goto Lab0;
+  Lab5:
+    result:=0;
+    for i:=11 downto 0 do
+      result:=result*10+t[i];
+  //if (result<0) and (s<>'零') then result:=-1;
+end;}
+
 function mysort(s: TTntStringList; P1, P2: Integer): Integer;
 var s1, s2: WideString; ef, k, j, g, ce, ne: integer;
   function isnum(n: wchar): boolean;
@@ -1199,8 +1274,8 @@ var s1, s2: WideString; ef, k, j, g, ce, ne: integer;
     result := (n >= '0') and (n <= '9');
   end;
 begin
-  s1 := Tnt_WideLowerCase(s.strings[p1]);
-  s2 := Tnt_WideLowerCase(s.strings[p2]);
+  s1 := Tnt_WideLowerCase(s[p1]);
+  s2 := Tnt_WideLowerCase(s[p2]);
   ce := length(s1); ne := length(s2);
   ef := min(ce, ne);
   for k := 1 to ef do begin
@@ -1212,17 +1287,24 @@ begin
         result := ord(s1[k + j]) - ord(s2[k])
       else if (g <> 0) and ((k + g) <= ne) and (j = 0) and (StrToInt(copy(s2, k, g)) = 0) then
         result := ord(s1[k]) - ord(s2[k + g])
-      else if j * g <> 0 then result := StrToInt(copy(s1, k, j)) - StrToInt(copy(s2, k, g))
+      else if j * g >= 0 then result := StrToInt(copy(s1, k, j)) - StrToInt(copy(s2, k, g))
       else result := ord(s1[k]) - ord(s2[k]);
       exit;
+    end
+    else if isnum(s1[k]) and isnum(s2[k]) then begin
+      j := 1; g := 1;
+      while ((k + j) <= ce) and isnum(s1[k + j]) do inc(j);
+      while ((k + g) <= ne) and isnum(s2[k + g]) do inc(g);
+      result := StrToInt(copy(s1, k, j)) - StrToInt(copy(s2, k, g));
+      if result<>0 then exit;
     end;
   end;
   result := ce - ne;
 end;
 
 procedure addEpisode(s: widestring);
-var index, a, eof: integer; s1, s2, path: WideString;
-  efiles: TTntStringList; SR: TSearchRecW;
+var index, a: integer; s1, s2, path: WideString;
+  efiles: TWStringList; SR: TSearchRecW;
   
   procedure trimpzero(var s: widestring);
   var z: integer;
@@ -1237,8 +1319,7 @@ var index, a, eof: integer; s1, s2, path: WideString;
   begin
     result := 0;
     bl := 0;
-    if eof = 1 then br := 0
-    else br := eof;
+    br := 0;
     cc := length(c); nc := length(n);
     ed := min(cc, nc);
     for l := 1 to ed do begin
@@ -1249,35 +1330,36 @@ var index, a, eof: integer; s1, s2, path: WideString;
 
     cd := copy(c, bl, cc - br - bl + 2); nd := copy(n, bl, nc - br - bl + 2);
     Val(cd, cc, ce); Val(nd, nc, ne);
-    if (ce = 0) and (ne = 0) and (nc * cc >= 0) then begin
-      eof := br; result := 1; exit;
+    if ((cd = '') and (ne = 0)) or
+       ((ce = 0) and (ne = 0) and (nc >= cc)) then begin
+      result := 1; exit;
     end;
     trimpzero(cd); trimpzero(nd);
     if length(cd) <> length(nd) then exit
     else if length(cd) = 1 then begin
       if (cd[1] >= 'a') and (cd[1] <= 'z') and (nd[1] >= 'a') and (nd[1] <= 'z') then begin
-        eof := br; result := 1; exit;
+        result := 1; exit;
       end;
     end;
   end;
 begin
   if not WideFileExists(s) then exit;
   path := WideIncludeTrailingPathDelimiter(WideExtractFilePath(s));
-  efiles := TTntSTringList.Create;
+  efiles := TWSTringList.Create;
   if WideFindFirst(path + '*' + WideExtractFileExt(s), faAnyFile, SR) = 0 then begin
     repeat
       if (SR.Name[1] <> '.') and ((SR.Attr and faDirectory) = 0) then efiles.Add(SR.Name);
     until WideFindNext(SR) <> 0;
     WideFindClose(SR); efiles.CustomSort(mysort);
   end;
-  eof := 1; s := WideExtractFileName(s);
+  s := WideExtractFileName(s);
   index := efiles.IndexOf(s);
   if index > efiles.Count - 2 then exit;
   s1 := GetFileName(Tnt_Widelowercase(s));
   for a := index + 1 to efiles.Count - 1 do begin
-    s2 := GetFileName(Tnt_Widelowercase(efiles.Strings[a]));
+    s2 := GetFileName(Tnt_Widelowercase(efiles[a]));
     if compare(s1, s2) <> 0 then
-      Playlist.AddFiles(path + efiles.Strings[a])
+      Playlist.AddFiles(path + efiles[a])
     else break;
   end;
 end;
