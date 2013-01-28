@@ -1266,12 +1266,13 @@ begin
       result:=result*10+t[i];
 end;}
 
+function isNum(n: wchar): boolean;
+begin
+  result := (n >= '0') and (n <= '9');
+end;
+
 function mysort(s: TTntStringList; P1, P2: Integer): Integer;
 var s1, s2: WideString; ef, k, j, g, ce, ne: integer;
-  function isnum(n: wchar): boolean;
-  begin
-    result := (n >= '0') and (n <= '9');
-  end;
 begin
   s1 := Tnt_WideLowerCase(s[p1]);
   s2 := Tnt_WideLowerCase(s[p2]);
@@ -1280,8 +1281,8 @@ begin
   for k := 1 to ef do begin
     if s1[k] <> s2[k] then begin
       j := 0; g := 0;
-      while ((k + j) <= ce) and isnum(s1[k + j]) do inc(j);
-      while ((k + g) <= ne) and isnum(s2[k + g]) do inc(g);
+      while ((k + j) <= ce) and isnum(s1[k + j]) do inc(j);           //000s
+      while ((k + g) <= ne) and isnum(s2[k + g]) do inc(g);           //a
       if (j <> 0) and ((k + j) <= ce) and (g = 0) and (StrToInt(copy(s1, k, j)) = 0) then
         result := ord(s1[k + j]) - ord(s2[k])
       else if (g <> 0) and ((k + g) <= ne) and (j = 0) and (StrToInt(copy(s2, k, g)) = 0) then
@@ -1318,19 +1319,23 @@ var index, a: integer; s1, s2, path: WideString;
   begin
     result := 0;
     bl := 0;
-    br := 0;
-    cc := length(c); nc := length(n);
-    ed := min(cc, nc);
-    for l := 1 to ed do begin
+    br := 0;                                                   //213
+    cc := length(c); nc := length(n);                          //2113
+    ed := min(cc, nc);                                        // 121212
+    for l := 1 to ed do begin                                  //12121212
       if (bl = 0) and (c[l] <> n[l]) then bl := l;
       if (br = 0) and (c[cc - l + 1] <> n[nc - l + 1]) then br := l;
-      if bl * br > 0 then break;
+      if bl * br > 0 then break;     //tq12et      tq1et      tqet       1a
     end;
-
+    if bl=0 then bl:=cc+1;           // tq1212et     tq11et    tq1212et  11a
+    if br=0 then br:=cc+1;
+    if bl>(cc-br+1) then begin
+       if (bl-1>0) and isNum(c[bl-1]) then dec(bl);
+       br:=cc-bl+1;
+    end;
     cd := copy(c, bl, cc - br - bl + 2); nd := copy(n, bl, nc - br - bl + 2);
     Val(cd, cc, ce); Val(nd, nc, ne);
-    if ((cd = '') and ((nd = '') or (ne = 0))) or
-       ((ce = 0) and (ne = 0) and (nc >= cc)) then begin
+    if (ce = 0) and (ne = 0) and (nc >= cc) then begin
       result := 1; exit;
     end;
     trimpzero(cd); trimpzero(nd);
@@ -1338,7 +1343,7 @@ var index, a: integer; s1, s2, path: WideString;
     else if length(cd) = 1 then begin
       if (cd[1] >= 'a') and (cd[1] <= 'z') and (nd[1] >= 'a') and (nd[1] <= 'z') then begin
         result := 1; exit;
-      end;
+      end;                                                                                                                             
     end;
   end;
 begin
