@@ -3246,7 +3246,7 @@ begin
     Title := MLoadlyric.Caption;
     Options := Options - [ofAllowMultiSelect] - [ofoldstyledialog];
     filter := LyricFilter + '|*.lrc;*.7z;*.rar;*.zip;*.001;*.arj;*.bz2;*.z;*.lzh;'
-      + '*.cab;*.lzma;*.xar;*.hfs;*.dmg;*.wim;*.iso;*.split;*.rpm;*.deb;*.cpio;'
+      + '*.cab;*.lzma;*.xar;*.hfs;*.dmg;*.wim;*.split;*.rpm;*.deb;*.cpio;'
       + '*.tar;*.gz|' + AnyFilter + '(*.*)|*.*';
     if Execute then begin
       j := Tnt_WideLowerCase(WideExtractFileExt(FileName));
