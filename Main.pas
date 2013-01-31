@@ -25,7 +25,7 @@ uses
   Forms, TntForms, Dialogs, TntDialogs, ComCtrls, TntComCtrls, Buttons, TntButtons,
   ExtCtrls, TntExtCtrls, Menus, TntMenus, StdCtrls, TntStdCtrls, ShellAPI, AppEvnts,
   Math, ImgList, TntClipBrd, ToolWin, jpeg, Controls, MultiMon, TntSystem,
-  TntFileCtrl, INIFiles, plist;
+  TntFileCtrl, INIFiles, plist, TntClasses;
 
 const
   ES_SYSTEM_REQUIRED = $01;
@@ -574,27 +574,29 @@ begin
 end;
 
 procedure DownSubtitle_CallBackW(const sub_path: PWChar; is_eng, sub_delay: Integer); stdcall;
-var s: integer; j: WideString;
+var s,i: integer; j: WideString;
 begin
   VobFileCount := 0; s := 0;
   Loadsub := 1; j := Tnt_WideLowerCase(WideExtractFileExt(sub_path));
   if j = '.idx' then begin
-    j := loadArcSub(sub_path, playlist.FindPW(sub_path));
+    j:= GetFileName(sub_path);
+    if not WideFileExists(j + '.sub') then j := loadArcSub(sub_path, playlist.FindPW(sub_path));
     if j <> '' then begin
       inc(VobFileCount);
-      if VobFileCount = 1 then begin
+      if VobFileCount=1 then begin
         Vobfile := j; LoadVob := 1; Restart;
       end;
     end;
   end
   else begin
-    if CheckInfo(ZipType, j) > -1 then begin
+    i:= CheckInfo(MediaType, j);
+    if (i > -1) and (i <= ZipTypeCount) then begin
       if IsLoaded(j) then begin
         j := ExtractSub(sub_path, playlist.FindPW(sub_path), j);
         if j <> '' then begin
-          Vobfile := j; inc(VobFileCount);
-          if VobFileCount = 1 then begin
-            LoadVob := 1; Restart;
+          inc(VobFileCount);
+          if VobFileCount=1 then begin
+            Vobfile := j; LoadVob := 1; Restart;
           end;
         end;
       end;
@@ -605,7 +607,7 @@ begin
       if pos(j,substring)=0 then begin
         if not Win32PlatformIsUnicode then begin
           Loadsub := 2; Loadsrt := 2;
-          AddChain(s, substring, j);
+          AddChain(s, substring, EscapeParam(j));
         end
         else
           SendCommand('sub_load ' +  Tnt_WideStringReplace(EscapeParam(j), '\', '/', [rfReplaceAll]));
@@ -740,13 +742,13 @@ end;
 
 procedure TMainForm.FormDropFiles(var msg: TMessage);
 var hDrop: THandle; fnbuf, j, t: widestring; k: boolean;
-  i, h, DropCount, s: integer; Entry: TPlaylistEntry;
+  i, DropCount, s,a: integer; FList:TTntStringList;
   tw: array[0..1024] of wideChar; ta: array[0..1024] of Char;
 begin
   hDrop := msg.wParam;
   if Win32PlatformIsUnicode then DropCount := DragQueryFileW(hDrop, cardinal(-1), nil, 0)
   else DropCount := DragQueryFile(hDrop, cardinal(-1), nil, 0);
-  VobFileCount := 0; s := 0;
+  VobFileCount := 0; s := 0; FList:= TTntStringList.Create;
   for i := 0 to DropCount - 1 do begin
     if Win32PlatformIsUnicode then begin
       DragQueryFileW(hDrop, i, tw, 1024); fnbuf := tw;
@@ -754,6 +756,11 @@ begin
     else begin
       DragQueryFile(hDrop, i, ta, 1024); fnbuf := WideString(ta);
     end;
+    FList.Add(fnbuf);
+  end;
+  FList.CustomSort(plist.mysort);
+  for i := 0 to DropCount - 1 do begin
+    fnbuf:=FList[i];
     if WideDirectoryExists(fnbuf) then begin
       if i = 0 then begin PClear := true; EndOpenDir:=true; end;
       Playlist.AddDirectory(fnbuf);
@@ -761,8 +768,9 @@ begin
     end
     else begin
       j := Tnt_WideLowerCase(WideExtractFileExt(fnbuf));
-      if FilterDrop then k := CheckInfo(MediaType, j) > ZipTypeCount
-      else k := CheckInfo(SubType, j) = -1;
+      a:= CheckInfo(MediaType, j);
+      if FilterDrop then k := a> ZipTypeCount
+      else k := (CheckInfo(SubType, j) = -1) and ((a = -1) or (a > ZipTypeCount));
       if k then begin
         if i = 0 then begin PClear := true; EndOpenDir:=true; end;
         Playlist.AddFiles(fnbuf);
@@ -770,40 +778,31 @@ begin
       end
       else begin
         if j = '.idx' then begin
-          j := loadArcSub(fnbuf, playlist.FindPW(fnbuf));
+          j:= GetFileName(fnbuf); Loadsub := 1;
+          if not WideFileExists(j + '.sub') then j := loadArcSub(fnbuf, playlist.FindPW(fnbuf));
           if j <> '' then begin
             inc(VobFileCount);
             if VobFileCount = 1 then begin
-              Vobfile := j;
-              Loadsub := 1; LoadVob := 1; Restart;
+              Vobfile := j; LoadVob := 1; Restart;
             end;
           end;
         end
         else begin
-          if CheckInfo(ZipType, j) > -1 then begin
+          if (a > -1) and (a <= ZipTypeCount) then begin
             if IsLoaded(j) then begin
               Loadsub := 1; TmpPW := '';
               t := ExtractSub(fnbuf, playlist.FindPW(fnbuf), j);
               if HaveLyric = 0 then ExtractLyric(fnbuf, TmpPW, j);
               if t <> '' then begin
-                Vobfile := t;
                 inc(VobFileCount);
                 if VobFileCount = 1 then begin
-                  LoadVob := 1; Restart;
+                  Vobfile := t; LoadVob := 1; Restart;
                 end;
               end;
-              h := AddMovies(fnbuf, TmpPW, false, j);
-              if h <> 0 then begin
+              if AddMovies(fnbuf, playlist.FindPW(fnbuf), false, j) > 0 then begin
                 Loadsub := 0;
                 if i = 0 then begin PClear := true; EndOpenDir:=true; end;
-              end;
-              if h > 0 then AddMovies(fnbuf, TmpPW, true, j);
-              if h < 0 then begin
-                Entry.State := psNotPlayed;
-                Entry.FullURL := fnbuf;
-                if Pos('://', fnbuf) > 1 then Entry.DisplayURL := fnbuf
-                else Entry.DisplayURL := WideExtractFileName(fnbuf);
-                playlist.Add(Entry);
+                AddMovies(fnbuf, TmpPW, true, j);
               end;
             end;
           end
@@ -823,11 +822,11 @@ begin
               if pos(t,substring)=0 then begin
                 if not Win32PlatformIsUnicode then begin
                   Loadsub := 2; Loadsrt := 2;
-                  AddChain(s, substring, t);
+                  AddChain(s, substring, EscapeParam(t));
                 end
                 else
                   SendCommand('sub_load ' + Tnt_WideStringReplace(EscapeParam(t), '\', '/', [rfReplaceAll]));
-			        end;
+              end;
             end;
           end;
         end;
@@ -836,6 +835,7 @@ begin
   end;
   DragFinish(hDrop);
   Playlist.Changed;
+  FList.Free;
   if (not Win32PlatformIsUnicode) and (s > 0) then Restart;
   if Loadsub = 0 then Application.OnIdle := OpenDroppedFile;
   msg.Result := 0;
@@ -2937,33 +2937,37 @@ begin
 end;
 
 procedure TMainForm.MLoadsubClick(Sender: TObject);
-var i, s: integer; j: WideString;
+var i, s,a: integer; j: WideString;
 begin
   with OpenDialog do begin
     Title := MLoadSub.Caption;
     Options := Options + [ofAllowMultiSelect] - [ofoldstyledialog];
-    filter := SubFilter + '|*.utf*;*.idx;*.sub;*.srt;*.smi;*.rt;*.txt;*.ssa;*.aqt;*.jss;*.js;*.ass;*.ifo;*.mpsub;*.rar;*.7z;*.zip|' + AnyFilter + '(*.*)|*.*';
+    filter := SubFilter + '|*.utf*;*.idx;*.sub;*.srt;*.smi;*.rt;*.txt;*.ssa;*.aqt;*.jss;*.js;'
+                        + '*.001;*.arj;*.bz2;*.z;*.lzh;*.cab;*.lzma;*.xar;*.hfs;*.dmg;*.wim;*.split;*.rpm;*.deb;*.cpio;'
+                        + '*.ass;*.ifo;*.mpsub;*.rar;*.7z;*.zip|' + AnyFilter + '(*.*)|*.*';
     if Execute then begin
       VobFileCount := 0; s := 0;
       for i := 0 to Files.Count - 1 do begin
         Loadsub := 1; j := Tnt_WideLowerCase(WideExtractFileExt(Files[i]));
         if j = '.idx' then begin
-          j := loadArcSub(Files[i], playlist.FindPW(Files[i]));
+          j:= GetFileName(Files[i]);
+          if not WideFileExists(j + '.sub') then j := loadArcSub(Files[i], playlist.FindPW(Files[i]));
           if j <> '' then begin
             inc(VobFileCount);
-            if VobFileCount = 1 then begin
+            if VobFileCount=1 then begin
               Vobfile := j; LoadVob := 1; Restart;
             end;
           end;
         end
         else begin
-          if CheckInfo(ZipType, j) > -1 then begin
+          a:= CheckInfo(MediaType, j);
+          if (a > -1) and (a <= ZipTypeCount) then begin
             if IsLoaded(j) then begin
               j := ExtractSub(Files[i], playlist.FindPW(Files[i]), j);
               if j <> '' then begin
-                Vobfile := j; inc(VobFileCount);
-                if VobFileCount = 1 then begin
-                  LoadVob := 1; Restart;
+                inc(VobFileCount);
+                if VobFileCount=1 then begin
+                  Vobfile := j; LoadVob := 1; Restart;
                 end;
               end;
             end;
@@ -2974,7 +2978,7 @@ begin
             if pos(j,substring)=0 then begin
               if not Win32PlatformIsUnicode then begin
                 Loadsub := 2; Loadsrt := 2;
-                AddChain(s, substring, j);
+                AddChain(s, substring, EscapeParam(j));
               end
               else
                 SendCommand('sub_load ' + Tnt_WideStringReplace(EscapeParam(j), '\', '/', [rfReplaceAll]));
@@ -3236,7 +3240,7 @@ begin
 end;
 
 procedure TMainForm.MLoadlyricClick(Sender: TObject);
-var j: WideString;
+var j: WideString; i:integer;
 begin
   with OpenDialog do begin
     Title := MLoadlyric.Caption;
@@ -3246,7 +3250,8 @@ begin
       + '*.tar;*.gz|' + AnyFilter + '(*.*)|*.*';
     if Execute then begin
       j := Tnt_WideLowerCase(WideExtractFileExt(FileName));
-      if CheckInfo(ZipType, j) > -1 then begin
+      i:= CheckInfo(MediaType, j);
+      if (i > -1) and (i <= ZipTypeCount) then begin
         if IsLoaded(j) then ExtractLyric(FileName, playlist.FindPW(FileName), j);
       end
       else Lyric.ParseLyric(fileName);

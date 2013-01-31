@@ -32,39 +32,33 @@ const sddll = 'SubDownloader.dll';
 const szdll: array[0..szdllCount] of WideString = ('7zxa.dll', '7za.dll', '7z.dll');
 
 const ZipTypeCount = 19;
-const ZipType: array[0..ZipTypeCount] of WideString = ('.7z', '.rar', '.zip', '.001', '.arj', '.bz2', '.z', '.lzh',
-    '.cab', '.lzma', '.xar', '.hfs', '.dmg', '.wim', '.split', '.rpm', '.deb', '.cpio',
-    '.tar', '.gz'
-    );
-
-const SubTypeCount = 36;
-  SubType: array[0..SubTypeCount] of WideString = ('.7z', '.rar', '.zip', '.001', '.arj', '.bz2', '.z', '.lzh',
-    '.cab', '.lzma', '.xar', '.hfs', '.dmg', '.wim', '.iso', '.split', '.rpm', '.deb', '.cpio',
-    '.tar', '.gz',
+const SubTypeCount = 15;
+  SubType: array[0..SubTypeCount] of WideString = (
     '.lrc', '.utf', '.utf8', '.utf-8', '.srt', '.smi', '.rt', '.txt', '.ssa', '.aqt', '.jss',
     '.js', '.ass', '.mpsub', '.idx', '.sub'
     );
 
-const MediaType: array[0..212] of WideString = ('.7z', '.rar', '.zip', '.001', '.arj', '.bz2', '.z', '.lzh',
-    '.cab', '.lzma', '.xar', '.hfs', '.dmg', '.wim', '.iso', '.split', '.rpm', '.deb', '.cpio',
+const MediaType: array[0..227] of WideString = ('.7z', '.rar', '.zip', '.001', '.arj', '.bz2', '.z', '.lzh',
+    '.cab', '.lzma', '.xar', '.hfs', '.dmg', '.wim', '.split', '.rpm', '.deb', '.cpio',
     '.tar', '.gz',
     '.aac', '.ac3', '.acc', '.act', '.aif', '.aifc', '.aiff', '.alac', '.amf', '.amr', '.amv', '.ape',
     '.as', '.asf', '.asx',
-    '.a52', '.ape', '.apl', '.au', '.avi', '.avs', '.bik', '.bin', '.cda', '.cmf', '.cmn', '.cpk',
+    '.a52', '.ape', '.apl', '.au', '.avi', '.avs', '.bik', '.bin', '.cda', '.cmf', '.cmn', '.cpk', '.csf',
     '.d2v', '.dat', '.drc', '.dsm', '.dsv', '.dsa', '.dss', '.dts', '.dtswav',
-    '.dv', '.dvr-ms', '.divx', '.evo', '.far', '.fla', '.flac', '.flc', '.fli', '.flic', '.flm',
-    '.flv', '.grf', '.hdmov',
+    '.dv', '.dvd', '.dvr-ms', '.divx', '.evo', '.f4v', '.far', '.fla', '.flac', '.flc', '.fli', '.flic', '.flm',
+    '.flv', '.grf', '.hdmov', '.hlv',
     '.img', '.iso', '.ivf', '.it', '.itz', '.jsv', '.kar', '.m1a', '.m2a', '.m2p', '.m2t', '.m2ts',
     '.m1v', '.m2v', '.m3u', '.m3u8', '.m4a', '.m4b', '.m4p', '.m4v', '.mac', '.mdz', '.mid',
     '.midi', '.miz', '.mjf', '.mka', '.mkv', '.mod', '.mov', '.mp1', '.mp2', '.mp2v',
-    '.mp3', '.mp3pro', '.mp4', '.mp4v', '.mp5', '.mpa', '.mpc', '.mpcpl', '.mpe', '.mpeg', '.mpg', '.mpga', '.mp+', '.mpp',
+    '.mp3', '.mp3pro', '.mp4', '.mp4v', '.mp5', '.mpa', '.mpc', '.mpcpl', '.mpe',
+    '.mpeg', '.mpeg1', '.mpeg2', '.mpeg4', '.mpg', '.mpga', '.mp+', '.mpp',
     '.mtm', '.mpv', '.mpv2', '.mpv4', '.mqv', '.mts', '.nrg', '.nsa', '.nst', '.nsv', '.nuv', '.ofr', '.ofs', '.oga', '.ogg',
-    '.ogm', '.ogv', '.okt', '.pls', '.pmp',
-    '.pmp2', '.pss', '.ptm', '.pva', '.qt', '.ra', '.ram', '.ratdvd', '.rm', '.rmi', '.rmj',
-    '.rmm', '.rmp', '.rms', '.rmvb', '.rmx', '.rnx', '.roq', '.rp', '.rpm', '.rt', '.rv', '.realpix',
-    '.s3m', '.s3z', '.scm', '.sdp', '.smil', '.smk', '.smpl', '.snd', '.stm', '.stz', '.swa', '.swf', '.tp', '.tpr',
-    '.ts', '.tta', '.ttpl', '.ult', '.umx', '.vcd', '.vfw', '.vg2', '.vid', '.vivo', '.vob', '.voc', '.vp3', '.vp4', '.vp5',
-    '.vp6', '.vp7', '.vqf', '.wav', '.wax', '.wm', '.wma', '.wmp', '.wmv', '.wmx',
+    '.ogm', '.ogv', '.ogx', '.okt', '.pls', '.pm2', '.pmp',
+    '.pmp2', '.pss', '.ptm', '.pva', '.qt', '.ra', '.ram', '.rat', '.ratdvd', '.rm', '.rmi', '.rmj',
+    '.rmm', '.rmp', '.rms', '.rmvb', '.rmx', '.rnx', '.roq', '.rp', '.rpm', '.rsc', '.rsm', '.rt', '.rv', '.realpix',
+    '.s3m', '.s3z', '.scm', '.sdp', '.smil', '.smk', '.smpl', '.smv', '.snd', '.stm', '.stz', '.swa', '.swf', '.tim', '.tp', '.tpr',
+    '.tps', '.ts', '.tta', '.ttpl', '.ult', '.umx', '.vcd', '.vfw', '.vg2', '.vid', '.vivo', '.vob', '.voc', '.vp3', '.vp4', '.vp5',
+    '.vp6', '.vp7', '.vqf', '.wav', '.wax', '.webm', '.wm', '.wma', '.wmp', '.wmv', '.wmx',
     '.wpl', '.wv', '.wvx', '.xm', '.xmz', '.xspf',
     '.261', '.264', '.3g2', '.3gp', '.3gpp', '.3gp2', '.669'
     );
@@ -125,7 +119,7 @@ var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread,cl: WideString;
   FirstOpen, PClear, Fd, Async, Cache, uof, oneM, FilterDrop,AutoDs: boolean;
   Wid, Dreset, UpdateSkipBar, Pri, HaveChapters, HaveMsg, skip,br: boolean;
   CT, RP, RS, SP, AutoPlay, ETime, InSubDir, SPDIF, ML, GUI, PScroll: boolean;
-  Shuffle, Loop, OneLoop, Uni, Utf, empty, UseUni,ADls: boolean;
+  Shuffle, Loop, OneLoop, Uni, Utf, UseUni,ADls: boolean;
   ControlledResize, ni, nobps, Dnav, IsDMenu, SMenu, lavf, UseekC, vsync: boolean;
   Flip, Mirror, Yuy2, Eq2, LastEq2, Dda, LastDda, Wadsp, addsFiles: boolean;
   WantFullscreen, WantCompact, AutoQuit, IsPause, IsDx, dsEnd, fup,uav: boolean;
@@ -291,12 +285,12 @@ begin
   if (LoadVob=0) and WideFileExists(m + '.idx') and WideFileExists(m + '.sub') then begin //idx
     LoadVob := 1; Vobfile := m; end;
 
-  for i := ZipTypeCount + 2 to SubTypeCount - 2 do begin  //srt,etc
+  for i := 1 to SubTypeCount - 2 do begin  //srt,etc
     n := m + SubType[i];
     if WideFileExists(n) then begin
       if (not IsWideStringMappableToAnsi(n)) or (pos(',', n) > 0) then n := WideExtractShortPathName(n);
       Loadsub := 2; Loadsrt := 2;
-      AddChain(t, substring, Tnt_WideStringReplace(EscapeParam(n), '\', '/', [rfReplaceAll]));
+      AddChain(t, substring, EscapeParam(n));
     end;
   end;
 
@@ -319,10 +313,10 @@ procedure loadArcLyric(folder, ArcName, psw: WideString);
 var i: integer;
 begin
   ArcName := WideIncludeTrailingBackslash(folder) + GetFileName(ArcName);
-  for i := Low(ZipType) to High(ZipType) do begin
-    if WideFileExists(ArcName + ZipType[i]) then begin
-      if IsLoaded(ZipType[i]) then begin
-        if HaveLyric = 0 then ExtractLyric(ArcName + ZipType[i], psw, ZipType[i])
+  for i := 0 to ZipTypeCount do begin
+    if WideFileExists(ArcName + MediaType[i]) then begin
+      if IsLoaded(MediaType[i]) then begin
+        if HaveLyric = 0 then ExtractLyric(ArcName + MediaType[i], psw, MediaType[i])
         else exit;
       end;
     end;
@@ -338,10 +332,10 @@ function loadArcSub(folder, ArcName, psw: WideString):WideString;
 var i: integer;
 begin
   Result := ''; ArcName := WideIncludeTrailingBackslash(folder) + GetFileName(ArcName);
-  for i := Low(ZipType) to High(ZipType) do begin
-    if WideFileExists(ArcName + ZipType[i]) then begin
-      if IsLoaded(ZipType[i]) then begin
-        if Result = '' then Result := ExtractSub(ArcName + ZipType[i], psw, ZipType[i])
+  for i := 0 to ZipTypeCount do begin
+    if WideFileExists(ArcName + MediaType[i]) then begin
+      if IsLoaded(MediaType[i]) then begin
+        if Result = '' then Result := ExtractSub(ArcName + MediaType[i], psw, MediaType[i])
         else exit;
       end;
     end;
@@ -810,7 +804,8 @@ begin
     s := Tnt_WideLowerCase(WideExtractFileExt(MediaURL));
     n:= WideExtractFileName(MediaURL);
     ArcMovie := DisplayURL;
-    if CheckInfo(ZipType, s) > -1 then begin
+    i:= CheckInfo(MediaType, s);
+    if (i > -1) and (i <= ZipTypeCount) then begin
       i := Pos(':', DisplayURL);
       if i > 0 then ArcPW := copy(DisplayURL, i + 1, length(DisplayURL) - i)
       else ArcPW := '';
@@ -2544,7 +2539,7 @@ begin
   Status := sNone; Shuffle := false; Loop := false; OneLoop := false; VideoOut := 'Auto';
   Volume := 100; Mute := False; Duration := ''; MouseMode := 0; SubPos := Dsubpos; FSize := 4.5;
   Flip := false; Mirror := false; Yuy2 := false; Eq2 := false; LastEq2 := false; Rot := 0;
-  Bp := 0; Ep := 0; FB := 2; MAspect := 'Default'; empty := true; lavf := false; vsync := false;
+  Bp := 0; Ep := 0; FB := 2; MAspect := 'Default'; lavf := false; vsync := false;
   Cache := false; CacheV := '2048'; bri := 101; contr := 101; hu := 101; sat := 101; CP := 0;
   gam := 101; briD := 101; contrD := 101; huD := 101; satD := 101; gamD := 101; uof := false;
   Dda := false; LastDda := false; Utf := false; TextColor := $00FFFF; OutColor := 0;

@@ -144,8 +144,6 @@ type
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 type
- TWideStringArray = array of WideString;
-type
   TInterfacedObject = class( TObject, IUnknown )
   protected
     FRefCount: Integer;
@@ -456,10 +454,8 @@ type
     FCreateObject: TCreateObjectFunc;
     FOnOpenVolume: TOpenVolume;
     FPassword: WideString;
-    FNamesOfVolumesWritten: TWideStringArray;                  //FHO 17.01.2007
 
     function InternalGetIndexByFilename( FileToExtract:Widestring ): Integer;		//ZSA 21.02.2007
-    procedure ClearNamesOfVolumeWritten;
     procedure SetLastError(const Value: Integer);                       //FHO 17.01.2007
   protected
     inA: IInArchive;
@@ -474,7 +470,6 @@ type
 
     property SevenZipComment: Widestring read Fcomment write FComment;
     property Files: TTntStringList read Ffiles write ffiles;
-    property NamesOfVolumesWritten: TWideStringArray read FNamesOfVolumesWritten;  //FHO 17.01.2007
 
     { Public Methods }
     function Extract( TestArchive:Boolean=False ): Integer;
@@ -1178,7 +1173,7 @@ begin
   if F7zaLibh <> 0 then begin                                   //FHO 25.01.2007
     @FCreateObject := GetProcAddress( F7zaLibh, 'CreateObject' );
     if Assigned(FCreateObject) then begin
-      i:=checkinfo(ZipType,ArcType);  
+      i:=checkinfo(MediaType,ArcType);  
       FCreateObject(@CLSID_CFormat[i],@IID_IInArchive,inA);
     end;
   end;
@@ -1186,8 +1181,6 @@ end;
 
 destructor TSevenzip.Destroy;
 begin
-  ClearNamesOfVolumeWritten;
-
 //jjw 18.10.2006
   inA := nil;
   ffiles.Clear;
@@ -1342,16 +1335,6 @@ begin
 	  FMainCancel := False;
     FExtrOutName:= '';
   end;
-end;
-
-procedure TSevenZip.ClearNamesOfVolumeWritten;
-var
-  i:Integer;
-begin
-  for i:=0 to length(FNamesOfVolumesWritten)-1 do
-    FNamesOfVolumesWritten[i]:='';
-  SetLength(FNamesOfVolumesWritten,0);
-
 end;
 
 procedure TSevenZip.SetLastError(const Value: Integer);

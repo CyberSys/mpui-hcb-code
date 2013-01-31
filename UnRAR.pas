@@ -416,7 +416,7 @@ begin
     if (HeaderData.Flags and $00000070) <> $00000070 then begin
       FExt:=Tnt_WideLowerCase(WideExtractFileExt(HeaderData.FileNameW));
       i:=CheckInfo(SubType,FExt);
-      if i<=ZipTypeCount then begin
+      if i=-1 then begin
         if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
       end
       else begin
@@ -429,7 +429,7 @@ begin
             if pos(FName,substring)=0 then begin
               if Firstrun or (not Win32PlatformIsUnicode) then begin
                 Loadsub:=2; Loadsrt:=2;
-                AddChain(j,substring,FName);
+                AddChain(j,substring,EscapeParam(FName));
               end
               else
                 SendCommand('sub_load ' + Tnt_WideStringReplace(EscapeParam(FName), '\', '/', [rfReplaceAll]));

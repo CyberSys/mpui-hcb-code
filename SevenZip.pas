@@ -448,7 +448,7 @@ begin
         end;
         FExt:=Tnt_WideLowerCase(WideExtractFileExt(UTF8Decode(fileInfo.szFilename)));
         i:=CheckInfo(SubType,FExt);
-        if i>ZipTypeCount then begin
+        if i>-1 then begin
           if i<SubTypeCount-1 then begin
             FName:=TempDir+UTF8Decode(fileInfo.szFilename);
             if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,UnZIPCallback)<>0 then
@@ -458,7 +458,7 @@ begin
               if pos(FName,substring)=0 then begin
                 if Firstrun or (not Win32PlatformIsUnicode) then begin
                   Loadsub:=2; Loadsrt:=2;
-                  AddChain(j,substring,FName);
+                  AddChain(j,substring,EscapeParam(FName));
                 end
                 else
                   SendCommand('sub_load ' + Tnt_WideStringReplace(EscapeParam(FName), '\', '/', [rfReplaceAll]));
@@ -532,7 +532,7 @@ begin
   for z:=0 to x-1 do begin
     FExt:=Tnt_WideLowerCase(WideExtractFileExt(Flist.Strings[z]));
     i:=CheckInfo(SubType,FExt);
-    if i>ZipTypeCount then begin
+    if i>-1 then begin
       if i<SubTypeCount-1 then begin
         sz.Files.Clear;
         sz.Files.Add(Flist.Strings[z]);
@@ -544,7 +544,7 @@ begin
           if pos(FName,substring)=0 then begin
             if Firstrun or (not Win32PlatformIsUnicode) then begin
               Loadsub:=2; Loadsrt:=2;
-              AddChain(j,substring,FName);
+              AddChain(j,substring,EscapeParam(FName));
             end
             else
               SendCommand('sub_load ' + Tnt_WideStringReplace(EscapeParam(FName), '\', '/', [rfReplaceAll]));
