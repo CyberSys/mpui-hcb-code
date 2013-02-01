@@ -34,10 +34,11 @@ const
 type
   TOpenDir = class(TThread)
     private
-      Directory: Widestring; EOpenDir:boolean;
+      Directory: Widestring; Sender: TObject;
     protected
       procedure Execute; override;
     public
+      procedure UpdateView;
   end;
 
 type
@@ -65,7 +66,7 @@ type TPlaylist = class
     procedure AddFiles(const URL: widestring);
     function AddM3U(const FileName: WideString; FileExtIndex: integer): boolean;
     procedure AddDir(Directory: WideString);
-    procedure AddDirectory(Directory: WideString);
+    procedure AddDirectory(Directory: WideString; Sender:TObject);
     property Count: integer read GetCount;
     property Items[Index: integer]: TPlaylistEntry read GetItem; default;
     property Selected[Index: integer]: boolean read GetSelected write SetSelected;
@@ -99,9 +100,12 @@ type TLyric = class
     destructor Destroy; override;
   end;
 
-type TWStringList = class(TTntStringList)
+type
+  TWStringList = class;
+  TMySortCompare = function(List: TWStringList; Index1, Index2: Integer): Integer;
+  TWStringList = class(TTntStringList)
   public
-    //procedure SortStr;
+    procedure SortStr(c:TMySortCompare);
     procedure LoadFile(const FileName: WideString; CharSet: TTntStreamCharSet);
   end;
 
@@ -311,9 +315,10 @@ var
   GuessStrChardet  : function(str,nameBuf:PChar):PChar; stdcall;
 
 procedure addEpisode(s: widestring);
-function mysort(s: TTntStringList; P1, P2: Integer): Integer;
+function mysort(s: TWStringList; P1, P2: Integer): Integer;
 procedure LoadCLibrary;
-procedure UnLoadCLibrary; 
+procedure UnLoadCLibrary;
+function isNum(n: WChar): boolean; 
 
 implementation
 
@@ -338,18 +343,18 @@ begin
     IsCLoaded := 0;
     GuessStrChardet  :=nil;
   end;
-end; 
+end;
 
-{procedure TWStringList.SortStr;
+procedure TWStringList.SortStr(c:TMySortCompare);
 var i, j: integer;
 begin
   for i := 0 to Count - 2 do begin
     for j := 1 to Count - i -1 do begin
-      if mysort(Tnt_WideLowerCase(Strings[j]),Tnt_WideLowerCase(Strings[j - 1]))<0 then
+      if c(self,j,j-1)<0 then
         Exchange(j - 1,j);
     end;
   end;
-end;}
+end;
 
 procedure TWStringList.LoadFile(const FileName: WideString; CharSet: TTntStreamCharSet);
 var Stream: TStream; DataLeft: Integer; SW: WideString; SA: AnsiString;
@@ -452,29 +457,29 @@ procedure TOpenDir.Execute;
 begin
   EndOpenDir:=false;
   Playlist.AddDir(Directory);
-  EOpenDir:=true;
+  Synchronize(UpdateView);
 end;
 
-procedure TPlaylist.AddDirectory(Directory: Widestring);
+procedure TOpenDir.UpdateView;
+begin
+  Playlist.Changed;
+  if Sender<>nil then PlaylistForm.BPlayClick(Sender);
+end;
+
+procedure TPlaylist.AddDirectory(Directory: Widestring; Sender:TObject);
 var t:TOpenDir;
 begin
   t:=TOpenDir.Create(True);
   t.FreeOnTerminate:=True;
-  t.Directory:=Directory; t.EOpenDir:=false;
+  t.Directory:=Directory; t.Sender:=Sender;
   t.Priority := tpTimeCritical;
   t.Resume;
   SwitchToThread;
-  while not t.EOpenDir do
-    WaitForSingleObject(t.Handle, 100);
-  
-  
-  //-------one Thread-----------
-  //EndOpenDir:=false;
-  //AddDir(Directory);
 end;
 
 procedure TPlaylist.AddDir(Directory: Widestring);
-var SR: TSearchRecW; Entry: TPlaylistEntry; a,s,d:WideString; 
+var SR: TSearchRecW; Entry: TPlaylistEntry; a,s,d:WideString;
+    FList:TWStringList;{TTntStringList;} i:integer;
 begin
   Directory := WideIncludeTrailingPathDelimiter(WideExpandUNCFileName(Directory));
 
@@ -544,14 +549,18 @@ begin
 
   // no (S)VCD -> search the directory recursively
   if (WideFindFirst(Directory + '*.*', faAnyFile, SR) = 0) and (not EndOpenDir) then begin
+    FList:=TWStringList.Create;
     repeat
       if SR.Name[1] <> '.' then begin // exclude . or .. Directory
         if (SR.Attr and faDirectory) <> 0 then AddDir(Directory + SR.Name)
         else if CheckInfo(MediaType, Tnt_WideLowerCase(WideExtractFileExt(SR.Name))) > -1 then
-          AddFiles(Directory + SR.Name);
+          FList.Add(SR.Name);
       end;
     until (WideFindNext(SR) <> 0) or EndOpenDir;
     WideFindClose(SR);
+    FList.SortStr(mysort);
+    for i:=0 to FList.Count-1 do AddFiles(Directory + FList[i]);
+    FList.Free;
     exit;
   end;
 
@@ -745,7 +754,7 @@ function TPlaylist.AddM3U(const FileName: WideString; FileExtIndex: integer): bo
 var BasePath, s: WideString;
   procedure AddToPls(str: WideString);
   begin
-    if WideDirectoryExists(str) then AddDirectory(str)
+    if WideDirectoryExists(str) then AddDirectory(str,nil)
     else begin
       str := ExpandName(BasePath, str);
       if (Pos('://', str) > 1) or WideFileExists(str) then AddFiles(str)
@@ -1273,13 +1282,17 @@ begin
       result:=result*10+t[i];
 end;}
 
-function isNum(n: wchar): boolean;
+function isNum(n: WChar): boolean;
 begin
   result := (n >= '0') and (n <= '9');
 end;
 
-function mysort(s: TTntStringList; P1, P2: Integer): Integer;
+function mysort(s: TWStringList; P1, P2: Integer): Integer;
 var s1, s2: WideString; ef, k, j, g, ce, ne: integer;
+  function isnum(n: wchar): boolean;
+  begin
+    result := (n >= '0') and (n <= '9');
+  end;
 begin
   s1 := Tnt_WideLowerCase(s[p1]);
   s2 := Tnt_WideLowerCase(s[p2]);
@@ -1361,7 +1374,7 @@ begin
     repeat
       if (SR.Name[1] <> '.') and ((SR.Attr and faDirectory) = 0) then efiles.Add(SR.Name);
     until WideFindNext(SR) <> 0;
-    WideFindClose(SR); efiles.CustomSort(mysort);
+    WideFindClose(SR); efiles.SortStr(mysort);
   end;
   s := WideExtractFileName(s);
   index := efiles.IndexOf(s);
@@ -1376,7 +1389,7 @@ begin
 end;
 
 procedure TPlaylistForm.BAddClick(Sender: TObject);
-var i: integer; sfiles: TTntStringList;
+var i: integer; sfiles: TWStringList;
 begin
   with MainForm.OpenDialog do begin
     Title := MainForm.MOpenFile.Caption;
@@ -1396,9 +1409,9 @@ begin
 
     if Execute then begin
       PClear := (Sender <> BAdd); EndOpenDir:=PClear;
-      sfiles := TTntSTringList.Create;
+      sfiles := TWSTringList.Create;
       sfiles.AddStrings(files);
-      sfiles.CustomSort(mysort);
+      sfiles.SortStr(mysort);
       for i := 0 to Files.Count - 1 do begin
         if Addsfiles then begin
           if playlist.FindItem('', WideExtractFileName(sfiles[i])) < 0 then begin
@@ -1416,13 +1429,13 @@ end;
 
 procedure TPlaylistForm.FormDropFiles(var msg: TMessage);
 var hDrop: THandle; fnbuf, j, t: widestring; k: boolean;
-  i, DropCount, s,a: integer; FList:TTntStringList;
+  i, DropCount, s,a: integer; FList:TWStringList; Entry: TPlaylistEntry;
   tw: array[0..1024] of wideChar; ta: array[0..1024] of Char;
 begin
   hDrop := msg.wParam;
   if Win32PlatformIsUnicode then DropCount := DragQueryFileW(hDrop, cardinal(-1), nil, 0)
   else DropCount := DragQueryFile(hDrop, cardinal(-1), nil, 0);
-  VobFileCount := 0; s := 0; FList:= TTntStringList.Create;
+  VobFileCount := 0; s := 0; FList:= TWStringList.Create;
   for i := 0 to DropCount - 1 do begin
     if Win32PlatformIsUnicode then begin
       DragQueryFileW(hDrop, i, tw, 1024); fnbuf := tw;
@@ -1432,10 +1445,10 @@ begin
     end;
     FList.Add(fnbuf);
   end;
-  FList.CustomSort(plist.mysort);
+  FList.SortStr(plist.mysort);
   for i := 0 to DropCount - 1 do begin
     fnbuf:=FList[i];
-    if WideDirectoryExists(fnbuf) then Playlist.AddDirectory(fnbuf)
+    if WideDirectoryExists(fnbuf) then Playlist.AddDirectory(fnbuf,nil)
     else begin
       j := Tnt_WideLowerCase(WideExtractFileExt(fnbuf));
       a:= CheckInfo(MediaType, j);
@@ -1465,7 +1478,14 @@ begin
                   Vobfile := t; LoadVob := 1; Restart;
                 end;
               end;
-              if AddMovies(fnbuf, playlist.FindPW(fnbuf), false, j) > 0 then AddMovies(fnbuf, TmpPW, true, j);
+              if AddMovies(fnbuf, TmpPW, false, j) > 0 then AddMovies(fnbuf, TmpPW, true, j)
+              else begin
+                Entry.State := psNotPlayed;
+                Entry.FullURL := fnbuf;
+                if Pos('://', fnbuf) > 1 then Entry.DisplayURL := fnbuf
+                else Entry.DisplayURL := WideExtractFileName(fnbuf);
+                playlist.Add(Entry);
+              end;
             end;
           end
           else begin
@@ -1614,8 +1634,7 @@ var s: widestring;
 begin
   if WideSelectDirectory(AddDirCp, '', s) then begin
     PClear := false;
-    Playlist.AddDirectory(s);
-    Playlist.Changed;
+    Playlist.AddDirectory(s,nil);
   end;
 end;
 

@@ -717,20 +717,26 @@ begin
           if IsFirst then begin
             PClear := true; EndOpenDir:=true; IsFirst := false; 
           end;
-          if WideDirectoryExists(FileName) then 
-            Playlist.AddDirectory(FileName)
-          else Playlist.AddFiles(FileName);
+          if WideDirectoryExists(FileName) then begin
+            if i<>PCount then Playlist.AddDirectory(FileName,nil)
+            else Playlist.AddDirectory(FileName,Sender);
+          end
+          else begin
+            Playlist.AddFiles(FileName);
+            if i=PCount then begin
+              Playlist.Changed;
+              Application.OnIdle := OpenDroppedFile;
+            end;
+          end;
         end;
       end;
     end
     else begin
       if AutoPlay then begin
         PClear := true; EndOpenDir:=true;
-        Playlist.AddDirectory('.');
+        Playlist.AddDirectory('.',Sender);
       end;
     end;
-    Playlist.Changed;
-    if Playlist.Count > 0 then Application.OnIdle := OpenDroppedFile;
   end;
   DragAcceptFiles(Handle, true);
 end;
@@ -742,13 +748,14 @@ end;
 
 procedure TMainForm.FormDropFiles(var msg: TMessage);
 var hDrop: THandle; fnbuf, j, t: widestring; k: boolean;
-  i, DropCount, s,a: integer; FList:TTntStringList;
+  i, DropCount, s,a: integer; FList,DList:TWStringList; Entry: TPlaylistEntry;
   tw: array[0..1024] of wideChar; ta: array[0..1024] of Char;
 begin
   hDrop := msg.wParam;
   if Win32PlatformIsUnicode then DropCount := DragQueryFileW(hDrop, cardinal(-1), nil, 0)
   else DropCount := DragQueryFile(hDrop, cardinal(-1), nil, 0);
-  VobFileCount := 0; s := 0; FList:= TTntStringList.Create;
+  VobFileCount := 0; s := 0;
+  FList:= TWStringList.Create; DList:= TWStringList.Create;
   for i := 0 to DropCount - 1 do begin
     if Win32PlatformIsUnicode then begin
       DragQueryFileW(hDrop, i, tw, 1024); fnbuf := tw;
@@ -756,15 +763,18 @@ begin
     else begin
       DragQueryFile(hDrop, i, ta, 1024); fnbuf := WideString(ta);
     end;
-    FList.Add(fnbuf);
+    if WideDirectoryExists(fnbuf) then DList.Add(fnbuf)
+    else FList.Add(fnbuf);
   end;
-  FList.CustomSort(plist.mysort);
+  FList.SortStr(plist.mysort);
+  FList.AddStrings(DList);
   for i := 0 to DropCount - 1 do begin
     fnbuf:=FList[i];
     if WideDirectoryExists(fnbuf) then begin
+      Loadsub:=3;
       if i = 0 then begin PClear := true; EndOpenDir:=true; end;
-      Playlist.AddDirectory(fnbuf);
-      Loadsub := 0;
+      if i<>(DropCount - 1) then Playlist.AddDirectory(fnbuf,nil)
+      else Playlist.AddDirectory(fnbuf,MainForm);
     end
     else begin
       j := Tnt_WideLowerCase(WideExtractFileExt(fnbuf));
@@ -799,10 +809,17 @@ begin
                   Vobfile := t; LoadVob := 1; Restart;
                 end;
               end;
-              if AddMovies(fnbuf, playlist.FindPW(fnbuf), false, j) > 0 then begin
-                Loadsub := 0;
+              Loadsub := 0;
+              if AddMovies(fnbuf, TmpPW, false, j) > 0 then begin
                 if i = 0 then begin PClear := true; EndOpenDir:=true; end;
                 AddMovies(fnbuf, TmpPW, true, j);
+              end
+              else begin
+                Entry.State := psNotPlayed;
+                Entry.FullURL := fnbuf;
+                if Pos('://', fnbuf) > 1 then Entry.DisplayURL := fnbuf
+                else Entry.DisplayURL := WideExtractFileName(fnbuf);
+                playlist.Add(Entry);
               end;
             end;
           end
@@ -835,7 +852,7 @@ begin
   end;
   DragFinish(hDrop);
   Playlist.Changed;
-  FList.Free;
+  FList.Free; DList.Free;
   if (not Win32PlatformIsUnicode) and (s > 0) then Restart;
   if Loadsub = 0 then Application.OnIdle := OpenDroppedFile;
   msg.Result := 0;
@@ -880,10 +897,12 @@ begin
       PClear := true; EndOpenDir:=true; HaveMsg := true; 
     end;
     if WideDirectoryExists(OpenFileName) then begin
-      Playlist.AddDirectory(OpenFileName);
+      Playlist.AddDirectory(OpenFileName,nil);
     end
-    else Playlist.AddFiles(OpenFileName);
-    Playlist.Changed;
+    else begin 
+      Playlist.AddFiles(OpenFileName);
+      Playlist.Changed; 
+    end;
   end;
   PlayMsgAt := GetTickCount() + 500;
 end;
@@ -1931,16 +1950,8 @@ var s: widestring;
 begin
   if WideSelectDirectory(AddDirCp, '', s) then begin
     PClear := true; EndOpenDir:=true;
-    Playlist.AddDirectory(s);
-    Playlist.Changed;
-    PlaylistForm.BPlayClick(Sender);
+    Playlist.AddDirectory(s, Sender);
   end;
-  {  if AddDirForm.Execute(true) then begin
-    PClear:=true; EndOpenDir:=true;
-    Playlist.AddDirectory(AddDirForm.DirView.SelectedFolder.PathName);
-    Playlist.Changed;
-    PlaylistForm.BPlayClick(Sender);
-  end;}
 end;
 
 procedure TMainForm.MOpenURLClick(Sender: TObject);
@@ -1953,11 +1964,13 @@ begin
   if (WideInputQuery(LOCstr_OpenURL_Caption, LOCstr_OpenURL_Prompt, s)) and (s <> '') then begin
     PClear := true; EndOpenDir:=true;
     if WideDirectoryExists(s) then
-      Playlist.AddDirectory(s)
-    else Playlist.AddFiles(s);
-    Playlist.Changed;
-    UpdateParams;
-    NextFile(0, psPlaying);
+      Playlist.AddDirectory(s, Sender)
+    else begin 
+      Playlist.AddFiles(s);
+      Playlist.Changed;
+      UpdateParams;
+      NextFile(0, psPlaying);
+    end;
   end;
 end;
 
@@ -1995,10 +2008,7 @@ end;
 procedure TMainForm.MOpenDriveClick(Sender: TObject);
 begin
   PClear := true; EndOpenDir:=true;
-  Playlist.AddDirectory(char((Sender as TTntMenuItem).Tag) + ':');
-  Playlist.Changed;
-  UpdateParams;
-  NextFile(0, psPlaying);
+  Playlist.AddDirectory(char((Sender as TTntMenuItem).Tag) + ':',Sender);
 end;
 
 procedure TMainForm.MKeyHelpClick(Sender: TObject);
