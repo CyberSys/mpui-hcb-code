@@ -38,7 +38,7 @@ const SubTypeCount = 15;
     '.js', '.ass', '.mpsub', '.idx', '.sub'
     );
 
-const MediaType: array[0..227] of WideString = ('.7z', '.rar', '.zip', '.001', '.arj', '.bz2', '.z', '.lzh',
+const MediaType: array[0..229] of WideString = ('.7z', '.rar', '.zip', '.001', '.arj', '.bz2', '.z', '.lzh',
     '.cab', '.lzma', '.xar', '.hfs', '.dmg', '.wim', '.split', '.rpm', '.deb', '.cpio',
     '.tar', '.gz',
     '.aac', '.ac3', '.acc', '.act', '.aif', '.aifc', '.aiff', '.alac', '.amf', '.amr', '.amv', '.ape',
@@ -47,7 +47,7 @@ const MediaType: array[0..227] of WideString = ('.7z', '.rar', '.zip', '.001', '
     '.d2v', '.dat', '.drc', '.dsm', '.dsv', '.dsa', '.dss', '.dts', '.dtswav',
     '.dv', '.dvd', '.dvr-ms', '.divx', '.evo', '.f4v', '.far', '.fla', '.flac', '.flc', '.fli', '.flic', '.flm',
     '.flv', '.grf', '.hdmov', '.hlv',
-    '.img', '.iso', '.ivf', '.it', '.itz', '.jsv', '.kar', '.m1a', '.m2a', '.m2p', '.m2t', '.m2ts',
+    '.img', '.iso', '.ivf', '.ivm', '.it', '.itz', '.jsv', '.kar', '.m1a', '.m2a', '.m2p', '.m2t', '.m2ts',
     '.m1v', '.m2v', '.m3u', '.m3u8', '.m4a', '.m4b', '.m4p', '.m4v', '.mac', '.mdz', '.mid',
     '.midi', '.miz', '.mjf', '.mka', '.mkv', '.mod', '.mov', '.mp1', '.mp2', '.mp2v',
     '.mp3', '.mp3pro', '.mp4', '.mp4v', '.mp5', '.mpa', '.mpc', '.mpcpl', '.mpe',
@@ -56,7 +56,7 @@ const MediaType: array[0..227] of WideString = ('.7z', '.rar', '.zip', '.001', '
     '.ogm', '.ogv', '.ogx', '.okt', '.pls', '.pm2', '.pmp',
     '.pmp2', '.pss', '.ptm', '.pva', '.qt', '.ra', '.ram', '.rat', '.ratdvd', '.rm', '.rmi', '.rmj',
     '.rmm', '.rmp', '.rms', '.rmvb', '.rmx', '.rnx', '.roq', '.rp', '.rpm', '.rsc', '.rsm', '.rt', '.rv', '.realpix',
-    '.s3m', '.s3z', '.scm', '.sdp', '.smil', '.smk', '.smpl', '.smv', '.snd', '.stm', '.stz', '.swa', '.swf', '.tim', '.tp', '.tpr',
+    '.s3m', '.s3z', '.scm', '.sdp', '.smil', '.smk', '.smpl', '.smv', '.snd', '.stm', '.stz', '.swa', '.swf', '.tim', '.tod', '.tp', '.tpr',
     '.tps', '.ts', '.tta', '.ttpl', '.ult', '.umx', '.vcd', '.vfw', '.vg2', '.vid', '.vivo', '.vob', '.voc', '.vp3', '.vp4', '.vp5',
     '.vp6', '.vp7', '.vqf', '.wav', '.wax', '.webm', '.wm', '.wma', '.wmp', '.wmv', '.wmx',
     '.wpl', '.wv', '.wvx', '.xm', '.xmz', '.xspf',
@@ -1714,7 +1714,7 @@ var r, i, j, p, len: integer; s: string; f: real;
       Val(Copy(Line, 16, MaxInt), i, r);
       if (r = 0) and (i >= 0) and (i < 8191) then begin
         VobAndInterSubCount := IntersubCount + VobsubCount;
-        if Loadsub = 1 then begin
+        if Loadsub =1 then begin
           SubID := i + VobAndInterSubCount - 1;
           MainForm.MShowSub.Checked := true;
         end

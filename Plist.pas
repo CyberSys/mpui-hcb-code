@@ -34,11 +34,9 @@ const
 type
   TOpenDir = class(TThread)
     private
-      Directory: Widestring; Sender: TObject;
+      Directory: Widestring;
     protected
       procedure Execute; override;
-    public
-      procedure UpdateView;
   end;
 
 type
@@ -66,7 +64,7 @@ type TPlaylist = class
     procedure AddFiles(const URL: widestring);
     function AddM3U(const FileName: WideString; FileExtIndex: integer): boolean;
     procedure AddDir(Directory: WideString);
-    procedure AddDirectory(Directory: WideString; Sender:TObject);
+    procedure AddDirectory(Directory: WideString);
     property Count: integer read GetCount;
     property Items[Index: integer]: TPlaylistEntry read GetItem; default;
     property Selected[Index: integer]: boolean read GetSelected write SetSelected;
@@ -401,7 +399,7 @@ end;
 
 procedure TPlaylist.Clear;
 begin
-  SetLength(Data, 0); CurPlay := -1; 
+  EndOpenDir:=true; SetLength(Data, 0); CurPlay := -1; 
 end;
 
 procedure TLyric.ClearLyric;
@@ -420,11 +418,20 @@ end;
 procedure TPlaylist.Add(const Entry: TPlaylistEntry);
 var len: integer;
 begin
-  if PClear then begin PClear := false; Clear; end;
+  if PClear then Clear;
   len := length(Data);
   SetLength(Data, len + 1);
   Data[len] := Entry;
   //  Changed;
+  if PClear then begin
+    PClear := false;
+    MainForm.UpdateParams;
+    NowPlaying(0); CurPlay := 0;
+    MainForm.DoOpen(Playlist[0].FullURL, Playlist[0].DisplayURL);
+    if IsIconic(Application.Handle) then Application.Restore
+    else Application.BringToFront;
+    SetForegroundWindow(Application.Handle);
+  end;
 end;
 
 procedure TPlaylist.AddFiles(const URL: widestring);
@@ -457,21 +464,15 @@ procedure TOpenDir.Execute;
 begin
   EndOpenDir:=false;
   Playlist.AddDir(Directory);
-  Synchronize(UpdateView);
+  Synchronize(Playlist.Changed);
 end;
 
-procedure TOpenDir.UpdateView;
-begin
-  Playlist.Changed;
-  if Sender<>nil then PlaylistForm.BPlayClick(Sender);
-end;
-
-procedure TPlaylist.AddDirectory(Directory: Widestring; Sender:TObject);
+procedure TPlaylist.AddDirectory(Directory: Widestring);
 var t:TOpenDir;
 begin
   t:=TOpenDir.Create(True);
   t.FreeOnTerminate:=True;
-  t.Directory:=Directory; t.Sender:=Sender;
+  t.Directory:=Directory;
   t.Priority := tpTimeCritical;
   t.Resume;
   SwitchToThread;
@@ -754,7 +755,7 @@ function TPlaylist.AddM3U(const FileName: WideString; FileExtIndex: integer): bo
 var BasePath, s: WideString;
   procedure AddToPls(str: WideString);
   begin
-    if WideDirectoryExists(str) then AddDirectory(str,nil)
+    if WideDirectoryExists(str) then AddDirectory(str)
     else begin
       str := ExpandName(BasePath, str);
       if (Pos('://', str) > 1) or WideFileExists(str) then AddFiles(str)
@@ -1448,7 +1449,7 @@ begin
   FList.SortStr(plist.mysort);
   for i := 0 to DropCount - 1 do begin
     fnbuf:=FList[i];
-    if WideDirectoryExists(fnbuf) then Playlist.AddDirectory(fnbuf,nil)
+    if WideDirectoryExists(fnbuf) then Playlist.AddDirectory(fnbuf)
     else begin
       j := Tnt_WideLowerCase(WideExtractFileExt(fnbuf));
       a:= CheckInfo(MediaType, j);
@@ -1478,14 +1479,14 @@ begin
                   Vobfile := t; LoadVob := 1; Restart;
                 end;
               end;
-              if AddMovies(fnbuf, TmpPW, false, j) > 0 then AddMovies(fnbuf, TmpPW, true, j)
-              else begin
-                Entry.State := psNotPlayed;
-                Entry.FullURL := fnbuf;
-                if Pos('://', fnbuf) > 1 then Entry.DisplayURL := fnbuf
-                else Entry.DisplayURL := WideExtractFileName(fnbuf);
-                playlist.Add(Entry);
-              end;
+              if AddMovies(fnbuf, TmpPW, false, j) > 0 then AddMovies(fnbuf, TmpPW, true, j);
+            end
+            else begin
+              Entry.State := psNotPlayed;
+              Entry.FullURL := fnbuf;
+              if Pos('://', fnbuf) > 1 then Entry.DisplayURL := fnbuf
+              else Entry.DisplayURL := WideExtractFileName(fnbuf);
+              playlist.Add(Entry);
             end;
           end
           else begin
@@ -1634,7 +1635,7 @@ var s: widestring;
 begin
   if WideSelectDirectory(AddDirCp, '', s) then begin
     PClear := false;
-    Playlist.AddDirectory(s,nil);
+    Playlist.AddDirectory(s);
   end;
 end;
 
@@ -1654,7 +1655,6 @@ end;
 
 procedure TPlaylistForm.BClearClick(Sender: TObject);
 begin
-  EndOpenDir:=true;
   Playlist.Clear;
   Playlist.Changed;
   playlistForm.PlaylistBox.ScrollWidth:=0;
