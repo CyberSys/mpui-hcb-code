@@ -714,7 +714,7 @@ begin
         FileName := WideParamStr(i);
         if not CheckOption(FileName) then begin
           if IsFirst then begin
-            PClear := true; IsFirst := false;
+            PClear := true; EndOpenDir:=true; IsFirst := false; 
           end;
           if WideDirectoryExists(FileName) then Playlist.AddDirectory(FileName)
           else Playlist.AddFiles(FileName);
@@ -723,10 +723,11 @@ begin
     end
     else begin
       if AutoPlay then begin
-        PClear := true;
+        PClear := true; EndOpenDir:=true;
         Playlist.AddDirectory('.');
       end;
     end;
+    Playlist.Changed;
   end;
 end;
 
@@ -767,7 +768,7 @@ begin
       if FilterDrop then k := a> ZipTypeCount
       else k := (CheckInfo(SubType, j) = -1) and ((a = -1) or (a > ZipTypeCount));
       if k then begin
-        if i = 0 then PClear := true;
+        if i = 0 then begin PClear := true; EndOpenDir:=true; end;
         Playlist.AddFiles(fnbuf);
       end
       else begin
@@ -794,12 +795,12 @@ begin
                 end;
               end;
               if AddMovies(fnbuf, TmpPW, false, j) > 0 then begin
-                if i = 0 then PClear := true;
+                if i = 0 then begin PClear := true; EndOpenDir:=true; end;
                 AddMovies(fnbuf, TmpPW, true, j);
               end;
             end
             else begin
-              if i = 0 then PClear := true;
+              if i = 0 then begin PClear := true; EndOpenDir:=true; end;
               Entry.State := psNotPlayed;
               Entry.FullURL := fnbuf;
               if Pos('://', fnbuf) > 1 then Entry.DisplayURL := fnbuf
@@ -835,8 +836,8 @@ begin
     end;
   end;
   DragFinish(hDrop);
-  Playlist.Changed;
   FList.Free;
+  Playlist.Changed;
   if (not Win32PlatformIsUnicode) and (s > 0) then Restart;
   msg.Result := 0;
 end;
@@ -869,15 +870,13 @@ begin
   GlobalDeleteAtom(msg.WParam);
   if not CheckOption(OpenFileName) then begin
     if not HaveMsg then begin
-      PClear := true; HaveMsg := true; 
+      PClear := true; EndOpenDir:=true; HaveMsg := true; 
+      if IsIconic(Application.Handle) then Application.Restore
+      else Application.BringToFront;
+      SetForegroundWindow(Application.Handle);
     end;
-    if WideDirectoryExists(OpenFileName) then begin
-      Playlist.AddDirectory(OpenFileName);
-    end
-    else begin 
-      Playlist.AddFiles(OpenFileName);
-      Playlist.Changed; 
-    end;
+    if WideDirectoryExists(OpenFileName) then Playlist.AddDirectory(OpenFileName)
+    else Playlist.AddFiles(OpenFileName); 
   end;
   PlayMsgAt := GetTickCount() + 500;
 end;
@@ -889,7 +888,7 @@ begin
   Application.ProcessMessages; // let the VCL process the finish messages
   if Firstrun then MediaURL := URL; //MakeURL(URL,DisplayURL);
   if DisplayURL <> DisplayName then begin
-    DisplayURL := DisplayName; //LyricURL := ''; 
+    DisplayURL := DisplayName; //LyricURL := '';
   end;
   UpdateCaption;
   FirstOpen := true;
@@ -1752,7 +1751,7 @@ end;
 procedure TMainForm.MRFClick(Sender: TObject);
 var Entry: TPlaylistEntry; w, g: WideString; h: integer;
 begin
-  PClear := true;
+  PClear := true; EndOpenDir:=true;
   w := (Sender as TTntMenuItem).Hint;
   h := pos('|', w); g := '';
   if h > 0 then begin
@@ -1911,8 +1910,9 @@ procedure TMainForm.MOpenDirClick(Sender: TObject);
 var s: widestring;
 begin
   if WideSelectDirectory(AddDirCp, '', s) then begin
-    PClear := true;
+    PClear := true; EndOpenDir:=true;
     Playlist.AddDirectory(s);
+    Playlist.Changed;
   end;
 end;
 
@@ -1924,13 +1924,10 @@ begin
     ((Pos('//', s) = 0) and (Pos('\\', s) = 0) and (Pos(':', s) = 0))
     then s := '';
   if (WideInputQuery(LOCstr_OpenURL_Caption, LOCstr_OpenURL_Prompt, s)) and (s <> '') then begin
-    PClear := true;
-    if WideDirectoryExists(s) then
-      Playlist.AddDirectory(s)
-    else begin 
-      Playlist.AddFiles(s);
-      Playlist.Changed;
-    end;
+    PClear := true; EndOpenDir:=true;
+    if WideDirectoryExists(s) then Playlist.AddDirectory(s)
+	else Playlist.AddFiles(s);
+    Playlist.Changed;
   end;
 end;
 
@@ -1967,8 +1964,9 @@ end;
 
 procedure TMainForm.MOpenDriveClick(Sender: TObject);
 begin
-  PClear := true;
+  PClear := true; EndOpenDir:=true;
   Playlist.AddDirectory(char((Sender as TTntMenuItem).Tag) + ':');
+  Playlist.Changed;
 end;
 
 procedure TMainForm.MKeyHelpClick(Sender: TObject);

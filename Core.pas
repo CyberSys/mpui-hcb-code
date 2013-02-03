@@ -1714,7 +1714,7 @@ var r, i, j, p, len: integer; s: string; f: real;
       Val(Copy(Line, 16, MaxInt), i, r);
       if (r = 0) and (i >= 0) and (i < 8191) then begin
         VobAndInterSubCount := IntersubCount + VobsubCount;
-        if Loadsub =1 then begin
+        if Loadsub = 1 then begin
           SubID := i + VobAndInterSubCount - 1;
           MainForm.MShowSub.Checked := true;
         end
