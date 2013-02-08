@@ -182,6 +182,8 @@ begin
     end;
     if calcOff then calcOffset;
     HaveTagHeader:=false; HaveVideoHeader:=false; HaveAudioHeader:=false;
+    i := Pos(' <-- ', FileName);
+    if i > 0 then FileName := copy(FileName, 1, i - 1);
     AddItem(LOCstr_InfoFileName,FileName);
     if length(FileFormat)>0 then AddItem(LOCstr_InfoFileFormat,FileFormat);
     if length(PlaybackTime)>0 then AddItem(LOCstr_InfoPlaybackTime,PlaybackTime);

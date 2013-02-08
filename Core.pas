@@ -31,16 +31,15 @@ const szdllCount = 2; Fscale = 4.2;
 const sddll = 'SubDownloader.dll';
 const szdll: array[0..szdllCount] of WideString = ('7zxa.dll', '7za.dll', '7z.dll');
 
-const ZipTypeCount = 19;
 const SubTypeCount = 15;
   SubType: array[0..SubTypeCount] of WideString = (
     '.lrc', '.utf', '.utf8', '.utf-8', '.srt', '.smi', '.rt', '.txt', '.ssa', '.aqt', '.jss',
     '.js', '.ass', '.mpsub', '.idx', '.sub'
     );
 
+const ZipTypeCount = 19;
 const MediaType: array[0..229] of WideString = ('.7z', '.rar', '.zip', '.001', '.arj', '.bz2', '.z', '.lzh',
-    '.cab', '.lzma', '.xar', '.hfs', '.dmg', '.wim', '.split', '.rpm', '.deb', '.cpio',
-    '.tar', '.gz',
+    '.cab', '.lzma', '.xar', '.hfs', '.dmg', '.wim', '.split', '.rpm', '.deb', '.cpio','.tar', '.gz',
     '.aac', '.ac3', '.acc', '.act', '.aif', '.aifc', '.aiff', '.alac', '.amf', '.amr', '.amv', '.ape',
     '.as', '.asf', '.asx',
     '.a52', '.ape', '.apl', '.au', '.avi', '.avs', '.bik', '.bin', '.cda', '.cmf', '.cmn', '.cpk', '.csf',
@@ -150,6 +149,7 @@ var Volume, MWC, CP, seekLen: integer;
   HMonitorList: array of HMonitor;
   FontPaths: TTntStringList;
   ppoint: TPoint;
+  PlayMsgAt: Cardinal;
 
 var StreamInfo: record
     FileName, FileFormat, PlaybackTime: WideString;
@@ -191,10 +191,10 @@ procedure Restart;
 procedure ForceStop;
 function Running: boolean;
 function IsLoaded(ArcType: WideString): boolean;
-function AddMovies(ArcName, PW: widestring; Add: boolean; ArcType: WideString): integer;
-procedure ExtractMovie(ArcName, MovieName, PW, ArcType: WideString);
-procedure ExtractLyric(ArcName, PW, ArcType: WideString);
-function ExtractSub(ArcName, PW, ArcType: WideString): WideString;
+function AddMovies(ArcName, PW: widestring; Add,msg:boolean): integer;
+procedure ExtractMovie(ArcName, MovieName, PW: WideString);
+procedure ExtractLyric(ArcName, PW: WideString);
+function ExtractSub(ArcName, PW: WideString): WideString;
 procedure TerminateMP;
 procedure SendCommand(Command: string);
 procedure SendVolumeChangeCommand(Vol: integer);
@@ -316,7 +316,7 @@ begin
   for i := 0 to ZipTypeCount do begin
     if WideFileExists(ArcName + MediaType[i]) then begin
       if IsLoaded(MediaType[i]) then begin
-        if HaveLyric = 0 then ExtractLyric(ArcName + MediaType[i], psw, MediaType[i])
+        if HaveLyric = 0 then ExtractLyric(ArcName + MediaType[i], psw)
         else exit;
       end;
     end;
@@ -335,7 +335,7 @@ begin
   for i := 0 to ZipTypeCount do begin
     if WideFileExists(ArcName + MediaType[i]) then begin
       if IsLoaded(MediaType[i]) then begin
-        if Result = '' then Result := ExtractSub(ArcName + MediaType[i], psw, MediaType[i])
+        if Result = '' then Result := ExtractSub(ArcName + MediaType[i], psw)
         else exit;
       end;
     end;
@@ -373,26 +373,29 @@ begin
   end;
 end;
 
-function AddMovies(ArcName, PW: widestring; Add: boolean; ArcType: WideString): integer;
+function AddMovies(ArcName, PW: widestring; Add,msg:boolean): integer;
+var ArcType:WideString;
 begin
-  Result := 0;
+  Result := -1; ArcType:=Tnt_WideLowerCase(WideExtractFileExt(ArcName));
   if ArcType = '.rar' then begin
-    if IsRarLoaded <> 0 then Result := AddRarMovies(ArcName, PW, Add)
-    else if Is7zLoaded > 2 then Result := Add7zMovies(ArcName, PW, Add);
+    if IsRarLoaded <> 0 then Result := AddRarMovies(ArcName, PW, Add, msg)
+    else if Is7zLoaded > 2 then Result := Add7zMovies(ArcName, PW, Add, msg);
   end
   else if ArcType = '.zip' then begin
-    if IsZipLoaded <> 0 then Result := AddZipMovies(ArcName, PW, Add)
-    else if Is7zLoaded > 2 then Result := Add7zMovies(ArcName, PW, Add);
+    if IsZipLoaded <> 0 then Result := AddZipMovies(ArcName, PW, Add, msg)
+    else if Is7zLoaded > 2 then Result := Add7zMovies(ArcName, PW, Add, msg);
   end
   else if (ArcType = '.7z') or (ArcType = '.001') then begin
-    if Is7zLoaded <> 0 then Result := Add7zMovies(ArcName, PW, Add)
-    else if IsZipLoaded <> 0 then Result := AddZipMovies(ArcName, PW, Add);
+    if Is7zLoaded <> 0 then Result := Add7zMovies(ArcName, PW, Add, msg)
+    else if IsZipLoaded <> 0 then Result := AddZipMovies(ArcName, PW, Add, msg);
   end
-  else if Is7zLoaded > 2 then Result := Add7zMovies(ArcName, PW, Add);
+  else if Is7zLoaded > 2 then Result := Add7zMovies(ArcName, PW, Add, msg);
 end;
 
-procedure ExtractMovie(ArcName, MovieName, PW, ArcType: widestring);
+procedure ExtractMovie(ArcName, MovieName, PW: widestring);
+var ArcType:WideString;
 begin
+  ArcType:=Tnt_WideLowerCase(WideExtractFileExt(ArcName));
   if ArcType = '.rar' then begin
     if IsRarLoaded <> 0 then ExtractRarMovie(ArcName, MovieName, PW)
     else if Is7zLoaded > 2 then Extract7zMovie(ArcName, MovieName, PW);
@@ -408,8 +411,10 @@ begin
   else if Is7zLoaded > 2 then Extract7zMovie(ArcName, MovieName, PW);
 end;
 
-procedure ExtractLyric(ArcName, PW, ArcType: WideString);
+procedure ExtractLyric(ArcName, PW: WideString);
+var ArcType:WideString;
 begin
+  ArcType:=Tnt_WideLowerCase(WideExtractFileExt(ArcName));
   if ArcType = '.rar' then begin
     if IsRarLoaded <> 0 then ExtractRarLyric(ArcName, PW)
     else if Is7zLoaded > 2 then Extract7zLyric(ArcName, PW);
@@ -425,9 +430,10 @@ begin
   else if Is7zLoaded > 2 then Extract7zLyric(ArcName, PW);
 end;
 
-function ExtractSub(ArcName, PW, ArcType: WideString): WideString;
+function ExtractSub(ArcName, PW: WideString): WideString;
+var ArcType:WideString;
 begin
-  Result := '';
+  Result := ''; ArcType:=Tnt_WideLowerCase(WideExtractFileExt(ArcName));
   if ArcType = '.rar' then begin
     if IsRarLoaded <> 0 then Result := ExtractRarSub(ArcName, PW)
     else if Is7zLoaded > 2 then Result := Extract7zSub(ArcName, PW);
@@ -618,7 +624,7 @@ end;
 
 procedure Init;
 const RFID_APPDATA: TGUID = '{3EB685DB-65F9-4CF6-A03A-E3EF65729F3D}';
-  RFID_PERSONAL: TGUID = '{FDD39AD0-238F-46AF-ADB4-6C85480369C7}';
+      RFID_PERSONAL: TGUID = '{FDD39AD0-238F-46AF-ADB4-6C85480369C7}';
       // use by SHGetKnownFolderPath http://msdn.microsoft.com/en-us/library/bb762584(VS.85).aspx
 begin
   SystemDir := Tnt_WideLowerCase(WideIncludeTrailingPathDelimiter(WideGetEnvironmentVariable('windir')));
@@ -814,8 +820,7 @@ begin
     end
     else i := -1;
 
-    TmpURL := WideExtractFileName(ArcMovie);
-    TmpURL := Tnt_WideLowerCase(GetFileName(TmpURL));
+    TmpURL := Tnt_WideLowerCase(GetFileName(ArcMovie));
     if WideFileExists(LyricURL) then begin //拖放的歌词或用户指定的歌词
       s := WideExtractFileName(LyricURL);
       s := Tnt_WideLowerCase(GetFileName(s));
@@ -840,9 +845,23 @@ begin
     end;
 
     if i>0 then begin
-      n:= WideExtractFileName(ArcMovie);
-      loadLyricSub(WideExtractFileDir(MediaURL),n);
-      loadLyricSub(a,n);
+      n:= WideExtractFileDir(MediaURL);
+      loadLyricSub(n,ArcMovie);
+      loadLyricSub(a,ArcMovie);
+
+      if HaveLyric = 0 then loadArcLyric(n,ArcMovie, ArcPW);
+      if LoadVob = 0 then begin
+        TmpURL := loadArcSub(n,ArcMovie, ArcPW);
+        if TmpURL <> '' then begin
+          Vobfile := TmpURL; LoadVob := 1; end;
+      end;
+
+      if HaveLyric = 0 then loadArcLyric(a,ArcMovie, ArcPW);
+      if LoadVob = 0 then begin
+        TmpURL := loadArcSub(a,ArcMovie, ArcPW);
+        if TmpURL <> '' then begin
+          Vobfile := TmpURL; LoadVob := 1; end;
+      end;
     end;
 
     MainForm.UpdateMRF;
@@ -850,8 +869,6 @@ begin
     if (i > 0) and IsLoaded(s) then begin
       tEnd := false;
       TmpURL := MediaURL; //避免系统调度UNRART线程的不确定性造成线程执行时获取的是已经变化的MediaURL
-      //if ((s = '.zip') and (IsZipLoaded <> 0)) or ((s = '.7z') and (Is7zLoaded = 0)) then
-      // else MediaURL := TempDir + 'hcb428' + WideExtractFileExt(ArcMovie);
 
       MediaURL := TempDir + ArcMovie;
       UnRART := TUnRARThread.Create(true);

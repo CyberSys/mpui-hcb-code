@@ -456,7 +456,7 @@ type
     FirstShow, Seeking, CV, MV, DragD, FirstDrag: boolean;
     WStyle: longint; WheelRolled: boolean;
     FS_PX, FS_PY, FS_SX, FS_SY, SeekMouseX, ViewMode: integer;
-    HideMouseAt, UpdateSeekBarAt, PlayMsgAt: Cardinal; //,ScreenSaverActive:Cardinal;
+    HideMouseAt, UpdateSeekBarAt: Cardinal; //,ScreenSaverActive:Cardinal;
     procedure FormDropFiles(var msg: TMessage); message WM_DROPFILES;
     procedure Init_MOpenDrive;
     procedure Init_MLanguage;
@@ -591,7 +591,7 @@ begin
     i:= CheckInfo(MediaType, j);
     if (i > -1) and (i <= ZipTypeCount) then begin
       if IsLoaded(j) then begin
-        j := ExtractSub(sub_path, playlist.FindPW(sub_path), j);
+        j := ExtractSub(sub_path, playlist.FindPW(sub_path));
         if j <> '' then begin
           inc(VobFileCount);
           if VobFileCount=1 then begin
@@ -716,18 +716,18 @@ begin
           if IsFirst then begin
             PClear := true; EndOpenDir:=true; IsFirst := false; 
           end;
-          if WideDirectoryExists(FileName) then Playlist.AddDirectory(FileName)
-          else Playlist.AddFiles(FileName);
+          if WideDirectoryExists(FileName) then Playlist.AddDirectory(FileName,false)
+          else Playlist.AddFiles(FileName,false);
         end;
       end;
+      Playlist.Changed;
     end
     else begin
       if AutoPlay then begin
         PClear := true; EndOpenDir:=true;
-        Playlist.AddDirectory('.');
+        Playlist.AddDirectory('.',false);
       end;
     end;
-    Playlist.Changed;
   end;
 end;
 
@@ -738,7 +738,7 @@ end;
 
 procedure TMainForm.FormDropFiles(var msg: TMessage);
 var hDrop: THandle; fnbuf, j, t: widestring; k: boolean;
-  i, DropCount, s,a: integer; FList:TWStringList; Entry: TPlaylistEntry;
+  i, DropCount, s,a: integer; FList:TWStringList;
   tw: array[0..1024] of wideChar; ta: array[0..1024] of Char;
 begin
   hDrop := msg.wParam;
@@ -760,7 +760,7 @@ begin
     fnbuf:=FList[i];
     if WideDirectoryExists(fnbuf) then begin
       if i = 0 then PClear := true;
-      Playlist.AddDirectory(fnbuf);
+      Playlist.AddDirectory(fnbuf,false);
     end
     else begin
       j := Tnt_WideLowerCase(WideExtractFileExt(fnbuf));
@@ -769,7 +769,7 @@ begin
       else k := (CheckInfo(SubType, j) = -1) and ((a = -1) or (a > ZipTypeCount));
       if k then begin
         if i = 0 then begin PClear := true; EndOpenDir:=true; end;
-        Playlist.AddFiles(fnbuf);
+        Playlist.AddFiles(fnbuf,false);
       end
       else begin
         if j = '.idx' then begin
@@ -786,26 +786,18 @@ begin
           if (a > -1) and (a <= ZipTypeCount) then begin
             if IsLoaded(j) then begin
               Loadsub := 1; TmpPW := '';
-              t := ExtractSub(fnbuf, playlist.FindPW(fnbuf), j);
-              if HaveLyric = 0 then ExtractLyric(fnbuf, TmpPW, j);
+              t := ExtractSub(fnbuf, playlist.FindPW(fnbuf));
+              if HaveLyric = 0 then ExtractLyric(fnbuf, TmpPW);
               if t <> '' then begin
                 inc(VobFileCount);
                 if VobFileCount = 1 then begin
                   Vobfile := t; LoadVob := 1; Restart;
                 end;
               end;
-              if AddMovies(fnbuf, TmpPW, false, j) > 0 then begin
+              if AddMovies(fnbuf, TmpPW, false,false) > 0 then begin
                 if i = 0 then begin PClear := true; EndOpenDir:=true; end;
-                AddMovies(fnbuf, TmpPW, true, j);
+                AddMovies(fnbuf, TmpPW, true,false);
               end;
-            end
-            else begin
-              if i = 0 then begin PClear := true; EndOpenDir:=true; end;
-              Entry.State := psNotPlayed;
-              Entry.FullURL := fnbuf;
-              if Pos('://', fnbuf) > 1 then Entry.DisplayURL := fnbuf
-              else Entry.DisplayURL := WideExtractFileName(fnbuf);
-              playlist.Add(Entry);
             end;
           end
           else begin
@@ -875,10 +867,9 @@ begin
       else Application.BringToFront;
       SetForegroundWindow(Application.Handle);
     end;
-    if WideDirectoryExists(OpenFileName) then Playlist.AddDirectory(OpenFileName)
-    else Playlist.AddFiles(OpenFileName); 
+    if WideDirectoryExists(OpenFileName) then Playlist.AddDirectory(OpenFileName,true)
+    else Playlist.AddFiles(OpenFileName,true);
   end;
-  PlayMsgAt := GetTickCount() + 500;
 end;
 
 procedure TMainForm.DoOpen(const URL, DisplayName: widestring);
@@ -1911,8 +1902,7 @@ var s: widestring;
 begin
   if WideSelectDirectory(AddDirCp, '', s) then begin
     PClear := true; EndOpenDir:=true;
-    Playlist.AddDirectory(s);
-    Playlist.Changed;
+    Playlist.AddDirectory(s,false);
   end;
 end;
 
@@ -1925,9 +1915,11 @@ begin
     then s := '';
   if (WideInputQuery(LOCstr_OpenURL_Caption, LOCstr_OpenURL_Prompt, s)) and (s <> '') then begin
     PClear := true; EndOpenDir:=true;
-    if WideDirectoryExists(s) then Playlist.AddDirectory(s)
-	else Playlist.AddFiles(s);
-    Playlist.Changed;
+    if WideDirectoryExists(s) then Playlist.AddDirectory(s,false)
+	  else begin
+      Playlist.AddFiles(s,false);
+      Playlist.Changed;
+    end;
   end;
 end;
 
@@ -1965,8 +1957,7 @@ end;
 procedure TMainForm.MOpenDriveClick(Sender: TObject);
 begin
   PClear := true; EndOpenDir:=true;
-  Playlist.AddDirectory(char((Sender as TTntMenuItem).Tag) + ':');
-  Playlist.Changed;
+  Playlist.AddDirectory(char((Sender as TTntMenuItem).Tag) + ':',false);
 end;
 
 procedure TMainForm.MKeyHelpClick(Sender: TObject);
@@ -2910,8 +2901,8 @@ begin
     Title := MLoadSub.Caption;
     Options := Options + [ofAllowMultiSelect] - [ofoldstyledialog];
     filter := SubFilter + '|*.utf*;*.idx;*.sub;*.srt;*.smi;*.rt;*.txt;*.ssa;*.aqt;*.jss;*.js;'
-                        + '*.001;*.arj;*.bz2;*.z;*.lzh;*.cab;*.lzma;*.xar;*.hfs;*.dmg;*.wim;*.split;*.rpm;*.deb;*.cpio;'
-                        + '*.ass;*.ifo;*.mpsub;*.rar;*.7z;*.zip|' + AnyFilter + '(*.*)|*.*';
+                        + '*.arj;*.bz2;*.z;*.lzh;*.cab;*.lzma;*.xar;*.hfs;*.dmg;*.wim;*.split;*.rpm;*.deb;*.cpio;*.tar;*.gz;'
+                        + '*.ass;*.ifo;*.mpsub;*.rar;*.7z;*.zip;*.001|' + AnyFilter + '(*.*)|*.*';
     if Execute then begin
       VobFileCount := 0; s := 0;
       for i := 0 to Files.Count - 1 do begin
@@ -2930,7 +2921,7 @@ begin
           a:= CheckInfo(MediaType, j);
           if (a > -1) and (a <= ZipTypeCount) then begin
             if IsLoaded(j) then begin
-              j := ExtractSub(Files[i], playlist.FindPW(Files[i]), j);
+              j := ExtractSub(Files[i], playlist.FindPW(Files[i]));
               if j <> '' then begin
                 inc(VobFileCount);
                 if VobFileCount=1 then begin
@@ -3212,14 +3203,14 @@ begin
   with OpenDialog do begin
     Title := MLoadlyric.Caption;
     Options := Options - [ofAllowMultiSelect] - [ofoldstyledialog];
-    filter := LyricFilter + '|*.lrc;*.7z;*.rar;*.zip;*.001;*.arj;*.bz2;*.z;*.lzh;'
-      + '*.cab;*.lzma;*.xar;*.hfs;*.dmg;*.wim;*.split;*.rpm;*.deb;*.cpio;'
-      + '*.tar;*.gz|' + AnyFilter + '(*.*)|*.*';
+    filter := LyricFilter + '|*.lrc;*.7z;*.rar;*.zip;*.001;'
+      + '*.arj;*.bz2;*.z;*.lzh;*.cab;*.lzma;*.xar;*.hfs;*.dmg;*.wim;*.split;*.rpm;*.deb;*.cpio;*.tar;*.gz'
+      +'|' + AnyFilter + '(*.*)|*.*';
     if Execute then begin
       j := Tnt_WideLowerCase(WideExtractFileExt(FileName));
       i:= CheckInfo(MediaType, j);
       if (i > -1) and (i <= ZipTypeCount) then begin
-        if IsLoaded(j) then ExtractLyric(FileName, playlist.FindPW(FileName), j);
+        if IsLoaded(j) then ExtractLyric(FileName, playlist.FindPW(FileName));
       end
       else Lyric.ParseLyric(fileName);
     end;

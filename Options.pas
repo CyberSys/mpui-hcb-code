@@ -27,6 +27,11 @@ uses
   jpeg, CheckLst, TntCheckLst, ShlObj, Dialogs, ActiveX, TntGraphics, Math, TntMenus;
 
 type
+  Tass = class(TThread)
+    protected
+      procedure Execute; override;
+  end;
+
   TOptionsForm = class(TTntForm)
     BOK: TTntButton;
     BApply: TTntButton;
@@ -249,8 +254,6 @@ type
     Changed, oML, Ikey: boolean;
     History: TTntStringList;
     HistoryPos, sIndex: integer;
-    procedure GetFass;
-    procedure SetFass;
   public
     { Public declarations }
     procedure Localize;
@@ -258,6 +261,8 @@ type
     procedure LoadValues;
     procedure AddLine(const Line: Widestring);
     function HotKeyToOldKey(var Shift: TShiftState; var Key: Word): TListItem;
+    procedure GetFass;
+    procedure SetFass;
   end;
 
   PDSEnumCallback = function(lpGuid: PGUID; lpcstrDescription, lpcstrModule: PChar; lpContext: pointer): LongBool; stdcall;
@@ -1239,12 +1244,20 @@ begin
   for i := 0 to TFass.Count - 1 do TFass.Checked[i] := false;
 end;
 
-procedure TOptionsForm.TFSetClick(Sender: TObject);
+procedure Tass.Execute;
 begin
-  SetFass; Save(HomeDir + DefaultFileName, 4);
+  OptionsForm.SetFass; Save(HomeDir + DefaultFileName, 4);
   if Win32PlatformIsVista and (not IsAdmin()) then
     ShellExecuteW(Handle, 'runas', PWChar(WideParamStr(0)), '/adminoption 0', nil, SW_SHOWDEFAULT)
   else regAss();
+end;
+
+procedure TOptionsForm.TFSetClick(Sender: TObject);
+var t:Tass;
+begin
+  t:=Tass.Create(True);
+  t.FreeOnTerminate:=True;
+  t.Resume;
 end;
 
 procedure regAss();

@@ -34,11 +34,14 @@ const
 type
   TOpenDir = class(TThread)
     private
-      Directory: Widestring;
+      Directory: Widestring; msg:boolean;
     protected
       procedure Execute; override;
   end;
-
+  TPFF = class(TThread)
+    protected
+      procedure Execute; override;
+  end;
 type
   TPlaybackState = (psNotPlayed, psPlaying, psPlayed, psSkipped);
   TPlaylistEntry = record
@@ -61,10 +64,10 @@ type TPlaylist = class
   public
     procedure Clear;
     procedure Add(const Entry: TPlaylistEntry);
-    procedure AddFiles(const URL: widestring);
-    function AddM3U(const FileName: WideString; FileExtIndex: integer): boolean;
-    procedure AddDir(Directory: WideString);
-    procedure AddDirectory(Directory: WideString);
+    procedure AddFiles(const URL: widestring; msg:boolean);
+    function AddM3U(const FileName: WideString; FileExtIndex: integer; msg:boolean): boolean;
+    procedure AddDir(Directory: WideString; msg:boolean);
+    procedure AddDirectory(Directory: WideString; msg:boolean);
     property Count: integer read GetCount;
     property Items[Index: integer]: TPlaylistEntry read GetItem; default;
     property Selected[Index: integer]: boolean read GetSelected write SetSelected;
@@ -76,6 +79,7 @@ type TPlaylist = class
     function FindItem(CheckStr, MovieName: widestring): integer;
     function FindPW(FileURL: widestring): string;
     procedure SetState(Index: integer; Value: TPlaybackState);
+    procedure play;
   end;
 
 type TLyric = class
@@ -415,8 +419,21 @@ begin
   PlaylistForm.TMLyricPaint(nil);
 end;
 
+
+procedure TPlaylist.Play;
+begin
+  MainForm.UpdateParams;
+  Playlist.NowPlaying(0); CurPlay := 0;
+  MainForm.DoOpen(Playlist[0].FullURL, Playlist[0].DisplayURL);
+end;
+
+procedure TPFF.Execute;
+begin
+  Synchronize(Playlist.play)
+end;
+
 procedure TPlaylist.Add(const Entry: TPlaylistEntry);
-var len: integer;
+var len: integer; t:TPFF;
 begin
   if PClear then Clear;
   len := length(Data);
@@ -425,23 +442,29 @@ begin
   //Changed;
   if PClear then begin
     PClear := false;
-    MainForm.UpdateParams;
-    NowPlaying(0); CurPlay := 0;
-    MainForm.DoOpen(Playlist[0].FullURL, Playlist[0].DisplayURL);
+    if GetCurrentThreadId = MainThreadId then play
+    else begin
+      t:=TPFF.Create(True);
+      t.FreeOnTerminate:=True;
+      t.Priority := tpTimeCritical;
+      t.Resume;
+      SwitchToThread;
+    end;
   end;
 end;
 
-procedure TPlaylist.AddFiles(const URL: widestring);
+procedure TPlaylist.AddFiles(const URL: widestring; msg:boolean);
 var PlistEntry: TPlaylistEntry; j: WideString; i,a: integer;
 begin
   // check for .m3u .pls .asx .wpl .xspf playlist file
   j := Tnt_WideLowerCase(WideExtractFileExt(URL));
   i := CheckInfo(PlaylistType, j);
-  if (i > -1) and AddM3U(URL, i) then exit;
+  if (i > -1) and AddM3U(URL, i, msg) then exit;
   // no playlist -> check for Arc file
   a:= CheckInfo(MediaType, j);
   if (a > -1) and (a <= ZipTypeCount) then begin
-    if IsLoaded(j) and (AddMovies(URL, FindPW(URL), true, j) > -1) then exit;
+    if IsLoaded(j) then AddMovies(URL, FindPW(URL), true, msg);
+    exit;
   end;
   // no playlist and Arc file-> enter directly
   if (Pos('://', URL) > 1) or WideFileExists(URL) then begin
@@ -454,38 +477,40 @@ begin
         DisplayURL := WideExtractFileName(URL);
     end;
     Add(PlistEntry);
+    if msg then PlayMsgAt := GetTickCount() + 500;
   end;
 end;
 
 procedure TOpenDir.Execute;
 begin
   EndOpenDir:=false;
-  Playlist.AddDir(Directory);
+  Playlist.AddDir(Directory,msg);
   Synchronize(Playlist.Changed);
 end;
 
-procedure TPlaylist.AddDirectory(Directory: Widestring);
-//var t:TOpenDir;
+procedure TPlaylist.AddDirectory(Directory: Widestring; msg:boolean);
+var t:TOpenDir;
 begin
-  {t:=TOpenDir.Create(True);
+  t:=TOpenDir.Create(True);
   t.FreeOnTerminate:=True;
-  t.Directory:=Directory;
+  t.Directory:=Directory; t.msg:=msg;
   t.Priority := tpTimeCritical;
   t.Resume;
-  SwitchToThread;}
-
-  EndOpenDir:=false;
-  AddDir(Directory);
+  SwitchToThread;
+  
+   // main thread
+  //EndOpenDir:=false;
+  //AddDir(Directory);
 end;
 
-procedure TPlaylist.AddDir(Directory: Widestring);
+procedure TPlaylist.AddDir(Directory: Widestring; msg:boolean);
 var SR: TSearchRecW; Entry: TPlaylistEntry; a,s,d:WideString;
     FList:TWStringList; i:integer;
 begin
   Directory := WideIncludeTrailingPathDelimiter(WideExpandUNCFileName(Directory));
 
   // check for DVD directory
-  if (not EndOpenDir) and WideDirectoryExists(Directory + 'VIDEO_TS') then begin
+  if WideDirectoryExists(Directory + 'VIDEO_TS') then begin
    // Directory:=WideExcludeTrailingPathDelimiter(Directory);
     with Entry do begin
       State := psNotPlayed; 
@@ -496,14 +521,17 @@ begin
         FullURL := s + EscapeParam(WideExtractShortPathName(Directory + 'VIDEO_TS')) + d;
       DisplayURL := a + Directory;
     end;
-    Add(Entry);
+    if not EndOpenDir then begin
+      Add(Entry);
+      if msg then PlayMsgAt := GetTickCount() + 500;
+    end;
     exit;
   end;
   // check for BlueRay directory
-  if (not EndOpenDir) and WideDirectoryExists(Directory + 'BDMV') then begin
+  if WideDirectoryExists(Directory + 'BDMV') then begin
     //Directory:=WideExcludeTrailingPathDelimiter(Directory);
     with Entry do begin
-      State := psNotPlayed; 
+      State := psNotPlayed;
      	s:=' -bluray-device '; a:='BlueRay-1 <-- '; d:=' br';
       if IsWideStringMappableToAnsi(Directory) then
         FullURL := s + EscapeParam(Directory+'BDMV') + d
@@ -511,14 +539,17 @@ begin
         FullURL := s + EscapeParam(WideExtractShortPathName(Directory+'BDMV')) + d;
       DisplayURL := a + Directory;
     end;
-    Add(Entry);
+    if not EndOpenDir then begin
+      Add(Entry);
+      if msg then PlayMsgAt := GetTickCount() + 500;
+    end;
     exit;
   end;
   // check for CD directory
-  if (not EndOpenDir) and WideFileExists(Directory + 'Track01.cda') then begin
+  if WideFileExists(Directory + 'Track01.cda') then begin
     Directory:=WideExcludeTrailingPathDelimiter(Directory);
     with Entry do begin
-      State := psNotPlayed; 
+      State := psNotPlayed;
      	s:=' -cdrom-device '; a:='CD-1 <-- '; d:=' cdda://';
       if IsWideStringMappableToAnsi(Directory) then
         FullURL := s + EscapeParam(Directory) + d
@@ -526,11 +557,14 @@ begin
         FullURL := s + EscapeParam(WideExtractShortPathName(Directory)) + d;
       DisplayURL := a + Directory;
     end;
-    Add(Entry);
+    if not EndOpenDir then begin
+      Add(Entry);
+      if msg then PlayMsgAt := GetTickCount() + 500;
+    end;
     exit;
   end;
 
-  {if (not EndOpenDir) and WideDirectoryExists(Directory + 'MPEGAV') then begin
+  {if WideDirectoryExists(Directory + 'MPEGAV') then begin
     Directory:=WideExcludeTrailingPathDelimiter(Directory);
     with Entry do begin
       State := psNotPlayed;
@@ -540,27 +574,27 @@ begin
         FullURL := ' -cdrom-device ' + EscapeParam(WideExtractShortPathName(Directory)) + ' vcd://';
       DisplayURL := 'VCD <-- ' + Directory;
     end;
-    Add(Entry);
+    if not EndOpenDir then Add(Entry);
     exit;
   end; }
 
   // no CD ->is it a (S)VCD directory?
-  if WideDirectoryExists(Directory + 'MPEGAV') and (not EndOpenDir) then Directory := Directory + 'MPEGAV\'
+  if WideDirectoryExists(Directory + 'MPEGAV') then Directory := Directory + 'MPEGAV\'
   else if WideDirectoryExists(Directory + 'MPEG2') then Directory := Directory + 'MPEG2\';
 
   // no (S)VCD -> search the directory recursively
-  if (not EndOpenDir) and (WideFindFirst(Directory + '*.*', faAnyFile, SR) = 0) then begin
+  if WideFindFirst(Directory + '*.*', faAnyFile, SR) = 0 then begin
     FList:=TWStringList.Create;
     repeat
-      if (not EndOpenDir) and (SR.Name[1] <> '.') then begin // exclude . or .. Directory
-        if (not EndOpenDir) and ((SR.Attr and faDirectory) <> 0) then AddDir(Directory + SR.Name)
+      if SR.Name[1] <> '.' then begin // exclude . or .. Directory
+        if (not EndOpenDir) and ((SR.Attr and faDirectory) <> 0) then AddDir(Directory + SR.Name,msg)
         else if (not EndOpenDir) and (CheckInfo(MediaType, Tnt_WideLowerCase(WideExtractFileExt(SR.Name))) > -1) then
           FList.Add(SR.Name);
       end;
     until  EndOpenDir or (WideFindNext(SR) <> 0);
     WideFindClose(SR);
     FList.SortStr(mysort);
-    for i:=0 to FList.Count-1 do AddFiles(Directory + FList[i]);
+    for i:=0 to FList.Count-1 do AddFiles(Directory + FList[i],msg);
     FList.Free;
     exit;
   end;
@@ -577,6 +611,7 @@ begin
       DisplayURL := 'VCD <-- ' + Directory;
     end;
     Add(Entry);
+    if msg then PlayMsgAt := GetTickCount() + 500;
   end;
 end;
 
@@ -614,16 +649,19 @@ begin
 end;
 
 function TPlaylist.FindItem(CheckStr, MovieName: widestring): integer;
-var i, j: integer; k: widestring;
+var i, j,a: integer; k: widestring;
 begin
   Result := -1;
   if Count < 1 then exit;
   i := Pos(CheckStr, MovieName);
   if i > 0 then MovieName := copy(MovieName, 1, i - 1);
   for j := High(Data) downto Low(Data) do begin
-    i := Pos(CheckStr, Data[j].DisplayURL);
-    if i > 0 then k := copy(Data[j].DisplayURL, 1, i - 1)
-    else k := Data[j].DisplayURL;
+    k := Data[j].DisplayURL;
+    if i>0 then begin
+      a := Pos(CheckStr, Data[j].DisplayURL);
+      if a > 0 then k := copy(k, 1, a - 1)
+      else continue;
+    end;
     if MovieName = k then begin
       Result := j;
       exit;
@@ -632,25 +670,26 @@ begin
 end;
 
 function TPlaylist.FindPW(FileURL: widestring): string;
-var i, k, h: integer; j, s: WideString;
+var a,i, k, h: integer; j, s,e: WideString;
 begin
   Result := '';
   if Count > 0 then begin
-    j := WideExtractFileName(FileURL);
-    i := Pos('.part', j);
-    if i > 0 then begin
-      j := copy(j, 1, i - 1);
-      for i := High(Data) downto Low(Data) do begin
-        if Tnt_WideLowerCase(WideExtractFileExt(Data[i].FullURL)) = '.rar' then begin
-          h := Pos(':', Data[i].DisplayURL);
-          if h > 0 then begin
-            s := WideExtractFileName(Data[i].FullURL);
+    j := Tnt_WideLowerCase(WideExtractFileName(FileURL)); e:= Tnt_WideLowerCase(WideExtractFileExt(FileURL));
+    a := Pos('.part', j);
+    if a > 0 then j := copy(j, 1, a - 1);
+    for i := High(Data) downto Low(Data) do begin
+      if Tnt_WideLowerCase(WideExtractFileExt(Data[i].FullURL)) = e then begin
+        h := Pos(':', Data[i].DisplayURL);
+        if h > 0 then begin
+          s := Tnt_WideLowerCase(WideExtractFileName(Data[i].FullURL));
+          if a>0 then begin
             k := Pos('.part', s);
-            if k > 0 then begin
-              s := copy(s, 1, k - 1);
-              if s = j then Result := copy(Data[i].DisplayURL, h + 1, length(Data[i].DisplayURL) - h);
-            end;
-            break;
+            if k > 0 then s := copy(s, 1, k - 1)
+            else continue;
+          end;
+          if s = j then begin
+            Result := copy(Data[i].DisplayURL, h + 1, MaxInt);
+            exit;
           end;
         end;
       end;
@@ -748,14 +787,14 @@ begin
   Changed;
 end;
 
-function TPlaylist.AddM3U(const FileName: WideString; FileExtIndex: integer): boolean;
+function TPlaylist.AddM3U(const FileName: WideString; FileExtIndex: integer; msg:boolean): boolean;
 var BasePath, s: WideString;
   procedure AddToPls(str: WideString);
   begin
-    if WideDirectoryExists(str) then AddDirectory(str)
+    if WideDirectoryExists(str) then AddDirectory(str,msg)
     else begin
       str := ExpandName(BasePath, str);
-      if (Pos('://', str) > 1) or WideFileExists(str) then AddFiles(str)
+      if (Pos('://', str) > 1) or WideFileExists(str) then AddFiles(str,msg)
       else exit;
     end;
     Result := true;
@@ -1385,7 +1424,7 @@ begin
   for a := index + 1 to efiles.Count - 1 do begin
     s2 := GetFileName(Tnt_Widelowercase(efiles[a]));
     if compare(s1, s2) <> 0 then
-      Playlist.AddFiles(path + efiles[a])
+      Playlist.AddFiles(path + efiles[a],false)
     else break;
   end;
 end;
@@ -1405,7 +1444,8 @@ begin
       + '*.am*;*.mid*;*.smi*;*.pva;*.tp*;*.cda;*.au;*.jsv;*.pmp*;*.m2p;'
       + '*.ap*;*.drc;*.d2v;*.ivf;*.rt;*.rp*;*.roq;*.smk;*.swf;*.vg2;'
       + '*.bik;*.mod;*.mdz;*.ult;*.669;*.far;*.okt;*.ptm;*.kar;*.vid;'
-      + '*.miz;*.rv;*.mac;*.mjf;*.cm*;*.mtm;*.rnx;*.voc;*.ratdvd;'
+      + '*.miz;*.rv;*.mac;*.mjf;*.cmf;*.cmn;*.mtm;*.rnx;*.voc;*.ratdvd;'
+      +'*.arj;*.bz2;*.z;*.lzh;*.cab;*.lzma;*.xar;*.hfs;*.dmg;*.wim;*.split;*.rpm;*.deb;*.cpio;*.tar;*.gz;'
       + '*.snd;*.pss;*.tta;*.umx;*.ram;*.ra;*.it*;*.xspf;*.smpl|'
       + AnyFilter + '(*.*)|*.*';
 
@@ -1415,23 +1455,17 @@ begin
       sfiles.AddStrings(files);
       sfiles.SortStr(mysort);
       for i := 0 to Files.Count - 1 do begin
-        if Addsfiles then begin
-          if playlist.FindItem('', WideExtractFileName(sfiles[i])) < 0 then begin
-            Playlist.AddFiles(sfiles[i]);
-            addEpisode(sfiles[i]);
-          end;
-        end
-        else Playlist.AddFiles(sfiles[i]);
+        Playlist.AddFiles(sfiles[i],false);
+        if Addsfiles then addEpisode(sfiles[i]);
       end;
       Playlist.Changed; sfiles.Free;
-      if Sender <> BAdd then PlaylistForm.BPlayClick(Sender);
     end;
   end;
 end;
 
 procedure TPlaylistForm.FormDropFiles(var msg: TMessage);
 var hDrop: THandle; fnbuf, j, t: widestring; k: boolean;
-  i, DropCount, s,a: integer; FList:TWStringList; Entry: TPlaylistEntry;
+  i, DropCount, s,a: integer; FList:TWStringList;
   tw: array[0..1024] of wideChar; ta: array[0..1024] of Char;
 begin
   hDrop := msg.wParam;
@@ -1450,13 +1484,13 @@ begin
   FList.SortStr(plist.mysort);
   for i := 0 to DropCount - 1 do begin
     fnbuf:=FList[i];
-    if WideDirectoryExists(fnbuf) then Playlist.AddDirectory(fnbuf)
+    if WideDirectoryExists(fnbuf) then Playlist.AddDirectory(fnbuf,false)
     else begin
       j := Tnt_WideLowerCase(WideExtractFileExt(fnbuf));
       a:= CheckInfo(MediaType, j);
       if FilterDrop then k := a> ZipTypeCount
       else k := (CheckInfo(SubType, j) = -1) and ((a = -1) or (a > ZipTypeCount));
-      if k then Playlist.AddFiles(fnbuf)
+      if k then Playlist.AddFiles(fnbuf,false)
       else begin
         if j = '.idx' then begin
           j:= GetFileName(fnbuf); Loadsub := 1;
@@ -1472,22 +1506,15 @@ begin
           if (a > -1) and (a <= ZipTypeCount) then begin
             if IsLoaded(j) then begin
               Loadsub := 1; TmpPW := '';
-              t := ExtractSub(fnbuf, playlist.FindPW(fnbuf), j);
-              if HaveLyric = 0 then ExtractLyric(fnbuf, TmpPW, j);
+              t := ExtractSub(fnbuf, playlist.FindPW(fnbuf));
+              if HaveLyric = 0 then ExtractLyric(fnbuf, TmpPW);
               if t <> '' then begin
                 inc(VobFileCount);
                 if VobFileCount = 1 then begin
                   Vobfile := t; LoadVob := 1; Restart;
                 end;
               end;
-              if AddMovies(fnbuf, TmpPW, false, j) > 0 then AddMovies(fnbuf, TmpPW, true, j);
-            end
-            else begin
-              Entry.State := psNotPlayed;
-              Entry.FullURL := fnbuf;
-              if Pos('://', fnbuf) > 1 then Entry.DisplayURL := fnbuf
-              else Entry.DisplayURL := WideExtractFileName(fnbuf);
-              playlist.Add(Entry);
+              AddMovies(fnbuf, TmpPW, true,false);
             end;
           end
           else begin
@@ -1635,8 +1662,7 @@ var s: widestring;
 begin
   if WideSelectDirectory(AddDirCp, '', s) then begin
     PClear := false;
-    Playlist.AddDirectory(s);
-    Playlist.Changed;
+    Playlist.AddDirectory(s,false);
   end;
 end;
 

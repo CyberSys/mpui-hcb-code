@@ -23,8 +23,8 @@ unit SevenZipVCL;
 interface
 
 uses
-  Windows, SysUtils, TntWideStrUtils, TntSysUtils, Tntdialogs,TntClasses, Classes,
-  TntWindows, ActiveX ,core, locale;
+  Windows, SysUtils, TntWideStrUtils, TntSysUtils, Tntdialogs, Classes,
+  TntWindows, ActiveX ,core, locale, plist;
 
 const
 //7z internal consts
@@ -441,7 +441,7 @@ type
     FSevenZipFileName: Widestring;
     FComment: Widestring;
     FRootDir: Widestring;
-    Ffiles:  TTntStringList;
+    Ffiles:  TWStringList;
     FAddOptions: Addopts;
     FExtractOptions: Extractopts;
     FNumberOfFiles: Integer;
@@ -469,7 +469,7 @@ type
     property LastError:Integer read FLastError write SetLastError;// FLastError;//FHO 22.01.2007
 
     property SevenZipComment: Widestring read Fcomment write FComment;
-    property Files: TTntStringList read Ffiles write ffiles;
+    property Files: TWStringList read Ffiles write ffiles;
 
     { Public Methods }
     function Extract( TestArchive:Boolean=False ): Integer;
@@ -733,7 +733,7 @@ begin
                      sz:=FExtractDirectory + WideExtractFileDir(path.bstrVal) + FSevenzip.FExtrOutName;
                  end;
 
-                 FFilestoextract:=FFilestoextract-1;
+                 dec(FFilestoextract);
                  if FFilestoextract=0 then FLastFileToExt:=true;
                  outStream := nil;
                  if Win32PlatformIsUnicode then
@@ -826,7 +826,7 @@ begin
   if FPassword='' then WideInputQuery(LOCstr_SetPW_Caption,FSevenzip.SZFileName,FPassword);
   if Length( FPassword ) > 0 then begin
     Password:=SysAllocString(PWChar(FPassword));
-    FSevenZip.Password:=Password;
+    FSevenZip.Password:=Password; TmpPW:=Password;
     Result := S_OK;
   end else Result := S_FALSE;
 end;
@@ -1164,7 +1164,7 @@ constructor TSevenZip.Create( AOwner: TComponent ; ArcType:WideString );
 var i:integer;
 begin
   inherited Create( AOwner );
-  ffiles := TTntStringList.Create;
+  ffiles := TWStringList.Create;
   FNumberOfFiles := -1;
   FPassword := '';
   FExtrOutName:='';
@@ -1268,11 +1268,11 @@ begin
       inA.GetProperty(i,kpidAttributes,attr);
       inA.GetProperty(i,kpidEncrypted,Encrypted);
       try    // isn't a directory or 0byte file
-        if not (((attr.uiVal and $10)<>0) or (size.uhVal.QuadPart=0)) then
-          ffiles.Add(path.bstrVal)
+        if not (((attr.uiVal and $10)<>0) or (size.uhVal.QuadPart=0)) then ffiles.Add(path.bstrVal)
         else dec(FNumberOfFiles);
-        if Encrypted.boolVal and (FPassword='') then WideInputQuery(LOCstr_SetPW_Caption,self.SZFileName,FPassword);
+        if Encrypted.boolVal and (FPassword='') then WideInputQuery(LOCstr_SetPW_Caption,WideExtractFileName(SZFileName),FPassword);
       except
+        dec(FNumberOfFiles);
       end;
     end;
     Result := FNumberOfFiles;
