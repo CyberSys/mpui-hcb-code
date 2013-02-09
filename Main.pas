@@ -25,7 +25,7 @@ uses
   Forms, TntForms, Dialogs, TntDialogs, ComCtrls, TntComCtrls, Buttons, TntButtons,
   ExtCtrls, TntExtCtrls, Menus, TntMenus, StdCtrls, TntStdCtrls, ShellAPI, AppEvnts,
   Math, ImgList, TntClipBrd, ToolWin, jpeg, Controls, MultiMon, TntSystem,
-  TntFileCtrl, INIFiles, plist, TntClasses;
+  TntFileCtrl, INIFiles, plist;
 
 const
   ES_SYSTEM_REQUIRED = $01;
@@ -579,7 +579,7 @@ begin
   Loadsub := 1; j := Tnt_WideLowerCase(WideExtractFileExt(sub_path));
   if j = '.idx' then begin
     j:= GetFileName(sub_path);
-    if not WideFileExists(j + '.sub') then j := loadArcSub(sub_path, playlist.FindPW(sub_path));
+    if not WideFileExists(j + '.sub') then j := loadArcSub(sub_path, '');
     if j <> '' then begin
       inc(VobFileCount);
       if VobFileCount=1 then begin
@@ -720,7 +720,6 @@ begin
           else Playlist.AddFiles(FileName,false);
         end;
       end;
-      Playlist.Changed;
     end
     else begin
       if AutoPlay then begin
@@ -728,6 +727,7 @@ begin
         Playlist.AddDirectory('.',false);
       end;
     end;
+    Playlist.Changed;
   end;
 end;
 
@@ -759,7 +759,7 @@ begin
   for i := 0 to DropCount - 1 do begin
     fnbuf:=FList[i];
     if WideDirectoryExists(fnbuf) then begin
-      if i = 0 then PClear := true;
+      if i = 0 then begin PClear := true; EndOpenDir:=true; end;
       Playlist.AddDirectory(fnbuf,false);
     end
     else begin
@@ -774,7 +774,7 @@ begin
       else begin
         if j = '.idx' then begin
           j:= GetFileName(fnbuf); Loadsub := 1;
-          if not WideFileExists(j + '.sub') then j := loadArcSub(fnbuf, playlist.FindPW(fnbuf));
+          if not WideFileExists(j + '.sub') then j := loadArcSub(fnbuf, '');
           if j <> '' then begin
             inc(VobFileCount);
             if VobFileCount = 1 then begin
@@ -785,7 +785,7 @@ begin
         else begin
           if (a > -1) and (a <= ZipTypeCount) then begin
             if IsLoaded(j) then begin
-              Loadsub := 1; TmpPW := '';
+              Loadsub := 1;
               t := ExtractSub(fnbuf, playlist.FindPW(fnbuf));
               if HaveLyric = 0 then ExtractLyric(fnbuf, TmpPW);
               if t <> '' then begin
@@ -801,7 +801,7 @@ begin
             end;
           end
           else begin
-            if Running and (j = '.lrc') and (HaveLyric = 0) then begin
+            if (j = '.lrc') and (HaveLyric = 0) then begin
               {j:=WideExtractFileName(MediaURL);
               j:=Tnt_WideLowerCase(GetFileName(j));
               t:=WideExtractFileName(fnbuf);
@@ -869,6 +869,7 @@ begin
     end;
     if WideDirectoryExists(OpenFileName) then Playlist.AddDirectory(OpenFileName,true)
     else Playlist.AddFiles(OpenFileName,true);
+    Playlist.Changed;
   end;
 end;
 
@@ -878,9 +879,7 @@ begin
   Sleep(50); // wait for the processing threads to finish
   Application.ProcessMessages; // let the VCL process the finish messages
   if Firstrun then MediaURL := URL; //MakeURL(URL,DisplayURL);
-  if DisplayURL <> DisplayName then begin
-    DisplayURL := DisplayName; //LyricURL := '';
-  end;
+  DisplayURL := DisplayName;
   UpdateCaption;
   FirstOpen := true;
   Start;
@@ -1903,6 +1902,7 @@ begin
   if WideSelectDirectory(AddDirCp, '', s) then begin
     PClear := true; EndOpenDir:=true;
     Playlist.AddDirectory(s,false);
+    Playlist.Changed;
   end;
 end;
 
@@ -1916,10 +1916,8 @@ begin
   if (WideInputQuery(LOCstr_OpenURL_Caption, LOCstr_OpenURL_Prompt, s)) and (s <> '') then begin
     PClear := true; EndOpenDir:=true;
     if WideDirectoryExists(s) then Playlist.AddDirectory(s,false)
-	  else begin
-      Playlist.AddFiles(s,false);
-      Playlist.Changed;
-    end;
+    else Playlist.AddFiles(s,false);
+    Playlist.Changed;
   end;
 end;
 
@@ -1958,6 +1956,7 @@ procedure TMainForm.MOpenDriveClick(Sender: TObject);
 begin
   PClear := true; EndOpenDir:=true;
   Playlist.AddDirectory(char((Sender as TTntMenuItem).Tag) + ':',false);
+  Playlist.Changed;
 end;
 
 procedure TMainForm.MKeyHelpClick(Sender: TObject);
@@ -2909,7 +2908,7 @@ begin
         Loadsub := 1; j := Tnt_WideLowerCase(WideExtractFileExt(Files[i]));
         if j = '.idx' then begin
           j:= GetFileName(Files[i]);
-          if not WideFileExists(j + '.sub') then j := loadArcSub(Files[i], playlist.FindPW(Files[i]));
+          if not WideFileExists(j + '.sub') then j := loadArcSub(Files[i], '');
           if j <> '' then begin
             inc(VobFileCount);
             if VobFileCount=1 then begin

@@ -826,9 +826,10 @@ begin
   if FPassword='' then WideInputQuery(LOCstr_SetPW_Caption,FSevenzip.SZFileName,FPassword);
   if Length( FPassword ) > 0 then begin
     Password:=SysAllocString(PWChar(FPassword));
-    FSevenZip.Password:=Password; TmpPW:=Password;
+    FSevenZip.Password:=Password;
     Result := S_OK;
   end else Result := S_FALSE;
+  TmpPW:=FPassword;
 end;
 
 constructor TMyArchiveOpenCallback.Create( Owner: TSevenZip );

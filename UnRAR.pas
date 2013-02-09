@@ -222,17 +222,16 @@ var hArcData:THandle; HeaderData:TRARHeaderData;
     Entry:TPlaylistEntry; i,k:widestring;
     First:boolean; FList:TWStringList; a:integer;
 begin
-  Result:=0;
+  Result:=0; TmpPW:=PW;
   FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
   OpenArchiveData.ArcNameW := PWideChar(ArcName);
   OpenArchiveData.OpenMode := RAR_OM_LIST;
   hArcData := RAROpenArchive(OpenArchiveData);
   if (hArcData = 0) OR (OpenArchiveData.OpenResult <> 0) then begin
     RARCloseArchive(hArcData);
-    Result:=-1;
-    exit;
+    Result:=-1; exit;
   end;
-  FList:=TWStringList.Create; TmpPW:=PW; First:=true; k:=WideExtractFileName(ArcName);
+  FList:=TWStringList.Create; First:=true; k:=WideExtractFileName(ArcName);
   if (OpenArchiveData.Flags and $00000080) = $00000080 then begin
     First:=false;
     if PW='' then WideInputQuery(LOCstr_SetPW_Caption,k,TmpPW);
@@ -314,6 +313,7 @@ procedure ExtractRarLyric(ArcName,PW:widestring);
 var hArcData:THandle; First:boolean; FName,t,k:widestring;
     HeaderData:TRARHeaderData; OpenArchiveData:TRAROpenArchiveData;
 begin
+  TmpPW:=PW;
   FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
   OpenArchiveData.ArcNameW := PWideChar(ArcName);
   OpenArchiveData.OpenMode := RAR_OM_EXTRACT;
@@ -323,7 +323,7 @@ begin
   if (hArcData = 0) OR (OpenArchiveData.OpenResult <> 0) then begin
     RARCloseArchive(hArcData); exit;
   end;
-  TmpPW:=PW; First:=true; k:=WideExtractFileName(ArcName);
+  First:=true; k:=WideExtractFileName(ArcName);
   // Obsolete, use TRAROpenArchiveData's callback and UserData fields above.
   RARSetCallback(hArcData,UnRARCallback,LPARAM(OpenArchiveData.ArcNameW));
   if (OpenArchiveData.Flags and $00000080) = $00000080 then begin

@@ -2567,7 +2567,7 @@ begin
   ReadPipe := 0; WritePipe := 0; ExitCode := 0; UseUni := false; HaveVideo := false;
   LyricF := 'Tahoma'; LyricS := 8; MaxLenLyricA := ''; MaxLenLyricW := ''; UseekC := true;
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
-  lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := false; ADls:=true;
+  lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := true; ADls:=true;
   dsEnd:=false; br:=false; UpdatePos:=true; fup:=true; avThread:='1'; uav:=false; AutoDs:=True;
   ResetStreamInfo;
 end.

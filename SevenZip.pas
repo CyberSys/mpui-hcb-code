@@ -265,13 +265,13 @@ var hArc:integer; fileInfo:TZipINDIVIDUALINFO; k,i:widestring;
 begin
   Result:=0; TmpPW:=PW;
   if ZipGetRunning then begin
-    Result:=-1; exit
+    Result:=-1; exit;
   end
   else begin
     ZipSetUnicodeMode(true);
     hArc:=ZipOpenArchive(0,PChar(UTF8Encode(ArcName)),0);
     if hArc=0 then begin Result:=-1; exit; end;
-    k:=WideExtractFileName(ArcName); TmpPW:=PW;
+    k:=WideExtractFileName(ArcName);
     //fileinfo.szAttribute[4]='G' 而不是'-'或#0时，文件是加密的
     if ((ZipGetAttribute(hArc) and FA_ENCRYPTED)=FA_ENCRYPTED) and (PW='') then
       WideInputQuery(LOCstr_SetPW_Caption,k,TmpPW);
@@ -420,10 +420,10 @@ end;
 
 function ExtractZipSub(ArcName,PW:widestring):WideString;
 var i,j,HaveIdx,HaveSub,DirHIdx,DirHSub:integer; FExt,FName,g:widestring;
-    hArc:integer; UArcName:UTF8String; First:boolean;
+    hArc:integer; UArcName:UTF8String;
     fileInfo:TZipINDIVIDUALINFO;
 begin
-  g:=GetFileName(ArcName); TmpPW:=PW; First:=true;
+  g:=GetFileName(ArcName); TmpPW:=PW;
   DirHIdx:=integer(WideFileExists(g+'.idx'));
   DirHSub:=integer(WideFileExists(g+'.sub'));
   if (DirHIdx+DirHSub)=2 then begin result:=g; exit; end;
@@ -437,12 +437,6 @@ begin
     else begin
       hArc:=ZipOpenArchive(0,PChar(UArcName),0);
       if hArc=0 then exit;
-      if First then begin
-        First:=false;
-        if ((ZipGetAttribute(hArc) and FA_ENCRYPTED)=FA_ENCRYPTED) and (PW='') then
-          WideInputQuery(LOCstr_SetPW_Caption,WideExtractFileName(ArcName),TmpPW);
-        PW:=TmpPW;
-      end;
       if ZipFindFirst(hArc,'*',fileInfo)=0 then begin
         repeat
           FExt:=Tnt_WideLowerCase(WideExtractFileExt(UTF8Decode(fileInfo.szFilename)));
@@ -460,11 +454,9 @@ begin
   else begin
     hArc:=ZipOpenArchive(0,PChar(UArcName),0);
     if hArc=0 then exit;  j:=0;
-    if First then begin
-      if ((ZipGetAttribute(hArc) and FA_ENCRYPTED)=FA_ENCRYPTED) and (PW='') then
-        WideInputQuery(LOCstr_SetPW_Caption,WideExtractFileName(ArcName),TmpPW);
-      PW:=TmpPW;
-    end;
+    if ((ZipGetAttribute(hArc) and FA_ENCRYPTED)=FA_ENCRYPTED) and (PW='') then
+      WideInputQuery(LOCstr_SetPW_Caption,WideExtractFileName(ArcName),TmpPW);
+    PW:=TmpPW;
     if ZipFindFirst(hArc,'*',fileInfo)=0 then begin
       repeat
         FExt:=Tnt_WideLowerCase(WideExtractFileExt(UTF8Decode(fileInfo.szFilename)));
