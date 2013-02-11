@@ -192,7 +192,7 @@ procedure ForceStop;
 function Running: boolean;
 function IsLoaded(ArcType: WideString): boolean;
 function AddMovies(ArcName, PW: widestring; Add,msg:boolean): integer;
-procedure ExtractMovie(ArcName, MovieName, PW: WideString);
+procedure ExtractMovie(ArcName, PW: WideString);
 procedure ExtractLyric(ArcName, PW: WideString);
 function ExtractSub(ArcName, PW: WideString): WideString;
 procedure TerminateMP;
@@ -204,10 +204,10 @@ procedure HandleInputLine(Line: string);
 function GetFileName(const fileName: WideString): WideString;
 procedure loadLyricSub(path: WideString); overload;
 procedure loadLyricSub(folder,filename: WideString); overload;
-procedure loadArcLyric(path, psw: WideString); overload;
-procedure loadArcLyric(folder,ArcName, psw: WideString); overload;
-function loadArcSub(path, psw: WideString):WideString; overload;
-function loadArcSub(folder,ArcName, psw: WideString):WideString; overload;
+procedure loadArcLyric(path: WideString); overload;
+procedure loadArcLyric(folder,ArcName: WideString); overload;
+function loadArcSub(path: WideString):WideString; overload;
+function loadArcSub(folder,ArcName: WideString):WideString; overload;
 
 implementation
 uses Main, config, plist, Info, UnRAR, Equalizer, Locale, Options, SevenZip, DLyric,OpenDevice;
@@ -304,38 +304,40 @@ begin
   end;
 end;
 
-procedure loadArcLyric(path, psw: WideString);
+procedure loadArcLyric(path: WideString);
 begin
-  loadArcLyric(WideExtractFileDir(path),WideExtractFileName(path),psw);
+  loadArcLyric(WideExtractFileDir(path),WideExtractFileName(path));
 end;
 
-procedure loadArcLyric(folder, ArcName, psw: WideString);
-var i: integer;
+procedure loadArcLyric(folder, ArcName: WideString);
+var i: integer; s:WideString;
 begin
   ArcName := WideIncludeTrailingBackslash(folder) + GetFileName(ArcName);
   for i := 0 to ZipTypeCount do begin
     if WideFileExists(ArcName + MediaType[i]) then begin
       if IsLoaded(MediaType[i]) then begin
-        if HaveLyric = 0 then ExtractLyric(ArcName + MediaType[i], psw)
+        s:=ArcName + MediaType[i];
+        if HaveLyric = 0 then ExtractLyric(s, playlist.FindPW(s))
         else exit;
       end;
     end;
   end;
 end;
 
-function loadArcSub(path, psw: WideString):WideString;
+function loadArcSub(path: WideString):WideString;
 begin
-  Result:=loadArcSub(WideExtractFileDir(path),WideExtractFileName(path),psw);
+  Result:=loadArcSub(WideExtractFileDir(path),WideExtractFileName(path));
 end;
 
-function loadArcSub(folder, ArcName, psw: WideString):WideString;
-var i: integer;
+function loadArcSub(folder, ArcName: WideString):WideString;
+var i: integer; s:WideString;
 begin
   Result := ''; ArcName := WideIncludeTrailingBackslash(folder) + GetFileName(ArcName);
   for i := 0 to ZipTypeCount do begin
     if WideFileExists(ArcName + MediaType[i]) then begin
       if IsLoaded(MediaType[i]) then begin
-        if Result = '' then Result := ExtractSub(ArcName + MediaType[i], psw)
+        s:=ArcName + MediaType[i];
+        if Result = '' then Result := ExtractSub(s, playlist.FindPW(s))
         else exit;
       end;
     end;
@@ -392,28 +394,29 @@ begin
   else if Is7zLoaded > 2 then Result := Add7zMovies(ArcName, PW, Add, msg);
 end;
 
-procedure ExtractMovie(ArcName, MovieName, PW: widestring);
+procedure ExtractMovie(ArcName, PW: widestring);
 var ArcType:WideString;
 begin
   ArcType:=Tnt_WideLowerCase(WideExtractFileExt(ArcName));
   if ArcType = '.rar' then begin
-    if IsRarLoaded <> 0 then ExtractRarMovie(ArcName, MovieName, PW)
-    else if Is7zLoaded > 2 then Extract7zMovie(ArcName, MovieName, PW);
+    if IsRarLoaded <> 0 then ExtractRarMovie(ArcName, PW)
+    else if Is7zLoaded > 2 then Extract7zMovie(ArcName, PW);
   end
   else if ArcType = '.zip' then begin
-    if IsZipLoaded <> 0 then ExtractZipMovie(ArcName, MovieName, PW)
-    else if Is7zLoaded > 2 then Extract7zMovie(ArcName, MovieName, PW);
+    if IsZipLoaded <> 0 then ExtractZipMovie(ArcName, PW)
+    else if Is7zLoaded > 2 then Extract7zMovie(ArcName, PW);
   end
   else if (ArcType = '.7z') or (ArcType = '.001') then begin
-    if Is7zLoaded <> 0 then Extract7zMovie(ArcName, MovieName, PW)
-    else if IsZipLoaded <> 0 then ExtractZipMovie(ArcName, MovieName, PW);
+    if Is7zLoaded <> 0 then Extract7zMovie(ArcName, PW)
+    else if IsZipLoaded <> 0 then ExtractZipMovie(ArcName, PW);
   end
-  else if Is7zLoaded > 2 then Extract7zMovie(ArcName, MovieName, PW);
+  else if Is7zLoaded > 2 then Extract7zMovie(ArcName, PW);
 end;
 
 procedure ExtractLyric(ArcName, PW: WideString);
 var ArcType:WideString;
 begin
+  if ArcMovie='' then exit;
   ArcType:=Tnt_WideLowerCase(WideExtractFileExt(ArcName));
   if ArcType = '.rar' then begin
     if IsRarLoaded <> 0 then ExtractRarLyric(ArcName, PW)
@@ -830,16 +833,16 @@ begin
     loadLyricSub(MediaURL);
     loadLyricSub(a + n);
     
-    if HaveLyric = 0 then loadArcLyric(MediaURL, ArcPW);
+    if HaveLyric = 0 then loadArcLyric(MediaURL);
     if LoadVob = 0 then begin
-      TmpURL := loadArcSub(MediaURL, ArcPW);
+      TmpURL := loadArcSub(MediaURL);
       if TmpURL <> '' then begin
         Vobfile := TmpURL; LoadVob := 1; end;
     end;
 
-    if HaveLyric = 0 then loadArcLyric(a,n, ArcPW);
+    if HaveLyric = 0 then loadArcLyric(a,n);
     if LoadVob = 0 then begin
-      TmpURL := loadArcSub(a,n, ArcPW);
+      TmpURL := loadArcSub(a,n);
       if TmpURL <> '' then begin
         Vobfile := TmpURL; LoadVob := 1; end;
     end;
@@ -849,16 +852,16 @@ begin
       loadLyricSub(n,ArcMovie);
       loadLyricSub(a,ArcMovie);
 
-      if HaveLyric = 0 then loadArcLyric(n,ArcMovie, ArcPW);
+      if HaveLyric = 0 then loadArcLyric(n,ArcMovie);
       if LoadVob = 0 then begin
-        TmpURL := loadArcSub(n,ArcMovie, ArcPW);
+        TmpURL := loadArcSub(n,ArcMovie);
         if TmpURL <> '' then begin
           Vobfile := TmpURL; LoadVob := 1; end;
       end;
 
-      if HaveLyric = 0 then loadArcLyric(a,ArcMovie, ArcPW);
+      if HaveLyric = 0 then loadArcLyric(a,ArcMovie);
       if LoadVob = 0 then begin
-        TmpURL := loadArcSub(a,ArcMovie, ArcPW);
+        TmpURL := loadArcSub(a,ArcMovie);
         if TmpURL <> '' then begin
           Vobfile := TmpURL; LoadVob := 1; end;
       end;
@@ -869,7 +872,6 @@ begin
     if (i > 0) and IsLoaded(s) then begin
       tEnd := false;
       TmpURL := MediaURL; //避免系统调度UNRART线程的不确定性造成线程执行时获取的是已经变化的MediaURL
-
       MediaURL := TempDir + ArcMovie;
       UnRART := TUnRARThread.Create(true);
       UnRART.FreeOnTerminate := true;
@@ -878,9 +880,9 @@ begin
       SwitchToThread;
 
       while not tEnd do begin
-        WaitForSingleObject(UNRART.Handle, 100);
+        Application.ProcessMessages;
         if WideFileExists(MediaURL) then begin
-          WaitForSingleObject(UNRART.Handle, 1000);
+          WaitForSingleObject(UnRART.Handle,1000);
           break;
         end;
       end;
@@ -1371,7 +1373,7 @@ var r, i, j, p, len: integer; s: string; f: real;
                 DisplayURL := s;
               end;
               playlist.Add(Entry);
-              if a = i then Playlist.Changed;
+              //if a = i then Playlist.Changed;
             end;
           end;
           if CheckMenu(MainForm.MDVDT, j) < 0 then begin
@@ -1541,7 +1543,7 @@ var r, i, j, p, len: integer; s: string; f: real;
           Entry.State := psNotPlayed; Entry.FullURL := MediaURL;
           Entry.DisplayURL := s;
           playlist.Add(Entry);
-          Playlist.Changed;
+          //Playlist.Changed;
           CID := j; TID := tmpTID;
           MainForm.NextFile(1, psPlayed);
         end
@@ -2561,7 +2563,7 @@ begin
   gam := 101; briD := 101; contrD := 101; huD := 101; satD := 101; gamD := 101; uof := false;
   Dda := false; LastDda := false; Utf := false; TextColor := $00FFFF; OutColor := 0;
   Ass := false; Efont := true; ISub := false; speed := 1; LastScale := 100; Scale := 100;
-  LastHaveVideo := false; AutoNext := true; FilterDrop := false; PScroll := true;
+  LastHaveVideo := false; AutoNext := true; FilterDrop := false; PScroll := true; ArcMovie:='';
   nobps := false; Ccap := 'Chapter'; Acap := 'Angle'; CurPlay := -1; Status := sNone;
   LTextColor := clWindowText; LBGColor := clWindow; LHGColor := $93; ClientProcess := 0;
   ReadPipe := 0; WritePipe := 0; ExitCode := 0; UseUni := false; HaveVideo := false;

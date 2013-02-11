@@ -119,8 +119,8 @@ function Extract7zSub(ArcName,PW:WideString):WideString;
 function ExtractZipSub(ArcName,PW:WideString):WideString;
 function Add7zMovies(ArcName,PW:WideString; Add,msg:boolean):integer;
 function AddZipMovies(ArcName,PW:WideString; Add,msg:boolean):integer;
-procedure Extract7zMovie(ArcName,MovieName,PW:WideString);
-procedure ExtractZipMovie(ArcName,MovieName,PW:WideString);
+procedure Extract7zMovie(ArcName,PW:WideString);
+procedure ExtractZipMovie(ArcName,PW:WideString);
 
 // NB: add '-hide' to command line switches if you want the CallBack function to be called
 // (set up via SevenZipSetOwnerWindowEx).
@@ -263,7 +263,7 @@ function AddZipMovies(ArcName,PW:widestring; Add,msg:boolean):integer;
 var hArc:integer; fileInfo:TZipINDIVIDUALINFO; k,i:widestring;
     Entry:TPlaylistEntry; FList:TWStringList; a:integer;
 begin
-  Result:=0; TmpPW:=PW;
+  Result:=0;
   if ZipGetRunning then begin
     Result:=-1; exit;
   end
@@ -274,7 +274,7 @@ begin
     k:=WideExtractFileName(ArcName);
     //fileinfo.szAttribute[4]='G' 而不是'-'或#0时，文件是加密的
     if ((ZipGetAttribute(hArc) and FA_ENCRYPTED)=FA_ENCRYPTED) and (PW='') then
-      WideInputQuery(LOCstr_SetPW_Caption,k,TmpPW);
+      WideInputQuery(LOCstr_SetPW_Caption,k,PW);
     FList:=TWStringList.Create;
     if ZipFindFirst(hArc,'*',fileInfo)=0 then begin
       repeat  //fileinfo.szAttribute[0]='-' 是目录
@@ -286,7 +286,7 @@ begin
             if Add then begin
               i:= i +' <-- '+k;
               if playlist.FindItem('',i)<0 then begin
-                if TmpPW='' then FList.Add(i) else FList.Add(i+':'+TmpPW);
+                if PW='' then FList.Add(i) else FList.Add(i+':'+PW);
               end;
             end
             else Break;
@@ -312,9 +312,8 @@ function Add7zMovies(ArcName,PW:widestring; Add,msg:boolean):integer;
 var k,i:widestring; Entry:TPlaylistEntry; x,z:integer; sz:TSevenZip;
 begin
   Result:=0; sz:=TSevenZip.Create(nil,Tnt_WideLowerCase(WideExtractFileExt(ArcName)));
-  sz.Password:=PW; sz.SZFileName:=ArcName; TmpPW:=PW;
-  x:=sz.List;
-  if sz.Password<>'' then TmpPW:=sz.Password;
+  sz.Password:=PW; sz.SZFileName:=ArcName;
+  x:=sz.List(false);
   if x=-1 then begin Result:=-1; sz.Free; exit; end;
   k:=WideExtractFileName(ArcName);
   sz.Files.SortStr(mysort);
@@ -328,7 +327,7 @@ begin
           with Entry do begin
             State:=psNotPlayed;
             FullURL:=ArcName;
-            if TmpPW='' then DisplayURL:=i else DisplayURL:=i+':'+sz.Password;
+            if sz.Password='' then DisplayURL:=i else DisplayURL:=i+':'+sz.Password;
           end;
           playlist.Add(Entry);
         end;
@@ -339,20 +338,34 @@ begin
   sz.Free;
 end;
 
-procedure ExtractZipMovie(ArcName,MovieName,PW:widestring);
+procedure ExtractZipMovie(ArcName,PW:widestring);
+var UArcName:UTF8String; hArc:integer;
 begin
-  ZipSetUnicodeMode(true);
-  ZipExtractArchive(0,UTF8Encode(ArcName),UTF8Encode(MovieName),false,UTF8Encode(PW),true,TempDir,false,UnZIPCallback);
+  if ZipGetRunning then exit
+  else begin
+    ZipSetUnicodeMode(true);
+    UArcName:=UTF8Encode(ArcName);
+    if PW='' then begin
+      hArc:=ZipOpenArchive(0,PChar(UArcName),0);
+      if hArc=0 then exit;
+      //fileinfo.szAttribute[4]='G' 而不是'-'或#0时，文件是加密的
+      if (ZipGetAttribute(hArc) and FA_ENCRYPTED)=FA_ENCRYPTED then
+        WideInputQuery(LOCstr_SetPW_Caption,WideExtractFileName(ArcName),PW);
+      ZipCloseArchive(hArc);
+    end;
+    ZipExtractArchive(0,UArcName,UTF8Encode(ArcMovie),false,UTF8Encode(PW),true,TempDir,false,UnZIPCallback);
+  end;
 end;
 
-procedure Extract7zMovie(ArcName,MovieName,PW:widestring);
+procedure Extract7zMovie(ArcName,PW:widestring);
 var sz:TSevenZip;
 begin
   sz:=TSevenZip.Create(nil,Tnt_WideLowerCase(WideExtractFileExt(ArcName)));
-  sz.Password:=PW; sz.SZFileName:=ArcName;
+  sz.SZFileName:=ArcName; sz.Password:=PW;
+  if PW='' then sz.List(true);
   sz.ExtrBaseDir:=TempDir;
   sz.Files.Clear;
-  sz.Files.Add(MovieName);
+  sz.Files.Add(ArcMovie);
   sz.ExtractOptions:=sz.ExtractOptions - [ExtractNoPath];
   sz.Extract;
   sz.Free;
@@ -394,11 +407,11 @@ procedure Extract7zLyric(ArcName,PW:widestring);
 var FName:WideString; x,z:integer; sz:TSevenZip; Flist:TTntStringList;
 begin
   sz:=TSevenZip.Create(nil,Tnt_WideLowerCase(WideExtractFileExt(ArcName)));
-  sz.Password:=PW; sz.SZFileName:=ArcName; TmpPW:=PW;
+  sz.Password:=PW; sz.SZFileName:=ArcName;
   sz.ExtrBaseDir:=TempDir;
   sz.ExtractOptions:=sz.ExtractOptions - [ExtractNoPath];
-  x:=sz.List;
-  if sz.Password<>'' then TmpPW:=sz.Password;
+  x:=sz.List(false);
+  TmpPW:=sz.Password;
   if x<1 then begin sz.Free; exit; end;
   Flist:=TTntStringList.Create;
   Flist.AddStrings(sz.Files);
@@ -461,7 +474,7 @@ begin
       repeat
         FExt:=Tnt_WideLowerCase(WideExtractFileExt(UTF8Decode(fileInfo.szFilename)));
         i:=CheckInfo(SubType,FExt);
-        if i>-1 then begin
+        if i>0 then begin
           if i<SubTypeCount-1 then begin
             FName:=TempDir+UTF8Decode(fileInfo.szFilename);
             if ZipExtractArchive(0,UArcName,fileInfo.szFilename,false,UTF8Encode(PW),true,TempDir,false,UnZIPCallback)<>0 then
@@ -523,8 +536,8 @@ begin
   sz:=TSevenZip.Create(nil,Tnt_WideLowerCase(WideExtractFileExt(ArcName)));
   sz.Password:=PW; sz.SZFileName:=ArcName;
   sz.ExtrBaseDir:=TempDir;
-  x:=sz.List;
-  if sz.Password<>'' then TmpPW:=sz.Password;
+  x:=sz.List(false);
+  TmpPW:=sz.Password;
   if x<1 then begin sz.Free; exit; end;
 
   if (DirHIdx+DirHSub)=1 then begin
@@ -545,7 +558,7 @@ begin
   for z:=0 to Flist.Count-1 do begin
     FExt:=Tnt_WideLowerCase(WideExtractFileExt(Flist.Strings[z]));
     i:=CheckInfo(SubType,FExt);
-    if i>-1 then begin
+    if i>0 then begin
       if i<SubTypeCount-1 then begin
         sz.Files.Clear;
         sz.Files.Add(Flist[z]);

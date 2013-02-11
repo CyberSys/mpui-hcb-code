@@ -26,7 +26,7 @@ uses
   Forms, TntForms, StdCtrls, TntStdCtrls, Controls, ShellAPI, Math,
   Dialogs, TntDialogs, Buttons, TntButtons, Menus, TntMenus,
   ComCtrls, TntComCtrls, Classes, TntClasses, TntSystem, ExtCtrls,
-  TntExtCtrls, TntFileCtrl;
+  TntExtCtrls, TntFileCtrl, SyncObjs;
 
 const
   chsdetDll='uchardet.dll';
@@ -439,7 +439,10 @@ begin
   len := length(Data);
   SetLength(Data, len + 1);
   Data[len] := Entry;
-  //Changed;
+  if PlaylistForm.Visible then begin
+    PlaylistForm.PlaylistBox.Count := Count;
+    PlaylistForm.PlaylistBox.Repaint;
+  end;
   if PClear then begin
     PClear := false;
     if GetCurrentThreadId = MainThreadId then play
@@ -448,7 +451,7 @@ begin
       t.FreeOnTerminate:=True;
       t.Priority := tpTimeCritical;
       t.Resume;
-      SwitchToThread;
+      SwitchToThread;;
     end;
   end;
 end;
@@ -485,7 +488,7 @@ procedure TOpenDir.Execute;
 begin
   EndOpenDir:=false;
   Playlist.AddDir(Directory,msg);
-  Synchronize(Playlist.Changed);
+  //Synchronize(Playlist.Changed);
 end;
 
 procedure TPlaylist.AddDirectory(Directory: Widestring; msg:boolean);
@@ -775,7 +778,7 @@ procedure TPlaylist.Changed;
 begin
   if PlaylistForm.Visible then begin
     PlaylistForm.PlaylistBox.Count := Count;
-    PlaylistForm.PlaylistBox.Invalidate;
+    PlaylistForm.PlaylistBox.Repaint;
   end;
   if (Count = 0) and (not Running) then MainForm.BPlay.Enabled := false;
   //if CurPlay<0 then CurPlay:=0;
@@ -1483,7 +1486,8 @@ begin
         end
         else Playlist.AddFiles(sfiles[i],false);
       end;
-      Playlist.Changed; sfiles.Free;
+      //Playlist.Changed; 
+      sfiles.Free;
     end;
   end;
 end;
@@ -1518,40 +1522,44 @@ begin
       if k then Playlist.AddFiles(fnbuf,false)
       else begin
         if j = '.idx' then begin
-          j:= GetFileName(fnbuf); Loadsub := 1;
-          if not WideFileExists(j + '.sub') then j := loadArcSub(fnbuf, '');
-          if j <> '' then begin
-            inc(VobFileCount);
-            if VobFileCount = 1 then begin
-              Vobfile := j; LoadVob := 1; Restart;
+          if Running and HaveVideo then begin
+            j:= GetFileName(fnbuf); Loadsub := 1;
+            if not WideFileExists(j + '.sub') then j := loadArcSub(fnbuf);
+            if j <> '' then begin
+              inc(VobFileCount);
+              if VobFileCount = 1 then begin
+                Vobfile := j; LoadVob := 1; Restart;
+              end;
             end;
           end;
         end
         else begin
           if (a > -1) and (a <= ZipTypeCount) then begin
             if IsLoaded(j) then begin
-              Loadsub := 1;
-              t := ExtractSub(fnbuf, playlist.FindPW(fnbuf));
-              if HaveLyric = 0 then ExtractLyric(fnbuf, TmpPW);
-              if t <> '' then begin
-                inc(VobFileCount);
-                if VobFileCount = 1 then begin
-                  Vobfile := t; LoadVob := 1; Restart;
+              Loadsub := 1; TmpPW:= playlist.FindPW(fnbuf);
+              if Running and HaveVideo then begin
+                t := ExtractSub(fnbuf, TmpPW);
+                if t <> '' then begin
+                  inc(VobFileCount);
+                  if VobFileCount = 1 then begin
+                    Vobfile := t; LoadVob := 1; Restart;
+                  end;
                 end;
               end;
+              if HaveLyric = 0 then ExtractLyric(fnbuf, TmpPW);
               AddMovies(fnbuf, TmpPW, true,false);
             end;
           end
           else begin
-            if (j = '.lrc') and (HaveLyric = 0) then begin
+            if j = '.lrc' then begin
               {j:=WideExtractFileName(MediaURL);
               j:=Tnt_WideLowerCase(GetFileName(j));
               t:=WideExtractFileName(fnbuf);
               t:=Tnt_WideLowerCase(GetFileName(t));
               if j=t then   }
-              Lyric.ParseLyric(fnbuf);
+              if HaveLyric = 0 then Lyric.ParseLyric(fnbuf);
             end
-            else begin
+            else if Running then begin
               Loadsub := 1;
               t := fnbuf;
               if (not IsWideStringMappableToAnsi(t)) or (pos(',', t) > 0) then t := WideExtractShortPathName(t);
@@ -1570,7 +1578,7 @@ begin
     end;
   end;
   DragFinish(hDrop);
-  FList.Free; Playlist.Changed;
+  FList.Free; //Playlist.Changed;
   if (not Win32PlatformIsUnicode) and (s > 0) then Restart;
   msg.Result := 0;
 end;
@@ -1688,7 +1696,7 @@ begin
   if WideSelectDirectory(AddDirCp, '', s) then begin
     PClear := false;
     Playlist.AddDirectory(s,false);
-    Playlist.Changed;
+    //Playlist.Changed;
   end;
 end;
 

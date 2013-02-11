@@ -473,7 +473,7 @@ type
 
     { Public Methods }
     function Extract( TestArchive:Boolean=False ): Integer;
-    function List: Integer;
+    function List(q:boolean): Integer;
     
   published
     { Public properties that also show on Object Inspector }
@@ -1244,7 +1244,7 @@ begin
   end;
 end;
 
-function TSevenZip.List:integer;
+function TSevenZip.List(q:boolean):integer;
 var ms:TMyStreamReader; updateOpenCallback:TmyArchiveOpenCallback;
     i:integer; fileCount:dword; path,Encrypted,size,attr:PROPVARIANT;
 begin
@@ -1272,6 +1272,7 @@ begin
         if not (((attr.uiVal and $10)<>0) or (size.uhVal.QuadPart=0)) then ffiles.Add(path.bstrVal)
         else dec(FNumberOfFiles);
         if Encrypted.boolVal and (FPassword='') then WideInputQuery(LOCstr_SetPW_Caption,WideExtractFileName(SZFileName),FPassword);
+        if q then break;
       except
         dec(FNumberOfFiles);
       end;

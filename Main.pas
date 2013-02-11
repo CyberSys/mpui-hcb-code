@@ -579,7 +579,7 @@ begin
   Loadsub := 1; j := Tnt_WideLowerCase(WideExtractFileExt(sub_path));
   if j = '.idx' then begin
     j:= GetFileName(sub_path);
-    if not WideFileExists(j + '.sub') then j := loadArcSub(sub_path, '');
+    if not WideFileExists(j + '.sub') then j := loadArcSub(sub_path);
     if j <> '' then begin
       inc(VobFileCount);
       if VobFileCount=1 then begin
@@ -727,7 +727,7 @@ begin
         Playlist.AddDirectory('.',false);
       end;
     end;
-    Playlist.Changed;
+    //Playlist.Changed;
   end;
 end;
 
@@ -773,43 +773,47 @@ begin
       end
       else begin
         if j = '.idx' then begin
-          j:= GetFileName(fnbuf); Loadsub := 1;
-          if not WideFileExists(j + '.sub') then j := loadArcSub(fnbuf, '');
-          if j <> '' then begin
-            inc(VobFileCount);
-            if VobFileCount = 1 then begin
-              Vobfile := j; LoadVob := 1; Restart;
+          if Running and HaveVideo then begin
+            j:= GetFileName(fnbuf); Loadsub := 1;
+            if not WideFileExists(j + '.sub') then j := loadArcSub(fnbuf);
+            if j <> '' then begin
+              inc(VobFileCount);
+              if VobFileCount = 1 then begin
+                Vobfile := j; LoadVob := 1; Restart;
+              end;
             end;
           end;
         end
         else begin
           if (a > -1) and (a <= ZipTypeCount) then begin
             if IsLoaded(j) then begin
-              Loadsub := 1;
-              t := ExtractSub(fnbuf, playlist.FindPW(fnbuf));
-              if HaveLyric = 0 then ExtractLyric(fnbuf, TmpPW);
-              if t <> '' then begin
-                inc(VobFileCount);
-                if VobFileCount = 1 then begin
-                  Vobfile := t; LoadVob := 1; Restart;
+              Loadsub := 1; TmpPW:= playlist.FindPW(fnbuf);
+              if Running and HaveVideo then begin
+                t := ExtractSub(fnbuf, TmpPW);
+                if t <> '' then begin
+                  inc(VobFileCount);
+                  if VobFileCount = 1 then begin
+                    Vobfile := t; LoadVob := 1; Restart;
+                  end;
                 end;
               end;
-              if AddMovies(fnbuf, TmpPW, false,false) > 0 then begin
-                if i = 0 then begin PClear := true; EndOpenDir:=true; end;
+              if HaveLyric = 0 then ExtractLyric(fnbuf, TmpPW);
+              if AddMovies(fnbuf, TmpPW, false,false) > 0 then begin //因为AddDir使用多线程，所以不能扰乱TmpPW，就不修改TmpPW了
+                if i = 0 then begin PClear := true; EndOpenDir:=true; end;//AddMovies放在ExtraxtSub或ExtractLyric后
                 AddMovies(fnbuf, TmpPW, true,false);
               end;
             end;
           end
           else begin
-            if (j = '.lrc') and (HaveLyric = 0) then begin
+            if j = '.lrc' then begin
               {j:=WideExtractFileName(MediaURL);
               j:=Tnt_WideLowerCase(GetFileName(j));
               t:=WideExtractFileName(fnbuf);
               t:=Tnt_WideLowerCase(GetFileName(t));
               if j=t then   }
-              Lyric.ParseLyric(fnbuf);
+              if HaveLyric = 0 then Lyric.ParseLyric(fnbuf);
             end
-            else begin
+            else if Running then begin
               Loadsub := 1;
               t := fnbuf;
               if (not IsWideStringMappableToAnsi(t)) or (pos(',', t) > 0) then t := WideExtractShortPathName(t);
@@ -829,7 +833,7 @@ begin
   end;
   DragFinish(hDrop);
   FList.Free;
-  Playlist.Changed;
+  //Playlist.Changed;
   if (not Win32PlatformIsUnicode) and (s > 0) then Restart;
   msg.Result := 0;
 end;
@@ -869,7 +873,7 @@ begin
     end;
     if WideDirectoryExists(OpenFileName) then Playlist.AddDirectory(OpenFileName,true)
     else Playlist.AddFiles(OpenFileName,true);
-    Playlist.Changed;
+    //Playlist.Changed;
   end;
 end;
 
@@ -994,7 +998,7 @@ begin
       if Wid and (ssAlt in Shift) then begin
         case Key of
           Ord('3'): MSizeClick(MSizeAny);
-        {`~} 192: MSizeClick(MSize50);
+          {`~} 192: MSizeClick(MSize50);
           Ord('1'): MSizeClick(MSize100);
           Ord('2'): MSizeClick(MSize200);
         end;
@@ -1004,7 +1008,7 @@ begin
           case Key of
             Ord('A'): NextAngle;
             Ord('E'): MEqualizerClick(nil);
-          {`~} 192: if Wid then MScale0Click(nil);
+            {`~} 192: if Wid then MScale0Click(nil);
             Ord('S'): HandleCommand('screenshot 1');
             Ord('Z'): MSubDelay2Click(nil);
           end;
@@ -1152,28 +1156,36 @@ begin
           VK_DOWN: HandleSeekCommand('seek -60');
           VK_PRIOR: HandleSeekCommand('seek +600');
           VK_NEXT: HandleSeekCommand('seek -600');
-          VK_HOME: if UseekC then begin
-              HandleSeekCommand('seek_chapter +1');
-              i := CheckMenu(MDVDT, TID);
-              if (i > 2) and HaveChapters then begin
-                j := CheckMenu(MDVDT.Items[i].Items[0], CID);
-                if j < MDVDT.Items[i].Items[0].Count - 1 then begin
-                  MDVDT.Items[i].Items[0].Items[j + 1].Checked := true;
-                  inc(CID);
-                end;
-              end;
-            end;
-          VK_END: if UseekC then begin
-              HandleSeekCommand('seek_chapter -1');
-              i := CheckMenu(MDVDT, TID);
-              if (i > 2) and HaveChapters then begin
-                j := CheckMenu(MDVDT.Items[i].Items[0], CID);
-                if j > 0 then begin
-                  MDVDT.Items[i].Items[0].Items[j - 1].Checked := true;
-                  dec(CID);
-                end;
-              end;
-            end;
+          VK_HOME: begin
+                     i := CheckMenu(MDVDT, TID);
+                     if (i > 2) and HaveChapters then begin
+                       j := CheckMenu(MDVDT.Items[i].Items[0], CID);
+                       if j < MDVDT.Items[i].Items[0].Count - 1 then begin
+                         if UseekC then HandleSeekCommand('seek_chapter +1');
+                         MDVDT.Items[i].Items[0].Items[j + 1].Checked := true;
+                         inc(CID);
+                         if not Useekc then begin
+                           Dreset:=true;
+                           Restart;
+                         end;
+                       end;
+                     end;
+                   end;
+          VK_END: begin
+                    i := CheckMenu(MDVDT, TID);
+                    if (i > 2) and HaveChapters then begin
+                      j := CheckMenu(MDVDT.Items[i].Items[0], CID);
+                      if j > 0 then begin
+                        if UseekC then HandleSeekCommand('seek_chapter -1');
+                        MDVDT.Items[i].Items[0].Items[j - 1].Checked := true;
+                        dec(CID);
+                        if not Useekc then begin
+                          Dreset:=true;
+                          Restart;
+                        end;
+                      end;
+                    end;
+                  end;
           VK_BACK: MSpeedClick(M1X);
        {-_} 189: if Speed > 0.01 then begin
               HandleCommand('speed_mult 0.9090909');
@@ -1753,7 +1765,7 @@ begin
   Entry.State := psNotPlayed;
   playlist.Add(Entry);
   if Addsfiles then Plist.addEpisode(w);
-  Playlist.Changed;
+  //Playlist.Changed;
 end;
 
 procedure TMainForm.UpdateMRF;
@@ -1902,7 +1914,7 @@ begin
   if WideSelectDirectory(AddDirCp, '', s) then begin
     PClear := true; EndOpenDir:=true;
     Playlist.AddDirectory(s,false);
-    Playlist.Changed;
+    //Playlist.Changed;
   end;
 end;
 
@@ -1917,7 +1929,7 @@ begin
     PClear := true; EndOpenDir:=true;
     if WideDirectoryExists(s) then Playlist.AddDirectory(s,false)
     else Playlist.AddFiles(s,false);
-    Playlist.Changed;
+    //Playlist.Changed;
   end;
 end;
 
@@ -1956,7 +1968,7 @@ procedure TMainForm.MOpenDriveClick(Sender: TObject);
 begin
   PClear := true; EndOpenDir:=true;
   Playlist.AddDirectory(char((Sender as TTntMenuItem).Tag) + ':',false);
-  Playlist.Changed;
+  //Playlist.Changed;
 end;
 
 procedure TMainForm.MKeyHelpClick(Sender: TObject);
@@ -2413,8 +2425,7 @@ end;
 
 procedure TMainForm.UpdateCaption;
 begin
-  if length(DisplayURL) <> 0
-    then Caption := DisplayURL
+  if length(DisplayURL) <> 0 then Caption := DisplayURL
   else Caption := LOCstr_Title;
 end;
 
@@ -2908,7 +2919,7 @@ begin
         Loadsub := 1; j := Tnt_WideLowerCase(WideExtractFileExt(Files[i]));
         if j = '.idx' then begin
           j:= GetFileName(Files[i]);
-          if not WideFileExists(j + '.sub') then j := loadArcSub(Files[i], '');
+          if not WideFileExists(j + '.sub') then j := loadArcSub(Files[i]);
           if j <> '' then begin
             inc(VobFileCount);
             if VobFileCount=1 then begin

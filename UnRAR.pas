@@ -88,7 +88,7 @@ procedure LoadShell32Library;
 procedure UnLoadShell32Library;
 procedure ClearTmpFiles(Directory:WideString);
 function AddRarMovies(ArcName,PW:widestring; Add,msg:boolean):integer;
-procedure ExtractRarMovie(ArcName,MovieName,PW:widestring);
+procedure ExtractRarMovie(ArcName,PW:widestring);
 procedure ExtractRarLyric(ArcName,PW:WideString);
 function ExtractRarSub(ArcName,PW:WideString):WideString;
 function GetShellPath(rfid:TGUID):WideString;
@@ -99,7 +99,7 @@ uses Main,Core,plist,locale,SevenZip;
 
 procedure TUnRARThread.Execute;
 begin
-  ExtractMovie(TmpURL,ArcMovie,ArcPW);
+  ExtractMovie(TmpURL,ArcPW);
   tEnd:=true;
   Restart;
 end;
@@ -222,7 +222,7 @@ var hArcData:THandle; HeaderData:TRARHeaderData;
     Entry:TPlaylistEntry; i,k:widestring;
     First:boolean; FList:TWStringList; a:integer;
 begin
-  Result:=0; TmpPW:=PW;
+  Result:=0;
   FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
   OpenArchiveData.ArcNameW := PWideChar(ArcName);
   OpenArchiveData.OpenMode := RAR_OM_LIST;
@@ -234,8 +234,8 @@ begin
   FList:=TWStringList.Create; First:=true; k:=WideExtractFileName(ArcName);
   if (OpenArchiveData.Flags and $00000080) = $00000080 then begin
     First:=false;
-    if PW='' then WideInputQuery(LOCstr_SetPW_Caption,k,TmpPW);
-    if TmpPW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(TmpPW)));
+    if PW='' then WideInputQuery(LOCstr_SetPW_Caption,k,PW);
+    if PW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
   end;
   FillChar(HeaderData ,sizeof(HeaderData),0);
   repeat
@@ -246,14 +246,14 @@ begin
       if First then begin
         First:=false;
         if ((HeaderData.Flags and $00000004) = $00000004) and (PW='') then
-          WideInputQuery(LOCstr_SetPW_Caption,k,TmpPW);
-        if TmpPW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(TmpPW)));
+          WideInputQuery(LOCstr_SetPW_Caption,k,PW);
+        if PW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
       end;
       inc(Result);
       if Add then begin
         i:=HeaderData.FileNameW+' <-- '+k;
         if playlist.FindItem('.part',i)<0 then begin
-            if TmpPW='' then FList.Add(i) else FList.Add(i+':'+TmpPW);
+            if PW='' then FList.Add(i) else FList.Add(i+':'+PW);
         end;
       end
       else Break;
@@ -273,8 +273,8 @@ begin
   Flist.Free;
 end;
 
-procedure ExtractRarMovie(ArcName,MovieName,PW:widestring);
-var hArcData:THandle; First:boolean;
+procedure ExtractRarMovie(ArcName,PW:widestring);
+var hArcData:THandle; First:boolean; k:widestring;
     HeaderData:TRARHeaderData; OpenArchiveData:TRAROpenArchiveData;
 begin
   FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
@@ -286,19 +286,24 @@ begin
   if (hArcData = 0) OR (OpenArchiveData.OpenResult <> 0) then begin
     RARCloseArchive(hArcData); exit;
   end;
-  First:=true;
+  First:=true; k:=WideExtractFileName(ArcName);
   // Obsolete, use TRAROpenArchiveData's callback and UserData fields above.
   RARSetCallback(hArcData,UnRARCallback,LPARAM(OpenArchiveData.ArcNameW));
   if (OpenArchiveData.Flags and $00000080) = $00000080 then begin
-    First:=false; RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
+    First:=false; if PW='' then WideInputQuery(LOCstr_SetPW_Caption,k,PW);
+    if PW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
   end;
   FillChar(HeaderData ,sizeof(HeaderData),0);
   repeat
     if RARReadHeader(hArcData,HeaderData) <> 0 then Break;
     if ((HeaderData.Flags and $00000070) <> $00000070) and
-       (HeaderData.FileNameW=MovieName) then begin
-      if First and ((HeaderData.Flags and $00000004) = $00000004) then RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
-      RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(TempDir+MovieName));
+       (HeaderData.FileNameW=ArcMovie) then begin
+      if First then begin
+        if ((HeaderData.Flags and $00000004) = $00000004) and (PW='') then
+          WideInputQuery(LOCstr_SetPW_Caption,k,PW);
+        if PW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
+      end;
+      RARProcessFile(hArcData, RAR_EXTRACT, nil, PWideChar(TempDir+ArcMovie));
       Break;
     end
     else if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
@@ -430,7 +435,7 @@ begin
       end;
       FExt:=Tnt_WideLowerCase(WideExtractFileExt(HeaderData.FileNameW));
       i:=CheckInfo(SubType,FExt);
-      if i=-1 then begin
+      if i<1 then begin
         if RARProcessFile(hArcData, RAR_SKIP, nil, nil)<>0 then break;
       end
       else begin

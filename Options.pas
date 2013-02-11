@@ -452,7 +452,7 @@ begin
   CSubcp.Text := subcode;
   oML := ML;
   EAV.Text:=avThread;
-  CAV.Checked:=UAV;
+  CAV.Checked:=UAV; CAVClick(nil);
   RMplayer.Checked := ML;
   RCMplayer.Checked := not ML;
   EMplayerLocation.Enabled := ML;
