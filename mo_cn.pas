@@ -157,6 +157,7 @@ begin
       MShowSub.Caption:=UTF8Decode('显示/隐藏 字幕');
       MVideo.Caption:=UTF8Decode(OSD_VideoTrack_Prompt);
       MDVDT.Caption:=UTF8Decode('DVD 标题');
+      MBRT.Caption:=UTF8Decode('蓝光 标题');
       MRmMenu.Caption:=UTF8Decode('返回主菜单');
       MRnMenu.Caption:=UTF8Decode('返回最近的菜单');
       MVCDT.Caption:=UTF8Decode('VCD 轨');

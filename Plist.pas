@@ -537,9 +537,9 @@ begin
       State := psNotPlayed;
      	s:=' -bluray-device '; a:='BlueRay-1 <-- '; d:=' br';
       if IsWideStringMappableToAnsi(Directory) then
-        FullURL := s + EscapeParam(Directory+'BDMV') + d
+        FullURL := s + EscapeParam(Directory) + d
       else
-        FullURL := s + EscapeParam(WideExtractShortPathName(Directory+'BDMV')) + d;
+        FullURL := s + EscapeParam(WideExtractShortPathName(Directory)) + d;
       DisplayURL := a + Directory;
     end;
     if not EndOpenDir then begin

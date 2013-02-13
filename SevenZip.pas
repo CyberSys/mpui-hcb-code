@@ -37,7 +37,7 @@
 // v1.01 1 September 2005
 // new feature:
 //  --> Add parameter Password in SevenZipCreateArchive and SevenZipExtractArchive function
-//      by Jéter Rabelo Ferreira (jeter.rabelo@jerasoft.com.br)
+//      by Jeter Rabelo Ferreira (jeter.rabelo@jerasoft.com.br)
 
 // --> Added BaseDirectory parameter to SevenZipCreateArchive for easier handling of
 //     relative paths (note that absolute paths ARE NOT supported by the DLL) [Dominic Dumée]

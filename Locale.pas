@@ -114,7 +114,7 @@ begin
 end;
 
 procedure ActivateLocale(Index: integer);
-var i, j, WantedLangID: integer;
+var i, WantedLangID: integer;
 begin
   if Index = AutoLocale then begin
     WantedLangID := GetUserDefaultLangID;
@@ -179,13 +179,13 @@ begin
   end;
   if MainForm.MDVDT.Count > 3 then begin
     for i := 3 to MainForm.MDVDT.Count - 1 do begin
-      for j := 0 to MainForm.MDVDT.Items[i].Count - 1 do begin
-        case j of
-          0: MainForm.MDVDT.Items[i].Items[0].Caption := Ccap;
-          1: MainForm.MDVDT.Items[i].Items[1].Caption := Acap;
-        end;
-      end;
+      MainForm.MDVDT.Items[i].Items[0].Caption := Ccap;
+      MainForm.MDVDT.Items[i].Items[1].Caption := Acap;
     end;
+  end;
+  for i := 0 to MainForm.MBRT.Count - 1 do begin
+    MainForm.MBRT.Items[i].Items[0].Caption := Ccap;
+    MainForm.MBRT.Items[i].Items[1].Caption := Acap;
   end;
   TntApplication.Title := LOCstr_Title;
   MainForm.UpdateCaption;

@@ -157,6 +157,7 @@ begin
       MShowSub.Caption:='Show/Hide Subtitles';
       MVideo.Caption:=OSD_VideoTrack_Prompt;
       MDVDT.Caption:='DVD Titles';
+      MBRT.Caption:='BluRay Titles';
       MRmMenu.Caption:='Return to main menu';
       MRnMenu.Caption:='Return to nearest menu';
       MVCDT.Caption:='VCD Tracks';

@@ -116,7 +116,7 @@ var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread,cl: WideString;
   MplayerLocation, WadspL, AsyncV, CacheV: widestring;
   MAspect, subcode, MaxLenLyricA, VideoOut: string;
   FirstOpen, PClear, Fd, Async, Cache, uof, oneM, FilterDrop,AutoDs: boolean;
-  Wid, Dreset, UpdateSkipBar, Pri, HaveChapters, HaveMsg, skip,br: boolean;
+  Wid, Dreset, UpdateSkipBar, Pri, HaveChapters, HaveMsg, skip,bluray,dvd: boolean;
   CT, RP, RS, SP, AutoPlay, ETime, InSubDir, SPDIF, ML, GUI, PScroll: boolean;
   Shuffle, Loop, OneLoop, Uni, Utf, UseUni,ADls: boolean;
   ControlledResize, ni, nobps, Dnav, IsDMenu, SMenu, lavf, UseekC, vsync: boolean;
@@ -981,8 +981,9 @@ begin
       i := Bp - 5;
     if i > LastPos then LastPos := i;
   end;
-  br:= Copy(MediaURL, 1, 15) = ' -bluray-device';
-  if (Copy(MediaURL, 1, 12) = ' -dvd-device') or br then begin
+  bluray:= Copy(MediaURL, 1, 15) = ' -bluray-device';
+  dvd:= Copy(MediaURL, 1, 12) = ' -dvd-device';
+  if dvd or bluray then begin
     if TotalTime > 0 then begin
       i := 0;
       if HaveChapters and (CID > 1) then begin
@@ -998,7 +999,7 @@ begin
     if LastPos > 0 then begin
       SecondPos := LastPos; CmdLine := CmdLine + ' -ss ' + SecondsToTime(LastPos); end;
 
-    if Dnav and (not br) then begin
+    if Dnav and (not bluray) then begin
       CmdLine := CmdLine + ' -nocache';
       CmdLine := CmdLine + MediaURL + 'nav://';
     end
@@ -1008,19 +1009,19 @@ begin
     end;
 
     if Firstrun then begin
-      if br then i := StrToIntDef(copy(DisplayURL, 9, Pos(' <-- ', DisplayURL) - 5), TID)
+      if bluray then i := StrToIntDef(copy(DisplayURL, 9, Pos(' <-- ', DisplayURL) - 9), TID)
       else i := StrToIntDef(copy(DisplayURL, 5, Pos(' <-- ', DisplayURL) - 5), TID);
-      if Dnav and SMenu and (i = 1) then TID := 0
+      if Dnav and SMenu and (i = 1) and dvd then TID := 0
       else TID := i;
     end;
     if (not Dnav) and (TID = 0) then TID := 1; tmpTID := TID;
     if TID > 0 then CmdLine := CmdLine + IntToStr(TID);
     if CID > 1 then begin
-      if br then CmdLine := CmdLine + ' -bluray-chapter ' + IntToStr(CID)
+      if bluray then CmdLine := CmdLine + ' -bluray-chapter ' + IntToStr(CID-1)
       else CmdLine := CmdLine + ' -chapter ' + IntToStr(CID);
     end;
     if AID > 1 then begin
-      if br then CmdLine := CmdLine + ' -bluray-angle ' + IntToStr(AID)
+      if bluray then CmdLine := CmdLine + ' -bluray-angle ' + IntToStr(AID-1)
       else CmdLine := CmdLine + ' -dvdangle ' + IntToStr(AID);
     end;
   end
@@ -1056,7 +1057,9 @@ begin
   VobsubCount := 0; IntersubCount := 0;
   with MainForm do begin
     for i := MDVDT.Count - 1 downto 3 do MDVDT.delete(i);
-    MDVDT.Visible := (Copy(MediaURL, 1, 12) = ' -dvd-device') or (Copy(MediaURL, 1, 15) = ' -bluray-device');
+    MBRT.Clear;
+    MDVDT.Visible := dvd;
+    MBRT.Visible := bluray;
     MVideo.Clear; MVideo.Visible := false;
     MAudio.Clear; MAudio.Visible := false;
     MSubtitle.Clear; MSubtitle.Visible := false;
@@ -1284,7 +1287,7 @@ end;
 
 procedure HandleInputLine(Line: string);
 var r, i, j, p, len: integer; s: string; f: real;
-    t: TTntMenuItem; key: word; a:TDownLoadLyric;
+    t: TTntMenuItem; key: word; a:TDownLoadLyric; m:TMenuItem;
 
   function SubMenu_Add(Menu: TMenuItem; ID, SelectedID: integer; Handler: TNotifyEvent): integer;
   begin
@@ -1355,17 +1358,16 @@ var r, i, j, p, len: integer; s: string; f: real;
     end;
   end;
 
-  function CheckDVDT: boolean;
+  function CheckBRT: boolean;
   var a: integer; Entry: TPlaylistEntry;
   begin
     Result := false;
-    if (len > 14) and (Copy(Line, 1, 14) = 'ID_DVD_TITLES=') then begin
-      Val(Copy(Line, 15, MaxInt), i, r);
+    if (len > 14) and (Copy(Line, 1, 17) = 'ID_BLURAY_TITLES=') then begin
+      Val(Copy(Line, 18, MaxInt), i, r);
       if (r = 0) and (i > 0) and (i < 8191) then begin
         for a := 1 to i do begin
           if FirstOpen then begin
-            if br then s := 'BlueRay-' + IntToStr(a) + Copy(DisplayURL, Pos(' <-- ', DisplayURL), MaxInt)
-            else s := 'DVD-' + IntToStr(a) + Copy(DisplayURL, Pos(' <-- ', DisplayURL), MaxInt);
+            s := 'BlueRay-' + IntToStr(a) + Copy(DisplayURL, Pos(' <-- ', DisplayURL), MaxInt);
             if playlist.FindItem('', s) < 0 then begin
               with Entry do begin
                 State := psNotPlayed;
@@ -1376,7 +1378,44 @@ var r, i, j, p, len: integer; s: string; f: real;
               //if a = i then Playlist.Changed;
             end;
           end;
-          if CheckMenu(MainForm.MDVDT, j) < 0 then begin
+          if CheckMenu(MainForm.MBRT, a) < 0 then begin
+            r := SubMenu_Add(MainForm.MBRT, a, TID, nil);
+
+            t := TTntMenuItem.Create(MainForm.MBRT.Items[r]);
+            t.Caption := Ccap; t.Tag := 0; t.GroupIndex := $0A;
+            MainForm.MBRT.Items[r].Add(t);
+
+            t := TTntMenuItem.Create(MainForm.MBRT.Items[r]);
+            t.Caption := Acap; t.Tag := 1; t.GroupIndex := $0A;
+            MainForm.MBRT.Items[r].Add(t);
+          end;
+        end;
+      end;
+      Result := true;
+    end;
+  end;
+
+  function CheckDVDT: boolean;
+  var a: integer; Entry: TPlaylistEntry;
+  begin
+    Result := false;
+    if (len > 14) and (Copy(Line, 1, 14) = 'ID_DVD_TITLES=') then begin
+      Val(Copy(Line, 15, MaxInt), i, r);
+      if (r = 0) and (i > 0) and (i < 8191) then begin
+        for a := 1 to i do begin
+          if FirstOpen then begin
+            s := 'DVD-' + IntToStr(a) + Copy(DisplayURL, Pos(' <-- ', DisplayURL), MaxInt);
+            if playlist.FindItem('', s) < 0 then begin
+              with Entry do begin
+                State := psNotPlayed;
+                FullURL := MediaURL;
+                DisplayURL := s;
+              end;
+              playlist.Add(Entry);
+              //if a = i then Playlist.Changed;
+            end;
+          end;
+          if CheckMenu(MainForm.MDVDT, a) < 0 then begin
             r := SubMenu_Add(MainForm.MDVDT, a, TID, nil);
 
             t := TTntMenuItem.Create(MainForm.MDVDT.Items[r]);
@@ -1390,6 +1429,39 @@ var r, i, j, p, len: integer; s: string; f: real;
         end;
       end;
       Result := true;
+    end;
+  end;
+
+  function CheckBRC: boolean;
+  var k: integer;
+  begin
+    Result := false;
+    if (len > 13) and (Copy(Line, 1, 16) = 'ID_BLURAY_TITLE_') then begin
+      s := Copy(Line, 17, MaxInt);
+      p := Pos('_CHAPTERS=', s);
+      if p <= 0 then exit;
+      Val(Copy(s, 1, p - 1), i, r);
+      if (r = 0) and (i > 0) and (i < 8191) then begin
+        Val(Copy(s, p + 10, MaxInt), j, r);
+        if (r = 0) and (j > 0) and (j < 8191) then begin
+          for k := 1 to j do begin
+            r := CheckMenu(MainForm.MBRT, i);
+            if r < 0 then r := SubMenu_Add(MainForm.MBRT, i, TID, nil);
+            if CheckMenu(MainForm.MBRT.Items[r], 0) < 0 then begin
+              t := TTntMenuItem.Create(MainForm.MBRT.Items[r]);
+              t.Caption := Ccap; t.Tag := 0; t.GroupIndex := $0A;
+              MainForm.MBRT.Items[r].Add(t);
+            end;
+            if CheckMenu(MainForm.MBRT.Items[r].Items[0], k) < 0 then begin
+              if i = TID then
+                SubMenu_Add(MainForm.MBRT.Items[r].Items[0], k, CID, MainForm.MDVDCClick)
+              else
+                SubMenu_Add(MainForm.MBRT.Items[r].Items[0], k, 1, MainForm.MDVDCClick);
+            end;
+          end;
+        end;
+        Result := true;
+      end;
     end;
   end;
 
@@ -1426,6 +1498,39 @@ var r, i, j, p, len: integer; s: string; f: real;
     end;
   end;
 
+  function CheckBRA: boolean;
+  var k: integer;
+  begin
+    Result := false;
+    if (len > 13) and (Copy(Line, 1, 16) = 'ID_BLURAY_TITLE_') then begin
+      s := Copy(Line, 17, MaxInt);
+      p := Pos('_ANGLE=', s);
+      if p <= 0 then exit;
+      Val(Copy(s, 1, p - 1), i, r);
+      if (r = 0) and (i > 0) and (i < 8191) then begin
+        Val(Copy(s, p + 7, MaxInt), j, r);
+        if (r = 0) and (j > 0) and (j < 8191) then begin
+          for k := 1 to j do begin
+            r := CheckMenu(MainForm.MBRT, i);
+            if r < 0 then r := SubMenu_Add(MainForm.MBRT, i, TID, nil);
+            if CheckMenu(MainForm.MBRT.Items[r], 1) < 0 then begin
+              t := TTntMenuItem.Create(MainForm.MBRT.Items[r]);
+              t.Caption := Acap; t.Tag := 1; t.GroupIndex := $0A;
+              MainForm.MBRT.Items[r].Add(t);
+            end;
+            if CheckMenu(MainForm.MBRT.Items[r].Items[1], k) < 0 then begin
+              if i = TID then
+                SubMenu_Add(MainForm.MBRT.Items[r].Items[1], k, AID, MainForm.MDVDAClick)
+              else
+                SubMenu_Add(MainForm.MBRT.Items[r].Items[1], k, 1, MainForm.MDVDAClick);
+            end;
+          end;
+        end;
+        Result := true;
+      end;
+    end;
+  end;
+
   function CheckDVDA: boolean;
   var k: integer;
   begin
@@ -1443,7 +1548,7 @@ var r, i, j, p, len: integer; s: string; f: real;
             if r < 0 then r := SubMenu_Add(MainForm.MDVDT, i, TID, nil);
             if CheckMenu(MainForm.MDVDT.Items[r], 1) < 0 then begin
               t := TTntMenuItem.Create(MainForm.MDVDT.Items[r]);
-              t.Caption := Ccap; t.Tag := 1; t.GroupIndex := $0A;
+              t.Caption := Acap; t.Tag := 1; t.GroupIndex := $0A;
               MainForm.MDVDT.Items[r].Add(t);
             end;
             if CheckMenu(MainForm.MDVDT.Items[r].Items[1], k) < 0 then begin
@@ -1453,6 +1558,26 @@ var r, i, j, p, len: integer; s: string; f: real;
                 SubMenu_Add(MainForm.MDVDT.Items[r].Items[1], k, 1, MainForm.MDVDAClick);
             end;
           end;
+        end;
+        Result := true;
+      end;
+    end;
+  end;
+
+  function CheckBRTL: boolean;
+  begin
+    Result := false;
+    if (len > 13) and (Copy(Line, 1, 16) = 'ID_BLURAY_TITLE_') then begin
+      s := Copy(Line, 17, MaxInt);
+      p := Pos('_LENGTH=', s);
+      if p <= 0 then exit;
+      Val(Copy(s, 1, p - 1), i, r);
+      if (r = 0) and (i > 0) and (i < 8191) then begin
+        Val(Copy(s, p + 8, MaxInt), f, r);
+        if (r = 0) and (f > 0) then begin
+          r := CheckMenu(MainForm.MBRT, i);
+          if r < 0 then r := SubMenu_Add(MainForm.MBRT, i, TID, nil);
+          MainForm.MBRT.Items[r].Caption := MainForm.MBRT.Items[r].Caption + ' (' + SecondsToTime(round(f)) + ')';
         end;
         Result := true;
       end;
@@ -1510,7 +1635,7 @@ var r, i, j, p, len: integer; s: string; f: real;
           MainForm.MDVDT.Items[r].Items[0].Items[j].Caption := IntToStr(MainForm.MDVDT.Items[r].Items[0].Items[j].Tag) + ' (' + ts + ')'
         else
           MainForm.MDVDT.Items[r].Items[0].Items[j].Caption := IntToStr(MainForm.MDVDT.Items[r].Items[0].Items[j].Tag) + ' (' + ds + ')';
-        //MainForm.MDVDT.Items[r].Items[0].Items[j].Caption:=IntToStr(MainForm.MDVDT.Items[r].Items[0].Items[j].Tag)+' ('+copy(s,1,i-1)+')';
+        //MainForm.MDVDT.Items[r].Items[0].Items[j].Caption := IntToStr(MainForm.MDVDT.Items[r].Items[0].Items[j].Tag)+' ('+copy(s,1,i-1)+')';
         ts := ds; s := copy(s, i + 1, MaxInt); i := pos(',', s);
       end;
       Result := true; HaveChapters := true;
@@ -1762,18 +1887,20 @@ var r, i, j, p, len: integer; s: string; f: real;
   var k: string; a: integer;
   begin
     Result := TotalTime;
-    r := CheckMenu(MainForm.MDVDT, TID);
-    if r < 0 then r := SubMenu_Add(MainForm.MDVDT, TID, TID, nil);
-    if CheckMenu(MainForm.MDVDT.Items[r], 0) < 0 then begin
-      t := TTntMenuItem.Create(MainForm.MDVDT.Items[r]);
+    if bluray then m:= MainForm.MBRT
+    else m:= MainForm.MDVDT;
+    r := CheckMenu(m, TID);
+    if r < 0 then r := SubMenu_Add(m, TID, TID, nil);
+    if CheckMenu(m.Items[r], 0) < 0 then begin
+      t := TTntMenuItem.Create(m.Items[r]);
       t.Caption := Ccap; t.Tag := 0; t.GroupIndex := $0A;
-      MainForm.MDVDT.Items[r].Add(t);
+      m.Items[r].Add(t);
     end;
-    a := CheckMenu(MainForm.MDVDT.Items[r].Items[0], CID);
+    a := CheckMenu(m.Items[r].Items[0], CID);
     if a < 0 then
-      a := SubMenu_Add(MainForm.MDVDT.Items[r].Items[0], CID, CID, MainForm.MDVDCClick);
+      a := SubMenu_Add(m.Items[r].Items[0], CID, CID, MainForm.MDVDCClick);
 
-    s := MainForm.MDVDT.Items[r].Items[0].Items[a].Caption;
+    s := m.Items[r].Items[0].Items[a].Caption;
     i := pos('(', s);
     {if Dnav then begin //caption=endTime
       if a=0 then r:=TimeToSeconds(copy(s,i+1,8))
@@ -1783,11 +1910,11 @@ var r, i, j, p, len: integer; s: string; f: real;
       end;
     end
     else begin //caption=startTime}
-    if a = MainForm.MDVDT.Items[r].Items[0].Count - 1 then begin
+    if a = m.Items[r].Items[0].Count - 1 then begin
       if TTime > 0 then r := TTime - TimeToSeconds(copy(s, i + 1, 8));
     end
     else begin
-      k := MainForm.MDVDT.Items[r].Items[0].Items[a + 1].Caption;
+      k := m.Items[r].Items[0].Items[a + 1].Caption;
       j := pos('(', k); r := TimeToSeconds(copy(k, j + 1, 8)) - TimeToSeconds(copy(s, i + 1, 8));
     end;
     //end;
@@ -2161,10 +2288,12 @@ begin
         else SecondPos := p;
         MainForm.UpdateTime; if SecondPos < EP then skip := true;
         if HaveChapters and (SecondPos = TotalTime - 1) then begin
-          i := CheckMenu(MainForm.MDVDT, TID);
-          r := CheckMenu(MainForm.MDVDT.Items[i].Items[0], CID);
-          if r < MainForm.MDVDT.Items[i].Items[0].Count - 1 then begin
-            MainForm.MDVDT.Items[i].Items[0].Items[r + 1].Checked := true;
+          if bluray then m:= MainForm.MBRT
+          else m:= MainForm.MDVDT;
+          i := CheckMenu(m, TID);
+          r := CheckMenu(m.Items[i].Items[0], CID);
+          if r < m.Items[i].Items[0].Count - 1 then begin
+            m.Items[i].Items[0].Items[r + 1].Checked := true;
             inc(CID); TotalTime := UpdateLen; //针对不带chapter属性的mplayer
           end;
         end;
@@ -2370,17 +2499,19 @@ begin
     Val(Copy(Line, 13, MaxInt), i, r);
     if (r = 0) and (i >= 0) then begin
       CID := i + 1;
-      r := CheckMenu(MainForm.MDVDT, TID);
-      if r < 0 then r := SubMenu_Add(MainForm.MDVDT, TID, TID, nil);
-      if CheckMenu(MainForm.MDVDT.Items[r], 0) < 0 then begin
-        t := TTntMenuItem.Create(MainForm.MDVDT.Items[r]);
+      if bluray then m:= MainForm.MBRT
+      else m:= MainForm.MDVDT;
+      r := CheckMenu(m, TID);
+      if r < 0 then r := SubMenu_Add(m, TID, TID, nil);
+      if CheckMenu(m.Items[r], 0) < 0 then begin
+        t := TTntMenuItem.Create(m.Items[r]);
         t.Caption := Ccap; t.Tag := 0; t.GroupIndex := $0A;
-        MainForm.MDVDT.Items[r].Add(t);
+        m.Items[r].Add(t);
       end;
-      i := CheckMenu(MainForm.MDVDT.Items[r].Items[0], CID);
+      i := CheckMenu(m.Items[r].Items[0], CID);
       if i < 0 then
-        SubMenu_Add(MainForm.MDVDT.Items[r].Items[0], CID, CID, MainForm.MDVDCClick)
-      else MainForm.MDVDT.Items[r].Items[0].Items[i].Checked := true;
+        SubMenu_Add(m.Items[r].Items[0], CID, CID, MainForm.MDVDCClick)
+      else m.Items[r].Items[0].Items[i].Checked := true;
     end;
     exit;
   end;
@@ -2434,9 +2565,13 @@ begin
   if not CheckVobsubID then
     if not CheckVobsubLang then
       if not CheckDVDT then
+      if not CheckBRT then
         if not CheckDVDC then
+        if not CheckBRC then
           if not CheckDVDA then
+          if not CheckBRA then
             if not CheckDVDTL then
+            if not CheckBRTL then
               if not CheckVCDTL then
               if not CheckVCDT then
               if not CheckCDTL then
@@ -2570,7 +2705,7 @@ begin
   LyricF := 'Tahoma'; LyricS := 8; MaxLenLyricA := ''; MaxLenLyricW := ''; UseekC := true;
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
   lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := true; ADls:=true;
-  dsEnd:=false; br:=false; UpdatePos:=true; fup:=true; avThread:='1'; uav:=false; AutoDs:=True;
-  ResetStreamInfo;
+  dsEnd:=false; UpdatePos:=true; fup:=true; avThread:='1'; uav:=false; AutoDs:=True;
+  bluray:=false; dvd:=false; ResetStreamInfo;
 end.
 

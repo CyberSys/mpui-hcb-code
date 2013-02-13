@@ -1904,7 +1904,7 @@ object MainForm: TMainForm
           OnClick = SimulateKey
         end
         object MRnMenu: TTntMenuItem
-          Tag = -1
+          Tag = -4
           Caption = 'Return to nearest menu'
           OnClick = SimulateKey
         end
@@ -1913,6 +1913,11 @@ object MainForm: TMainForm
           Caption = '-'
           Visible = False
         end
+      end
+      object MBRT: TTntMenuItem
+        Caption = 'BlueRay Titles'
+        GroupIndex = 169
+        Visible = False
       end
       object N19: TTntMenuItem
         Caption = '-'

@@ -130,9 +130,11 @@ var i:integer;
 begin
   if (not Running) or (Pos('tv://', MediaURL) = 0) then TOpenClick(nil);
   if Status <> sPaused then MainForm.BPlayClick(nil);
+  if HK.Items.Count = 0 then exit;
   i:=(Sender as TTntButton).tag;
   if (HK.ItemIndex<0) then HK.ItemIndex:=0;
-  if (HK.ItemIndex=0) and (i=-1) then i:=1;
+  if (HK.ItemIndex=0) and (i=-1) then i:=0;
+  if (HK.ItemIndex+i)> HK.Items.Count -1 then exit;
   SendCommand('tv_set_freq '+ HK.Items[HK.ItemIndex+i].SubItems.Strings[0]);
   HK.Items[HK.ItemIndex+i].Selected:=true;
 end;

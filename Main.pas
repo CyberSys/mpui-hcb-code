@@ -333,6 +333,7 @@ type
     HZ1: TTntMenuItem;
     ISO885921: TTntMenuItem;
     WINDOWS12501: TTntMenuItem;
+    MBRT: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -946,7 +947,7 @@ begin
 end;
 
 procedure TMainForm.HotKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-var i, j: integer;
+var i, j: integer; t:TMenuItem;
   procedure HandleCommand(const Command: string); begin
     if not Win32PlatformIsUnicode then exit;
     SendCommand(Command);
@@ -1110,7 +1111,7 @@ begin
             Ord('K'): if Dnav then HandleCommand('dvdnav 2'); {down}
             Ord('J'): if Dnav then HandleCommand('dvdnav 3'); {left}
             Ord('L'): if Dnav then HandleCommand('dvdnav 4'); {right}
-          {;:} 186: if Dnav then HandleCommand('dvdnav prev');
+            {;:} 186: if Dnav then HandleCommand('dvdnav prev');
             Ord('N'): NextAspect;
             Ord('B'): NextSub;
             Ord('Q'): NextVideo;
@@ -1128,7 +1129,7 @@ begin
       Ord('L'): MOpenURLClick(nil);
       Ord('W'): MCloseClick(nil);
       Ord('S'): BStopClick(nil);
-    {`~} 192: MPanClick(nil);
+      {`~} 192: MPanClick(nil);
       Ord('Q'): Close;
       Ord('D'): MOpenDirClick(nil);
       VK_BACK: MAudioDelay2Click(nil);
@@ -1157,33 +1158,35 @@ begin
           VK_PRIOR: HandleSeekCommand('seek +600');
           VK_NEXT: HandleSeekCommand('seek -600');
           VK_HOME: begin
-                     i := CheckMenu(MDVDT, TID);
-                     if (i > 2) and HaveChapters then begin
-                       j := CheckMenu(MDVDT.Items[i].Items[0], CID);
-                       if j < MDVDT.Items[i].Items[0].Count - 1 then begin
-                         if UseekC then HandleSeekCommand('seek_chapter +1');
-                         MDVDT.Items[i].Items[0].Items[j + 1].Checked := true;
-                         inc(CID);
-                         if not Useekc then begin
-                           Dreset:=true;
-                           Restart;
-                         end;
-                       end;
+                     if bluray then t:= MBRT
+                     else t:= MDVDT;
+                     i := CheckMenu(t, TID);
+                     if i < 0 then exit;
+                     if CheckMenu(t.Items[i],0)<0 then exit;
+                     j := CheckMenu(t.Items[i].Items[0], CID+1);
+                     if j < 0 then exit;
+                     t.Items[i].Items[0].Items[j].Checked := true;
+                     inc(CID);
+                     if UseekC then HandleSeekCommand('seek_chapter +1')
+                     else begin
+                       Dreset:=true;
+                       Restart;
                      end;
                    end;
           VK_END: begin
-                    i := CheckMenu(MDVDT, TID);
-                    if (i > 2) and HaveChapters then begin
-                      j := CheckMenu(MDVDT.Items[i].Items[0], CID);
-                      if j > 0 then begin
-                        if UseekC then HandleSeekCommand('seek_chapter -1');
-                        MDVDT.Items[i].Items[0].Items[j - 1].Checked := true;
-                        dec(CID);
-                        if not Useekc then begin
-                          Dreset:=true;
-                          Restart;
-                        end;
-                      end;
+                    if bluray then t:= MBRT
+                    else t:= MDVDT;
+                    i := CheckMenu(t, TID);
+                    if i < 0 then exit;
+                    if CheckMenu(t.Items[i],0)<0 then exit;
+                    j := CheckMenu(t.Items[i].Items[0], CID-1);
+                    if j < 0 then exit;
+                    t.Items[i].Items[0].Items[j].Checked := true;
+                    dec(CID);
+                    if UseekC then HandleSeekCommand('seek_chapter -1')
+                    else begin
+                      Dreset:=true;
+                      Restart;
                     end;
                   end;
           VK_BACK: MSpeedClick(M1X);
@@ -1784,21 +1787,24 @@ begin
 end;
 
 procedure TMainForm.MDVDCClick(Sender: TObject);
-var index, r: integer;
+var index, r: integer; t:TMenuItem;
 begin
-  r := CheckMenu(MainForm.MDVDT, TID);
-  index := CheckMenu(MainForm.MDVDT.Items[r].Items[0], CID);
-  MainForm.MDVDT.Items[r].Items[0].Items[index].Checked := false;
+  if bluray then t:=MBRT
+  else t:=MDVDT;
+  r := CheckMenu(t, TID);
+  if r<0 then exit;
+  index := CheckMenu(t.Items[r].Items[0], CID);
+  t.Items[r].Items[0].Items[index].Checked := false;
   CID := (Sender as TTntMenuItem).Tag;
   index := (Sender as TTntMenuItem).Parent.Parent.Tag;
   (Sender as TTntMenuItem).Checked := True;
   if UseekC and (TID = index) and Win32PlatformIsUnicode then begin
-    if Dnav then SendCommand('switch_title ' + IntToStr(TID));
+    if Dnav and dvd then SendCommand('switch_title ' + IntToStr(TID));
     SendCommand('seek_chapter ' + IntToStr(CID - 1) + ' 1')
   end
   else begin
     TID := index; Dreset := true;
-    if Dnav then SendCommand('switch_title ' + IntToStr(TID))
+    if Dnav and dvd then SendCommand('switch_title ' + IntToStr(TID))
     else Restart;
   end;
 end;
@@ -1813,7 +1819,7 @@ begin
   AID := (Sender as TTntMenuItem).Tag;
   (Sender as TTntMenuItem).Checked := True;
   if UseekC and Win32PlatformIsUnicode and (not Dnav)then
-    SendCommand('switch_angle ' + IntToStr(AID))
+    SendCommand('switch_angle ' + IntToStr(AID -1))
   else begin
     Dreset := true; Restart;
   end;
@@ -2262,13 +2268,22 @@ begin
 end;
 
 procedure TMainForm.NextAngle;
+var i:integer; t:TMenuItem;
 begin
-  if MDVDT.Count = 3 then exit;
-  if MDVDT.Items[TID + 2].Items[1].Count < 2 then exit;
+  if bluray then t:= MBRT
+  else t:= MDVDT;
+  i := CheckMenu(t, TID);
+  if i < 0 then exit;
+  if CheckMenu(t.Items[i], 1) < 0 then exit;
+  if t.Items[i].Items[1].Count < 2 then exit;
   if AID < 1 then AID := 1;
-  AID := AID mod MDVDT.Items[TID + 2].Items[1].Count + 1;
-  MDVDT.Items[TID + 2].Items[1].Items[AID - 1].Checked := True;
-  SendCommand('switch_angle ' + IntToStr(AID));
+  AID := AID mod t.Items[i].Items[1].Count + 1;
+  t.Items[i].Items[1].Items[AID - 1].Checked := True;
+  if UseekC and Win32PlatformIsUnicode and (not Dnav)then
+    SendCommand('switch_angle ' + IntToStr(AID-1))
+  else begin
+    Dreset := true; Restart;
+  end;
 end;
 
 procedure TMainForm.NextSub;
