@@ -177,11 +177,9 @@ begin
     sStopped: MainForm.LStatus.Caption := LOCstr_Status_Stopped;
     sError: MainForm.LStatus.Caption := LOCstr_Status_Error;
   end;
-  if MainForm.MDVDT.Count > 3 then begin
-    for i := 3 to MainForm.MDVDT.Count - 1 do begin
-      MainForm.MDVDT.Items[i].Items[0].Caption := Ccap;
-      MainForm.MDVDT.Items[i].Items[1].Caption := Acap;
-    end;
+  for i := 3 to MainForm.MDVDT.Count - 1 do begin
+    MainForm.MDVDT.Items[i].Items[0].Caption := Ccap;
+    MainForm.MDVDT.Items[i].Items[1].Caption := Acap;
   end;
   for i := 0 to MainForm.MBRT.Count - 1 do begin
     MainForm.MBRT.Items[i].Items[0].Caption := Ccap;

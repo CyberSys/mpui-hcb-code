@@ -116,7 +116,7 @@ var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread,cl: WideString;
   MplayerLocation, WadspL, AsyncV, CacheV: widestring;
   MAspect, subcode, MaxLenLyricA, VideoOut: string;
   FirstOpen, PClear, Fd, Async, Cache, uof, oneM, FilterDrop,AutoDs: boolean;
-  Wid, Dreset, UpdateSkipBar, Pri, HaveChapters, HaveMsg, skip,bluray,dvd: boolean;
+  Wid, Dreset, UpdateSkipBar, Pri, HaveChapters, HaveMsg, skip,bluray,dvd,vcd: boolean;
   CT, RP, RS, SP, AutoPlay, ETime, InSubDir, SPDIF, ML, GUI, PScroll: boolean;
   Shuffle, Loop, OneLoop, Uni, Utf, UseUni,ADls: boolean;
   ControlledResize, ni, nobps, Dnav, IsDMenu, SMenu, lavf, UseekC, vsync: boolean;
@@ -665,7 +665,7 @@ var DummyPipe1, DummyPipe2: THandle;
   Success: boolean; Error: DWORD;
   ErrorMessage: array[0..1023] of Char;
   ErrorMessageW: array[0..1023] of WideChar;
-  i, t, h: integer; UnRART: TUnRARThread;
+  i, t, h: integer; UnRART: TUnRARThread; m:TMenuItem;
 begin
   if Running or (length(MediaURL) = 0) then exit;
   Status := sOpening; IsPause := false; IsDx := false;
@@ -983,14 +983,17 @@ begin
   end;
   bluray:= Copy(MediaURL, 1, 15) = ' -bluray-device';
   dvd:= Copy(MediaURL, 1, 12) = ' -dvd-device';
-  if dvd or bluray then begin
+  vcd:=Copy(MediaURL, 1, 14) = ' -cdrom-device';
+  if dvd or bluray or vcd then begin
     if TotalTime > 0 then begin
       i := 0;
       if HaveChapters and (CID > 1) then begin
-        t := CheckMenu(MainForm.MDVDT, TID);
-        {if Dnav then i:=CheckMenu(MainForm.MDVDT.Items[t].Items[0],CID-1)
-        else } i := CheckMenu(MainForm.MDVDT.Items[t].Items[0], CID);
-        s := MainForm.MDVDT.Items[t].Items[0].Items[i].Caption;
+      	if bluray then m:=MainForm.MBRT
+      	else m:=MainForm.MDVDT; 
+        t := CheckMenu(m, TID);
+        {if Dnav then i:=CheckMenu(m.Items[t].Items[0],CID-1)
+        else } i := CheckMenu(m.Items[t].Items[0], CID);
+        s := m.Items[t].Items[0].Items[i].Caption;
         s := Copy(s, pos('(', s) + 1, 8);
         i := TimeToSeconds(s);
       end;
@@ -1905,7 +1908,7 @@ var r, i, j, p, len: integer; s: string; f: real;
     {if Dnav then begin //caption=endTime
       if a=0 then r:=TimeToSeconds(copy(s,i+1,8))
       else begin
-        k:=MainForm.MDVDT.Items[r].Items[0].Items[a-1].Caption;
+        k:=m.Items[r].Items[0].Items[a-1].Caption;
         j:=pos('(',k); r:=TimeToSeconds(copy(s,i+1,8))-TimeToSeconds(copy(k,j+1,8));
       end;
     end
@@ -2706,6 +2709,6 @@ begin
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
   lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := true; ADls:=true;
   dsEnd:=false; UpdatePos:=true; fup:=true; avThread:='1'; uav:=false; AutoDs:=True;
-  bluray:=false; dvd:=false; ResetStreamInfo;
+  bluray:=false; dvd:=false; vcd:=false; ResetStreamInfo;
 end.
 
