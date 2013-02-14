@@ -553,7 +553,7 @@ begin
     Directory:=WideExcludeTrailingPathDelimiter(Directory);
     with Entry do begin
       State := psNotPlayed;
-     	s:=' -cdrom-device '; a:='CD-1 <-- '; d:=' cdda://';
+     	s:=' -cdrom-device '; a:='CD <-- '; d:=' cdda://';
       if IsWideStringMappableToAnsi(Directory) then
         FullURL := s + EscapeParam(Directory) + d
       else
@@ -567,7 +567,7 @@ begin
     exit;
   end;
 
-  {if WideDirectoryExists(Directory + 'MPEGAV') then begin
+{  if WideDirectoryExists(Directory + 'MPEGAV') or WideDirectoryExists(Directory + 'MPEG2') then begin
     Directory:=WideExcludeTrailingPathDelimiter(Directory);
     with Entry do begin
       State := psNotPlayed;
@@ -579,7 +579,7 @@ begin
     end;
     if not EndOpenDir then Add(Entry);
     exit;
-  end; }
+  end;}
 
   // no CD ->is it a (S)VCD directory?
   if WideDirectoryExists(Directory + 'MPEGAV') then Directory := Directory + 'MPEGAV\'

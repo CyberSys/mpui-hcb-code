@@ -116,7 +116,7 @@ var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread,cl: WideString;
   MplayerLocation, WadspL, AsyncV, CacheV: widestring;
   MAspect, subcode, MaxLenLyricA, VideoOut: string;
   FirstOpen, PClear, Fd, Async, Cache, uof, oneM, FilterDrop,AutoDs: boolean;
-  Wid, Dreset, UpdateSkipBar, Pri, HaveChapters, HaveMsg, skip,bluray,dvd,vcd: boolean;
+  Wid, Dreset, UpdateSkipBar, Pri, HaveChapters, HaveMsg, skip,bluray,dvd,vcd,cd: boolean;
   CT, RP, RS, SP, AutoPlay, ETime, InSubDir, SPDIF, ML, GUI, PScroll: boolean;
   Shuffle, Loop, OneLoop, Uni, Utf, UseUni,ADls: boolean;
   ControlledResize, ni, nobps, Dnav, IsDMenu, SMenu, lavf, UseekC, vsync: boolean;
@@ -983,8 +983,9 @@ begin
   end;
   bluray:= Copy(MediaURL, 1, 15) = ' -bluray-device';
   dvd:= Copy(MediaURL, 1, 12) = ' -dvd-device';
-  vcd:=Copy(MediaURL, 1, 14) = ' -cdrom-device';
-  if dvd or bluray or vcd then begin
+  cd:=pos('cdda://',MediaURL)>0;
+  vcd:=pos('vcd://',MediaURL)>0;
+  if dvd or bluray then begin
     if TotalTime > 0 then begin
       i := 0;
       if HaveChapters and (CID > 1) then begin
@@ -1002,7 +1003,7 @@ begin
     if LastPos > 0 then begin
       SecondPos := LastPos; CmdLine := CmdLine + ' -ss ' + SecondsToTime(LastPos); end;
 
-    if Dnav and (not bluray) then begin
+    if Dnav and dvd then begin
       CmdLine := CmdLine + ' -nocache';
       CmdLine := CmdLine + MediaURL + 'nav://';
     end
@@ -1031,7 +1032,7 @@ begin
   else begin
     if LastPos > 0 then CmdLine := CmdLine + ' -ss ' + SecondsToTime(LastPos);
     if Cache then CmdLine := CmdLine + ' -cache ' + CacheV;
-    if Copy(MediaURL, 1, 14) = ' -cdrom-device' then begin
+    if cd or vcd then begin
       CmdLine := CmdLine + MediaURL;
       if CDID > 1 then CmdLine := CmdLine + IntToStr(CDID);
     end
@@ -1067,6 +1068,7 @@ begin
     MAudio.Clear; MAudio.Visible := false;
     MSubtitle.Clear; MSubtitle.Visible := false;
     MVCDT.Clear; MVCDT.Visible := false;
+    MCDT.Clear; MCDT.Visible:= false;
   end;
 
   with sec do begin
@@ -1365,7 +1367,7 @@ var r, i, j, p, len: integer; s: string; f: real;
   var a: integer; Entry: TPlaylistEntry;
   begin
     Result := false;
-    if (len > 14) and (Copy(Line, 1, 17) = 'ID_BLURAY_TITLES=') then begin
+    if (len > 17) and (Copy(Line, 1, 17) = 'ID_BLURAY_TITLES=') then begin
       Val(Copy(Line, 18, MaxInt), i, r);
       if (r = 0) and (i > 0) and (i < 8191) then begin
         for a := 1 to i do begin
@@ -1439,7 +1441,7 @@ var r, i, j, p, len: integer; s: string; f: real;
   var k: integer;
   begin
     Result := false;
-    if (len > 13) and (Copy(Line, 1, 16) = 'ID_BLURAY_TITLE_') then begin
+    if (len > 16) and (Copy(Line, 1, 16) = 'ID_BLURAY_TITLE_') then begin
       s := Copy(Line, 17, MaxInt);
       p := Pos('_CHAPTERS=', s);
       if p <= 0 then exit;
@@ -1505,7 +1507,7 @@ var r, i, j, p, len: integer; s: string; f: real;
   var k: integer;
   begin
     Result := false;
-    if (len > 13) and (Copy(Line, 1, 16) = 'ID_BLURAY_TITLE_') then begin
+    if (len > 16) and (Copy(Line, 1, 16) = 'ID_BLURAY_TITLE_') then begin
       s := Copy(Line, 17, MaxInt);
       p := Pos('_ANGLE=', s);
       if p <= 0 then exit;
@@ -1570,7 +1572,7 @@ var r, i, j, p, len: integer; s: string; f: real;
   function CheckBRTL: boolean;
   begin
     Result := false;
-    if (len > 13) and (Copy(Line, 1, 16) = 'ID_BLURAY_TITLE_') then begin
+    if (len > 16) and (Copy(Line, 1, 16) = 'ID_BLURAY_TITLE_') then begin
       s := Copy(Line, 17, MaxInt);
       p := Pos('_LENGTH=', s);
       if p <= 0 then exit;
@@ -1687,6 +1689,19 @@ var r, i, j, p, len: integer; s: string; f: real;
     end;
   end;
 
+  function CheckCDCT: boolean;
+  begin
+    Result := false;
+    if (len > 14) and (Copy(Line, 1, 14) = 'ID_CDDA_TRACK=') then begin
+      Val(Copy(Line, 15, MaxInt), i, r);
+      if (r = 0) and (i > 0) and (i < 8191) then begin
+        if CheckMenu(MainForm.MCDT, i) < 0 then
+          SubMenu_Add(MainForm.MCDT, i, CDID, MainForm.MVCDTClick);
+        MainForm.MCDT.Items[CheckMenu(MainForm.MCDT, i)].Checked:=true;
+      end;
+      Result := true;
+    end;
+  end;
 
   function CheckCDTL: boolean;
   begin
@@ -1709,10 +1724,8 @@ var r, i, j, p, len: integer; s: string; f: real;
   var k: integer;
   begin
     Result := false;
-    if (len > 20) and (Copy(Line, 1, 20) = 'Found audio CD with ') then begin
-      s:= Copy(Line, 21, Maxint);
-      s:= Copy(s, 1, length(s)-8);
-      Val(s, i, r);
+    if (len > 15) and (Copy(Line, 1, 15) = 'ID_CDDA_TRACKS=') then begin
+      Val(Copy(Line, 16, Maxint), i, r);
       if (r = 0) and (i >= 0) and (i < 8191) then begin
         for k := 1 to i do begin
           if CheckMenu(MainForm.MCDT, k) < 0 then
@@ -1889,38 +1902,53 @@ var r, i, j, p, len: integer; s: string; f: real;
   function UpdateLen: integer;
   var k: string; a: integer;
   begin
-    Result := TotalTime;
+    Result := TotalTime; r:=0;
     if bluray then m:= MainForm.MBRT
-    else m:= MainForm.MDVDT;
-    r := CheckMenu(m, TID);
-    if r < 0 then r := SubMenu_Add(m, TID, TID, nil);
-    if CheckMenu(m.Items[r], 0) < 0 then begin
-      t := TTntMenuItem.Create(m.Items[r]);
-      t.Caption := Ccap; t.Tag := 0; t.GroupIndex := $0A;
-      m.Items[r].Add(t);
-    end;
-    a := CheckMenu(m.Items[r].Items[0], CID);
-    if a < 0 then
-      a := SubMenu_Add(m.Items[r].Items[0], CID, CID, MainForm.MDVDCClick);
-
-    s := m.Items[r].Items[0].Items[a].Caption;
-    i := pos('(', s);
-    {if Dnav then begin //caption=endTime
-      if a=0 then r:=TimeToSeconds(copy(s,i+1,8))
-      else begin
-        k:=m.Items[r].Items[0].Items[a-1].Caption;
-        j:=pos('(',k); r:=TimeToSeconds(copy(s,i+1,8))-TimeToSeconds(copy(k,j+1,8));
+    else if dvd then m:= MainForm.MDVDT
+    else if cd then m:= MainForm.MCDT
+    else m:= MainForm.MVCDT;
+    if dvd or bluray then begin
+      r := CheckMenu(m, TID);
+      if r < 0 then r := SubMenu_Add(m, TID, TID, nil);
+      if CheckMenu(m.Items[r], 0) < 0 then begin
+        t := TTntMenuItem.Create(m.Items[r]);
+        t.Caption := Ccap; t.Tag := 0; t.GroupIndex := $0A;
+        m.Items[r].Add(t);
       end;
+      a := CheckMenu(m.Items[r].Items[0], CID);
+      if a < 0 then
+        a := SubMenu_Add(m.Items[r].Items[0], CID, CID, MainForm.MDVDCClick);
+
+      s := m.Items[r].Items[0].Items[a].Caption;
+      i := pos('(', s);
+      {if Dnav then begin //caption=endTime
+        if a=0 then r:=TimeToSeconds(copy(s,i+1,8))
+        else begin
+          k:=m.Items[r].Items[0].Items[a-1].Caption;
+          j:=pos('(',k); r:=TimeToSeconds(copy(s,i+1,8))-TimeToSeconds(copy(k,j+1,8));
+        end;
+      end
+      else begin }//caption=startTime
+      if a = m.Items[r].Items[0].Count - 1 then begin
+        if TTime > 0 then r := TTime - TimeToSeconds(copy(s, i + 1, 8));
+      end
+      else begin
+        k := m.Items[r].Items[0].Items[a + 1].Caption;
+        j := pos('(', k); r := TimeToSeconds(copy(k, j + 1, 8)) - TimeToSeconds(copy(s, i + 1, 8));
+      end;
+      //end;
     end
-    else begin //caption=startTime}
-    if a = m.Items[r].Items[0].Count - 1 then begin
-      if TTime > 0 then r := TTime - TimeToSeconds(copy(s, i + 1, 8));
-    end
-    else begin
-      k := m.Items[r].Items[0].Items[a + 1].Caption;
-      j := pos('(', k); r := TimeToSeconds(copy(k, j + 1, 8)) - TimeToSeconds(copy(s, i + 1, 8));
+    else if cd or vcd then begin
+      r:=CheckMenu(m,CDID);
+      if r>-1 then begin
+        s:=m.Items[r].Caption;
+        i:=pos('(',s);
+        if i>0 then begin
+          s:='00:'+copy(copy(s,i+1,MaxInt),1,5);
+          r:= TimeToSeconds(s);
+        end;
+      end;
     end;
-    //end;
     if r > 0 then Result := r;
     Duration := SecondsToTime(Result);
     StreamInfo.PlaybackTime := Duration;
@@ -2579,6 +2607,7 @@ begin
               if not CheckVCDT then
               if not CheckCDTL then
               if not CheckCDT then
+              if not CheckCDCT then
                 if not CheckChapterLen then
                   if not CheckVideoID then
                     if not CheckVideoName then
@@ -2709,6 +2738,6 @@ begin
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
   lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := true; ADls:=true;
   dsEnd:=false; UpdatePos:=true; fup:=true; avThread:='1'; uav:=false; AutoDs:=True;
-  bluray:=false; dvd:=false; vcd:=false; ResetStreamInfo;
+  bluray:=false; dvd:=false; vcd:=false; cd:=false; ResetStreamInfo;
 end.
 
