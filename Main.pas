@@ -1167,10 +1167,18 @@ begin
                      if j < 0 then exit;
                      t.Items[i].Items[0].Items[j].Checked := true;
                      inc(CID);
-                     if UseekC then HandleSeekCommand('seek_chapter +1')
+                     if Running then begin
+                       if UseekC then HandleSeekCommand('seek_chapter +1')
+                       else begin
+                         Dreset:=true;
+                         Restart;
+                       end;
+                     end
                      else begin
-                       Dreset:=true;
-                       Restart;
+                       MSecPos := -1;  LastPos := 0; SecondPos := -1; Duration := '0:00:00';
+                       SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; Dreset := true;
+                       Start;
+                       exit;
                      end;
                    end;
           VK_END: begin
@@ -1183,10 +1191,18 @@ begin
                     if j < 0 then exit;
                     t.Items[i].Items[0].Items[j].Checked := true;
                     dec(CID);
-                    if UseekC then HandleSeekCommand('seek_chapter -1')
+                    if Running then begin
+                      if UseekC then HandleSeekCommand('seek_chapter -1')
+                      else begin
+                        Dreset:=true;
+                        Restart;
+                      end;
+                    end
                     else begin
-                      Dreset:=true;
-                      Restart;
+                      MSecPos := -1;  LastPos := 0; SecondPos := -1; Duration := '0:00:00';
+                      SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; Dreset := true;
+                      Start;
+                      exit;
                     end;
                   end;
           VK_BACK: MSpeedClick(M1X);
@@ -1789,6 +1805,7 @@ end;
 procedure TMainForm.MDVDCClick(Sender: TObject);
 var index, r: integer; t:TMenuItem;
 begin
+  if (Sender as TTntMenuItem).Checked then exit;
   if bluray then t:=MBRT
   else t:=MDVDT;
   r := CheckMenu(t, TID);
@@ -1798,6 +1815,14 @@ begin
   CID := (Sender as TTntMenuItem).Tag;
   index := (Sender as TTntMenuItem).Parent.Parent.Tag;
   (Sender as TTntMenuItem).Checked := True;
+  if not Running then begin
+    MSecPos := -1;  LastPos := 0; SecondPos := -1; Duration := '0:00:00';
+    SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible;
+    if TID<>index then begin TID := index; AID:=1 end;
+    Dreset := true;
+    Start;
+    exit;
+  end;
   if UseekC and (TID = index) and Win32PlatformIsUnicode then begin
     if Dnav and dvd then SendCommand('switch_title ' + IntToStr(TID));
     SendCommand('seek_chapter ' + IntToStr(CID - 1) + ' 1')
@@ -1818,6 +1843,11 @@ begin
   (Sender as TTntMenuItem).Parent.Items[index].Checked := false;
   AID := (Sender as TTntMenuItem).Tag;
   (Sender as TTntMenuItem).Checked := True;
+  if not Running then begin
+    Dreset := true;
+    Start;
+    exit;
+  end;
   if UseekC and Win32PlatformIsUnicode and (not Dnav)then
     SendCommand('switch_angle ' + IntToStr(AID -1))
   else begin
@@ -1828,14 +1858,14 @@ end;
 procedure TMainForm.MVCDTClick(Sender: TObject);
 begin
   if (Sender as TTntMenuItem).Checked then exit;
-  UpdateParams;
+  MSecPos := -1;  LastPos := 0; SecondPos := -1; TotalTime := 0; Duration := '0:00:00';
+  SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; Firstrun := true; FirstOpen := true;
   CDID := (Sender as TTntMenuItem).Tag;
   (Sender as TTntMenuItem).Checked := True;
   ForceStop;
   Sleep(50); // wait for the processing threads to finish
   Application.ProcessMessages;
   Start;
-  MainForm.UpdateSeekBar;
 end;
 
 procedure TMainForm.UpdateMenus(Sender: TObject);
@@ -2284,6 +2314,11 @@ begin
   if AID < 1 then AID := 1;
   AID := AID mod t.Items[i].Items[1].Count + 1;
   t.Items[i].Items[1].Items[AID - 1].Checked := True;
+  if not Running then begin
+    Dreset := true;
+    Start;
+    exit;
+  end;
   if UseekC and Win32PlatformIsUnicode and (not Dnav)then
     SendCommand('switch_angle ' + IntToStr(AID-1))
   else begin

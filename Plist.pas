@@ -519,9 +519,9 @@ begin
       State := psNotPlayed; 
      	s:=' -dvd-device '; a:='DVD-1 <-- '; d:=' dvd';
       if IsWideStringMappableToAnsi(Directory) then
-        FullURL := s + EscapeParam(Directory + 'VIDEO_TS') + d
+        FullURL := s + EscapeParam(Directory) + d
       else
-        FullURL := s + EscapeParam(WideExtractShortPathName(Directory + 'VIDEO_TS')) + d;
+        FullURL := s + EscapeParam(WideExtractShortPathName(Directory)) + d;
       DisplayURL := a + Directory;
     end;
     if not EndOpenDir then begin

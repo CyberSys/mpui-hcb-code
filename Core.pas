@@ -1461,7 +1461,7 @@ var r, i, j, p, len: integer; s: string; f: real;
               if i = TID then
                 SubMenu_Add(MainForm.MBRT.Items[r].Items[0], k, CID, MainForm.MDVDCClick)
               else
-                SubMenu_Add(MainForm.MBRT.Items[r].Items[0], k, 1, MainForm.MDVDCClick);
+                SubMenu_Add(MainForm.MBRT.Items[r].Items[0], k, 0, MainForm.MDVDCClick);
             end;
           end;
         end;
@@ -1494,7 +1494,7 @@ var r, i, j, p, len: integer; s: string; f: real;
               if i = TID then
                 SubMenu_Add(MainForm.MDVDT.Items[r].Items[0], k, CID, MainForm.MDVDCClick)
               else
-                SubMenu_Add(MainForm.MDVDT.Items[r].Items[0], k, 1, MainForm.MDVDCClick);
+                SubMenu_Add(MainForm.MDVDT.Items[r].Items[0], k, 0, MainForm.MDVDCClick);
             end;
           end;
         end;
@@ -1527,7 +1527,7 @@ var r, i, j, p, len: integer; s: string; f: real;
               if i = TID then
                 SubMenu_Add(MainForm.MBRT.Items[r].Items[1], k, AID, MainForm.MDVDAClick)
               else
-                SubMenu_Add(MainForm.MBRT.Items[r].Items[1], k, 1, MainForm.MDVDAClick);
+                SubMenu_Add(MainForm.MBRT.Items[r].Items[1], k, 0, MainForm.MDVDAClick);
             end;
           end;
         end;
@@ -1560,7 +1560,7 @@ var r, i, j, p, len: integer; s: string; f: real;
               if i = TID then
                 SubMenu_Add(MainForm.MDVDT.Items[r].Items[1], k, AID, MainForm.MDVDAClick)
               else
-                SubMenu_Add(MainForm.MDVDT.Items[r].Items[1], k, 1, MainForm.MDVDAClick);
+                SubMenu_Add(MainForm.MDVDT.Items[r].Items[1], k, 0, MainForm.MDVDAClick);
             end;
           end;
         end;
@@ -1696,8 +1696,8 @@ var r, i, j, p, len: integer; s: string; f: real;
       Val(Copy(Line, 15, MaxInt), i, r);
       if (r = 0) and (i > 0) and (i < 8191) then begin
         if CheckMenu(MainForm.MCDT, i) < 0 then
-          SubMenu_Add(MainForm.MCDT, i, CDID, MainForm.MVCDTClick);
-        MainForm.MCDT.Items[CheckMenu(MainForm.MCDT, i)].Checked:=true;
+          SubMenu_Add(MainForm.MCDT, i, i, MainForm.MVCDTClick);
+        CDID:=i;
       end;
       Result := true;
     end;
