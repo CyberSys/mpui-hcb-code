@@ -1754,12 +1754,6 @@ object MainForm: TMainForm
         Caption = 'Speed'
         GroupIndex = 169
         ImageIndex = 2
-        object MN8X: TTntMenuItem
-          Caption = '-8X'
-          GroupIndex = 54
-          RadioItem = True
-          OnClick = MSpeedClick
-        end
         object MN4X: TTntMenuItem
           Tag = 1
           Caption = '-4X'
@@ -1792,13 +1786,6 @@ object MainForm: TMainForm
         object M4X: TTntMenuItem
           Tag = 5
           Caption = '4X'
-          GroupIndex = 54
-          RadioItem = True
-          OnClick = MSpeedClick
-        end
-        object M8X: TTntMenuItem
-          Tag = 6
-          Caption = '8X'
           GroupIndex = 54
           RadioItem = True
           OnClick = MSpeedClick

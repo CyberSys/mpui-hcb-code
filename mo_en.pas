@@ -126,13 +126,11 @@ begin
       MNext.Caption:='Next title';
       MShowPlaylist.Caption:='Playlist ...';
       MSpeed.Caption:='Play Speed';
-        MN8X.Caption:='1/8X';
         MN4X.Caption:='1/4X';
         MN2X.Caption:='1/2X';
         M1X.Caption:='1X';
         M2X.Caption:='2X';
         M4X.Caption:='4X';
-        M8X.Caption:='8X';
       MAudiochannels.Caption:='Channel';
         MStereo.Caption:='Stereo';
         MLchannels.Caption:='Left channels';
@@ -372,6 +370,7 @@ begin
     LHelp.Caption:=THelp.Caption;
     SLyric.Caption:='Lyric folder';
     TLyric.Caption:='Lyric';
+    TLog.Caption:='Log';
     LScroll.Caption:='Smooth scroll';
     LTCL.Caption:='Text Color';
     LBCL.Caption:='Background';

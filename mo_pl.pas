@@ -124,13 +124,11 @@ begin
       MNext.Caption:=UTF8Decode('Następny');
       MShowPlaylist.Caption:=UTF8Decode('Lista odtwarzania...');
       MSpeed.Caption:=UTF8Decode('Prędkość odtwarzania');
-        MN8X.Caption:='1/8X';
         MN4X.Caption:='1/4X';
         MN2X.Caption:='1/2X';
         M1X.Caption:='1X';
         M2X.Caption:='2X';
         M4X.Caption:='4X';
-        M8X.Caption:='8X';
       MAudiochannels.Caption:=UTF8Decode('Kanały');
         MStereo.Caption:=UTF8Decode('Tryb stereo');
         MLchannels.Caption:=UTF8Decode('Lewy kanał');

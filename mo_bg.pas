@@ -120,13 +120,11 @@ begin
       MNext.Caption:=UTF8Decode('Следващо заглавие');
       MShowPlaylist.Caption:=UTF8Decode('Плейлист ...');
       MSpeed.Caption:=UTF8Decode('Скорост на изпълнение');
-        MN8X.Caption:=UTF8Decode('1/8X');
         MN4X.Caption:=UTF8Decode('1/4X');
         MN2X.Caption:=UTF8Decode('1/2X');
         M1X.Caption:=UTF8Decode('1X');
         M2X.Caption:=UTF8Decode('2X');
         M4X.Caption:=UTF8Decode('4X');
-        M8X.Caption:=UTF8Decode('8X');
       MAudiochannels.Caption:=UTF8Decode('Аудио канали');
         MStereo.Caption:=UTF8Decode('Стерео');
         MLchannels.Caption:=UTF8Decode('Ляв канал');

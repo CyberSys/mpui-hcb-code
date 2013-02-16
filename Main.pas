@@ -143,13 +143,11 @@ type
     MSubExpand: TTntMenuItem;
     N12: TTntMenuItem;
     MSpeed: TTntMenuItem;
-    MN8X: TTntMenuItem;
     MN4X: TTntMenuItem;
     MN2X: TTntMenuItem;
     M1X: TTntMenuItem;
     M2X: TTntMenuItem;
     M4X: TTntMenuItem;
-    M8X: TTntMenuItem;
     MStereo: TTntMenuItem;
     MLchannels: TTntMenuItem;
     MRchannels: TTntMenuItem;
@@ -1158,6 +1156,7 @@ begin
           VK_PRIOR: HandleSeekCommand('seek +600');
           VK_NEXT: HandleSeekCommand('seek -600');
           VK_HOME: begin
+                     if not Running then exit;
                      if bluray then t:= MBRT
                      else t:= MDVDT;
                      i := CheckMenu(t, TID);
@@ -1167,21 +1166,14 @@ begin
                      if j < 0 then exit;
                      t.Items[i].Items[0].Items[j].Checked := true;
                      inc(CID);
-                     if Running then begin
-                       if UseekC then HandleSeekCommand('seek_chapter +1')
-                       else begin
-                         Dreset:=true;
-                         Restart;
-                       end;
-                     end
+                     if UseekC then HandleSeekCommand('seek_chapter +1')
                      else begin
-                       MSecPos := -1;  LastPos := 0; SecondPos := -1; Duration := '0:00:00';
-                       SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; Dreset := true;
-                       Start;
-                       exit;
+                       Dreset:=true;
+                       Restart;
                      end;
                    end;
           VK_END: begin
+                    if not Running then exit;
                     if bluray then t:= MBRT
                     else t:= MDVDT;
                     i := CheckMenu(t, TID);
@@ -1191,18 +1183,10 @@ begin
                     if j < 0 then exit;
                     t.Items[i].Items[0].Items[j].Checked := true;
                     dec(CID);
-                    if Running then begin
-                      if UseekC then HandleSeekCommand('seek_chapter -1')
-                      else begin
-                        Dreset:=true;
-                        Restart;
-                      end;
-                    end
+                    if UseekC then HandleSeekCommand('seek_chapter -1')
                     else begin
-                      MSecPos := -1;  LastPos := 0; SecondPos := -1; Duration := '0:00:00';
-                      SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; Dreset := true;
-                      Start;
-                      exit;
+                      Dreset:=true;
+                      Restart;
                     end;
                   end;
           VK_BACK: MSpeedClick(M1X);
@@ -1684,8 +1668,6 @@ begin
   if (Sender as TTntMenuItem).Checked then exit;
   (Sender as TTntMenuItem).Checked := True;
   case (Sender as TTntMenuItem).Tag of
-    0: begin
-        Speed := 0.125; SendCommand('speed_set 0.125'); end;
     1: begin
         Speed := 0.25; SendCommand('speed_set 0.25'); end;
     2: begin
@@ -1696,8 +1678,6 @@ begin
         Speed := 2; SendCommand('speed_set 2'); end;
     5: begin
         Speed := 4; SendCommand('speed_set 4'); end;
-    6: begin
-        Speed := 8; SendCommand('speed_set 8'); end;
     7: SendCommand('speed_set ' + FloatToStr(Speed));
   end;
   if not Win32PlatformIsUnicode then Restart;
@@ -1843,11 +1823,7 @@ begin
   (Sender as TTntMenuItem).Parent.Items[index].Checked := false;
   AID := (Sender as TTntMenuItem).Tag;
   (Sender as TTntMenuItem).Checked := True;
-  if not Running then begin
-    Dreset := true;
-    Start;
-    exit;
-  end;
+  if not Running then exit;
   if UseekC and Win32PlatformIsUnicode and (not Dnav)then
     SendCommand('switch_angle ' + IntToStr(AID -1))
   else begin
@@ -2305,6 +2281,7 @@ end;
 procedure TMainForm.NextAngle;
 var i:integer; t:TMenuItem;
 begin
+  if not Running then exit;
   if bluray then t:= MBRT
   else t:= MDVDT;
   i := CheckMenu(t, TID);
@@ -2314,11 +2291,6 @@ begin
   if AID < 1 then AID := 1;
   AID := AID mod t.Items[i].Items[1].Count + 1;
   t.Items[i].Items[1].Items[AID - 1].Checked := True;
-  if not Running then begin
-    Dreset := true;
-    Start;
-    exit;
-  end;
   if UseekC and Win32PlatformIsUnicode and (not Dnav)then
     SendCommand('switch_angle ' + IntToStr(AID-1))
   else begin

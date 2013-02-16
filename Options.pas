@@ -728,7 +728,7 @@ begin
   end;
 
   if Fd <> CFd.Checked then begin
-    Fd := CFd.Checked; SendCommand('frame_drop');
+    Fd := CFd.Checked; changed := true;
   end;
 
   if Async <> CAsync.Checked then begin

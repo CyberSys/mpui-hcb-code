@@ -289,8 +289,10 @@ begin
     n := m + SubType[i];
     if WideFileExists(n) then begin
       if (not IsWideStringMappableToAnsi(n)) or (pos(',', n) > 0) then n := WideExtractShortPathName(n);
-      Loadsub := 2; Loadsrt := 2;
-      AddChain(t, substring, EscapeParam(n));
+      if pos(n,substring)=0 then begin
+        Loadsub := 2; Loadsrt := 2;
+        AddChain(t, substring, EscapeParam(n));
+      end;
     end;
   end;
 

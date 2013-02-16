@@ -126,13 +126,11 @@ begin
       MNext.Caption:=UTF8Decode('下一个');
       MShowPlaylist.Caption:=UTF8Decode('播放列表 ...');
       MSpeed.Caption:=UTF8Decode('播放速度');
-        MN8X.Caption:=UTF8Decode('1/8倍速');
         MN4X.Caption:=UTF8Decode('1/4倍速');
         MN2X.Caption:=UTF8Decode('1/2倍速');
         M1X.Caption:=UTF8Decode('1倍速');
         M2X.Caption:=UTF8Decode('2倍速');
         M4X.Caption:=UTF8Decode('4倍速');
-        M8X.Caption:=UTF8Decode('8倍速');
       MAudiochannels.Caption:=UTF8Decode('声道');
         MStereo.Caption:=UTF8Decode('立体声');
         MLchannels.Caption:=UTF8Decode('左声道');
