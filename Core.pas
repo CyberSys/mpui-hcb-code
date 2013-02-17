@@ -119,12 +119,12 @@ var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread,cl: WideString;
   Wid, Dreset, UpdateSkipBar, Pri, HaveChapters, HaveMsg, skip,bluray,dvd,vcd,cd: boolean;
   CT, RP, RS, SP, AutoPlay, ETime, InSubDir, SPDIF, ML, GUI, PScroll: boolean;
   Shuffle, Loop, OneLoop, Uni, Utf, UseUni,ADls: boolean;
-  ControlledResize, ni, nobps, Dnav, IsDMenu, SMenu, lavf, UseekC, vsync: boolean;
+  ControlledResize, ni, nobps, Dnav, IsDMenu, SMenu, lavf, UdvdTtime, vsync: boolean;
   Flip, Mirror, Yuy2, Eq2, LastEq2, Dda, LastDda, Wadsp, addsFiles: boolean;
   WantFullscreen, WantCompact, AutoQuit, IsPause, IsDx, dsEnd, fup,uav: boolean;
 var VideoID, Ch, CurPlay, LyricS, HaveLyric: integer;
   AudioID, MouseMode, SubPos, NoAccess: integer;
-  SubID, TID, tmpTID, CID, AID, VCDST, VCDET, CDID: integer;
+  SubID, TID, tmpTID, CID, AID, VCDST, CDID: integer;
   subcount, Bp, Ep, CurrentLocale: integer;
   Lastsubcount: integer;
   CurLyric, NextLyric, LyricCount: integer;
@@ -134,7 +134,7 @@ var VideoID, Ch, CurPlay, LyricS, HaveLyric: integer;
   MFunc, CBHSA, bri, briD, contr, contrD, hu, huD, sat, satD, gam, gamD: integer;
 var AudioOut, AudioDev, Postproc, Deinterlace, Aspect: integer;
   ReIndex, SoftVol, RFScr, dbbuf, nfc, nmsg, Firstrun, Volnorm, Dr, UpdatePos: boolean;
-  Loadsrt, LoadVob, Loadsub, Expand, TotalTime, TTime: integer;
+  Loadsrt, LoadVob, Loadsub, Expand, TotalTime, TTime, ChapterLen, ChaptersLen: integer;
 var HaveAudio, HaveVideo, LastHaveVideo, ChkAudio, ChkVideo, ChkStartPlay: boolean;
   NativeWidth, NativeHeight, MonitorID, MonitorW, MonitorH: integer;
   LastPos, SecondPos, OSDLevel, DefaultOSDLevel, MSecPos: integer;
@@ -997,10 +997,14 @@ begin
         {if Dnav then i:=CheckMenu(m.Items[t].Items[0],CID-1)
         else } i := CheckMenu(m.Items[t].Items[0], CID);
         s := m.Items[t].Items[0].Items[i].Caption;
-        s := Copy(s, pos('(', s) + 1, 8);
-        i := TimeToSeconds(s);
+        i := pos('(', s);
+        if i>0 then begin
+          s := Copy(s, i + 1, 8);
+          i := TimeToSeconds(s);
+        end;
       end;
-      if Dreset then LastPos := i else LastPos := LastPos + i;
+      if Dreset then LastPos := i
+      else if not UDVDTtime then LastPos := LastPos + i;
     end;
     if LastPos > 0 then begin
       SecondPos := LastPos; CmdLine := CmdLine + ' -ss ' + SecondsToTime(LastPos); end;
@@ -1240,7 +1244,17 @@ begin
 end;
 
 procedure CloseMedia;
+var i:integer;
 begin
+  for i := MainForm.MDVDT.Count - 1 downto 3 do MainForm.MDVDT.delete(i);
+  MainForm.MBRT.Clear; MainForm.MBRT.Visible := false;
+  MainForm.MDVDT.Visible := false; MainForm.MAudios.Visible:=false;
+  MainForm.MVideo.Clear; MainForm.MVideo.Visible := false;
+  MainForm.MAudio.Clear; MainForm.MAudio.Visible := false;
+  MainForm.MSubtitle.Clear; MainForm.MSubtitle.Visible := false;
+  MainForm.MVCDT.Clear; MainForm.MVCDT.Visible := false;
+  MainForm.MCDT.Clear; MainForm.MCDT.Visible:= false;
+  MainForm.UpdateMenuEV(false);
   if not Running then begin
     MainForm.BPlay.Enabled := false; Status := sNone;
     MediaURL := ''; DisplayURL := '';
@@ -1293,7 +1307,7 @@ end;
 
 
 procedure HandleInputLine(Line: string);
-var r, i, j, p, len: integer; s: string; f: real;
+var r, i, j, p, len: integer; s: string; f: real; b:boolean;
     t: TTntMenuItem; key: word; a:TDownLoadLyric; m:TMenuItem;
 
   function SubMenu_Add(Menu: TMenuItem; ID, SelectedID: integer; Handler: TNotifyEvent): integer;
@@ -1301,16 +1315,16 @@ var r, i, j, p, len: integer; s: string; f: real;
     t := TTntMenuItem.Create(Menu);
     t.Caption := IntToStr(ID); t.Tag := ID; t.GroupIndex := $0A;
     t.RadioItem := true; t.OnClick := Handler;
-    if ID = SelectedID then t.Checked := true
-    else begin
-      if SelectedID < 0 then begin
-        if (Menu = MainForm.MDVDT) and (Menu.Count = 3) then t.Checked := true
-        else if Menu.Count = 0 then t.Checked := true;
-      end;
-    end;
     Menu.Add(t);
     Menu.Visible := true;
     Result := Menu.Count - 1;
+    if ID = SelectedID then Menu.Items[Result].Checked := true
+    else begin
+      if SelectedID < 0 then begin
+        if (Menu = MainForm.MDVDT) and (Menu.Count = 4) then Menu.Items[Result].Checked := true
+        else if Menu.Count = 1 then Menu.Items[Result].Checked := true;
+      end;
+    end;
   end;
 
   procedure SubMenu_SetNameLang(Menu: TTntMenuItem; ID: integer; NameLang: string);
@@ -1628,8 +1642,10 @@ var r, i, j, p, len: integer; s: string; f: real;
       i := pos(',', s); ts := '00:00:00';
       while (i > 0) do begin
         inc(j); ds := copy(s, 1, i - 1);
-        r := CheckMenu(MainForm.MDVDT, TID);
-        if r < 0 then r := SubMenu_Add(MainForm.MDVDT, TID, TID, nil);
+        if TID=0 then p:=1
+        else p:=TID;
+        r := CheckMenu(MainForm.MDVDT, p);
+        if r < 0 then r := SubMenu_Add(MainForm.MDVDT, p, TID, nil);
         if CheckMenu(MainForm.MDVDT.Items[r], 0) < 0 then begin
           t := TTntMenuItem.Create(MainForm.MDVDT.Items[r]);
           t.Caption := Ccap; t.Tag := 0; t.GroupIndex := $0A;
@@ -1910,8 +1926,10 @@ var r, i, j, p, len: integer; s: string; f: real;
     else if cd then m:= MainForm.MCDT
     else m:= MainForm.MVCDT;
     if dvd or bluray then begin
-      r := CheckMenu(m, TID);
-      if r < 0 then r := SubMenu_Add(m, TID, TID, nil);
+      if TID=0 then p:=1
+      else p:=TID;
+      r := CheckMenu(m, p);
+      if r < 0 then r := SubMenu_Add(m, p, TID, nil);
       if CheckMenu(m.Items[r], 0) < 0 then begin
         t := TTntMenuItem.Create(m.Items[r]);
         t.Caption := Ccap; t.Tag := 0; t.GroupIndex := $0A;
@@ -1932,11 +1950,16 @@ var r, i, j, p, len: integer; s: string; f: real;
       end
       else begin }//caption=startTime
       if a = m.Items[r].Items[0].Count - 1 then begin
-        if TTime > 0 then r := TTime - TimeToSeconds(copy(s, i + 1, 8));
+        if TTime > 0 then begin
+          r := TTime - TimeToSeconds(copy(s, i + 1, 8));
+          ChaptersLen:=TTime;
+        end;
       end
       else begin
         k := m.Items[r].Items[0].Items[a + 1].Caption;
-        j := pos('(', k); r := TimeToSeconds(copy(k, j + 1, 8)) - TimeToSeconds(copy(s, i + 1, 8));
+        j := pos('(', k);
+        ChaptersLen:= TimeToSeconds(copy(k, j + 1, 8));
+        r := ChaptersLen - TimeToSeconds(copy(s, i + 1, 8));
       end;
       //end;
     end
@@ -1952,9 +1975,6 @@ var r, i, j, p, len: integer; s: string; f: real;
       end;
     end;
     if r > 0 then Result := r;
-    Duration := SecondsToTime(Result);
-    StreamInfo.PlaybackTime := Duration;
-    InfoForm.UpdateInfo(false);
   end;
 
   function CheckLength: boolean;
@@ -1963,11 +1983,15 @@ var r, i, j, p, len: integer; s: string; f: real;
     if Result then begin
       Val(Copy(Line, 11, MaxInt), f, r);
       if r = 0 then begin
-        TotalTime := abs(round(f)); TTime := TotalTime;
-        Duration := SecondsToTime(TotalTime);
-        StreamInfo.PlaybackTime := Duration;
+        TTime := abs(round(f)); TotalTime:= TTime;
       end;
-      if HaveChapters then TotalTime := UpdateLen;
+      if HaveChapters then begin
+        ChapterLen:=UpdateLen;
+        if not UDVDTtime then TotalTime:= ChapterLen;
+      end;
+      Duration := SecondsToTime(TotalTime);
+      StreamInfo.PlaybackTime := Duration;
+      InfoForm.UpdateInfo(false);
     end;
   end;
 
@@ -2317,17 +2341,34 @@ begin
           if HaveChapters then Sendcommand('get_property chapter');
           SendCommand('get_time_length');
         end;
+        if HaveChapters and UDVDTtime then begin
+          if ((p<=(ChaptersLen - ChapterLen)) or (p>=ChaptersLen)) and (not IsDMenu) then begin
+            Sendcommand('get_property chapter');
+            SendCommand('get_time_length');
+          end;
+        end;
         if IsDMenu then SecondPos := 0
         else SecondPos := p;
         MainForm.UpdateTime; if SecondPos < EP then skip := true;
-        if HaveChapters and (SecondPos = TotalTime - 1) then begin
-          if bluray then m:= MainForm.MBRT
-          else m:= MainForm.MDVDT;
-          i := CheckMenu(m, TID);
-          r := CheckMenu(m.Items[i].Items[0], CID);
-          if r < m.Items[i].Items[0].Count - 1 then begin
-            m.Items[i].Items[0].Items[r + 1].Checked := true;
-            inc(CID); TotalTime := UpdateLen; //针对不带chapter属性的mplayer
+        if HaveChapters then begin
+          if UDVDTtime then b:= SecondPos = (ChaptersLen - 1)
+          else b:= SecondPos = (ChapterLen - 1);
+          if b then begin
+            if bluray then m:= MainForm.MBRT
+            else m:= MainForm.MDVDT;
+            i := CheckMenu(m, TID);
+            r := CheckMenu(m.Items[i].Items[0], CID);
+            if r < m.Items[i].Items[0].Count - 1 then begin
+              m.Items[i].Items[0].Items[r + 1].Checked := true;
+              inc(CID);   //针对不带chapter属性的mplayer
+              ChapterLen:=UpdateLen;
+              if not UDVDTtime then begin
+                TotalTime:= ChapterLen;
+                Duration := SecondsToTime(TotalTime);
+                StreamInfo.PlaybackTime := Duration;
+                InfoForm.UpdateInfo(false);
+              end;
+            end;
           end;
         end;
 
@@ -2345,7 +2386,7 @@ begin
           end;
           if (EP > 0) and (SecondPos = Ep) and skip then begin
             skip := false;
-            if HaveChapters then begin
+            if HaveChapters and (not UDVDTtime) then begin
               key := VK_HOME;
               MainForm.FormKeyDown(nil, key, []);
             end
@@ -2531,11 +2572,13 @@ begin
   if (len > 12) and (Copy(Line, 1, 12) = 'ANS_chapter=') then begin
     Val(Copy(Line, 13, MaxInt), i, r);
     if (r = 0) and (i >= 0) then begin
-      CID := i + 1;
       if bluray then m:= MainForm.MBRT
       else m:= MainForm.MDVDT;
-      r := CheckMenu(m, TID);
-      if r < 0 then r := SubMenu_Add(m, TID, TID, nil);
+      if TID=0 then p:=1
+      else p:=TID;
+      CID := i + 1;
+      r := CheckMenu(m, p);
+      if r < 0 then r := SubMenu_Add(m, p, TID, nil);
       if CheckMenu(m.Items[r], 0) < 0 then begin
         t := TTntMenuItem.Create(m.Items[r]);
         t.Caption := Ccap; t.Tag := 0; t.GroupIndex := $0A;
@@ -2545,6 +2588,7 @@ begin
       if i < 0 then
         SubMenu_Add(m.Items[r].Items[0], CID, CID, MainForm.MDVDCClick)
       else m.Items[r].Items[0].Items[i].Checked := true;
+      m.Items[r].Checked:=true;
     end;
     exit;
   end;
@@ -2552,14 +2596,17 @@ begin
   if (len > 11) and (Copy(Line, 1, 11) = 'ANS_LENGTH=') then begin
     Val(Copy(Line, 12, MaxInt), f, r);
     if r = 0 then begin
-      TotalTime := abs(round(f)); TTime := TotalTime;
-      Duration := SecondsToTime(TotalTime);
-      StreamInfo.PlaybackTime := Duration;
-      InfoForm.UpdateInfo(false);
+      TTime := abs(round(f)); TotalTime:= TTime;
     end;
+    if HaveChapters then begin
+      ChapterLen:=UpdateLen;
+      if not UDVDTtime then TotalTime:= ChapterLen;
+    end;
+    Duration := SecondsToTime(TotalTime);
+    StreamInfo.PlaybackTime := Duration;
+    InfoForm.UpdateInfo(false);
     if CID + AID > 2 then begin
       MainForm.LTime.Font.Size := 12; MainForm.LTime.Top := 0; end;
-    if HaveChapters then TotalTime := UpdateLen;
     exit;
   end;
   //check balance
@@ -2736,7 +2783,7 @@ begin
   nobps := false; Ccap := 'Chapter'; Acap := 'Angle'; CurPlay := -1; Status := sNone;
   LTextColor := clWindowText; LBGColor := clWindow; LHGColor := $93; ClientProcess := 0;
   ReadPipe := 0; WritePipe := 0; ExitCode := 0; UseUni := false; HaveVideo := false;
-  LyricF := 'Tahoma'; LyricS := 8; MaxLenLyricA := ''; MaxLenLyricW := ''; UseekC := true;
+  LyricF := 'Tahoma'; LyricS := 8; MaxLenLyricA := ''; MaxLenLyricW := ''; UdvdTtime := true;
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
   lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := true; ADls:=true;
   dsEnd:=false; UpdatePos:=true; fup:=true; avThread:='1'; uav:=false; AutoDs:=True;

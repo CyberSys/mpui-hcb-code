@@ -1166,10 +1166,10 @@ begin
                      if j < 0 then exit;
                      t.Items[i].Items[0].Items[j].Checked := true;
                      inc(CID);
-                     if UseekC then HandleSeekCommand('seek_chapter +1')
+                     if Win32PlatformIsUnicode then
+                       HandleSeekCommand('seek_chapter +1')
                      else begin
-                       Dreset:=true;
-                       Restart;
+                       Dreset := true; Restart;
                      end;
                    end;
           VK_END: begin
@@ -1183,10 +1183,10 @@ begin
                     if j < 0 then exit;
                     t.Items[i].Items[0].Items[j].Checked := true;
                     dec(CID);
-                    if UseekC then HandleSeekCommand('seek_chapter -1')
+                    if Win32PlatformIsUnicode then
+                      HandleSeekCommand('seek_chapter -1')
                     else begin
-                      Dreset:=true;
-                      Restart;
+                      Dreset := true; Restart;
                     end;
                   end;
           VK_BACK: MSpeedClick(M1X);
@@ -1788,12 +1788,15 @@ begin
   if (Sender as TTntMenuItem).Checked then exit;
   if bluray then t:=MBRT
   else t:=MDVDT;
-  r := CheckMenu(t, TID);
+  if TID=0 then index:=1
+  else index:=TID;
+  r := CheckMenu(t, index);
   if r<0 then exit;
   index := CheckMenu(t.Items[r].Items[0], CID);
   t.Items[r].Items[0].Items[index].Checked := false;
   CID := (Sender as TTntMenuItem).Tag;
   index := (Sender as TTntMenuItem).Parent.Parent.Tag;
+  (Sender as TTntMenuItem).Parent.Parent.Checked:=true;
   (Sender as TTntMenuItem).Checked := True;
   if not Running then begin
     MSecPos := -1;  LastPos := 0; SecondPos := -1; Duration := '0:00:00';
@@ -1803,14 +1806,21 @@ begin
     Start;
     exit;
   end;
-  if UseekC and (TID = index) and Win32PlatformIsUnicode then begin
-    if Dnav and dvd then SendCommand('switch_title ' + IntToStr(TID));
-    SendCommand('seek_chapter ' + IntToStr(CID - 1) + ' 1')
+  if Win32PlatformIsUnicode then begin
+    if TID = index then
+      SendCommand('seek_chapter ' + IntToStr(CID - 1) + ' 1')
+    else begin
+      TID := index;
+      if Dnav and dvd then begin
+        SendCommand('switch_title ' + IntToStr(TID));
+        SendCommand('seek_chapter ' + IntToStr(CID - 1) + ' 1');
+      end
+      else begin Dreset := true; Restart; end;
+    end;
   end
   else begin
     TID := index; Dreset := true;
-    if Dnav and dvd then SendCommand('switch_title ' + IntToStr(TID))
-    else Restart;
+    Restart;
   end;
 end;
 
@@ -1818,13 +1828,15 @@ procedure TMainForm.MDVDAClick(Sender: TObject);
 var index: integer;
 begin
   if (Sender as TTntMenuItem).Checked then exit;
-  if TID <> (Sender as TTntMenuItem).Parent.Parent.Tag then exit;
+  if TID=0 then index:=1
+  else index:=TID;
+  if index <> (Sender as TTntMenuItem).Parent.Parent.Tag then exit;
   index := CheckMenu((Sender as TTntMenuItem).Parent, AID);
   (Sender as TTntMenuItem).Parent.Items[index].Checked := false;
   AID := (Sender as TTntMenuItem).Tag;
   (Sender as TTntMenuItem).Checked := True;
   if not Running then exit;
-  if UseekC and Win32PlatformIsUnicode and (not Dnav)then
+  if Win32PlatformIsUnicode and (not Dnav)then
     SendCommand('switch_angle ' + IntToStr(AID -1))
   else begin
     Dreset := true; Restart;
@@ -2291,7 +2303,7 @@ begin
   if AID < 1 then AID := 1;
   AID := AID mod t.Items[i].Items[1].Count + 1;
   t.Items[i].Items[1].Items[AID - 1].Checked := True;
-  if UseekC and Win32PlatformIsUnicode and (not Dnav)then
+  if Win32PlatformIsUnicode and (not Dnav)then
     SendCommand('switch_angle ' + IntToStr(AID-1))
   else begin
     Dreset := true; Restart;
@@ -2427,8 +2439,8 @@ begin
   Vobfile := ''; substring := ''; MShowSub.Checked := true; IsDMenu := false; SMenu := true;
   AudioID := -1; SubID := -1; VideoID := -1; TID := 1; CID := 1; AID := 1; CDID := 1;
   subcount := 0; Lastsubcount := 0; VobsubCount := 0; procArc := false; Dreset := false;
-  LastPos := 0; SecondPos := -1; TotalTime := 0; Duration := '0:00:00'; ppoint.x := -1;
-  ppoint.y := -1; SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; dsEnd:=false;
+  LastPos := 0; SecondPos := -1; TotalTime := 0; Duration := '0:00:00'; ChapterLen:=0; ChaptersLen:=0;
+  ppoint.x := -1; ppoint.y := -1; SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; dsEnd:=false;
   AudioFile := '';
 end;
 

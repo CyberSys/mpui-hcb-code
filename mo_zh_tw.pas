@@ -323,8 +323,8 @@ begin
     CMir.Caption:=UTF8Decode('左右翻轉視頻');
     CVSync.Caption:=UTF8Decode('vsync垂直同步');
     CVSync.Hint:=UTF8Decode('對於解決圖像撕裂情況有所幫助');
-    CUseekC.Caption:=UTF8Decode('快速切換DVD章節');
-    CUseekC.Hint:=UTF8Decode('對於一些DVD,切換DVD章節的時候需要重啓Mplayer');
+    CDVDTtimeC.Caption:=UTF8Decode('使用DVD標題時間');
+    CDVDTtimeC.Hint:=UTF8Decode('對於一些DVD,需要使用DVD標題時間而不是章節時間去顯示');
     CNi.Caption:=UTF8Decode('使用非交錯的AVI解析器');
     CNi.Hint:=UTF8Decode('用來處理某些質量差的AVI文件的播放');
     CNobps.Caption:=UTF8Decode('不用平均比特率維持AV同步');

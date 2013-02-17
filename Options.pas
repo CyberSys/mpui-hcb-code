@@ -139,7 +139,7 @@ type
     ELyric: TTntEdit;
     BLyric: TTntButton;
     LScroll: TTntCheckBox;
-    CUseekC: TTntCheckBox;
+    CDVDTtimeC: TTntCheckBox;
     CVSync: TTntCheckBox;
     BFont: TButton;
     FontDialog1: TFontDialog;
@@ -294,7 +294,7 @@ var
   OptionsForm: TOptionsForm; IsDsLoaded: THandle = 0; OptionsFormHook: HHOOK; ctrlkey: TShiftState = [];
 
 implementation
-uses Core, Config, Main, Locale, plist, unrar;
+uses Core, Config, Main, Locale, plist, unrar, Info;
 
 {$R *.dfm}
 var DirectSoundEnumerate: function(lpDSEnumCallback: PDSEnumCallback; lpContext: pointer): HRESULT; stdcall;
@@ -473,7 +473,7 @@ begin
   CMir.Checked := Mirror;
   CEq2.Checked := Eq2;
   CYuy2.Checked := Yuy2;
-  CUseekC.Checked := UseekC;
+  CDVDTtimeC.Checked := UdvdTtime;
   CVSync.Checked := vsync;
   CEq2.Enabled := not Dda;
   CYuy2.Enabled := CEq2.Enabled;
@@ -798,6 +798,15 @@ begin
     ShotDir := ESsf.Text; changed := true;
   end;
 
+  if UDVDTtime <> CDVDTtimeC.Checked then begin
+    UDVDTtime := CDVDTtimeC.Checked;
+    if UDVDTtime then TotalTime:=Ttime
+    else if HaveChapters then TotalTime:=ChapterLen;
+    Duration := SecondsToTime(TotalTime);
+    StreamInfo.PlaybackTime := Duration;
+    InfoForm.UpdateInfo(false);
+  end;
+
   RFScr := CRFScr.Checked;
   with MainForm do begin
     if RFScr then begin
@@ -825,7 +834,6 @@ begin
   if not (CT or Running) then MainForm.LTime.Caption := '';
   seekLen := StrToIntdef(Eseek.Text, 10);
   vsync := CVSync.Checked;
-  UseekC := CUseekC.Checked;
   oneM := Cone.Checked;
   PScroll := LScroll.Checked;
   LTextColor := ColorToRGB(PLTC.Color);

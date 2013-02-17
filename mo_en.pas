@@ -296,9 +296,9 @@ begin
                   'files supported by Mplayer.';
     CFlip.Caption:='Flip image';
     CMir.Caption:='Mirrors image';
-    CUseekC.Caption:='Fast Chapter Switching';
-    CUseekC.Hint:='For some DVD, it need to reboot '^M^J+
-                  'Mplayer when switch chapter';
+    CDVDTtimeC.Caption:='Use DVD title time';
+    CDVDTtimeC.Hint:='For some DVD, it need to DVD title time, not chapter time'^M^J+
+                  'to display';
     CGUI.Caption:='Use GUI of Mplayer';
     CGUI.Hint:='Avoid GMplayer to use GUI of itself. For mplayer without ''-nogui'','^M^J+
                'you can cancel this checkbox to ensure mplayer can be runed';

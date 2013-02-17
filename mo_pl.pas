@@ -292,9 +292,6 @@ begin
                   'files supported by Mplayer.');
     CFlip.Caption:=UTF8Decode('Obróć obraz');
     CMir.Caption:=UTF8Decode('Lustrzany obrót obrazu');
-    CUseekC.Caption:=UTF8Decode('Szybka zmiana rozdziałów DVD');
-    CUseekC.Hint:=UTF8Decode('Niektóre DVD, wymagają restartu '^M^J+
-                  'Mplayer');
     CGUI.Caption:=UTF8Decode('Użyj GUI Mplayer');
     CGUI.Hint:=UTF8Decode('Avoid GMplayer to use GUI of itself. For mplayer without ''-nogui'','^M^J+
                'you can cancel this checkbox to ensure mplayer can be runed');
