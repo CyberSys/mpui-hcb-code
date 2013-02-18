@@ -273,25 +273,21 @@ begin
 end;
 
 procedure loadLyricSub(path: WideString);
-begin
-  loadLyricSub(WideExtractFileDir(path),WideExtractFileName(path));
-end;
-
-procedure loadLyricSub(folder, filename: WideString);
 var t,i: integer; m,n:WideString;
 begin
-  m:=WideIncludeTrailingBackslash(folder) + GetFileName(filename);
+  m:=GetFileName(path);
+  if path<>MediaURL then begin
+    if (LoadVob=0) and WideFileExists(m + '.idx') and WideFileExists(m + '.sub') then begin //idx
+      LoadVob := 1; Vobfile := m; end;
 
-  if (LoadVob=0) and WideFileExists(m + '.idx') and WideFileExists(m + '.sub') then begin //idx
-    LoadVob := 1; Vobfile := m; end;
-
-  for i := 1 to SubTypeCount - 2 do begin  //srt,etc
-    n := m + SubType[i];
-    if WideFileExists(n) then begin
-      if (not IsWideStringMappableToAnsi(n)) or (pos(',', n) > 0) then n := WideExtractShortPathName(n);
-      if pos(n,substring)=0 then begin
-        Loadsub := 2; Loadsrt := 2;
-        AddChain(t, substring, EscapeParam(n));
+    for i := 1 to SubTypeCount - 2 do begin  //srt,etc
+      n := m + SubType[i];
+      if WideFileExists(n) then begin
+        if (not IsWideStringMappableToAnsi(n)) or (pos(',', n) > 0) then n := WideExtractShortPathName(n);
+        if pos(n,substring)=0 then begin
+          Loadsub := 2; Loadsrt := 2;
+          AddChain(t, substring, EscapeParam(n));
+        end;
       end;
     end;
   end;
@@ -304,6 +300,11 @@ begin
     end;
     if WideFileExists(n) then Lyric.ParseLyric(n);
   end;
+end;
+
+procedure loadLyricSub(folder, filename: WideString);
+begin
+  loadLyricSub(WideIncludeTrailingBackslash(folder) + filename);
 end;
 
 procedure loadArcLyric(path: WideString);
@@ -685,7 +686,7 @@ begin
   else CmdLine := EscapeParam(HomeDir + 'mplayer.exe');
   if not GUI then CmdLine := CmdLine + ' -nogui -noconsolecontrols';
   CmdLine := CmdLine + ' -slave -identify -noquiet -nofs -noterm-osd -hr-mp3-seek'
-    + ' -subalign 1 -spualign 1 -sub-fuzziness 1 -subfont-autoscale 2'
+    + ' -subalign 1 -spualign 1 -sub-fuzziness 0 -subfont-autoscale 2'
     + ' -subfont-osd-scale 4.8 -subfont-text-scale ' + FloatToStr(FSize)
     + ' -subfont-outline ' + FloatToStr(Fol) + ' -subfont-blur ' + FloatToStr(FB);
 
@@ -895,20 +896,21 @@ begin
     end;
   end;
 
-   {   ____________________________________________________________
-     |   vob (-vob vobfile)         | ID_VOBSUB_ID   |             |
-     |______________________________|________________|             |
-     |  inter (DVD/MKV/OGM)         | ID_SUBTITLE_ID |             |
-     |______________________________|________________|___          |
-     | lastsub (-sub substring)     |                |   |__       |
-     |    (re)start                 |                |   |  |      |
-     |______________________________|                |___|  |   CurrentSub
-     | autoloaded Sub               |                |      |      |
-     | (samedirSub)                 | ID_FILE_SUB_ID |    SubCount |
-     |  (re)start                   |                |      |      |
-     |______________________________|                |___ _ |______|
-     | running (sub_load) loadsub=1 |                |   |__|
-     |______________________________|________________|___|
+   {   _____________________________________________________________________
+     |   vob (-vob vobfile)         | ID_VOBSUB_ID   |   |                  |
+     |______________________________|________________| VobAndInterSubCount  |
+     |  inter (DVD/MKV/OGM)         | ID_SUBTITLE_ID |   |                  |
+     |______________________________|________________|___|__                |
+     | lastsub (-sub substring)     |                |      |               |
+     |                              |                | Lastsubcount    CurrentSub
+     |    (re)start                 |                |      |__             |
+     |______________________________|                |______|  |            |
+     | autoloaded Sub               |                |         |            |
+     | (samedirSub)                 | ID_FILE_SUB_ID |      SubCount        |
+     |  (re)start                   |                |         |            |
+     |______________________________|                |_________|____________|
+     | running (sub_load) loadsub=1 |                |      |__|
+     |______________________________|________________|______|
   }
 
   if Loadsrt > 0 then begin //必须放到LoadVOB的判断前面，因为要考虑到VOB字幕加载失败时需要对SubID进行调整
@@ -1353,7 +1355,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
         end;
         if CheckMenu(MainForm.MSubtitle, i) < 0 then begin
           SubMenu_Add(MainForm.MSubtitle, i, SubID, MainForm.MSubtitleClick);
-          VobsubCount := i + 1;
+          inc(VobsubCount);
         end;
       end;
       Result := true;
@@ -1371,7 +1373,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
       if (r = 0) and (i >= 0) and (i < 256) then begin
         if CheckMenu(MainForm.MSubtitle, i) < 0 then begin
           SubMenu_Add(MainForm.MSubtitle, i, SubID, MainForm.MSubtitleClick);
-          VobsubCount := i + 1;
+          inc(VobsubCount);
         end;
         SubMenu_SetNameLang(MainForm.MSubtitle, i, copy(s, p + 6, MaxInt));
       end;
@@ -1858,7 +1860,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
       if (r = 0) and (i >= 0) and (i < 8191) then begin
         if CheckMenu(MainForm.MSubtitle, VobsubCount + i) < 0 then begin
           SubMenu_Add(MainForm.MSubtitle, VobsubCount + i, SubID, MainForm.MSubtitleClick);
-          IntersubCount := i + 1;
+          inc(IntersubCount);
         end;
       end;
       Result := true;
@@ -1877,7 +1879,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
       if (r = 0) and (i >= 0) and (i < 8191) then begin
         if CheckMenu(MainForm.MSubtitle, VobsubCount + i) < 0 then begin
           SubMenu_Add(MainForm.MSubtitle, VobsubCount + i, SubID, MainForm.MSubtitleClick);
-          IntersubCount := i + 1;
+          inc(IntersubCount);
         end;
         SubMenu_SetNameLang(MainForm.MSubtitle, VobsubCount + i, copy(s, p + 6, MaxInt));
       end;
@@ -1886,6 +1888,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
   end;
 
   function CheckFilesubID: boolean;
+  var w:string;
   begin
     Result := false;
     if (len > 15) and (Copy(Line, 1, 15) = 'ID_FILE_SUB_ID=') then begin
@@ -1893,7 +1896,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
       if (r = 0) and (i >= 0) and (i < 8191) then begin
         VobAndInterSubCount := IntersubCount + VobsubCount;
         if Loadsub = 1 then begin
-          SubID := i + VobAndInterSubCount - 1;
+          SubID := i + VobAndInterSubCount;
           MainForm.MShowSub.Checked := true;
         end
         else
@@ -1906,12 +1909,27 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
     if (len > 21) and (Copy(Line, 1, 21) = 'ID_FILE_SUB_FILENAME=') then begin
       s := copy(Line, 22, MaxInt);
       SubMenu_SetNameLang(MainForm.MSubtitle, MainForm.MSubtitle.Count - 1, s);
-      if subcount = 0 then substring := '';
-      AddChain(subcount, substring, EscapeParam(s));
       case Loadsub of
         1: begin
-            Mainform.NextSub; Loadsrt := 1; end;
-        2: Lastsubcount := subcount;
+             inc(subcount);
+             if subcount>1 then
+               substring:=substring+','+EscapeParam(s)
+             else
+               substring:=EscapeParam(s);
+             Loadsrt := 1;
+           end;
+        2: begin
+             if IsWideStringMappableToAnsi(MediaURL) then w:=GetFileName(MediaURL)
+             else w:=GetFileName(WideExtractShortPathName(MediaURL));
+             if w<>GetFileName(s) then begin
+               inc(subcount);
+               if subcount>1 then
+                 substring:=substring+','+EscapeParam(s)
+               else
+                 substring:=EscapeParam(s);
+               Lastsubcount := subcount;
+             end;
+           end;
       end;
       Result := true;
     end;
