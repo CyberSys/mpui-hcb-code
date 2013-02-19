@@ -263,7 +263,7 @@ function AddZipMovies(ArcName,PW:widestring; Add,msg:boolean):integer;
 var hArc:integer; fileInfo:TZipINDIVIDUALINFO; k,i:widestring;
     Entry:TPlaylistEntry; FList:TWStringList; a:integer;
 begin
-  Result:=0;
+  Result:=0; if not Add then TmpPW:=PW;
   if ZipGetRunning then begin
     Result:=-1; exit;
   end
@@ -275,6 +275,7 @@ begin
     //fileinfo.szAttribute[4]='G' 而不是'-'或#0时，文件是加密的
     if ((ZipGetAttribute(hArc) and FA_ENCRYPTED)=FA_ENCRYPTED) and (PW='') then
       WideInputQuery(LOCstr_SetPW_Caption,k,PW);
+    if not Add then TmpPW:=PW;
     FList:=TWStringList.Create;
     if ZipFindFirst(hArc,'*',fileInfo)=0 then begin
       repeat  //fileinfo.szAttribute[0]='-' 是目录
@@ -313,7 +314,7 @@ var k,i:widestring; Entry:TPlaylistEntry; x,z:integer; sz:TSevenZip;
 begin
   Result:=0; sz:=TSevenZip.Create(nil,Tnt_WideLowerCase(WideExtractFileExt(ArcName)));
   sz.Password:=PW; sz.SZFileName:=ArcName;
-  x:=sz.List(false);
+  x:=sz.List(false); if not Add then TmpPW:=sz.Password;
   if x=-1 then begin Result:=-1; sz.Free; exit; end;
   k:=WideExtractFileName(ArcName);
   sz.Files.SortStr(mysort);

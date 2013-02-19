@@ -786,8 +786,13 @@ begin
         else begin
           if (a > -1) and (a <= ZipTypeCount) then begin
             if IsLoaded(j) then begin
-              Loadsub := 1; TmpPW:= playlist.FindPW(fnbuf);
+              TmpPW:= playlist.FindPW(fnbuf);
+              if AddMovies(fnbuf, TmpPW, false,false) > 0 then begin //因为AddDir使用多线程，所以不能扰乱TmpPW，就不修改TmpPW了
+                if i = 0 then begin PClear := true; EndOpenDir:=true; end;
+                AddMovies(fnbuf, TmpPW, true,false);
+              end;
               if Running and HaveVideo then begin
+                Loadsub := 1;
                 t := ExtractSub(fnbuf, TmpPW);
                 if t <> '' then begin
                   inc(VobFileCount);
@@ -797,10 +802,6 @@ begin
                 end;
               end;
               if HaveLyric = 0 then ExtractLyric(fnbuf, TmpPW);
-              if AddMovies(fnbuf, TmpPW, false,false) > 0 then begin //因为AddDir使用多线程，所以不能扰乱TmpPW，就不修改TmpPW了
-                if i = 0 then begin PClear := true; EndOpenDir:=true; end;//AddMovies放在ExtraxtSub或ExtractLyric后
-                AddMovies(fnbuf, TmpPW, true,false);
-              end;
             end;
           end
           else begin

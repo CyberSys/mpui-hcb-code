@@ -222,7 +222,7 @@ var hArcData:THandle; HeaderData:TRARHeaderData;
     Entry:TPlaylistEntry; i,k:widestring;
     First:boolean; FList:TWStringList; a:integer;
 begin
-  Result:=0;
+  Result:=0; if not Add then TmpPW:=PW;
   FillChar(OpenArchiveData ,sizeof(OpenArchiveData),0);
   OpenArchiveData.ArcNameW := PWideChar(ArcName);
   OpenArchiveData.OpenMode := RAR_OM_LIST;
@@ -236,6 +236,7 @@ begin
     First:=false;
     if PW='' then WideInputQuery(LOCstr_SetPW_Caption,k,PW);
     if PW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
+    if not Add then TmpPW:=PW;
   end;
   FillChar(HeaderData ,sizeof(HeaderData),0);
   repeat
@@ -248,6 +249,7 @@ begin
         if ((HeaderData.Flags and $00000004) = $00000004) and (PW='') then
           WideInputQuery(LOCstr_SetPW_Caption,k,PW);
         if PW<>'' then RARSetPassword(hArcData,PAnsiChar(AnsiString(PW)));
+        if not Add then TmpPW:=PW;
       end;
       inc(Result);
       if Add then begin

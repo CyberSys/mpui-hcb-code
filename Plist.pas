@@ -1536,8 +1536,9 @@ begin
         else begin
           if (a > -1) and (a <= ZipTypeCount) then begin
             if IsLoaded(j) then begin
-              Loadsub := 1; TmpPW:= playlist.FindPW(fnbuf);
+              TmpPW:= playlist.FindPW(fnbuf);
               if Running and HaveVideo then begin
+                Loadsub := 1; 
                 t := ExtractSub(fnbuf, TmpPW);
                 if t <> '' then begin
                   inc(VobFileCount);
@@ -1547,7 +1548,7 @@ begin
                 end;
               end;
               if HaveLyric = 0 then ExtractLyric(fnbuf, TmpPW);
-              AddMovies(fnbuf, TmpPW, true,false);
+              AddMovies(fnbuf, TmpPW, true,false);  //add=true时，不更新TmpPW，要放在ExtractSub或ExtractLyric后
             end;
           end
           else begin
