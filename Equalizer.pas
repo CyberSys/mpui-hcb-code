@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2013 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -87,9 +87,10 @@ begin
   CBHSA:=5; Changed:=false;
   BReset.Enabled:=TCon.Enabled OR TGam.Enabled OR
                   TBri.Enabled OR THue.Enabled OR TSat.Enabled;
-  if (left+width)>=Screen.Width then left:=Screen.Width-width;
+  if (left+width)>=CurMonitor.Width then left:=CurMonitor.Width-width;
   if left<0 then left:=0; if top<0 then top:=0;
-  if (top+height)>=Screen.WorkAreaHeight then top:=Screen.WorkAreaHeight-height;
+  if (top+height)>=CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top then 
+    top:=CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top-height;
 end;
 
 procedure TEqualizerForm.TbChange(Sender: TObject);

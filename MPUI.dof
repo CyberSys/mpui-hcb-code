@@ -128,9 +128,12 @@ CompanyName=
 FileDescription=MPUI-hcb (A Windows frontend for MPlayer)
 FileVersion=1.0.10.33
 InternalName=MPUI-hcb
-LegalCopyright=(C) 2006 - 2011 Huang chen bin
+LegalCopyright=(C) 2006 - 2013 Huang chen bin
 LegalTrademarks=
 OriginalFilename=MPUI.dpr
 ProductName=MPUI-hcb
 ProductVersion=1.0.0.0
 Comments=
+[HistoryLists\hlUnitAliases]
+Count=1
+Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;

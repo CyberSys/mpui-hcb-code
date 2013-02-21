@@ -8,7 +8,7 @@ object OpenDevicesForm: TOpenDevicesForm
   Color = clBtnFace
   ParentFont = True
   OldCreateOrder = True
-  Position = poScreenCenter
+  Position = poMainFormCenter
   OnCreate = TntFormCreate
   OnShow = FormShow
   DesignSize = (

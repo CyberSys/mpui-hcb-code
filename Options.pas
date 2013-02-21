@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2013 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -397,9 +397,10 @@ begin
   end
   else
     LHelp.Visible := false;
-  if (left + width) >= Screen.Width then left := Screen.Width - width;
-  if left < 0 then left := 0; if top < 0 then top := 0;
-  if (top + height) >= Screen.WorkAreaHeight then top := Screen.WorkAreaHeight - height;
+  if (left + width) >= (CurMonitor.Left + CurMonitor.Width) then left := CurMonitor.Left + CurMonitor.Width - width;
+  if left < CurMonitor.Left then left := CurMonitor.Left; if top < CurMonitor.Top then top := CurMonitor.Top;
+  if (top + height) >= (CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top) then
+    top := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - height;
 end;
 
 procedure TOptionsForm.LHelpClick(Sender: TObject);
@@ -458,7 +459,7 @@ begin
   EMplayerLocation.Enabled := ML;
   BMplayer.Enabled := ML;
   CWid.Checked := Wid;
-  CDs.Checked := Ds;
+  CDs.Checked := ds;
   CRS.Checked := RS;
   CSP.Checked := SP;
   CRP.Checked := RP;
@@ -826,7 +827,7 @@ begin
     ActivateLocale(DefaultLocale);
   end;
   if WideDirectoryExists(ELyric.Text) then LyricDir := ELyric.Text;
-  DS := CDs.Checked;
+  ds := CDs.Checked;
   RP := CRP.Checked;
   RS := CRS.Checked;
   SP := CSP.Checked;

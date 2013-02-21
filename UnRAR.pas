@@ -1,5 +1,5 @@
 {  MPUI-hcb, an MPlayer frontend for Windows
-   Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
+   Copyright (C) 2006-2013 Huang Chen Bin <hcb428@foxmail.com>
    based on TDFUnRAR by <dfrischalowski@del-net.com>
    
    see UNRARDLL.TXT for Informations about UnRar.dll - Functions and structures

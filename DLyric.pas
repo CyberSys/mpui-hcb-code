@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2013 Huang Chen Bin <hcb428@foxmail.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -573,7 +573,7 @@ end;
 
 procedure TDLyricForm.TntFormShow(Sender: TObject);
 begin
-  if (MainForm.Width >= Screen.Width) or (MainForm.Height >= Screen.WorkAreaHeight) then MainForm.Enabled := false;
+  if (MainForm.Width >= CurMonitor.Width) or (MainForm.Height >= CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top) then MainForm.Enabled := false;
   if (OnTop > 0) or MainForm.MFullScreen.Checked then SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE);
 end;
 

@@ -10,7 +10,7 @@ object EqualizerForm: TEqualizerForm
   Color = clBtnFace
   ParentFont = True
   OldCreateOrder = True
-  Position = poScreenCenter
+  Position = poMainFormCenter
   OnClose = FormClose
   OnShow = FormShow
   DesignSize = (

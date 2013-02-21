@@ -1,5 +1,5 @@
 {  MPUI-hcb, an MPlayer frontend for Windows
-   Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
+   Copyright (C) 2006-2013 Huang Chen Bin <hcb428@foxmail.com>
    based on Delphi interface to 7-zip32.dll written by Dominic Dumée (dominic@psas.co.za)
 // Purpose: to create and extract files in the 7-zip format (www.7-zip.org)
 

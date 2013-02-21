@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2013 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -214,11 +214,12 @@ begin
   UpdateInfo(true);
   MainForm.MStreamInfo.Checked:=True;
   MainForm.BStreamInfo.Down:=True;
-  if (left+width)>=Screen.Width then begin ControlledMove:=true; left:=Screen.Width-width; end;
+  if (left+width)>=(CurMonitor.Left + CurMonitor.Width) then begin ControlledMove:=true; left:=CurMonitor.Left + CurMonitor.Width-width; end;
   if left<0 then begin ControlledMove:=true; left:=0; end;
   if top<0 then begin ControlledMove:=true; top:=0; end;
-  if (top+height)>=Screen.WorkAreaHeight then begin ControlledMove:=true; top:=Screen.WorkAreaHeight-height; end;
-  if (MainForm.Width>=Screen.Width) OR (MainForm.Height>=Screen.WorkAreaHeight) then MainForm.Enabled:=false;
+  if (top+height)>=(CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top) then begin
+    ControlledMove:=true; top:=CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top-height; end;
+  if (MainForm.Width>=CurMonitor.Width) OR (MainForm.Height>=(CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)) then MainForm.Enabled:=false;
   if (OnTop>0) OR MainForm.MFullScreen.Checked then SetWindowPos(Handle,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE OR SWP_NOSIZE);
 end;
 

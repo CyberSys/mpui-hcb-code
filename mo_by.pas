@@ -1,7 +1,7 @@
 {   MPUI, an MPlayer frontend for Windows
     Copyright (C) 2005 Martin J. Fiedler <martin.fiedler@gmx.net>
     Copyright (C) 2005 Vasily Khoruzhick <fenix-fen@mail.ru>
-    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2013 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify

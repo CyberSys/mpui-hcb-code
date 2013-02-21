@@ -1,5 +1,5 @@
 (* MPUI-hcb, an MPlayer frontend for Windows
-   Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
+   Copyright (C) 2006-2013 Huang Chen Bin <hcb428@foxmail.com>
    based on TsevenZip by Ivo Andonov and TSevenZipVCL by Rainer Geigenberger ( -> http://www.rg-software.de - SevenZipVCL@rg-software.de )
 
    Thanks to:

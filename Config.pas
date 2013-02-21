@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2013 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -126,7 +126,7 @@ begin
           Core.AutoPlay := ReadBool(SectionName, 'AutoPlay', Core.AutoPlay);
           Core.uof := ReadBool(SectionName, 'UseOSDfont', Core.uof);
           Core.GUI := ReadBool(SectionName, 'GUI', Core.GUI);
-          Core.DS := ReadBool(SectionName, 'DSize', Core.DS);
+          Core.ds := ReadBool(SectionName, 'DSize', Core.ds);
           Core.UAV := ReadBool(SectionName, 'UAV', Core.UAV);
           Core.RS := ReadBool(SectionName, 'RSize', Core.RS);
           Core.RP := ReadBool(SectionName, 'RPostion', Core.RP);
@@ -301,7 +301,8 @@ begin
             Core.EL := MainForm.Left + ((MainForm.Width - MainForm.Constraints.MinWidth) div 2);
             Core.ET := MainForm.Top + ((MainForm.Height - MainForm.Constraints.MinHeight) div 2);
           end;
-          if Core.EL < 0 then Core.EL := 0; if Core.ET < 0 then Core.ET := 0;
+          if Core.EL < CurMonitor.Left then Core.EL := CurMonitor.Left;
+          if Core.ET < CurMonitor.Top then Core.ET := CurMonitor.Top;
           WriteInteger(SectionName, 'InfoLeft', IL);
           WriteInteger(SectionName, 'InfoTop', IT);
           WriteInteger(SectionName, 'LastLeft', Core.EL);

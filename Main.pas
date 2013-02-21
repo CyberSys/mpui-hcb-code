@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2013 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -521,23 +521,6 @@ uses Locale, Config, Options, Info, UnRAR, Equalizer, SevenZip, Core, DLyric,
 
 function SetThreadExecutionState(esFlags: Cardinal): Cardinal; stdcall; external kernel32;
 
-procedure LoadDrLibrary;
-begin
-  if IsDrLoaded <> 0 then exit;
-  IsDrLoaded := Tnt_LoadLibraryW('ddraw.dll');
-  if IsDrLoaded <> 0 then
-    @DirectDrawEnumerateEx := GetProcAddress(IsDrLoaded, 'DirectDrawEnumerateExA');
-end;
-
-procedure UnLoadDrLibrary;
-begin
-  if IsDrLoaded <> 0 then begin
-    FreeLibrary(IsDrLoaded);
-    IsDrLoaded := 0;
-    DirectDrawEnumerateEx := nil;
-  end;
-end;
-
 procedure LoadSLibrary;
 begin
   if IsSLoaded <> 0 then exit;
@@ -554,16 +537,6 @@ begin
     IsSLoaded := 0;
     DownloaderSubtitleW := nil;
   end;
-end;
-
-function DDrawEnumCallbackEx(lpGUID: PGUID; lpDriverDescription, lpDriverName: PChar; lpContext: pointer; hm: HMONITOR): LongBool; stdcall;
-var len: integer;
-begin
-  len := length(HMonitorList);
-  SetLength(HMonitorList, len + 1);
-  HMonitorList[len] := hm;
-  if hm = CurMonitor.Handle then MonitorID := len;
-  Result := True; 
 end;
 
 procedure DownSubtitle_CallBackFinish(number, bad_number: integer); stdcall;
@@ -626,6 +599,11 @@ begin
   SkipBar.ParentBackground := False; BackBar.ParentBackground := False;
   VolSlider.ParentBackground := False; SeekBarSlider.ParentBackground := False;
 {$ENDIF}
+  CurMonitor := Screen.MonitorFromWindow(Handle);
+  if CurMonitor=nil then CurMonitor:=Screen.Monitors[0];
+  MonitorW := CurMonitor.Width; MonitorH := CurMonitor.Height;
+  MonitorID := CurMonitor.MonitorNum;
+
   FirstShow := true; AutoQuit := false; ViewMode := 0;
   HideMouseAt := 0; UpdateSeekBarAt := 0; PlayMsgAt := 0;
   WantFullscreen := false; WantCompact := false;
@@ -643,24 +621,24 @@ begin
     if EW = 0 then EW := OPanel.Width;
     if RS then Width := Width - OPanel.Width + EW;
   end;
-  Left := (screen.Width - Width) div 2;
+  Left := CurMonitor.Left + (CurMonitor.Width - Width) div 2;
   if RP and (EL <> -1) then Left := EL;
   if Wid and Win32PlatformIsUnicode then begin
     if ds then begin
       if RS then begin
         if EH = 0 then EH := defaultHeight;
         Height := MWC + MenuBar.Height + CPanel.Height + Width - OPanel.Width + EH;
-        Top := (screen.Height - Height) div 2;
+        Top := CurMonitor.Top + (CurMonitor.Height - Height) div 2;
       end
       else begin
-        Top := (screen.Height - defaultHeight) div 2 - 60;
+        Top := CurMonitor.Top + (CurMonitor.Height - defaultHeight) div 2 - 60;
         Height := defaultHeight;
       end;
     end
-    else Top := (screen.Height - Height) div 2;
+    else Top := CurMonitor.Top + (CurMonitor.Height - Height) div 2;
     if RP and (ET <> -1) then Top := ET;
   end
-  else Top := screen.WorkAreaHeight - Height;
+  else Top := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - Height;
 
   if RFScr then begin
     OPanel.PopupMenu := nil; IPanel.PopupMenu := nil;
@@ -683,8 +661,7 @@ begin
 //  SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, ScreenSaverActive, nil, 0);
   Config.Save(HomeDir + DefaultFileName, 1);
   UnLoadRarLibrary; UnLoadZipLibrary; UnLoad7zLibrary;
-  UnLoadShell32Library; UnLoadDsLibrary; UnLoadDrLibrary;
-  UnLoadSLibrary; UnLoadCLibrary;
+  UnLoadShell32Library; UnLoadDsLibrary;
   FontPaths.Free; SetErrorMode(0);
 end;
 
@@ -693,17 +670,21 @@ var i, PCount: integer; FileName: WideString; IsFirst: boolean;
 begin
   UpdateDockedWindows;
   if FirstShow then begin
-    FirstShow := false; MonitorID := 0;
-    CurMonitor := Screen.MonitorFromWindow(Handle);
-    if Win32PlatformIsUnicode then begin
-      LoadDrLibrary;
-      if IsDrLoaded <> 0 then DirectDrawEnumerateEx(DDrawEnumCallbackEx, nil, 1);
-    end
-    else begin
+    FirstShow := false;
+    if not Win32PlatformIsUnicode then begin
       MPause.Visible := false; MPPause.Visible := false;
       BPause.Enabled := false;
     end;
+
+    CurMonitor := Screen.MonitorFromWindow(Handle);
+    if CurMonitor=nil then CurMonitor:=Screen.Monitors[0];
     MonitorW := CurMonitor.Width; MonitorH := CurMonitor.Height;
+    MonitorID := CurMonitor.MonitorNum;
+    if Left>= CurMonitor.Left then Left:= CurMonitor.Left + (CurMonitor.Width - Width) div 2;
+    if Top>=CurMonitor.Top then
+      Top:= CurMonitor.Top + (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - Height) div 2;
+
+
     ActivateLocale(DefaultLocale); DragAcceptFiles(Handle, true);
     Application.ProcessMessages;
 
@@ -713,7 +694,7 @@ begin
         FileName := WideParamStr(i);
         if not CheckOption(FileName) then begin
           if IsFirst then begin
-            PClear := true; EndOpenDir:=true; IsFirst := false; 
+            PClear := true; EndOpenDir:=true; IsFirst := false;
           end;
           if WideDirectoryExists(FileName) then Playlist.AddDirectory(FileName,false)
           else Playlist.AddFiles(FileName,false);
@@ -1304,7 +1285,7 @@ begin
 end;
 
 procedure TMainForm.UpdateTimerTimer(Sender: TObject);
-var P: Tpoint; TickCount: Cardinal; i: integer;
+var P: Tpoint; TickCount: Cardinal;
 begin
   TickCount := GetTickCount; Init_MOpenDrive;
   if (CPanel.Visible or MenuBar.Visible) and (not seeking)
@@ -1314,30 +1295,36 @@ begin
       SetCtrlV(false); SetMenuBarV(false);
     end;
   end;
+  CurMonitor := Screen.MonitorFromWindow(Handle);
+  if CurMonitor=nil then begin
+    if Width>Screen.Width then Width:=Screen.Width;
+    if Height>Screen.Height then Height:=Screen.Height;
+    if (Left<0) or (Left> Screen.Width) then Left:=(Screen.Width - Width) div 2;
+    if (Top<0) or (Top> Screen.Height) then Top:=(Screen.Height - Height) div 2;
+  end
+  else begin
+    if MonitorID <> CurMonitor.MonitorNum then begin
+      MonitorID := CurMonitor.MonitorNum; MonitorW := CurMonitor.Width; MonitorH := CurMonitor.Height;
+      if Width>CurMonitor.Width then Width:=CurMonitor.Width;
+      if Height>CurMonitor.Height then Height:=CurMonitor.Height;
+      if IsDx then Restart;
+    end;
+    if (CurMonitor.Width <> MonitorW) or (CurMonitor.Height <> MonitorH) then begin
+      MonitorW := CurMonitor.Width; MonitorH := CurMonitor.Height;
+      if Width>CurMonitor.Width then Width:=CurMonitor.Width;
+      if Height>CurMonitor.Height then Height:=CurMonitor.Height;
+      if (Left + Width)> (CurMonitor.Left + CurMonitor.Width) then
+        Left := CurMonitor.Left + CurMonitor.Width - Width;
+      if (Top + Height) > (CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top) then
+        Top := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - Height;
+      if IsDx then Restart;
+    end;
+  end;
+
   if (TickCount >= PlayMsgAt) and HaveMsg then HaveMsg := false;
   if Running then begin
     if Status = sPlaying then begin
       if TickCount >= UpdateSeekBarAt then UpdateSeekBar;
-      if MVideos.Visible then begin
-        CurMonitor := Screen.MonitorFromWindow(Handle);
-        if Win32PlatformIsUnicode then begin
-          for i := low(HMonitorList) to high(HMonitorList) do begin
-            if HMonitorList[i] = CurMonitor.Handle then begin
-              if MonitorID <> i then begin
-                MonitorID := i; MonitorW := CurMonitor.Width; MonitorH := CurMonitor.Height;
-                UpdatePos:=False;
-                if IsDx then Restart;
-              end;
-              break;
-            end;
-          end;
-        end;
-        if (CurMonitor.Width <> MonitorW) or (CurMonitor.Height <> MonitorH) then begin
-          MonitorW := CurMonitor.Width; MonitorH := CurMonitor.Height;
-          UpdatePos:=False; 
-          if IsDx then Restart;
-        end;
-      end;
       if HaveVideo or (HaveLyric <> 0) then SetThreadExecutionState(ES_DISPLAY_REQUIRED)
       else SetThreadExecutionState(ES_SYSTEM_REQUIRED);
     end; {//Allow OS into "Stand by" or "Hibernate" state when player in "pause" state
@@ -1401,7 +1388,7 @@ begin
       SkipBar.Width := (SeekBar.Width * Ep div TotalTime) - SkipBar.Left + SeekBar.Left
     else SkipBar.Width := SeekBar.Width - SkipBar.Left + SeekBar.Left;
   end;
-  if (Width >= (Screen.Width - 20)) or (Height >= (Screen.WorkAreaHeight - 20))
+  if (Width >= (CurMonitor.Width - 20)) or (Height >= (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - 20))
     or MMaxW.Checked then LastScale := Scale;
   FixSize;
   CX := OPanel.ClientWidth;
@@ -1580,13 +1567,14 @@ begin
   PY := Top + ((OPanel.Height - SY) div 2);
   SX := Width - (OPanel.Width - SX);
   SY := Height - (OPanel.Height - SY);
-  if PX < 0 then PX := 0; if PY < 0 then PY := 0;
-  if (SX > Screen.Width) and UpdatePos then begin
-    SX := Screen.Width; MSizeAny.Checked := True; MSizeAny.Checked := false; UpdatePos:=True; end;
-  if (SY > Screen.WorkAreaHeight) and UpdatePos then begin
-    SY := Screen.WorkAreaHeight; MSizeAny.Checked := True; MSizeAny.Checked := false; UpdatePos:=True; end;
-  if ((PX + SX) > Screen.Width) and UpdatePos then begin PX := Screen.Width - SX;  UpdatePos:=True; end;
-  if ((PY + SY) > Screen.WorkAreaHeight) and UpdatePos then begin PY := Screen.WorkAreaHeight - SY; UpdatePos:=True; end;
+  if PX < CurMonitor.Left then PX := CurMonitor.Left; if PY < CurMonitor.Top then PY := CurMonitor.Top;
+  if (SX > CurMonitor.Width) then begin
+    SX := CurMonitor.Width; MSizeAny.Checked := True; MSizeAny.Checked := false; end;
+  if (SY > (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)) then begin
+    SY := CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top; MSizeAny.Checked := True; MSizeAny.Checked := false; end;
+  if ((PX + SX) > (CurMonitor.Left + CurMonitor.Width)) then begin PX := CurMonitor.Left + CurMonitor.Width - SX; end;
+  if ((PY + SY) > (CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)) then begin
+    PY := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - SY; end;
   SetWindowLong(Handle, GWL_STYLE, DWORD(GetWindowLong(Handle, GWL_STYLE)) and (not WS_MAXIMIZE));
   ControlledResize := true; LastScale := 100; SetBounds(PX, PY, SX, SY);
   if WantCompact then begin
@@ -2099,15 +2087,18 @@ begin
     CPanel.Visible := false; MenuBar.Visible := false;
     mctrl.Checked := true; hide_menu.Checked := true;
     MPCtrl.Checked := false;
-    PX := Left - OPanel.ClientOrigin.X;
-    PY := Top - OPanel.ClientOrigin.Y;
-    SX := Screen.Width + Width - OPanel.Width;
-    SY := Screen.Height + Height - OPanel.Height;
+    PX := CurMonitor.Left + (OPanel.Width - Width) div 2;
+    PY := CurMonitor.Top + (OPanel.Width - Width) div 2;
+    SX := CurMonitor.Width + Width - OPanel.Width;
+    SY := CurMonitor.Height + Width - OPanel.Width;
+
     ControlledResize := true;
+    WStyle := GetWindowLong(Handle, GWL_STYLE);
+    SetWindowLong(Handle, GWL_STYLE, WS_VISIBLE and (not WS_DLGFRAME));
     SetWindowPos(Handle, HWND_TOPMOST, PX, PY, SX, SY, 0);
   end
   else begin
-    ControlledResize := true;
+    ControlledResize := true; SetWindowLong(Handle, GWL_STYLE, WStyle and (not WS_MAXIMIZE));
     case OnTop of
       0: SetWindowPos(Handle, HWND_NOTOPMOST, FS_PX, FS_PY, FS_SX, FS_SY, 0);
       1: SetWindowPos(Handle, HWND_TOPMOST, FS_PX, FS_PY, FS_SX, FS_SY, 0);
@@ -2136,15 +2127,17 @@ begin
     FS_PX := Left; FS_PY := Top; FS_SX := Width; FS_SY := Height;
     WheelRolled := false; WStyle := GetWindowLong(Handle, GWL_STYLE);
     //SetWindowLong(Handle,GWL_STYLE,(DWORD(GetWindowLong(Handle,GWL_STYLE)) OR WS_POPUP) AND (NOT WS_DLGFRAME));
-    if (Width >= (Screen.Width - 20)) or (Height >= (Screen.WorkAreaHeight - 20)) or MMaxW.Checked then begin
+    if (Width >= (CurMonitor.Width - 20))
+      or (Height >= (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - 20))
+      or MMaxW.Checked then begin
       SetWindowLong(Handle, GWL_STYLE, WS_VISIBLE and (not WS_DLGFRAME));
       MFunc := 0; MWheelControl.Items[0].Checked := true;
       MPWheelControl.Items[0].Checked := true;
-      L := (OPanel.Width - Width) div 2; T := L;
-      W := Screen.Width + Width - OPanel.Width;
-      if (OPanel.Width = Screen.Width) and (Height = Screen.WorkAreaHeight + Width - OPanel.Width)
+      L := CurMonitor.Left + (OPanel.Width - Width) div 2; T := CurMonitor.Top + (OPanel.Width - Width) div 2;
+      W := CurMonitor.Width + Width - OPanel.Width;
+      if (OPanel.Width = CurMonitor.Width) and (Height = CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top + Width - OPanel.Width)
         then H := Height + 1 //in this case, size don't change, SetBounds(L,T,W,H) will directly exit, so +1 to avoid this case.
-      else H := Screen.WorkAreaHeight + Width - OPanel.Width;
+      else H := CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top + Width - OPanel.Width;
     end
     else begin
       L := Left + IPanel.Left; T := Top + MWC + OPanel.Top + IPanel.Top;
@@ -2180,11 +2173,13 @@ begin
       else if not Hide_menu.Checked then H := Height + MWC + MenuBar.Height - OPanel.Top + CPanel.Height
       else H := Height + MWC + MenuBar.Height + CPanel.Height;
 
-      if L < 0 then L := 0; if T < 0 then T := 0;
-      if W > Screen.Width then W := Screen.Width;
-      if H > Screen.WorkAreaHeight then H := Screen.WorkAreaHeight;
-      if (L + W) > Screen.Width then L := Screen.Width - W;
-      if (T + H) > Screen.WorkAreaHeight then T := Screen.WorkAreaHeight - H;
+      if L < CurMonitor.Left then L := CurMonitor.Left; if T < CurMonitor.Top then T := CurMonitor.Top;
+      if W > CurMonitor.Width then W := CurMonitor.Width;
+      if H > (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top) then
+        H := CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top;
+      if (L + W) > (CurMonitor.Left + CurMonitor.Width) then L := CurMonitor.Left + CurMonitor.Width - W;
+      if (T + H) > (CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top) then
+        T := (CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top) - H;
     end;
     CPanel.Visible := true; MenuBar.Visible := true;
     Mctrl.Checked := false; Hide_menu.Checked := false;
@@ -2529,7 +2524,7 @@ begin
       0: SetVolumeRel(WheelDelta div 40);
       1: if MFullscreen.Checked then SetVolumeRel(WheelDelta div 40)
         else if ds or (NativeWidth <> 0) then begin
-          if ((OPanel.Width = Screen.Width) and (Height = Screen.WorkAreaHeight + Width - OPanel.Width) and (WheelDelta > 0)) or
+          if ((OPanel.Width = CurMonitor.Width) and (Height = CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top + Width - OPanel.Width) and (WheelDelta > 0)) or
             MFullscreen.Checked then exit;
           if ds then begin
             if Height = Constraints.MinWidth then exit; end
@@ -2540,12 +2535,15 @@ begin
           Height := j + WheelDelta div 2; if j <> 0 then Width := Height * i div j;
           if (not ds) and (Width = Constraints.MinWidth) then Height := Constraints.MinWidth * NativeHeight div NativeWidth;
           Left := Left - (Width - i) div 2; Top := Top - (Height - j) div 2;
-          if Left < ((OPanel.Width - Width) div 2) then Left := (OPanel.Width - Width) div 2;
-          if Top < ((OPanel.Width - Width) div 2) then Top := (OPanel.Width - Width) div 2;
-          if Width > (Screen.Width + Width - OPanel.Width) then Width := Screen.Width + Width - OPanel.Width;
-          if Height > (Screen.WorkAreaHeight + Width - OPanel.Width) then Height := Screen.WorkAreaHeight + Width - OPanel.Width;
-          if (Left + Width) > (Screen.Width + (Width - OPanel.Width) div 2) then Left := Screen.Width - (Width + OPanel.Width) div 2;
-          if (Top + Height) > (Screen.WorkAreaHeight + (Width - OPanel.Width) div 2) then Top := Screen.WorkAreaHeight - Height + (Width - OPanel.Width) div 2;
+          if Left < (CurMonitor.Left + (OPanel.Width - Width) div 2) then Left := CurMonitor.Left + (OPanel.Width - Width) div 2;
+          if Top < (CurMonitor.Top + (OPanel.Width - Width) div 2) then Top := CurMonitor.Top + (OPanel.Width - Width) div 2;
+          if Width > (CurMonitor.Width + Width - OPanel.Width) then Width := CurMonitor.Width + Width - OPanel.Width;
+          if Height > (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top + Width - OPanel.Width) then
+            Height := CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top + Width - OPanel.Width;
+          if (Left + Width) > (CurMonitor.Left + CurMonitor.Width + (Width - OPanel.Width) div 2) then
+            Left := CurMonitor.Left + CurMonitor.Width - (Width + OPanel.Width) div 2;
+          if (Top + Height) > (CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top + (Width - OPanel.Width) div 2) then
+            Top := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - Height + (Width - OPanel.Width) div 2;
         end;
     end;
   end;
@@ -2554,7 +2552,7 @@ end;
 procedure TMainForm.UpdateDockedWindows;
 begin
 //PlaylistForm Docked
-  if plist.LDocked and ((Left + Width) <= (Screen.Width - 100)) then begin
+  if plist.LDocked and ((Left + Width) <= (CurMonitor.Left + CurMonitor.Width - 100)) then begin
     PlaylistForm.ControlledMove := false;
     PlaylistForm.Left := Left + Width;
     PlaylistForm.top := Top - Plist.TT;
@@ -2566,7 +2564,7 @@ begin
     PlaylistForm.top := Top - Plist.TT;
   end;
 
-  if plist.TDocked and ((Top + Height) <= (Screen.Height - 100)) then begin
+  if plist.TDocked and ((Top + Height) <= (CurMonitor.Top + CurMonitor.Height - 100)) then begin
     PlaylistForm.ControlledMove := false;
     PlaylistForm.Top := Top + Height;
     PlaylistForm.left := left - Plist.LL;
@@ -2579,7 +2577,7 @@ begin
   end;
 
 //InfoForm Docked
-  if Info.Docked and ((Left + Width) <= (Screen.Width - 100)) then begin
+  if Info.Docked and ((Left + Width) <= (CurMonitor.Left + CurMonitor.Width - 100)) then begin
     InfoForm.ControlledMove := True;
     InfoForm.Left := Left + Width;
     InfoForm.ControlledMove := True;
@@ -2652,7 +2650,7 @@ begin
     else if ssShift in Shift then MouseMode := 3 //Scale video
     else if ssCtrl in Shift then MouseMode := 4 //Adjust aspect ratio
     else if ssAlt in Shift then MouseMode := 5 //Adjust bright,contrast
-    else if ((Width < Screen.Width) or (Height < Screen.WorkAreaHeight))
+    else if ((Width < CurMonitor.Width) or (Height < (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)))
       and (WindowState = wsNormal) then begin
       GetCursorPos(p); OldX := p.X; OldY := p.Y;
       MouseMode := 1; //Drag window

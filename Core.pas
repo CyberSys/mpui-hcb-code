@@ -1,5 +1,5 @@
 {   MPUI-hcb, an MPlayer frontend for Windows
-    Copyright (C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>
+    Copyright (C) 2006-2013 Huang Chen Bin <hcb428@foxmail.com>
     based on work by Martin J. Fiedler <martin.fiedler@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
@@ -121,7 +121,7 @@ var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread,cl: WideString;
   Shuffle, Loop, OneLoop, Uni, Utf, UseUni,ADls: boolean;
   ControlledResize, ni, nobps, Dnav, IsDMenu, SMenu, lavf, UdvdTtime, vsync: boolean;
   Flip, Mirror, Yuy2, Eq2, LastEq2, Dda, LastDda, Wadsp, addsFiles: boolean;
-  WantFullscreen, WantCompact, AutoQuit, IsPause, IsDx, dsEnd, fup,uav: boolean;
+  WantFullscreen, WantCompact, AutoQuit, IsPause, IsDx, dsEnd,uav: boolean;
 var VideoID, Ch, CurPlay, LyricS, HaveLyric: integer;
   AudioID, MouseMode, SubPos, NoAccess: integer;
   SubID, TID, tmpTID, CID, AID, VCDST, CDID: integer;
@@ -133,7 +133,7 @@ var VideoID, Ch, CurPlay, LyricS, HaveLyric: integer;
   IL, IT, EL, ET, EW, EH, InterW, InterH, NW, NH, OldX, OldY, Scale, LastScale: integer;
   MFunc, CBHSA, bri, briD, contr, contrD, hu, huD, sat, satD, gam, gamD: integer;
 var AudioOut, AudioDev, Postproc, Deinterlace, Aspect: integer;
-  ReIndex, SoftVol, RFScr, dbbuf, nfc, nmsg, Firstrun, Volnorm, Dr, UpdatePos: boolean;
+  ReIndex, SoftVol, RFScr, dbbuf, nfc, nmsg, Firstrun, Volnorm, Dr: boolean;
   Loadsrt, LoadVob, Loadsub, Expand, TotalTime, TTime, ChapterLen, ChaptersLen: integer;
 var HaveAudio, HaveVideo, LastHaveVideo, ChkAudio, ChkVideo, ChkStartPlay: boolean;
   NativeWidth, NativeHeight, MonitorID, MonitorW, MonitorH: integer;
@@ -701,19 +701,9 @@ begin
   else SetPriorityClass(GetCurrentProcess, ABOVE_NORMAL_PRIORITY_CLASS);
 
   CurMonitor := Screen.MonitorFromWindow(MainForm.Handle);
-  for i := low(HMonitorList) to high(HMonitorList) do begin
-    if HMonitorList[i] = CurMonitor.Handle then begin
-      MonitorID := i; MonitorW := CurMonitor.Width; MonitorH := CurMonitor.Height;
-      break;
-    end;
-  end;
+  MonitorID := CurMonitor.MonitorNum; MonitorW := CurMonitor.Width; MonitorH := CurMonitor.Height;
 
-  if fup then begin
-    UpdatePos:=CurMonitor.Primary;
-    fup:=false;
-  end;
-
-  if (not CurMonitor.Primary) and (MonitorID > 0) then CmdLine := CmdLine + ' -adapter ' + IntToStr(MonitorID);
+  if not CurMonitor.Primary then CmdLine := CmdLine + ' -adapter ' + IntToStr(MonitorID);
 
   if nmsg then CmdLine := CmdLine + ' -nomsgmodule';
   if UseUni then CmdLine := CmdLine + ' -msgcharset noconv';
@@ -948,7 +938,7 @@ begin
   end;
   if MAspect <> '' then begin
     if Trim(LowerCase(MAspect)) = 'default' then
-      CmdLine := CmdLine + ' -monitoraspect ' + IntTostr(Screen.Width) + ':' + IntTostr(Screen.Height)
+      CmdLine := CmdLine + ' -monitoraspect ' + IntTostr(CurMonitor.Width) + ':' + IntTostr(CurMonitor.Height)
     else CmdLine := CmdLine + ' -monitoraspect ' + MAspect; OptionsForm.CAspect.Items.Count
   end;
   if Aspect = MainForm.MAspects.Count - 1 then begin
@@ -2268,13 +2258,14 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
             r := Left - ((j - Constraints.MinWidth) div 2);
             i := Top - ((p - Constraints.MinHeight) div 2);
             if RS and (EW <> 0) and (EH <> 0) then begin
-              if r < 0 then r := 0; if i < 0 then i := 0;
-              if j > Screen.Width then begin
-                j := Screen.Width; end;
-              if p > Screen.WorkAreaHeight then begin
-                p := Screen.WorkAreaHeight; end;
-              if (r + j) > Screen.Width then r := Screen.Width - j;
-              if (i + p) > Screen.WorkAreaHeight then i := Screen.WorkAreaHeight - p;
+              if r < CurMonitor.Left then r := CurMonitor.Left ; if i < CurMonitor.Top then i := CurMonitor.Top;
+              if j > CurMonitor.Width then begin
+                j := CurMonitor.Width; end;
+              if p > CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top then begin
+                p := CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top; end;
+              if (r + j) > (CurMonitor.Left + CurMonitor.Width) then r := CurMonitor.Left + CurMonitor.Width - j;
+              if (i + p) > (CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top) then
+                i := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - p;
               SetBounds(r, i, j, p);
             end
             else begin
@@ -2294,7 +2285,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
           CPanel.Visible := true; MenuBar.Visible := true;
           SetWindowLong(Handle, GWL_STYLE, DWORD(GetWindowLong(Handle, GWL_STYLE)) and (not WS_SIZEBOX) and (not WS_MAXIMIZEBOX) and (not WS_MAXIMIZE));
           r := Left + ((Width - Constraints.MinWidth) div 2);
-          i := screen.WorkAreaHeight - Constraints.MinHeight;
+          i := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - Constraints.MinHeight;
           SetBounds(r, i, Constraints.MinWidth, Constraints.MinHeight);
           PlaylistForm.Left := Left - PlaylistForm.Width;
           PlaylistForm.Top := Top + Height - PlaylistForm.Height;
@@ -2323,7 +2314,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
       end;
 
       LastEq2 := Eq2; LastDda := Dda; HaveVideo := true;
-      if (NativeWidth / NativeHeight) = (Screen.Width / Screen.Height) then begin
+      if (NativeWidth / NativeHeight) = (CurMonitor.Width / CurMonitor.Height) then begin
         LastScale := 100; Scale := 100;
       end;
       VideoSizeChanged; SetupPlay;
@@ -2804,7 +2795,7 @@ begin
   LyricF := 'Tahoma'; LyricS := 8; MaxLenLyricA := ''; MaxLenLyricW := ''; UdvdTtime := true;
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
   lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := true; ADls:=true;
-  dsEnd:=false; UpdatePos:=true; fup:=true; avThread:='1'; uav:=false; AutoDs:=True;
+  dsEnd:=false; avThread:='1'; uav:=false; AutoDs:=True;
   bluray:=false; dvd:=false; vcd:=false; cd:=false; ResetStreamInfo;
 end.
 

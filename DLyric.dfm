@@ -13,7 +13,7 @@ object DLyricForm: TDLyricForm
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poMainFormCenter
   OnHide = TntFormHide
   OnShow = TntFormShow
   PixelsPerInch = 96
@@ -22,7 +22,7 @@ object DLyricForm: TDLyricForm
     Left = 0
     Top = 0
     Width = 593
-    Height = 451
+    Height = 444
     ActivePage = SSubtitle
     Align = alClient
     TabOrder = 0
@@ -31,7 +31,7 @@ object DLyricForm: TDLyricForm
       Caption = 'Lyric'
       DesignSize = (
         585
-        423)
+        416)
       object LArtist: TTntLabel
         Left = 16
         Top = 16
@@ -133,7 +133,7 @@ object DLyricForm: TDLyricForm
       Caption = 'Subtitle'
       DesignSize = (
         585
-        423)
+        416)
       object LSTitle: TTntLabel
         Left = 228
         Top = 11
