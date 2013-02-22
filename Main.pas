@@ -332,6 +332,8 @@ type
     ISO885921: TTntMenuItem;
     WINDOWS12501: TTntMenuItem;
     MBRT: TTntMenuItem;
+    N41: TTntMenuItem;
+    MTM: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BPlayClick(Sender: TObject);
@@ -449,6 +451,7 @@ type
     procedure MDownloadLyricClick(Sender: TObject);
     procedure SSDClick(Sender: TObject);
     procedure more1Click(Sender: TObject);
+    procedure MTMClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -477,6 +480,7 @@ type
     procedure SetFullscreen(Mode: boolean);
     procedure SetCompact(Mode: boolean);
     procedure NextAudio;
+    procedure NextMonitor;
     procedure NextVideo;
     procedure NextSub;
     procedure NextSubCP;
@@ -662,11 +666,13 @@ begin
   Config.Save(HomeDir + DefaultFileName, 1);
   UnLoadRarLibrary; UnLoadZipLibrary; UnLoad7zLibrary;
   UnLoadShell32Library; UnLoadDsLibrary;
+  UnLoadSLibrary; UnLoadCLibrary;
   FontPaths.Free; SetErrorMode(0);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 var i, PCount: integer; FileName: WideString; IsFirst: boolean;
+    t:TTntMenuItem;
 begin
   UpdateDockedWindows;
   if FirstShow then begin
@@ -683,7 +689,13 @@ begin
     if Left>= CurMonitor.Left then Left:= CurMonitor.Left + (CurMonitor.Width - Width) div 2;
     if Top>=CurMonitor.Top then
       Top:= CurMonitor.Top + (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - Height) div 2;
-
+    for i:=0 to Screen.MonitorCount -1 do begin
+      t := TTntMenuItem.Create(MTM);
+      t.Caption := IntToStr(i); t.Tag := i; t.GroupIndex := $0A;
+      t.RadioItem := true; t.OnClick := MTMClick;
+      MTM.Add(t);
+    end;
+    MTM.Items[CurMonitor.MonitorNum].Checked:=true;
 
     ActivateLocale(DefaultLocale); DragAcceptFiles(Handle, true);
     Application.ProcessMessages;
@@ -1106,6 +1118,7 @@ begin
   if ssCtrl in Shift then begin
     case Key of
       Ord('O'): PlaylistForm.BAddClick(Sender);
+      Ord('A'): NextMonitor;
       Ord('L'): MOpenURLClick(nil);
       Ord('W'): MCloseClick(nil);
       Ord('S'): BStopClick(nil);
@@ -1303,6 +1316,7 @@ begin
     if (Top<0) or (Top> Screen.Height) then Top:=(Screen.Height - Height) div 2;
   end
   else begin
+    MTM.Items[CurMonitor.MonitorNum].Checked:=true;
     if MonitorID <> CurMonitor.MonitorNum then begin
       MonitorID := CurMonitor.MonitorNum; MonitorW := CurMonitor.Width; MonitorH := CurMonitor.Height;
       if Width>CurMonitor.Width then Width:=CurMonitor.Width;
@@ -2306,6 +2320,13 @@ begin
   end;
 end;
 
+procedure TMainForm.NextMonitor;
+var index:integer;
+begin
+  index:= (CurMonitor.MonitorNum + 1) mod MTM.Count;
+  MTMClick(MTM.Items[index]);
+end;
+
 procedure TMainForm.NextSub;
 begin
   if MSubtitle.Count < 1 then exit;
@@ -2650,7 +2671,7 @@ begin
     else if ssShift in Shift then MouseMode := 3 //Scale video
     else if ssCtrl in Shift then MouseMode := 4 //Adjust aspect ratio
     else if ssAlt in Shift then MouseMode := 5 //Adjust bright,contrast
-    else if ((Width < CurMonitor.Width) or (Height < (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)))
+    else if ((Width <= CurMonitor.Width) or (Height <= (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)))
       and (WindowState = wsNormal) then begin
       GetCursorPos(p); OldX := p.X; OldY := p.Y;
       MouseMode := 1; //Drag window
@@ -3325,6 +3346,21 @@ begin
     OptionsForm.Tab.ActivePage := OptionsForm.TSub;
     OptionsForm.Showmodal;
   end;
+end;
+
+procedure TMainForm.MTMClick(Sender: TObject);
+begin
+  if (Sender as TTntMenuItem).Checked then exit;
+  (Sender as TTntMenuItem).Checked:=true;
+  CurMonitor:= Screen.Monitors[(Sender as TTntMenuItem).tag];
+  if (Width>CurMonitor.Width) or MFullscreen.Checked then Width:=CurMonitor.Width;
+  if (Height>CurMonitor.Height) or MFullscreen.Checked then Height:=CurMonitor.Height;
+  if MMaxW.Checked then begin
+    Width:=CurMonitor.Width;
+    Height:=CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top;
+  end;
+  Left:=CurMonitor.Left + (CurMonitor.Width - Width) div 2;
+  Top:=CurMonitor.Top + (CurMonitor.Height - Height) div 2;
 end;
 
 end.

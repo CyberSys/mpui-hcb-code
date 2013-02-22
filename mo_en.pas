@@ -118,6 +118,7 @@ begin
         MSubExpand.Caption:='Sub';
       Hide_menu.Caption:='AutoHide MainMenu';
       Mctrl.Caption:='AutoHide ControlPanel';
+      MTM.Caption:='Toggle Monitor';
     MSeek.Caption:='Play';
       MPlay.Caption:=MSeek.Caption;
       MPause.Caption:=LOCstr_Status_Paused;
@@ -493,6 +494,7 @@ begin
     HK.Items[99].SubItems.Strings[0]:='Play/Pause';
     HK.Items[100].SubItems.Strings[0]:=MainForm.MPrev.Caption;
     HK.Items[101].SubItems.Strings[0]:=MainForm.MNext.Caption;
+    HK.Items[102].SubItems.Strings[0]:=MainForm.MTM.Caption;
   end;
   with PlaylistForm do begin
     Caption:='Playlist';

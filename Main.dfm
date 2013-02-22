@@ -1683,6 +1683,14 @@ object MainForm: TMainForm
         Visible = False
         OnClick = SimulateKey
       end
+      object N41: TTntMenuItem
+        Caption = '-'
+        GroupIndex = 1
+      end
+      object MTM: TTntMenuItem
+        Caption = 'Toggle Monitor'
+        GroupIndex = 1
+      end
     end
     object OMSeek: TTntMenuItem
       Caption = 'Seek'

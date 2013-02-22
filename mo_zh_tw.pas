@@ -118,6 +118,7 @@ begin
         MSubExpand.Caption:=UTF8Decode('Sub字幕');
       Hide_menu.Caption:=UTF8Decode('自動隱藏 主菜單');
       Mctrl.Caption:=UTF8Decode('自動隱藏 控制面板');
+      MTM.Caption:=UTF8Decode('切換 顯示器');
     MSeek.Caption:=LOCstr_Status_Playing;
       MPlay.Caption:=LOCstr_Status_Playing;
       MPause.Caption:=LOCstr_Status_Paused;
@@ -492,6 +493,7 @@ begin
     HK.Items[99].SubItems.Strings[0]:=UTF8Decode('播放/暫停');
     HK.Items[100].SubItems.Strings[0]:=MainForm.MPrev.Caption;
     HK.Items[101].SubItems.Strings[0]:=MainForm.MNext.Caption;
+    HK.Items[102].SubItems.Strings[0]:=MainForm.MTM.Caption;
   end;
   with PlaylistForm do begin
     TMLyric.Hint:=UTF8Decode('通過右鍵菜單，可以改變歌詞的編碼');
