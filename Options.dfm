@@ -100,7 +100,7 @@ object OptionsForm: TOptionsForm
     Top = 6
     Width = 555
     Height = 417
-    ActivePage = TOther
+    ActivePage = TSystem
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 5
     OnChange = TabChange
@@ -616,7 +616,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 8
       end
       object CAspect: TTntComboBox
@@ -626,7 +626,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 1
       end
       object CDeinterlace: TTntComboBox
@@ -636,7 +636,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 2
       end
       object CDr: TTntCheckBox
@@ -657,7 +657,7 @@ object OptionsForm: TOptionsForm
         Width = 288
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 4
       end
       object double: TTntCheckBox
@@ -837,7 +837,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 1
       end
       object CSPDIF: TTntCheckBox
@@ -1925,7 +1925,7 @@ object OptionsForm: TOptionsForm
           'This is free software, licensed under the terms of the'
           'GNU General Public License, Version 2.'
           ''
-          '(C) 2006-2011 Huang Chen Bin <hcb428@foxmail.com>'
+          '(C) 2006-2013 Huang Chen Bin <hcb428@foxmail.com>'
           'based on work by Martin J. Fiedler <martin.fiedler@gmx.net>'
           ''
           'Code contributions and hints:'
