@@ -623,7 +623,7 @@ begin
   LOCstr_InfoAudioChannels:=UTF8Decode(' 聲道數');
   IKeyHint:=UTF8Decode('請按下快捷鍵');
   IKeyerror:=UTF8Decode('快捷鍵已被使用。'^M^J+'要覆蓋它嗎？');
-  Ccap:=UTF8Decode('章節');
+  Ccap:=UTF8Decode('章節'); Tcap:=UTF8Decode('軌');
   Acap:=UTF8Decode('視角');
 end;
 

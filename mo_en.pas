@@ -624,7 +624,7 @@ begin
   LOCstr_InfoAudioChannels:='Channels';
   IKeyHint:='Please press hotkey';
   IKeyerror:='Shortcut is already in use.'^M^J+'Overwrite?';
-  Ccap:='Chapter'; Acap:='Angle';
+  Ccap:='Chapter'; Acap:='Angle'; Tcap:='Track';
 end;
 
 begin

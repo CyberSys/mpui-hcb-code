@@ -112,7 +112,7 @@ var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread,cl: WideString;
   ArcPW, TmpPW, DisplayURL, AudioFile, MaxLenLyricW: WideString;
   Duration, LyricF, fass, HKS, lastP1, lastFN: string;
   substring, Vobfile, ShotDir, LyricDir, LyricURL: WideString;
-  subfont, osdfont, Ccap, Acap, DemuxerName: WideString;
+  subfont, osdfont, Ccap, Acap, Tcap, DemuxerName: WideString;
   MplayerLocation, WadspL, AsyncV, CacheV: widestring;
   MAspect, subcode, MaxLenLyricA, VideoOut: string;
   FirstOpen, PClear, Fd, Async, Cache, uof, oneM, FilterDrop,AutoDs: boolean;
@@ -1708,6 +1708,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
       if (r = 0) and (i > 0) and (i < 8191) then begin
         if CheckMenu(MainForm.MCDT, i) < 0 then
           SubMenu_Add(MainForm.MCDT, i, i, MainForm.MVCDTClick);
+        MainForm.MCDT.Items[CheckMenu(MainForm.MCDT, i)].Checked:=true;
         CDID:=i;
       end;
       Result := true;
@@ -2802,7 +2803,7 @@ begin
   Dda := false; LastDda := false; Utf := false; TextColor := $00FFFF; OutColor := 0;
   Ass := false; Efont := true; ISub := false; speed := 1; LastScale := 100; Scale := 100;
   LastHaveVideo := false; AutoNext := true; FilterDrop := false; PScroll := true; ArcMovie:='';
-  nobps := false; Ccap := 'Chapter'; Acap := 'Angle'; CurPlay := -1; Status := sNone;
+  nobps := false; Ccap := 'Chapter'; Acap := 'Angle'; Tcap := 'Track'; CurPlay := -1; Status := sNone;
   LTextColor := clWindowText; LBGColor := clWindow; LHGColor := $93; ClientProcess := 0;
   ReadPipe := 0; WritePipe := 0; ExitCode := 0; UseUni := false; HaveVideo := false;
   LyricF := 'Tahoma'; LyricS := 8; MaxLenLyricA := ''; MaxLenLyricW := '';
