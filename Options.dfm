@@ -616,7 +616,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 8
       end
       object CAspect: TTntComboBox
@@ -626,7 +626,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 1
       end
       object CDeinterlace: TTntComboBox
@@ -636,7 +636,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 2
       end
       object CDr: TTntCheckBox
@@ -657,7 +657,7 @@ object OptionsForm: TOptionsForm
         Width = 288
         Height = 21
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 4
       end
       object double: TTntCheckBox
@@ -709,16 +709,6 @@ object OptionsForm: TOptionsForm
         Caption = 'Rotate'
         TabOrder = 12
       end
-      object CDVDTtimeC: TTntCheckBox
-        Left = 8
-        Top = 218
-        Width = 297
-        Height = 17
-        Caption = 'Use DVD title time'
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 13
-      end
       object CVSync: TTntCheckBox
         Left = 368
         Top = 130
@@ -728,7 +718,7 @@ object OptionsForm: TOptionsForm
         Caption = 'VSync'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 14
+        TabOrder = 13
       end
       object CRot: TComboBox
         Left = 485
@@ -752,7 +742,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
-        TabOrder = 15
+        TabOrder = 14
         OnChange = CDDXAClick
         Items.Strings = (
           'novideo'
@@ -837,7 +827,7 @@ object OptionsForm: TOptionsForm
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 1
       end
       object CSPDIF: TTntCheckBox

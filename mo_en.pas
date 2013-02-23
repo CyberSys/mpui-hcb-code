@@ -166,6 +166,7 @@ begin
         MForce43.Caption:='Force 4:3';
         MForce169.Caption:='Force 16:9';
         MForceCinemascope.Caption:='Force 2.35:1';
+        MForce155.Caption:='Force 14:9';
         MForce54.Caption:='Force 5:4';
         MForce85.Caption:='Force 16:10';
         MForce221.Caption:='Force 2.21:1';
@@ -297,9 +298,6 @@ begin
                   'files supported by Mplayer.';
     CFlip.Caption:='Flip image';
     CMir.Caption:='Mirrors image';
-    CDVDTtimeC.Caption:='Use DVD title time';
-    CDVDTtimeC.Hint:='For some DVD, it need to DVD title time, not chapter time'^M^J+
-                  'to display';
     CGUI.Caption:='Use GUI of Mplayer';
     CGUI.Hint:='Avoid GMplayer to use GUI of itself. For mplayer without ''-nogui'','^M^J+
                'you can cancel this checkbox to ensure mplayer can be runed';

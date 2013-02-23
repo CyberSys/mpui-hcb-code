@@ -322,8 +322,6 @@ begin
                            '显示YV12速度慢而YUY2速度快的情况.');
     CFlip.Caption:=UTF8Decode('上下翻转视频');
     CMir.Caption:=UTF8Decode('左右翻转视频');
-    CDVDTtimeC.Caption:=UTF8Decode('使用DVD标题时间');
-    CDVDTtimeC.Hint:=UTF8Decode('对于一些DVD,需要使用DVD标题时间而不是章节时间去显示');
     CVSync.Caption:=UTF8Decode('vsync垂直同步');
     CVSync.Hint:=UTF8Decode('对于解决图像撕裂情况有所帮助');
     CNi.Caption:=UTF8Decode('使用非交错的AVI解析器');

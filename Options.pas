@@ -139,7 +139,6 @@ type
     ELyric: TTntEdit;
     BLyric: TTntButton;
     LScroll: TTntCheckBox;
-    CDVDTtimeC: TTntCheckBox;
     CVSync: TTntCheckBox;
     BFont: TButton;
     FontDialog1: TFontDialog;
@@ -474,7 +473,6 @@ begin
   CMir.Checked := Mirror;
   CEq2.Checked := Eq2;
   CYuy2.Checked := Yuy2;
-  CDVDTtimeC.Checked := UdvdTtime;
   CVSync.Checked := vsync;
   CEq2.Enabled := not Dda;
   CYuy2.Enabled := CEq2.Enabled;
@@ -797,15 +795,6 @@ begin
 
   if ShotDir <> ESsf.Text then begin
     ShotDir := ESsf.Text; changed := true;
-  end;
-
-  if UDVDTtime <> CDVDTtimeC.Checked then begin
-    UDVDTtime := CDVDTtimeC.Checked;
-    if UDVDTtime then TotalTime:=Ttime
-    else if HaveChapters then TotalTime:=ChapterLen;
-    Duration := SecondsToTime(TotalTime);
-    StreamInfo.PlaybackTime := Duration;
-    InfoForm.UpdateInfo(false);
   end;
 
   RFScr := CRFScr.Checked;

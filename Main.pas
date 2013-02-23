@@ -1786,7 +1786,7 @@ begin
 end;
 
 procedure TMainForm.MDVDCClick(Sender: TObject);
-var index, r: integer; t:TMenuItem;
+var index, r,e: integer; t:TMenuItem;
 begin
   if (Sender as TTntMenuItem).Checked then exit;
   if bluray then t:=MBRT
@@ -1794,9 +1794,13 @@ begin
   if TID=0 then index:=1
   else index:=TID;
   r := CheckMenu(t, index);
-  if r<0 then exit;
-  index := CheckMenu(t.Items[r].Items[0], CID);
-  t.Items[r].Items[0].Items[index].Checked := false;
+  if r>=0 then begin
+  	e:=CheckMenu(t.Items[r],0);
+  	if e>=0 then begin
+      index := CheckMenu(t.Items[r].Items[e], CID);
+      if index>=0 then t.Items[r].Items[e].Items[index].Checked := false;
+    end;
+  end;
   CID := (Sender as TTntMenuItem).Tag;
   index := (Sender as TTntMenuItem).Parent.Parent.Tag;
   (Sender as TTntMenuItem).Parent.Parent.Checked:=true;
@@ -2455,9 +2459,9 @@ begin
   ETime := false; CBHSA := 0; Firstrun := true; HaveAudio := false; HaveVideo := false;
   Vobfile := ''; substring := ''; MShowSub.Checked := true; IsDMenu := false; SMenu := true;
   AudioID := -1; SubID := -1; VideoID := -1; TID := 1; CID := 1; AID := 1; CDID := 1;
-  subcount := 0; Lastsubcount := 0; VobsubCount := 0; procArc := false; Dreset := false;
+  subcount := 0; procArc := false; Dreset := false; ppoint.x := -1; ppoint.y := -1;
   LastPos := 0; SecondPos := -1; TotalTime := 0; Duration := '0:00:00'; ChapterLen:=0; ChaptersLen:=0;
-  ppoint.x := -1; ppoint.y := -1; SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; dsEnd:=false;
+  SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; dsEnd:=false;
   AudioFile := '';
 end;
 

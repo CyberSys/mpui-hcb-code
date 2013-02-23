@@ -63,7 +63,6 @@ begin
           Core.OneLoop := ReadBool(SectionName, 'OneLoop', Core.OneLoop);
           Core.SoftVol := ReadBool(SectionName, 'SoftVol', Core.SoftVol);
           Core.RFScr := ReadBool(SectionName, 'MBRFullScreen', Core.RFScr);
-          Core.UDVDTtime := ReadBool(SectionName, 'Use_DVD_Total_time', Core.UDVDTtime);
           Core.Dr := ReadBool(SectionName, 'Dr', Core.Dr);
           Core.dbbuf := ReadBool(SectionName, 'Double', Core.dbbuf);
           Core.Volnorm := ReadBool(SectionName, 'Volnorm', Core.Volnorm);
@@ -230,7 +229,6 @@ begin
           WriteBool(SectionName, 'ReIndex', Core.ReIndex);
           WriteBool(SectionName, 'SoftVol', Core.SoftVol);
           WriteBool(SectionName, 'MBRFullScreen', Core.RFScr);
-          WriteBool(SectionName, 'Use_DVD_Total_time', Core.UDVDTtime);
           WriteBool(SectionName, 'Dr', Core.Dr);
           WriteBool(SectionName, 'Double', Core.dbbuf);
           WriteBool(SectionName, 'Show config windows', Core.sconfig);

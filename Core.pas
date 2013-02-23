@@ -763,8 +763,8 @@ begin
   s := Trim(LowerCase(VideoOut));
   if s <> '' then begin
     if s = 'novideo' then CmdLine := CmdLine + ' -novideo'
-    else if s <> 'auto' then CmdLine := CmdLine + ' -vo ' + s + ','
-    else if (s = 'auto') and Win32PlatformIsVista then CmdLine := CmdLine + ' -vo direct3d,';
+    else if s = 'null' then CmdLine := CmdLine + ' -vo null'
+    else if s <> 'auto' then CmdLine := CmdLine + ' -vo ' + s + ',';
   end;
 
   if not Dda then begin
@@ -1623,18 +1623,20 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
     if Dnav then begin
       i := Pos(', CHAPTERS: ', Line);
       e := (len > 26) and (Copy(Line, 1, 6) = 'TITLE ') and (i > 0);
-      if e then s := Copy(Line, i + 12, MaxInt);
+      if e then begin
+        s := Copy(Line, i + 12, MaxInt);
+        p:=StrToInt(Copy(Line,7,i-7));
+      end;
     end
     else begin
       e := (len > 10) and (Copy(Line, 1, 10) = 'CHAPTERS: ');
       s := Copy(Line, 11, MaxInt);
+      p := TID;
     end;
     if e then begin
       i := pos(',', s); ts := '00:00:00';
       while (i > 0) do begin
         inc(j); ds := copy(s, 1, i - 1);
-        if TID=0 then p:=1
-        else p:=TID;
         r := CheckMenu(MainForm.MDVDT, p);
         if r < 0 then r := SubMenu_Add(MainForm.MDVDT, p, TID, nil);
         if CheckMenu(MainForm.MDVDT.Items[r], 0) < 0 then begin
@@ -2349,6 +2351,18 @@ begin
           if HaveChapters then Sendcommand('get_property chapter');
           SendCommand('get_time_length');
         end;
+        if HaveChapters then begin
+          if CID = 1 then UDVDTtime:=false
+          else UDVDTtime:= p>=(ChaptersLen - ChapterLen);
+          if UDVDTtime then TotalTime:=Ttime
+          else TotalTime:=ChapterLen;
+          s:= SecondsToTime(TotalTime);
+          if Duration<>s then begin
+            Duration := s;
+            StreamInfo.PlaybackTime := Duration;
+            InfoForm.UpdateInfo(false);
+          end;
+        end;
         if HaveChapters and UDVDTtime then begin
           if ((p<=(ChaptersLen - ChapterLen)) or (p>=ChaptersLen)) and (not IsDMenu) then begin
             Sendcommand('get_property chapter');
@@ -2370,12 +2384,12 @@ begin
               m.Items[i].Items[0].Items[r + 1].Checked := true;
               inc(CID);   //针对不带chapter属性的mplayer
               ChapterLen:=UpdateLen;
-              if not UDVDTtime then begin
+              {if not UDVDTtime then begin
                 TotalTime:= ChapterLen;
                 Duration := SecondsToTime(TotalTime);
                 StreamInfo.PlaybackTime := Duration;
                 InfoForm.UpdateInfo(false);
-              end;
+              end;}
             end;
           end;
         end;
@@ -2774,12 +2788,12 @@ begin
   DecimalSeparator := '.'; Wadsp := false; GUI := false; HaveMsg := false; Uni := false;
   MFunc := 0; ETime := false; InSubDir := true; ML := false; Pri := true; HaveLyric := 0;
   DefaultOSDLevel := 1; OSDLevel := 1; Ch := 0; Fd := false; oneM := true; Wid := true;
-  Deinterlace := 0; Aspect := 0; Postproc := 0; IntersubCount := 0; UpdatePW := false;
+  Deinterlace := 0; Aspect := 0; Postproc := 0; UpdatePW := false; IsDx:=false;
   AudioOut := 2; AudioDev := 0; Expand := 0; SPDIF := false; nmsg := true; Subcode := '';
   ReIndex := false; SoftVol := false; RFScr := false; ni := false; Dnav := true; Fol := 2;
   dbbuf := true; Dr := false; Volnorm := false; nfc := true; InterW := 4; InterH := 3;
   Params := ''; OnTop := 0; UpdateSkipBar := false; Async := false; AsyncV := '100';
-  Status := sNone; Shuffle := false; Loop := false; OneLoop := false; VideoOut := 'Auto';
+  Status := sNone; Shuffle := false; Loop := false; OneLoop := false; VideoOut := 'direct3d';
   Volume := 100; Mute := False; Duration := ''; MouseMode := 0; SubPos := Dsubpos; FSize := 4.5;
   Flip := false; Mirror := false; Yuy2 := false; Eq2 := false; LastEq2 := false; Rot := 0;
   Bp := 0; Ep := 0; FB := 2; MAspect := 'Default'; lavf := false; vsync := false;
@@ -2791,7 +2805,7 @@ begin
   nobps := false; Ccap := 'Chapter'; Acap := 'Angle'; CurPlay := -1; Status := sNone;
   LTextColor := clWindowText; LBGColor := clWindow; LHGColor := $93; ClientProcess := 0;
   ReadPipe := 0; WritePipe := 0; ExitCode := 0; UseUni := false; HaveVideo := false;
-  LyricF := 'Tahoma'; LyricS := 8; MaxLenLyricA := ''; MaxLenLyricW := ''; UdvdTtime := true;
+  LyricF := 'Tahoma'; LyricS := 8; MaxLenLyricA := ''; MaxLenLyricW := '';
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
   lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := true; ADls:=true;
   dsEnd:=false; avThread:='1'; uav:=false; AutoDs:=True;
