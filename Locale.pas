@@ -179,17 +179,17 @@ begin
   end;
   for i := 3 to MainForm.MDVDT.Count - 1 do begin
     for j := 0 to MainForm.MDVDT.Items[i].Count - 1 do begin
-      case j of
-        0: MainForm.MDVDT.Items[i].Items[0].Caption := Ccap;
-        1: MainForm.MDVDT.Items[i].Items[1].Caption := Acap;
+      case MainForm.MDVDT.Items[i].Items[j].Tag of
+        0: MainForm.MDVDT.Items[i].Items[j].Caption := Ccap;
+        1: MainForm.MDVDT.Items[i].Items[j].Caption := Acap;
       end;
     end;
   end;
   for i := 0 to MainForm.MBRT.Count - 1 do begin
     for j := 0 to MainForm.MBRT.Items[i].Count - 1 do begin
-      case j of
-        0: MainForm.MBRT.Items[i].Items[0].Caption := Ccap;
-        1: MainForm.MBRT.Items[i].Items[1].Caption := Acap;
+      case MainForm.MBRT.Items[i].Items[j].Tag of
+        0: MainForm.MBRT.Items[i].Items[j].Caption := Ccap;
+        1: MainForm.MBRT.Items[i].Items[j].Caption := Acap;
       end;
     end;
   end;

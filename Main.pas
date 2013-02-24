@@ -2474,7 +2474,7 @@ begin
   else
     LTime.Caption := SecondsToTime(SecondPos) + '/' + Duration;
   s := '';
-  if CDID > 1 then s := Tcap + IntToStr(CDID);
+  if cd or vcd then s := Tcap + IntToStr(CDID);
   if CID > 1 then s := Ccap + IntToStr(CID);
   if AID > 1 then begin
     if s <> '' then s := Acap + IntToStr(AID) + '@' + s else s := Acap + IntToStr(AID);

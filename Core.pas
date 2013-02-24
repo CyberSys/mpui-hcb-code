@@ -1706,9 +1706,10 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
     if (len > 14) and (Copy(Line, 1, 14) = 'ID_CDDA_TRACK=') then begin
       Val(Copy(Line, 15, MaxInt), i, r);
       if (r = 0) and (i > 0) and (i < 8191) then begin
-        if CheckMenu(MainForm.MCDT, i) < 0 then
-          SubMenu_Add(MainForm.MCDT, i, i, MainForm.MVCDTClick);
-        MainForm.MCDT.Items[CheckMenu(MainForm.MCDT, i)].Checked:=true;
+        j:= CheckMenu(MainForm.MCDT, i);
+        if j < 0 then
+          SubMenu_Add(MainForm.MCDT, i, i, MainForm.MVCDTClick)
+        else MainForm.MCDT.Items[j].Checked:=true;
         CDID:=i;
       end;
       Result := true;
@@ -2379,7 +2380,9 @@ begin
           if b then begin
             if bluray then m:= MainForm.MBRT
             else m:= MainForm.MDVDT;
-            i := CheckMenu(m, TID);
+            if TID=0 then i:=1
+            else i:=TID;
+            i := CheckMenu(m, i);
             r := CheckMenu(m.Items[i].Items[0], CID);
             if r < m.Items[i].Items[0].Count - 1 then begin
               m.Items[i].Items[0].Items[r + 1].Checked := true;
