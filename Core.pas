@@ -885,7 +885,7 @@ begin
     end;
   end;
 
-   {   _____________________________________________________________________
+   {  ______________________________________________________________________
      |   vob (-vob vobfile)         | ID_VOBSUB_ID   |   |                  |
      |______________________________|________________| VobAndInterSubCount  |
      |  inter (DVD/MKV/OGM)         | ID_SUBTITLE_ID |   |                  |
@@ -1344,7 +1344,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
         end;
         if CheckMenu(MainForm.MSubtitle, i) < 0 then begin
           SubMenu_Add(MainForm.MSubtitle, i, SubID, MainForm.MSubtitleClick);
-          inc(VobsubCount);
+          inc(VobsubCount); CurrentSubCount := IntersubCount + VobsubCount;
         end;
       end;
       Result := true;
@@ -1362,7 +1362,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
       if (r = 0) and (i >= 0) and (i < 256) then begin
         if CheckMenu(MainForm.MSubtitle, i) < 0 then begin
           SubMenu_Add(MainForm.MSubtitle, i, SubID, MainForm.MSubtitleClick);
-          inc(VobsubCount);
+          inc(VobsubCount); CurrentSubCount := IntersubCount + VobsubCount;
         end;
         SubMenu_SetNameLang(MainForm.MSubtitle, i, copy(s, p + 6, MaxInt));
       end;
@@ -1853,7 +1853,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
       if (r = 0) and (i >= 0) and (i < 8191) then begin
         if CheckMenu(MainForm.MSubtitle, VobsubCount + i) < 0 then begin
           SubMenu_Add(MainForm.MSubtitle, VobsubCount + i, SubID, MainForm.MSubtitleClick);
-          inc(IntersubCount);
+          inc(IntersubCount); CurrentSubCount := IntersubCount + VobsubCount;
         end;
       end;
       Result := true;
@@ -1872,7 +1872,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
       if (r = 0) and (i >= 0) and (i < 8191) then begin
         if CheckMenu(MainForm.MSubtitle, VobsubCount + i) < 0 then begin
           SubMenu_Add(MainForm.MSubtitle, VobsubCount + i, SubID, MainForm.MSubtitleClick);
-          inc(IntersubCount);
+          inc(IntersubCount); CurrentSubCount := IntersubCount + VobsubCount;
         end;
         SubMenu_SetNameLang(MainForm.MSubtitle, VobsubCount + i, copy(s, p + 6, MaxInt));
       end;

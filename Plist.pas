@@ -518,10 +518,10 @@ begin
     with Entry do begin
       State := psNotPlayed; 
      	s:=' -dvd-device '; a:='DVD-1 <-- '; d:=' dvd';
-      if IsWideStringMappableToAnsi(Directory) then
-        FullURL := s + EscapeParam(Directory) + d
+      if (Pos(#32, Directory) > 0) or (not IsWideStringMappableToAnsi(Directory)) then
+        FullURL := s + WideExtractShortPathName(Directory) + d
       else
-        FullURL := s + EscapeParam(WideExtractShortPathName(Directory)) + d;
+        FullURL := s + Directory + d;
       DisplayURL := a + Directory;
     end;
     if not EndOpenDir then begin
@@ -536,10 +536,10 @@ begin
     with Entry do begin
       State := psNotPlayed;
      	s:=' -bluray-device '; a:='BlueRay-1 <-- '; d:=' br';
-      if IsWideStringMappableToAnsi(Directory) then
-        FullURL := s + EscapeParam(Directory) + d
+      if (Pos(#32, Directory) > 0) or (not IsWideStringMappableToAnsi(Directory)) then
+        FullURL := s + WideExtractShortPathName(Directory) + d
       else
-        FullURL := s + EscapeParam(WideExtractShortPathName(Directory)) + d;
+        FullURL := s + Directory + d;
       DisplayURL := a + Directory;
     end;
     if not EndOpenDir then begin
@@ -554,10 +554,10 @@ begin
     with Entry do begin
       State := psNotPlayed;
      	s:=' -cdrom-device '; a:='CD <-- '; d:=' cdda://';
-      if IsWideStringMappableToAnsi(Directory) then
-        FullURL := s + EscapeParam(Directory) + d
+      if (Pos(#32, Directory) > 0) or (not IsWideStringMappableToAnsi(Directory)) then
+        FullURL := s + WideExtractShortPathName(Directory) + d
       else
-        FullURL := s + EscapeParam(WideExtractShortPathName(Directory)) + d;
+        FullURL := s + Directory + d;
       DisplayURL := a + Directory;
     end;
     if not EndOpenDir then begin
@@ -608,11 +608,12 @@ begin
   Directory:=WideExcludeTrailingPathDelimiter(Directory);
   with Entry do begin
     State := psNotPlayed;
-    if IsWideStringMappableToAnsi(Directory) then
-      FullURL := ' -cdrom-device ' + EscapeParam(Directory) + ' vcd://'
+    s:=' -cdrom-device '; a:='VCD <-- '; d:=' vcd://';
+    if (Pos(#32, Directory) > 0) or (not IsWideStringMappableToAnsi(Directory)) then
+      FullURL := s + WideExtractShortPathName(Directory) + d
     else
-      FullURL := ' -cdrom-device ' + EscapeParam(WideExtractShortPathName(Directory)) + ' vcd://';
-    DisplayURL := 'VCD <-- ' + Directory;
+      FullURL := s + Directory + d;
+    DisplayURL := a + Directory;
   end;
   if not EndOpenDir then begin
     Add(Entry);

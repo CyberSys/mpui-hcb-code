@@ -2459,7 +2459,8 @@ begin
   ETime := false; CBHSA := 0; Firstrun := true; HaveAudio := false; HaveVideo := false;
   Vobfile := ''; substring := ''; MShowSub.Checked := true; IsDMenu := false; SMenu := true;
   AudioID := -1; SubID := -1; VideoID := -1; TID := 1; CID := 1; AID := 1; CDID := 1;
-  subcount := 0; procArc := false; Dreset := false; ppoint.x := -1; ppoint.y := -1;
+  subcount := 0; Lastsubcount := 0; CurrentSubCount:=0;
+  procArc := false; Dreset := false; ppoint.x := -1; ppoint.y := -1;
   LastPos := 0; SecondPos := -1; TotalTime := 0; Duration := '0:00:00'; ChapterLen:=0; ChaptersLen:=0;
   SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; dsEnd:=false;
   AudioFile := '';
