@@ -1015,7 +1015,7 @@ begin
       if Dnav and SMenu and (i = 1) and dvd then TID := 0
       else TID := i;
     end;
-    if (not Dnav) and (TID = 0) then TID := 1; tmpTID := TID;
+    if (not Dnav) and (TID = 0) then TID := 1; //tmpTID:=TID;
     if TID > 0 then CmdLine := CmdLine + IntToStr(TID);
     if CID > 1 then begin
       if bluray then CmdLine := CmdLine + ' -bluray-chapter ' + IntToStr(CID-1)
@@ -1658,7 +1658,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
     end;
   end;
 
-  function CheckDVDNavTL: boolean;
+  {function CheckDVDNavTL: boolean;
   var Entry: TPlaylistEntry;
   begin
     Result := false;
@@ -1684,17 +1684,34 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
           Entry.State := psNotPlayed; Entry.FullURL := MediaURL;
           Entry.DisplayURL := s;
           playlist.Add(Entry);
-          //Playlist.Changed;
-          CID := j; TID := tmpTID;
-          MainForm.NextFile(1, psPlayed);
-        end
-        else begin
-          Playlist.SetState(CurPlay, psPlayed);
-          CurPlay := i;
-          CID := j; TID := tmpTID;
-          Playlist.NowPlaying(i);
-          MainForm.DoOpen(Playlist[i].FullURL, Playlist[i].DisplayURL);
+          i := playlist.FindItem('', s);
         end;
+        Playlist.SetState(CurPlay, psPlayed);
+        CurPlay := i;
+        CID := j; TID := tmpTID;
+        Playlist.NowPlaying(i);
+        MainForm.DoOpen(Playlist[i].FullURL, Playlist[i].DisplayURL);
+      end;
+      Result := true;
+    end;
+  end;}
+
+  function CheckDVDNavTL: boolean;
+  begin
+    Result := false;
+    if Dnav and (len > 27) and (Copy(Line, 1, 27) = 'DVDNAV, switched to title: ') then begin
+      Val(Copy(Line, 28, MaxInt), i, r);
+      if r = 0 then tmpTID := i;
+      Result := true; exit;
+    end;
+
+    if Dnav and (len > 17) and (Copy(Line, 1, 17) = 'DVDNAV_TITLE_IS_M') then begin
+      s := Copy(Line, 18, MaxInt);
+      if s = 'ENU' then IsDMenu := true
+      else if s = 'OVIE' then begin
+        IsDMenu := false; TID:=tmpTID;
+        Sendcommand('get_property chapter');
+        SendCommand('get_time_length');
       end;
       Result := true;
     end;
