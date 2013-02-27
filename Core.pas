@@ -1665,9 +1665,9 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
     if Dnav and (len > 27) and (Copy(Line, 1, 27) = 'DVDNAV, switched to title: ') then begin
       Val(Copy(Line, 28, MaxInt), i, r);
       if r = 0 then begin
-        if i <> TID then tmpTID := i
-        else SendCommand('get_time_length');
+        if i <> TID then tmpTID := i;
         Sendcommand('get_property chapter');
+        SendCommand('get_time_length');
       end;
       Result := true; exit;
     end;
