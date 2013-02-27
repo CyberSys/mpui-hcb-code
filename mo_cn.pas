@@ -241,7 +241,8 @@ begin
 '中键/右键 单击进度条滑块'^I'设置片头/片尾'^M^J+
 '在拖曳时，松开、按下不同的功能键和起始拖曳方向决定不同的功能'^M^J^M^J+
 '如果MPUI目录下存在''MPUI.ini''文件，MPUI将优先读取和保存设置到这个文件'^M^J+
-'MPUI将以DVD、VCD或SVCD的方式打开包含''VIDEO_TS''、''MPEGAV''或''MPEG2''子目录的目录');
+'MPUI将以DVD、VCD、SVCD或蓝光的方式打开包含''VIDEO_TS''、''MPEGAV''、''MPEG2'''^M^J+
+'或''BDMV''子目录的目录');
 
   with OptionsForm do begin
   	ads.Caption:=UTF8Decode('播放视频时自动下载字幕');

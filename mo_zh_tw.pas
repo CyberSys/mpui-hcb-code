@@ -240,7 +240,8 @@ begin
 '中鍵/右鍵 單擊進度條滑塊'^I'設置片頭/片尾'^M^J+
 '在拖曳時，松開、按下不同的功能鍵和起始拖曳方向決定不同的功能'^M^J^M^J+
 '如果MPUI目錄下存在''MPUI.ini''檔案，MPUI將優先讀取和保存設置到這個檔案'^M^J+
-'MPUI將以DVD、VCD或SVCD的方式打開包含''VIDEO_TS''、''MPEGAV''或''MPEG2''子目錄的目錄');
+'MPUI將以DVD、VCD、SVCD或藍光的方式打開包含''VIDEO_TS''、''MPEGAV''、''MPEG2'''^M^J+
+'或''BDMV''子目錄的目錄');
 
   with OptionsForm do begin
   	ads.Caption:=UTF8Decode('播放視頻時自動下載字幕');
