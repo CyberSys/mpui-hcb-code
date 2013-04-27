@@ -178,7 +178,7 @@ begin
     FullURL:=FullURL+'adevice='+i+':chanlist='+s+a;
   end;
   Playlist.Add(Entry);
-  //Playlist.Changed;
+  Playlist.Changed;
 end;
 
 procedure TOpenDevicesForm.TViewClick(Sender: TObject);

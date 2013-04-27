@@ -488,7 +488,7 @@ procedure TOpenDir.Execute;
 begin
   EndOpenDir:=false;
   Playlist.AddDir(Directory,msg);
-  //Synchronize(Playlist.Changed);
+  Synchronize(Playlist.Changed);
 end;
 
 procedure TPlaylist.AddDirectory(Directory: Widestring; msg:boolean);
@@ -1487,7 +1487,7 @@ begin
         end
         else Playlist.AddFiles(sfiles[i],false);
       end;
-      //Playlist.Changed; 
+      Playlist.Changed; 
       sfiles.Free;
     end;
   end;
@@ -1580,7 +1580,7 @@ begin
     end;
   end;
   DragFinish(hDrop);
-  FList.Free; //Playlist.Changed;
+  FList.Free; Playlist.Changed;
   if (not Win32PlatformIsUnicode) and (s > 0) then Restart;
   msg.Result := 0;
 end;

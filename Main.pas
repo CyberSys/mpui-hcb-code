@@ -719,7 +719,7 @@ begin
         Playlist.AddDirectory('.',false);
       end;
     end;
-    //Playlist.Changed;
+    Playlist.Changed;
   end;
 end;
 
@@ -826,7 +826,7 @@ begin
   end;
   DragFinish(hDrop);
   FList.Free;
-  //Playlist.Changed;
+  Playlist.Changed;
   if (not Win32PlatformIsUnicode) and (s > 0) then Restart;
   msg.Result := 0;
 end;
@@ -866,7 +866,7 @@ begin
     end;
     if WideDirectoryExists(OpenFileName) then Playlist.AddDirectory(OpenFileName,true)
     else Playlist.AddFiles(OpenFileName,true);
-    //Playlist.Changed;
+    Playlist.Changed;
   end;
 end;
 
@@ -1767,7 +1767,7 @@ begin
   Entry.State := psNotPlayed;
   playlist.Add(Entry);
   if Addsfiles then Plist.addEpisode(w);
-  //Playlist.Changed;
+  Playlist.Changed;
 end;
 
 procedure TMainForm.UpdateMRF;
@@ -1965,7 +1965,7 @@ begin
     PClear := true; EndOpenDir:=true;
     if WideDirectoryExists(s) then Playlist.AddDirectory(s,false)
     else Playlist.AddFiles(s,false);
-    //Playlist.Changed;
+    Playlist.Changed;
   end;
 end;
 
@@ -2004,7 +2004,7 @@ procedure TMainForm.MOpenDriveClick(Sender: TObject);
 begin
   PClear := true; EndOpenDir:=true;
   Playlist.AddDirectory(char((Sender as TTntMenuItem).Tag) + ':',false);
-  //Playlist.Changed;
+  Playlist.Changed;
 end;
 
 procedure TMainForm.MKeyHelpClick(Sender: TObject);

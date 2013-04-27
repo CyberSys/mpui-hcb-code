@@ -1387,7 +1387,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
                 DisplayURL := s;
               end;
               playlist.Add(Entry);
-              //if a = i then Playlist.Changed;
+              if a = i then Playlist.Changed;
             end;
           end;
           if CheckMenu(MainForm.MBRT, a) < 0 then begin
@@ -1424,7 +1424,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
                 DisplayURL := s;
               end;
               playlist.Add(Entry);
-              //if a = i then Playlist.Changed;
+              if a = i then Playlist.Changed;
             end;
           end;
           if CheckMenu(MainForm.MDVDT, a) < 0 then begin
