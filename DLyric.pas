@@ -104,8 +104,8 @@ const
 SearchPath: array[0..2] of string = (
     'http://ttlrcct.qianqian.com/dll/lyricsvr.dll?sh?Artist=%s&Title=%s&Flags=0',
     'http://ttlrccnc.qianqian.com/dll/lyricsvr.dll?sh?Artist=%s&Title=%s&Flags=0',
-    '<?xml version="1.0" encoding=''utf-8''?><search filetype="lyrics" artist="%s" title="%s"/>'
-
+  //'<?xml version="1.0" encoding=''utf-8''?><search filetype="lyrics" artist="%s" title="%s"/>'
+    '<?xml version=''1.0'' encoding=''utf-8'' standalone=''yes'' ?><search filetype="lyrics" artist="%s" title="%s" client="MiniLyrics" />'
     );
 
 DownloadPath : array[0..2] of string = (
@@ -118,9 +118,11 @@ function ToHexString(s, encode: WideString): string;
 function CreateLyricCode(singer, title: WideString; lrcId: integer): string;
 function Conv(i: Integer): int64;
 function findID(id:WideString; list:TLyricEntryList):Boolean;
+function vl_enc(data, md5_extra:string):TBytes;
+function vl_dec(data:string):string;
 
 implementation
-uses Plist, Core, Locale, Main;
+uses Plist, Core, Locale, Main, md5;
 
 {$R *.dfm}
 procedure TDownLoadLyric.Execute;
@@ -187,14 +189,10 @@ end;
 procedure TDownLoadLyric.GetLyricList;
 var XMLString, MyUrl: string; artistV, titleV,idV,linkV,s:OleVariant;
     XDOC: IXMLDocument; XmlNd,nd,nd1: IXMLNode; i,j,Len,searchID:Integer;
-    IdHTTP1: TIdhttp; SList: TStringList;
+    IdHTTP1: TIdhttp; Mem:TMemoryStream; tb:TBytes; SList:TStringList;
     IDSubtitle,LanguageName,SubFormat,SubSumCD,MovieName,
     SubAddDate,SubEnabled,SubDownloadsCnt,SubBad,a,t:WideString;
-
 begin
-  IdHTTP1:=TIdhttp.Create(nil);
-  IdHTTP1.HTTPOptions:=[hoKeepOrigProtocol];
-  XMLString:='';
   if Abs(mode mod 2)=1 then begin
     artist := Tnt_WideLowerCase(Tnt_WideStringReplace(artist, '''', '', [rfReplaceAll]));
     artist := Tnt_WideLowerCase(Tnt_WideStringReplace(artist, '"', '', [rfReplaceAll]));
@@ -202,10 +200,10 @@ begin
     title := Tnt_WideLowerCase(Tnt_WideStringReplace(title, '"', '', [rfReplaceAll]));
 
     for searchID:=High(SearchPath) downto Low(SearchPath) do begin
-      IdHTTP1:=TIdhttp.Create(nil);
+      IdHTTP1:=TIdhttp.Create(nil); XMLString:='';
       IdHTTP1.HTTPOptions:=[hoKeepOrigProtocol];
 
-      if searchID<2 then begin  //IdHTTP1.Free;  Exit;
+      if searchID<2 then begin   //IdHTTP1.Free;  Exit;
         a:= Tnt_WideStringReplace(artist, ' ', '', [rfReplaceAll]);
         t:= Tnt_WideStringReplace(title, ' ', '', [rfReplaceAll]);
         a:= ToHexString(a, 'Unicode'); t:= ToHexString(t, 'Unicode');
@@ -218,19 +216,29 @@ begin
         end;
       end
       else begin  // IdHTTP1.Free;  Exit;
-        SList:=TStringList.Create;
-        SList.Text:=Format(SearchPath[searchID], [UTF8Encode(artist), UTF8Encode(title)]);
-        try            //http://www.viewlyrics.com:1212/searchlyrics.htm
-        //IdHTTP1.Host:='search.crintsoft.com';
+        MyUrl:= Format(SearchPath[searchID], [UTF8Encode(artist), UTF8Encode(title)]);
+        FillChar(tb ,sizeof(tb),0);
+        tb:= vl_enc(MyUrl,'Mlv1clt4.0');
+        Mem:= TMemoryStream.Create();
+        Mem.Write(tb[0],length(tb));
+        //http://www.viewlyrics.com:1212/searchlyrics.htm
         IdHTTP1.Request.UserAgent:='MiniLyrics';
-       // IdHTTP1.Port:='1212';
-          XMLString:=IdHTTP1.Post('http://search.crintsoft.com/searchlyrics.htm',SList);
-          SList.Free;
+        {IdHTTP1.ProtocolVersion:=pv1_1;
+        IdHttp1.Request.CustomHeaders.Values['Connection']:='Keep-Alive';
+        IdHttp1.Request.CustomHeaders.Values['Expect']:='100-continue';}
+        idhttp1.Request.ContentType:='';
+        idhttp1.Request.Accept:='';
+        // IdHTTP1.Port:='1212';
+        //idhttp1.Request.ContentLength:=length(tb);
+        try
+          XMLString:=IdHTTP1.post('http://search.crintsoft.com/searchlyrics.htm',Mem);
+          XMLString:=vl_dec(XMLString);
         except
-           IdHTTP1.Free;
-           SList.Free;
-           Continue;
+          IdHTTP1.Free;
+          Mem.free;
+          Continue;
         end;
+        Mem.free;
       end;
       IdHTTP1.Free;
       if XMLString='' then Continue;
@@ -277,6 +285,8 @@ begin
     end;
   end
   else begin
+    IdHTTP1:=TIdhttp.Create(nil); XMLString:='';
+    IdHTTP1.HTTPOptions:=[hoKeepOrigProtocol];
     IdHTTP1.Host:='www.opensubtitles.org';
     MyUrl:= Format('/en/search/sublanguageid-%s/moviename-%s/xml', [LangList[Lang],UTF8Encode(title)]);
     try
@@ -724,6 +734,45 @@ begin
        Result:= true;
        Break;
      end;
+end;
+
+function hexToStr(hex:string):string;
+var i:integer;
+begin
+    result:='';
+    i:=1;
+    while i<length(hex) do begin
+       result:= result + char(StrToInt('$'+hex[i]+hex[i+1]));
+       i:=i+2;
+    end;
+end;
+
+function vl_enc(data, md5_extra:string):TBytes;
+var datalen,j,i,magickey:integer; hasheddata:string;
+begin
+  hasheddata:= StrToMD5(data + md5_extra);
+  hasheddata:=hexToStr(hasheddata);
+  j:= 0; datalen:= length(data);
+  for i:= 1 to datalen do
+    j:= j + ord(data[i]);
+
+  magickey:= round(j / datalen);
+  for i:= 1 to datalen do
+    data[i]:= char(ord(data[i]) xor magickey);
+ hasheddata:= hasheddata + data;
+ datalen := Length(hasheddata);
+ SetLength(result, datalen + 6);
+ result[0]:=$02; result[1]:=magickey; result[2]:=$04; result[3]:=$00; result[4]:=$00; result[5]:=$00;
+ for i:= 1 to datalen do
+   result[5 + i]:=byte(hasheddata[i]);
+end;
+
+function vl_dec(data:string):string;
+var magickey,i:integer;
+begin
+  result:= ''; magickey:= ord(data[2]);
+  for i:= 23 to length(data) do
+    result:= result + char(ord(data[i]) xor magickey);
 end;
 
 end.

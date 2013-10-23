@@ -59,7 +59,8 @@ uses
   SevenZipVCL in 'SevenZipVCL.pas',
   Equalizer in 'Equalizer.pas' {EqualizerForm},
   OpenDevice in 'OpenDevice.pas' {OpenDevicesForm},
-  DLyric in 'DLyric.pas' {DLyricForm};
+  DLyric in 'DLyric.pas' {DLyricForm},
+  md5 in 'md5.pas';
 
 {$R *.res}
 {$R XPStyle.res}
