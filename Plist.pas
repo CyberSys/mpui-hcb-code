@@ -727,6 +727,7 @@ var i, UPCount: integer;
 begin
   if Count = 0 then begin Result := -1; CurPlay := -1; exit; end
   else Result := CurPlay;
+  if Direction=0 then exit;
   if Result < 0 then Result := 0
   else if Result < Count then Data[Result].State := ExitState; // mark State of current track
   if OneLoop and AutoNext then exit;
