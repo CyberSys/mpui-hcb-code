@@ -138,7 +138,7 @@ type
     SLyric: TTntLabel;
     ELyric: TTntEdit;
     BLyric: TTntButton;
-    LScroll: TTntCheckBox;
+    Ldlod: TTntCheckBox;
     CVSync: TTntCheckBox;
     BFont: TButton;
     FontDialog1: TFontDialog;
@@ -293,7 +293,7 @@ var
   OptionsForm: TOptionsForm; IsDsLoaded: THandle = 0; OptionsFormHook: HHOOK; ctrlkey: TShiftState = [];
 
 implementation
-uses Core, Config, Main, Locale, plist, unrar, Info;
+uses Core, Config, Main, Locale, plist, unrar, Info, LyricShow;
 
 {$R *.dfm}
 var DirectSoundEnumerate: function(lpDSEnumCallback: PDSEnumCallback; lpContext: pointer): HRESULT; stdcall;
@@ -373,7 +373,6 @@ begin
     PlaylistForm.PLTC.Hint := LTCL.Caption;
     PlaylistForm.PLHC.Hint := LHCL.Caption;
     PlaylistForm.PLBC.Hint := LBCL.Caption;
-    PlaylistForm.LScroll.Caption := LScroll.Caption;
     CLanguage.Clear;
     CLanguage.Items.Add(LOCstr_AutoLocale);
     for i := 0 to High(Locales) do
@@ -438,7 +437,7 @@ begin
   Load(HomeDir + DefaultFileName, 1);
   CAudioOut.ItemIndex := AudioOut;
   CAudioDev.ItemIndex := AudioDev;
-  LScroll.Checked := PScroll;
+  Ldlod.Checked := dlod;
   CIndex.Checked := ReIndex;
   CSoftVol.Checked := SoftVol;
   CRFScr.Checked := RFScr;
@@ -825,7 +824,35 @@ begin
   seekLen := StrToIntdef(Eseek.Text, 10);
   vsync := CVSync.Checked;
   oneM := Cone.Checked;
-  PScroll := LScroll.Checked;
+
+  if dlod <> Ldlod.Checked then begin
+    if Ldlod.Checked then begin
+      if HaveLyric<>0 then begin
+        if MSecPos < Lyric.LyricTime[0].timecode then begin
+          if LyricCount=0 then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(0),'')
+          else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(0),Lyric.GetLyricString(1));
+        end;
+        if MSecPos > Lyric.LyricTime[LyricCount].timecode then begin
+          if CurLyric mod 2 = 0 then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric),'')
+          else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric-1),Lyric.GetLyricString(CurLyric));
+        end;
+        if (MSecPos >= Lyric.LyricTime[CurLyric].timecode) and (MSecPos <= Lyric.LyricTime[NextLyric].timecode) then begin
+          if CurLyric mod 2 = 0 then begin
+            if CurLyric = LyricCount then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric),'')
+            else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric),Lyric.GetLyricString(NextLyric));
+          end
+          else begin
+            if CurLyric = LyricCount then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric-1),Lyric.GetLyricString(CurLyric))
+            else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(NextLyric),Lyric.GetLyricString(CurLyric));
+          end;
+        end;
+      end;
+      LyricShowForm.Show;
+    end
+    else
+      LyricShowForm.Hide;
+  end;
+  dlod := Ldlod.Checked;
   LTextColor := ColorToRGB(PLTC.Color);
   LbgColor := ColorToRGB(PLBC.Color);
   LhgColor := ColorToRGB(PLHC.Color);
@@ -836,7 +863,6 @@ begin
   PlaylistForm.PLTC.Color := LTextColor;
   PlaylistForm.PLBC.Color := LbgColor;
   PlaylistForm.PLHC.Color := LhgColor;
-  PlaylistForm.LScroll.Checked := PScroll;
   ADls:=CLS.Checked;
   AutoDs:=ads.Checked;
   Addsfiles := CAddsfiles.Checked;
@@ -1151,6 +1177,9 @@ begin
     if FontDialog1.Execute then begin
       BFont.Caption := FontDialog1.Font.Name;
       BFont.Font.Name := FontDialog1.Font.Name;
+      GDILyric.SetFont(FontDialog1.Font.Name,35);
+      LyricShowForm.Canvas.Font.Name:= FontDialog1.Font.Name;
+      LyricShowForm.Canvas.Font.Size:= 35;
       Lyric.BitMap.Canvas.Font.Name := FontDialog1.Font.Name;
       Lyric.BitMap.Canvas.Font.Size := FontDialog1.Font.Size;
       Lyric.ItemHeight:= WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;

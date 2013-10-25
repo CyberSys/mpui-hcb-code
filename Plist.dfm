@@ -5,6 +5,7 @@ object PlaylistForm: TPlaylistForm
   Height = 255
   Caption = 'PlaylistForm'
   Color = clBtnFace
+  TransparentColorValue = 15204041
   Constraints.MinHeight = 105
   Constraints.MinWidth = 365
   Font.Charset = DEFAULT_CHARSET
@@ -281,22 +282,9 @@ object PlaylistForm: TPlaylistForm
         Height = 181
         Anchors = [akLeft, akTop, akRight, akBottom]
         PopupMenu = TntCP
-        OnPaint = TMLyricPaint
-      end
-      object LScroll: TTntCheckBox
-        Left = 264
-        Top = 2
-        Width = 122
-        Height = 17
-        Anchors = [akLeft, akTop, akRight]
-        Caption = 'Smooth scroll'
-        ParentShowHint = False
-        ShowHint = False
-        TabOrder = 5
-        OnClick = LScrollClick
       end
       object PLBC: TTntPanel
-        Left = 208
+        Left = 264
         Top = 0
         Width = 30
         Height = 21
@@ -312,7 +300,7 @@ object PlaylistForm: TPlaylistForm
         OnClick = PLBCClick
       end
       object PLHC: TTntPanel
-        Left = 176
+        Left = 232
         Top = 0
         Width = 30
         Height = 21
@@ -328,7 +316,7 @@ object PlaylistForm: TPlaylistForm
         OnClick = PLHCClick
       end
       object PLTC: TTntPanel
-        Left = 144
+        Left = 200
         Top = 0
         Width = 30
         Height = 21
@@ -344,9 +332,9 @@ object PlaylistForm: TPlaylistForm
         OnClick = PLTCClick
       end
       object CLyricS: TComboBox
-        Left = 106
+        Left = 146
         Top = 0
-        Width = 34
+        Width = 47
         Height = 21
         ItemHeight = 13
         TabOrder = 3
@@ -372,20 +360,20 @@ object PlaylistForm: TPlaylistForm
       object CLyricF: TComboBox
         Left = 2
         Top = 0
-        Width = 102
+        Width = 143
         Height = 21
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 4
         OnChange = CLyricFChange
       end
       object dlyric1: TTntBitBtn
-        Left = 238
+        Left = 326
         Top = 0
         Width = 23
         Height = 20
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 6
+        TabOrder = 5
         OnClick = MDownloadLyricClick
         Glyph.Data = {
           36030000424D3603000000000000360000002800000010000000100000000100

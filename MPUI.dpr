@@ -60,10 +60,17 @@ uses
   Equalizer in 'Equalizer.pas' {EqualizerForm},
   OpenDevice in 'OpenDevice.pas' {OpenDevicesForm},
   DLyric in 'DLyric.pas' {DLyricForm},
-  md5 in 'md5.pas';
+  md5 in 'md5.pas',
+  GDILyrics in 'GDILyrics.pas',
+  GDIPAPI in 'GDIPAPI.pas',
+  GDIPOBJ in 'GDIPOBJ.pas',
+  GDIPUTIL in 'GDIPUTIL.pas',
+  DirectDraw in 'DirectDraw.pas',
+  LyricShow in 'LyricShow.pas' {LyricShowForm};
 
 {$R *.res}
 {$R XPStyle.res}
+
 var hAppMutex: Thandle; Mf: hWnd; s: WideString; t: string; i, PCount: integer;
 begin
   Init;
@@ -103,6 +110,7 @@ begin
   Application.CreateForm(TOptionsForm, OptionsForm);
   Application.CreateForm(TOpenDevicesForm, OpenDevicesForm);
   Application.CreateForm(TDLyricForm, DLyricForm);
+  Application.CreateForm(TLyricShowForm, LyricShowForm);
   Application.Run;
     ReleaseMutex(hAppMutex);
   end;

@@ -371,7 +371,7 @@ begin
     SSF.Caption:=UTF8Decode('保存截圖的目錄');
     SLyric.Caption:=UTF8Decode('歌詞目錄:');
     TLyric.Caption:=UTF8Decode('歌词');
-    LScroll.Caption:=UTF8Decode('平滑滾動');
+    Ldlod.Caption:=UTF8Decode('桌面歌詞');
     LTCL.Caption:=UTF8Decode('文字');
     LBCL.Caption:=UTF8Decode('背景');
     LHCL.Caption:=UTF8Decode('高亮');

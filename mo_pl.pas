@@ -358,7 +358,6 @@ begin
     LHelp.Caption:=THelp.Caption;
     SLyric.Caption:=UTF8Decode('Katalog Lyric');
     TLyric.Caption:=UTF8Decode('Lyric');
-    LScroll.Caption:=UTF8Decode('Gładkie przewijanie');
     LTCL.Caption:=UTF8Decode('Kolor tekstu');
     LBCL.Caption:=UTF8Decode('Tło');
     LHCL.Caption:=UTF8Decode('Podświetlenie');

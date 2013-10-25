@@ -1001,13 +1001,13 @@ object OptionsForm: TOptionsForm
           TabOrder = 4
           OnClick = BSsfClick
         end
-        object LScroll: TTntCheckBox
+        object Ldlod: TTntCheckBox
           Left = 8
           Top = 18
           Width = 368
           Height = 17
           Anchors = [akLeft, akRight, akBottom]
-          Caption = 'Smooth scroll'
+          Caption = 'Display lyric on desktop'
           ParentShowHint = False
           ShowHint = False
           TabOrder = 5

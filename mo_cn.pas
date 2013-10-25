@@ -368,7 +368,7 @@ begin
     SLyric.Caption:=UTF8Decode('歌词目录:');
     TLyric.Caption:=UTF8Decode('歌词');
     TLog.Caption:=UTF8Decode('日志');
-    LScroll.Caption:=UTF8Decode('平滑滚动');
+    Ldlod.Caption:=UTF8Decode('桌面歌词');
     LTCL.Caption:=UTF8Decode('文字');
     LBCL.Caption:=UTF8Decode('背景');
     LHCL.Caption:=UTF8Decode('高亮');

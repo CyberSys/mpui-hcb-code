@@ -85,19 +85,20 @@ type TPlaylist = class
 type TLyric = class
   private
     IsParsed: boolean;
-    LyricTime: array of TLyricTimeCodeEntry;
     LyricStringsA: TStringList; LyricStringsW: TTntStringList;
     procedure ParseLyricA(const FileName: WideString);
     procedure ParseLyricW(const FileName: WideString; mode: TTntStreamCharSet);
     procedure SortLyric;
     procedure Draw;
   public
+    LyricTime: array of TLyricTimeCodeEntry;
     BitMap: TBitmap;
     ItemHeight, TY, dt:Integer;
     procedure ParseLyric(FileName: WideString);
     procedure GetCurrentLyric;
     procedure ClearLyric;
     procedure DownloadLyric;
+    function GetLyricString(i:Integer):WideString;
     constructor Create; overload;
     destructor Destroy; override;
   end;
@@ -255,7 +256,6 @@ type
     PLTC: TTntPanel;
     PLHC: TTntPanel;
     PLBC: TTntPanel;
-    LScroll: TTntCheckBox;
     MGB: TTntMenuItem;
     MG2B: TTntMenuItem;
     MB2G: TTntMenuItem;
@@ -289,7 +289,6 @@ type
     procedure TntCPClick(Sender: TObject);
     procedure CLyricFChange(Sender: TObject);
     procedure CLyricSChange(Sender: TObject);
-    procedure LScrollClick(Sender: TObject);
     procedure PLTCClick(Sender: TObject);
     procedure PLHCClick(Sender: TObject);
     procedure PLBCClick(Sender: TObject);
@@ -321,10 +320,12 @@ function mysort(s: TWStringList; P1, P2: Integer): Int64;
 procedure LoadCLibrary;
 procedure UnLoadCLibrary;
 function isNum(n: WChar): boolean; 
+function Big52Gb(str: string): string;
+function Gb2Big5(str: string): string;
 
 implementation
 
-uses Main, Core, UnRAR, Locale, Options, SevenZip, DLyric;
+uses Main, Core, UnRAR, Locale, Options, SevenZip, DLyric, GDILyrics, LyricShow;
 
 {$R *.dfm}
 {$R plist_img.res}
@@ -411,8 +412,8 @@ begin
   if length(LyricTime) > 0 then begin
     SetLength(LyricTime, 0);
     case HaveLyric of
-      1: begin if LyricStringsW <> nil then LyricStringsW.Free; MaxLenLyricW := ''; end;
-      2: begin if LyricStringsA <> nil then LyricStringsA.Free; MaxLenLyricA := ''; end;
+      1: if LyricStringsW <> nil then LyricStringsW.Free;
+      2: if LyricStringsA <> nil then LyricStringsA.Free;
     end;
   end;
   HaveLyric := 0; PlaylistForm.CPA.Tag:=0;
@@ -727,30 +728,27 @@ var i, UPCount: integer;
 begin
   if Count = 0 then begin Result := -1; CurPlay := -1; exit; end
   else Result := CurPlay;
-  if Direction=0 then exit;
+
   if Result < 0 then Result := 0
   else if Result < Count then Data[Result].State := ExitState; // mark State of current track
-  if OneLoop and AutoNext then exit;
+  if (OneLoop and AutoNext) or (Direction=0) then exit;
   AutoNext := true;
   if Shuffle and (not OneLoop) then begin // ***** SHUFFLE MODE *****
-    if Loop and (Count > 1) then begin
-      repeat Result := Random(Count);
-      until Result <> CurPlay;
-    end
-    else begin
-      // unplayed tracks left?
-      UPCount := 0;
-      for i := 0 to Count - 1 do
-        if Data[i].State = psNotPlayed then inc(UPCount);
-      // find a track
-      if UPCount = 0 then begin
+    // unplayed tracks left?
+    UPCount := 0;
+    for i := 0 to Count - 1 do
+      if Data[i].State = psNotPlayed then inc(UPCount);
+
+    if UPCount = 0 then begin
+      if Count > 1 then begin
         repeat Result := Random(Count);
         until Result <> CurPlay;
       end
-      else begin
-        repeat Result := Random(Count);
-        until Data[Result].State = psNotPlayed;
-      end;
+      else if not Loop then Result := -1;
+    end
+    else begin
+      repeat Result := Random(Count);
+      until Data[Result].State = psNotPlayed;
     end;
   end
   else begin // ***** NORMAL MODE *****
@@ -946,12 +944,13 @@ begin
       s := copy(s, rc + 1, length(s));
     until false;
     if NoTag or (LyricStringsA = nil) then continue;
-    inc(Lyricindex); s := Trim(s);
+    s := Trim(s);
     LyricStringsA.Add(s);
     i := length(s);
     if i > sMaxLen then begin
-      sMaxLen := i; MaxLenLyricA := s;
+      sMaxLen := i; MaxLenLyric := Lyricindex;
     end;
+    inc(Lyricindex);
   end;
   a.Free;
   if len = -1 then exit;
@@ -979,8 +978,8 @@ begin
   HaveLyric := 2; LyricURL := FileName; IsParsed := true;
   with PlaylistForm do begin
     UpdatePW := True;
-    if Visible then PlaylistForm.TMLyricPaint(nil)
-    else begin
+    if Visible then TMLyricPaint(nil)
+    else if not dlod then begin
       TntPageControl1.TabIndex := 1;
       Show;
     end;
@@ -1046,12 +1045,13 @@ begin
       s := copy(s, rc + 1, length(s));
     until false;
     if NoTag or (LyricStringsW = nil) then continue;
-    inc(Lyricindex); s := Trim(s);
+    s := Trim(s);
     LyricStringsW.Add(s);
     i := length(s);
     if i > sMaxLen then begin
-      sMaxLen := i; MaxLenLyricW := s;
+      sMaxLen := i; MaxLenLyric := Lyricindex;
     end;
+    inc(Lyricindex);
   end;
   a.Free;
   if len = -1 then exit;
@@ -1079,7 +1079,7 @@ begin
   with PlaylistForm do begin
     UpdatePW := True;
     if Visible then PlaylistForm.TMLyricPaint(nil)
-    else begin
+    else if not dlod then begin
       TntPageControl1.TabIndex := 1;
       Show;
     end;
@@ -1100,12 +1100,16 @@ begin
 end;
 
 procedure TLyric.GetCurrentLyric;
-var l,h, m, mv: integer;
+var l,h, m, mv,d: integer;
 begin
   if MSecPos < LyricTime[0].timecode then begin
     if CurLyric <> 0 then begin
       CurLyric := 0; NextLyric := 0;
       TY := 0; dt:=0;
+      if dlod then begin
+        if LyricCount=0 then LyricShowForm.DisplayLyricD(GetLyricString(0),'')
+        else LyricShowForm.DisplayLyricD(GetLyricString(0),GetLyricString(1));
+      end;
     end;
     exit;
   end;
@@ -1113,12 +1117,23 @@ begin
     if CurLyric <> LyricCount then begin
       CurLyric := LyricCount; NextLyric := LyricCount;
       TY:=-CurLyric*ItemHeight;  dt:=0;
+
+      if dlod then begin
+        if CurLyric mod 2 = 0 then LyricShowForm.DisplayLyricD(GetLyricString(CurLyric),'')
+        else LyricShowForm.DisplayLyricD(GetLyricString(CurLyric-1),GetLyricString(CurLyric));
+      end;
     end;
     exit;
   end;
 
-  if (dt> 0) and PScroll then
-    l := (MSecPos - Lyric.LyricTime[CurLyric].timecode) * ItemHeight div dt
+  if dt> 0 then begin
+    d:=  MSecPos - Lyric.LyricTime[CurLyric].timecode;
+    l := d * ItemHeight div dt;
+    if dlod then begin
+      if CurLyric mod 2 = 0 then GDILyric.SetPositionAndFlags(d * GDILyric.FirstStrWidth div dt, 0)
+      else GDILyric.SetPositionAndFlags(d * GDILyric.NextStrWidth div dt, 1);
+    end;
+  end
   else l:= 0;
   TY := -l - CurLyric * ItemHeight;
   PlaylistForm.TMLyricPaint(nil);
@@ -1144,6 +1159,16 @@ begin
   if NextLyric > LyricCount then NextLyric := LyricCount;
   if CurLyric <> NextLyric then
     dt := LyricTime[NextLyric].timecode - LyricTime[CurLyric].timecode;
+  if dlod then begin
+    if CurLyric mod 2 = 0 then begin
+      if CurLyric = LyricCount then LyricShowForm.DisplayLyricD(GetLyricString(CurLyric),'')
+      else LyricShowForm.DisplayLyricD(GetLyricString(CurLyric),GetLyricString(NextLyric));
+    end
+    else begin
+      if CurLyric = LyricCount then LyricShowForm.DisplayLyricD(GetLyricString(CurLyric-1),GetLyricString(CurLyric))
+      else LyricShowForm.DisplayLyricD(GetLyricString(NextLyric),GetLyricString(CurLyric));
+    end;
+  end;
 end;
 
 procedure TLyric.DownloadLyric;
@@ -1200,7 +1225,7 @@ begin
   CLyricF.Text := Lyric.BitMap.Canvas.Font.Name;
   CLyricS.Text := intToStr(Lyric.BitMap.Canvas.Font.Size);
   PLTC.Color := LTextColor; PLBC.Color := LbgColor;
-  PLHC.Color := LhgColor; LScroll.Checked := PScroll;
+  PLHC.Color := LhgColor;
   PlaylistBox.Count := Playlist.Count;
   DragAcceptFiles(Handle, true);
   MainForm.MShowPlaylist.Checked := true;
@@ -1751,6 +1776,9 @@ end;
 procedure TPlaylistForm.CLyricFChange(Sender: TObject);
 begin
   if CLyricF.ItemIndex > -1 then begin
+    GDILyric.SetFont(CLyricF.Text,35);
+    LyricShowForm.Canvas.Font.Name:= CLyricF.Text;
+    LyricShowForm.Canvas.Font.Size:= 35;
     Lyric.BitMap.Canvas.Font.Name := CLyricF.Text; UpdatePW := True;
     Lyric.ItemHeight:= WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;
     TMLyricPaint(nil);
@@ -1767,11 +1795,6 @@ begin
     UpdatePW := True;
     TMLyricPaint(nil);
   end;
-end;
-
-procedure TPlaylistForm.LScrollClick(Sender: TObject);
-begin
-  PScroll := LScroll.Checked;
 end;
 
 procedure TPlaylistForm.PLTCClick(Sender: TObject);
@@ -1815,21 +1838,6 @@ begin
   MainForm.MLoadlyricClick(nil);
 end;
 
-constructor TLyric.Create;
-begin
-  BitMap := TBitmap.Create;
-  BitMap.Canvas.Font.size := 8;
-  BitMap.Canvas.Font.name := 'Tahoma';
-  ItemHeight:= WideCanvasTextHeight(BitMap.Canvas,'S') + 4;
-end;
-
-destructor TLyric.Destroy;
-begin
-  BitMap.Free;
-end;
-procedure TLyric.Draw;
-var s, f: WideString; L, T, j, i, d: integer; k: string;
-
 function Gb2Big5(str: string): string;
 begin
   setLength(result, length(str));
@@ -1844,15 +1852,55 @@ begin
   LCMapString(GetUserDefaultLCID, LCMAP_SIMPLIFIED_CHINESE, PChar(str), length(str), PChar(result), length(result));
 end;
 
+constructor TLyric.Create;
 begin
-  Lyric.BitMap.Canvas.Lock;
-  Lyric.BitMap.Width := PlaylistForm.TMLyric.Width;
-  Lyric.BitMap.Height := PlaylistForm.TMLyric.Height + 2*Lyric.ItemHeight;
-  Lyric.BitMap.Canvas.Brush.Color := LbgColor;
-  Lyric.BitMap.Canvas.FillRect(Lyric.BitMap.Canvas.ClipRect);
+  BitMap := TBitmap.Create;
+  BitMap.Canvas.Font.size := 8;
+  BitMap.Canvas.Font.name := 'Tahoma';
+  ItemHeight:= WideCanvasTextHeight(BitMap.Canvas,'S') + 4;
+end;
+
+destructor TLyric.Destroy;
+begin
+  BitMap.Free;
+end;
+
+function TLyric.GetLyricString(i:Integer):WideString;
+var f:WideString; k: string;
+begin
+  Result:='';
+  if HaveLyric = 1 then begin
+    if LyricStringsW = nil then exit;
+    Result := LyricStringsW[LyricTime[i].LyricEntry];
+    if PlaylistForm.MG2B.Checked then begin
+      f := Result;
+      LCMapStringW(GetUserDefaultLCID, LCMAP_TRADITIONAL_CHINESE, PWChar(f), length(f), PWChar(Result), length(Result));
+    end;
+    if PlaylistForm.MB2G.Checked then begin
+      f := Result;
+      LCMapStringW(GetUserDefaultLCID, LCMAP_SIMPLIFIED_CHINESE, PWChar(f), length(f), PWChar(Result), length(Result));
+    end;
+  end
+  else begin
+    if LyricStringsA = nil then exit;
+    k := LyricStringsA[LyricTime[i].LyricEntry];
+    if PlaylistForm.MG2B.Checked then k := Gb2Big5(k);
+    if PlaylistForm.MB2G.Checked then k := Big52Gb(k);
+    Result := StringToWideStringEx(k, CP);
+  end;
+end;
+
+procedure TLyric.Draw;
+var s: WideString; L, T, j, i, d: integer;
+begin
+  BitMap.Canvas.Lock;
+  BitMap.Width := PlaylistForm.TMLyric.Width;
+  BitMap.Height := PlaylistForm.TMLyric.Height + 2*ItemHeight;
+  BitMap.Canvas.Brush.Color := LbgColor;
+  BitMap.Canvas.FillRect(BitMap.Canvas.ClipRect);
 
   if HaveLyric=0 then begin
-    Lyric.BitMap.Canvas.Unlock;
+    BitMap.Canvas.Unlock;
     Exit;
   end;
 
@@ -1866,44 +1914,14 @@ begin
     BitMap.Canvas.Font.Color := LTextColor;
     if i = CurLyric then BitMap.Canvas.Font.Color := LhgColor;
       
-    if HaveLyric = 1 then begin
-      if Lyric.LyricStringsW = nil then exit;
-      s := Lyric.LyricStringsW[lyric.LyricTime[i].LyricEntry];
-      if PlaylistForm.MG2B.Checked then begin
-        f := s;
-        LCMapStringW(GetUserDefaultLCID, LCMAP_TRADITIONAL_CHINESE, PWChar(f), length(f), PWChar(s), length(s));
-      end;
-      if PlaylistForm.MB2G.Checked then begin
-        f := s;
-        LCMapStringW(GetUserDefaultLCID, LCMAP_SIMPLIFIED_CHINESE, PWChar(f), length(f), PWChar(s), length(s));
-      end;
-    end
-    else begin
-      if Lyric.LyricStringsA = nil then exit;
-      k := Lyric.LyricStringsA[Lyric.LyricTime[i].LyricEntry];
-      if PlaylistForm.MG2B.Checked then k := Gb2Big5(k);
-      if PlaylistForm.MB2G.Checked then k := Big52Gb(k);
-      s := StringToWideStringEx(k, CP);
-    end;
+    s:= GetLyricString(i);
     L := (BitMap.Width - WideCanvasTextWidth(BitMap.Canvas, s)) div 2;
     //T := (BitMap.Height - WideCanvasTextHeight(BitMap.Canvas, s)) div 2;
     WideCanvasTextOut(BitMap.Canvas, L,  j, s);
     if UpdatePW then begin
       UpdatePW := false;
-      if HaveLyric = 1 then begin
-        f := MaxLenLyricW;
-        if PlaylistForm.MG2B.Checked then
-          LCMapStringW(GetUserDefaultLCID, LCMAP_TRADITIONAL_CHINESE, PWChar(MaxLenLyricW), length(MaxLenLyricW), PWChar(f), length(f));
-        if PlaylistForm.MB2G.Checked then
-          LCMapStringW(GetUserDefaultLCID, LCMAP_SIMPLIFIED_CHINESE, PWChar(MaxLenLyricW), length(MaxLenLyricW), PWChar(f), length(f));
-        j := 10 + WideCanvasTextWidth(BitMap.Canvas, f) + PlaylistForm.width - PlaylistForm.TMLyric.Width;
-      end
-      else begin
-        k := MaxLenLyricA;
-        if PlaylistForm.MG2B.Checked then k := Gb2Big5(k);
-        if PlaylistForm.MB2G.Checked then k := Big52Gb(k);
-        j := 10 + WideCanvasTextWidth(BitMap.Canvas, StringToWideStringEx(k, CP)) + PlaylistForm.width - PlaylistForm.TMLyric.Width;
-      end;
+      s:= GetLyricString(MaxLenLyric);
+      j := 10 + WideCanvasTextWidth(BitMap.Canvas, s) + PlaylistForm.width - PlaylistForm.TMLyric.Width;
       if j > CurMonitor.Width then j := CurMonitor.Width;
       if j < PlaylistForm.Constraints.MinWidth then j := PlaylistForm.Constraints.MinWidth;
       d := (j - PlaylistForm.Width) div 2;
@@ -1918,11 +1936,12 @@ end;
 
 procedure TPlaylistForm.TMLyricPaint(Sender: TObject);
 begin
+  if TntPageControl1.TabIndex <> 1 then exit;
   Lyric.Draw;
-  PlaylistForm.TMLyric.Canvas.Lock;
-  //PlaylistForm.TMLyric.Canvas.Draw(0, 0, Lyric.BitMap);
-  BitBlt(PlaylistForm.TMLyric.Canvas.Handle, 0, 0, Lyric.BitMap.Width, Lyric.BitMap.Height, Lyric.BitMap.Canvas.Handle, 0, Lyric.ItemHeight, SRCCOPY);
-  PlaylistForm.TMLyric.Canvas.Unlock;
+  TMLyric.Canvas.Lock;
+  TMLyric.Canvas.Draw(0, -Lyric.ItemHeight, Lyric.BitMap);
+  //BitBlt(TMLyric.Canvas.Handle, 0, 0, Lyric.BitMap.Width, Lyric.BitMap.Height, Lyric.BitMap.Canvas.Handle, 0, Lyric.ItemHeight, SRCCOPY);
+  TMLyric.Canvas.Unlock;
 end;
 
 initialization

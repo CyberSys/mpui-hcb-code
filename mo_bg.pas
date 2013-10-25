@@ -335,7 +335,6 @@ begin
     LHelp.Caption:=THelp.Caption;
     SLyric.Caption:=UTF8Decode('Директория с говор');
     TLyric.Caption:=UTF8Decode('Говор');
-    LScroll.Caption:=UTF8Decode('Гладко скролиране');
     LTCL.Caption:=UTF8Decode('Цвят на текста');
     LBCL.Caption:=UTF8Decode('Фон');
     LHCL.Caption:=UTF8Decode('Осветяване');

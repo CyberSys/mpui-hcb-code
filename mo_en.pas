@@ -370,7 +370,7 @@ begin
     SLyric.Caption:='Lyric folder';
     TLyric.Caption:='Lyric';
     TLog.Caption:='Log';
-    LScroll.Caption:='Smooth scroll';
+    Ldlod.Caption:='Display lyric on desktop';
     LTCL.Caption:='Text Color';
     LBCL.Caption:='Background';
     LHCL.Caption:='Hightlight';

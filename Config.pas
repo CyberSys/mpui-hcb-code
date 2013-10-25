@@ -152,7 +152,7 @@ begin
           Core.Addsfiles := ReadBool(SectionName, 'Add sequence files', Core.Addsfiles);
           Core.WantCompact := ReadBool(SectionName, 'Compact', Core.WantCompact);
           Core.ADls := ReadBool(SectionName, 'Auto Download Lyric/Subtitle', Core.ADls);
-          Core.PScroll := ReadBool(SectionName, 'Scroll', Core.PScroll);
+          Core.dlod := ReadBool(SectionName, 'display lyric on desktop', Core.dlod);
           Core.AutoDs := ReadBool(SectionName, 'AutoDs', Core.AutoDs);
           s := ReadString(SectionName, 'LyricFont', '');
           if s <> '' then Core.LyricF := s;
@@ -279,7 +279,7 @@ begin
           WriteBool(SectionName, 'UseOSDfont', Core.uof);
           WriteBool(SectionName, 'GUI', Core.GUI);
           WriteBool(SectionName, 'FilterDrop', Core.FilterDrop);
-          WriteBool(SectionName, 'Scroll', Core.PScroll);
+          WriteBool(SectionName, 'display lyric on desktop', Core.dlod);
           WriteBool(SectionName, 'SPause', Core.SP);
           WriteBool(SectionName, 'DTime', Core.CT);
           WriteString(SectionName, 'Params', Core.Params);
