@@ -411,6 +411,7 @@ procedure TLyric.ClearLyric;
 begin
   if length(LyricTime) > 0 then begin
     SetLength(LyricTime, 0);
+    LyricShowForm.DisplayLyricD('','');
     case HaveLyric of
       1: if LyricStringsW <> nil then LyricStringsW.Free;
       2: if LyricStringsA <> nil then LyricStringsA.Free;

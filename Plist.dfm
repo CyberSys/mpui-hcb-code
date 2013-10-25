@@ -31,7 +31,7 @@ object PlaylistForm: TPlaylistForm
     Top = 0
     Width = 368
     Height = 237
-    ActivePage = TntTabSheet1
+    ActivePage = TntTabSheet2
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
     object TntTabSheet1: TTntTabSheet
@@ -282,6 +282,7 @@ object PlaylistForm: TPlaylistForm
         Height = 181
         Anchors = [akLeft, akTop, akRight, akBottom]
         PopupMenu = TntCP
+        OnPaint = TMLyricPaint
       end
       object PLBC: TTntPanel
         Left = 264
