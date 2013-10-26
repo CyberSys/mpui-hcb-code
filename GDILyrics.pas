@@ -51,7 +51,6 @@ type
     FFirstStrWidth,
     FNextStrWidth : Integer;
 
-    FTmpTest:Boolean;
 
     procedure SetSingleOrDoubleLine(Value: TGDIShowFlags);
     procedure UpdateDisplay;
@@ -64,11 +63,9 @@ type
     procedure DrawLyricBitmapFirst;
     procedure DrawLyricBitmapNext;
 
-    procedure SetFont(FontName: string; FontSize: Integer);
-    procedure SetFontColor(ColorStyle: TGDILyricFontColor = lfcGreen);
+    procedure SetFont(FontName: string);
     procedure SetPositionAndFlags(Position: Single = 0.0; DrawMod: Integer = 0);
     procedure SetWidthAndHeight(AWidth, AHeight: Integer);
-    function  GetTextWidth(Str: WideString; Alignment: TStringAlignment = StringAlignmentNear):Integer;
 
     property ShowFlags: TGDIShowFlags read FShowFlags write SetSingleOrDoubleLine;
     property FirstString: widestring read FFirstStr write FFirstStr;
@@ -80,25 +77,19 @@ type
 
 implementation
 
-uses Types, LyricShow;
+uses Types, LyricShow, core;
 
 constructor TGDIDrawLyric.Create(Handle: HWND);
-var
-  Style: Cardinal;
 begin
   FHandle := Handle;
-  FFontName := 'Tahoma';
-  FFontHeight := 46;
   FBackColor1 := $FF0B6300;
   FBackColor2 := $FF8AF622;
   FForeColor1 := $FFE4FE04;
   FForeColor2 := $FFE7FEC9;
-
+  FShowFlags := sfDouble;
   FPosition := 0;
   FDrawMod  := 0;
-  FTmpTest := False;
-  Style := GetWindowLong(FHandle,GWL_EXSTYLE);
-  SetWindowLong(FHandle, GWL_EXSTYLE, Style or
+  SetWindowLong(FHandle, GWL_EXSTYLE, GetWindowLong(FHandle,GWL_EXSTYLE) or
                 WS_EX_LAYERED or WS_EX_TOOLWINDOW);
   SetWindowPos(FHandle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE);
 end;
@@ -129,7 +120,6 @@ var
   I:Integer;
 
 begin
-  FTmpTest := False;
 
   Graphics := TGPGraphics.Create(DestBitmap);
   
@@ -169,8 +159,6 @@ begin
      begin
        Pen.SetWidth(0);
        Graphics.DrawPath(Pen, Path);
-       //Path.GetBounds(rb, nil, Pen);
-       //OutputDebugString(PWideChar(Format('W=%f, H=%f', [rb.Width, rb.Height])));
      end;
   end;
 
@@ -185,14 +173,8 @@ end;
 
 
 procedure TGDIDrawLyric.DrawLyricBitmapFirst;
-//var
-// GUIDi:TGUID;
 begin
    FStrWidth1 := Round(FFirstStrWidth + FFontHeight * 0.75);
-   //FStrWidth1 := GetTextWidth(AStr);
-
-  // OutputDebugString(PChar(Format('AStrWidth=%f,  StrWidth=%d', [AStrwidth+ FFontHeight * 0.75, FStrWidth1])));
-
    if Assigned(FBackImage) then FBackImage.Free;
    FBackImage := TGPBitmap.Create(FStrWidth1, FFontHeight+6);
    DrawStrToImage(FBackImage , FFirstStr,  FFontName, FStrWidth1, FBackColor1, FBackColor2,
@@ -202,21 +184,12 @@ begin
    FForeImage := TGPBitmap.Create(FStrWidth1, FFontHeight+6);
    DrawStrToImage(FForeImage , FFirstStr,  FFontName, FStrWidth1, FForeColor1, FForeColor2,
                   FFontHeight, False, StringAlignmentNear);
-
-
- //  GetEncoderClsid('image/png', GUIDi);
- //  FBackImage.Save('12.png', GUIDi);
-
-  // if not FDrawing then
      UpdateDisplay;
 end;
 
 procedure TGDIDrawLyric.DrawLyricBitmapNext;
-//var
-// GUIDi:TGUID;
 begin
    FStrWidth2 := Round(FNextStrWidth + FFontHeight * 0.75);
-   //FStrWidth2 := GetTextWidth(AStr, StringAlignmentFar);
 
    if Assigned(FBackImage2) then FBackImage2.Free;
    FBackImage2 := TGPBitmap.Create(FStrWidth2, FFontHeight+6);
@@ -227,54 +200,20 @@ begin
    FForeImage2 := TGPBitmap.Create(FStrWidth2, FFontHeight+6);
    DrawStrToImage(FForeImage2 , FNextStr,  FFontName, FStrWidth2, FForeColor1, FForeColor2,
                   FFontHeight, False, StringAlignmentNear);
-
-   // GetEncoderClsid('image/png', GUIDi);
-   //FBackImage2.Save('12.png', GUIDi);
-  // if not FDrawing then
     UpdateDisplay;
 end;
 
-procedure TGDIDrawLyric.SetFont(FontName: string; FontSize: Integer);
+procedure TGDIDrawLyric.SetFont(FontName: string);
 begin
-  FFontName   := FontName;
-  FFontHeight := Round(FontSize / 0.75);
-  UpdateDisplay;
-end;
-
-procedure TGDIDrawLyric.SetFontColor(ColorStyle: TGDILyricFontColor);
-begin
-  {
-    À¶É«: $FF004393, $FF02B4EA;    $FF35ECFB, $FF9AF7FC
-    ºìÉ«: $FFB30000, $FFFE9500;    $FFFE7D15, $FFFEFE87
-    ÂÌÉ«: $FF0B6300, $FF8AF622;    $FFE4FE04, $FFE7FEC9
-  }
-  case ColorStyle of
-    lfcBlue :
-       begin
-          FBackColor1 := $FF004393;
-          FBackColor2 := $FF02B4EA;
-          FForeColor1 := $FF35ECFB;
-          FForeColor2 := $FF9AF7FC;
-       end;
-    lfcRed  :
-       begin
-          FBackColor1 := $FFB30000;
-          FBackColor2 := $FFFE9500;
-          FForeColor1 := $FFFE7D15;
-          FForeColor2 := $FFFEFE87;
-       end;
-    lfcGreen:
-       begin
-          FBackColor1 := $FF0B6300;
-          FBackColor2 := $FF8AF622;
-          FForeColor1 := $FFE4FE04;
-          FForeColor2 := $FFE7FEC9;
-       end;
+  FFontName:= FontName;
+  if HaveLyric=0 then exit;
+  FFontHeight := LyricShowForm.GetFontHeight(FontName);
+  FirstStrWidth := LyricShowForm.LyricTextW(FirstString);
+  DrawLyricBitmapFirst();
+  if FShowFlags = sfDouble then begin
+    NextStrWidth := LyricShowForm.LyricTextW(NextString);
+    DrawLyricBitmapNext();
   end;
-
-  DrawLyricBitmapFirst;
-  DrawLyricBitmapNext;
-  UpdateDisplay;
 end;
 
 procedure TGDIDrawLyric.SetWidthAndHeight(AWidth, AHeight: Integer);
@@ -282,33 +221,6 @@ begin
    FWidth  := AWidth;
    FHeight := AHeight;
    UpdateDisplay;
-end;
-
-function  TGDIDrawLyric.GetTextWidth(Str: WideString; Alignment: TStringAlignment):Integer;
-var
-  Path: TGPGraphicsPath;
-  FontFamily:TGPFontFamily ;
-  strFormat:TGPStringFormat;
-  rcBound:TGPRectF;
-  Pen: TGPPen;
-begin
-  FontFamily := TGPFontFamily.Create(FFontName);
-  strFormat := TGPStringFormat.Create();
-  strFormat.SetFormatFlags(StringFormatFlagsNoWrap);
-  strFormat.SetAlignment(Alignment);
-  Path := TGPGraphicsPath.Create();
-  Pen := TGPPen.Create();
-  Pen.SetWidth(3);
-
-  Path.AddString(Str, -1, FontFamily, 1, 43.1 , MakePoint(0.0, 0.0), strFormat);
-
-  Path.GetBounds(rcBound, nil, Pen);
-  Result := Round(rcBound.Width);
-
-  FontFamily.Free;
-  strFormat.Free;
-  Pen.Free;
-  Path.Free;
 end;
 
 procedure TGDIDrawLyric.SetSingleOrDoubleLine(Value: TGDIShowFlags);
@@ -338,7 +250,7 @@ var
 
   hBitMap: Windows.HBITMAP;
 
-  TmpLeft, TmpWidth, TmpHeight : Integer;
+  TmpLeft, TmpHeight : Integer;
   TmpLeft2, TmpTop2: Single;
 begin
     FormHDC  := GetDC(FHandle);
@@ -354,67 +266,15 @@ begin
     case FShowFlags of
       sfSingle :
         begin
-          if FStrWidth1 > 0 then
-          begin
-
-            if not FTmpTest then
-            begin
-              if FStrWidth1 > FWidth then
-              begin
-                if FPosition > FWidth / 2 then
-                begin
-                   TmpWidth := FStrWidth1 - FWidth;
-                   gBack.TranslateTransform(-TmpWidth, 0.0);
-                   gFore.TranslateTransform(-TmpWidth, 0.0);
-                end;
-              end;
-            end;
-
             TmpLeft2 := FWidth  / 2 - FStrWidth1  / 2;
             TmpTop2  := FHeight / 2 - TmpHeight   / 2;
             gBack.DrawImage(FBackImage, MakeRect(TmpLeft2, TmpTop2, FStrWidth1, TmpHeight));
             gFore.SetClip(MakeRect(TmpLeft2, TmpTop2, FPosition, TmpHeight)) ;
             gFore.DrawImage(FForeImage, MakeRect(TmpLeft2, TmpTop2, FStrWidth1, TmpHeight));
-          end;
         end;
       sfDouble :
         begin
-
-          if (FStrWidth1 >0) and (FStrWidth2 > 0) then
-          begin
             gBack2 := TGPGraphics.Create(MemHDC);
-
-
-              if FStrWidth1 > FWidth then
-              begin
-                if FPosition > FWidth / 2 then
-                begin
-                   TmpWidth := FStrWidth1 - FWidth;
-                   case FDrawMod of
-                     0 : gBack.TranslateTransform(-TmpWidth, 0.0);
-                     1 : gBack2.TranslateTransform(-TmpWidth, 0.0);
-                   end;
-                   gFore.TranslateTransform(-TmpWidth, 0.0);
-                end;
-              end;
-
-
-
-              if FStrWidth2 > FWidth then
-              begin
-                if FPosition > FWidth / 2 then
-                begin
-                   TmpWidth := FStrWidth2 - FWidth;
-                   case FDrawMod of
-                     0 : gBack.TranslateTransform(-TmpWidth, 0.0);
-                     1 : gBack2.TranslateTransform(-TmpWidth, 0.0);
-                   end;
-                   gFore.TranslateTransform(-TmpWidth, 0.0);
-                   FTmpTest := True;
-                end;
-              end;
-
-
             gBack.DrawImage(FBackImage, MakeRect(0.0, 11, FStrWidth1, TmpHeight));
 
             TmpLeft := FWidth - FStrWidth2 + Trunc(FFontHeight * 0.75) - 10;
@@ -437,7 +297,6 @@ begin
                  end;
             end;
             gBack2.Free;
-          end;
         end;
     end;
 
@@ -460,7 +319,6 @@ begin
     ReleaseDC(FHandle, FormHDC);
     DeleteObject(hBitMap);
     DeleteDC(MemHDC);
-    //FPosition := 0;
 end;  
 
 

@@ -827,6 +827,7 @@ begin
 
   if dlod <> Ldlod.Checked then begin
     if Ldlod.Checked then begin
+      GDILyric.SetFont(BFont.Caption);
       if HaveLyric<>0 then begin
         if MSecPos < Lyric.LyricTime[0].timecode then begin
           if LyricCount=0 then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(0),'')
@@ -1177,9 +1178,7 @@ begin
     if FontDialog1.Execute then begin
       BFont.Caption := FontDialog1.Font.Name;
       BFont.Font.Name := FontDialog1.Font.Name;
-      GDILyric.SetFont(FontDialog1.Font.Name,35);
-      LyricShowForm.Canvas.Font.Name:= FontDialog1.Font.Name;
-      LyricShowForm.Canvas.Font.Size:= 35;
+      GDILyric.SetFont(FontDialog1.Font.Name);
       Lyric.BitMap.Canvas.Font.Name := FontDialog1.Font.Name;
       Lyric.BitMap.Canvas.Font.Size := FontDialog1.Font.Size;
       Lyric.ItemHeight:= WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;

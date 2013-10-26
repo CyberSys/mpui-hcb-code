@@ -21,6 +21,7 @@ type
     procedure DisplayLyricD(fs,ns:WideString);
     function LyricTextW(s:WideString):Integer;
     function LyricTextH:Integer;
+    function GetFontHeight(f:String):Integer;
   private
     { Private declarations }
   public
@@ -34,16 +35,35 @@ var
 
 implementation
 
+uses plist, core;
+
 {$R *.dfm}
 
 function TLyricShowForm.LyricTextW(s:WideString):Integer;
 begin
-  Result := WideCanvasTextWidth(Canvas,s) + Height;
+  Result := WideCanvasTextWidth(Canvas,s) + Trunc(2.5 * Height);
 end;
 
 function TLyricShowForm.LyricTextH:Integer;
 begin
   Result := WideCanvasTextHeight(Canvas,'S') + 4;
+end;
+
+function TLyricShowForm.GetFontHeight(f:String):Integer;
+var s:WideString; len:integer;
+begin
+  Canvas.Font.Name:= f;
+  s:=Lyric.GetLyricString(MaxLenLyric);
+  len:= LyricTextW(s);
+  if len>width then
+    repeat
+      Canvas.Font.Size:=Canvas.Font.Size - 1;
+    until LyricTextW(s)<=width
+  else if len<width then
+    repeat
+      Canvas.Font.Size:=Canvas.Font.Size + 1;
+    until (LyricTextW(s)>=width) or (Canvas.Font.Size>=35);
+  Result:= LyricTextH;
 end;
 
 procedure TLyricShowForm.FormCreate(Sender: TObject);

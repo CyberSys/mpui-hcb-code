@@ -977,6 +977,7 @@ begin
   end;
 
   HaveLyric := 2; LyricURL := FileName; IsParsed := true;
+  if dlod then GDILyric.SetFont(BitMap.Canvas.Font.Name);
   with PlaylistForm do begin
     UpdatePW := True;
     if Visible then TMLyricPaint(nil)
@@ -1077,6 +1078,7 @@ begin
     end;
 
   HaveLyric := 1; LyricURL := FileName; IsParsed := true;
+  if dlod then GDILyric.SetFont(BitMap.Canvas.Font.Name);
   with PlaylistForm do begin
     UpdatePW := True;
     if Visible then PlaylistForm.TMLyricPaint(nil)
@@ -1777,9 +1779,7 @@ end;
 procedure TPlaylistForm.CLyricFChange(Sender: TObject);
 begin
   if CLyricF.ItemIndex > -1 then begin
-    GDILyric.SetFont(CLyricF.Text,35);
-    LyricShowForm.Canvas.Font.Name:= CLyricF.Text;
-    LyricShowForm.Canvas.Font.Size:= 35;
+    GDILyric.SetFont(CLyricF.Text);
     Lyric.BitMap.Canvas.Font.Name := CLyricF.Text; UpdatePW := True;
     Lyric.ItemHeight:= WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;
     TMLyricPaint(nil);
