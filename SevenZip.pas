@@ -156,7 +156,7 @@ var
   ZipSetUnicodeMode        : TZipSetUnicodeMode       = nil;
 
 implementation
-uses main, core, plist, locale;
+uses core, plist, locale;
 
 procedure Load7zLibrary;
 var i:integer;

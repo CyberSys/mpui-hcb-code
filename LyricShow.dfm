@@ -7,6 +7,7 @@ object LyricShowForm: TLyricShowForm
   ClientHeight = 80
   ClientWidth = 751
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -47

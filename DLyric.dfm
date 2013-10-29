@@ -6,6 +6,7 @@ object DLyricForm: TDLyricForm
   Color = clBtnFace
   Constraints.MinHeight = 478
   Constraints.MinWidth = 526
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -13,7 +14,7 @@ object DLyricForm: TDLyricForm
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
-  Position = poMainFormCenter
+  Position = poScreenCenter
   OnHide = TntFormHide
   OnShow = TntFormShow
   PixelsPerInch = 96

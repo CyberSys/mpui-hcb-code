@@ -60,7 +60,7 @@ var
 
 implementation
 
-uses Main, Core, Locale;
+uses Core, Locale;
 
 {$R *.dfm}
 
@@ -88,7 +88,7 @@ begin
   BReset.Enabled:=TCon.Enabled OR TGam.Enabled OR
                   TBri.Enabled OR THue.Enabled OR TSat.Enabled;
   if (left+width)>=CurMonitor.Width then left:=CurMonitor.Width-width;
-  if left<0 then left:=0; if top<0 then top:=0;
+  if left<CurMonitor.Left then left:=CurMonitor.Left; if top<CurMonitor.Top then top:=CurMonitor.Top;
   if (top+height)>=CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top then 
     top:=CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top-height;
 end;

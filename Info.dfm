@@ -10,6 +10,7 @@ object InfoForm: TInfoForm
   Color = clBtnFace
   Constraints.MinHeight = 112
   Constraints.MinWidth = 200
+  DefaultMonitor = dmMainForm
   Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

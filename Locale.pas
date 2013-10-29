@@ -257,4 +257,3 @@ begin
   IKeyerror := ' ,Shortcut already exists';
   FontTitle := 'OSD font ...';
 end.
-

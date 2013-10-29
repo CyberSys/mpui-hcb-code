@@ -95,7 +95,7 @@ function GetShellPath(rfid:TGUID):WideString;
 function IsAdmin:boolean;
 
 implementation
-uses Main,Core,plist,locale,SevenZip;
+uses Core,plist,locale;
 
 procedure TUnRARThread.Execute;
 begin

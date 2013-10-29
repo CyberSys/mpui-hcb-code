@@ -118,7 +118,7 @@ function ToHexString(s, encode: WideString): string;
 function CreateLyricCode(singer, title: WideString; lrcId: integer): string;
 function Conv(i: Integer): int64;
 function findID(id:WideString; list:TLyricEntryList):Boolean;
-function vl_enc(data, md5_extra:string):TBytes;
+procedure vl_enc(data, md5_extra:string; out ms:TMemoryStream);
 function vl_dec(data:string):string;
 
 implementation
@@ -189,7 +189,7 @@ end;
 procedure TDownLoadLyric.GetLyricList;
 var XMLString, MyUrl: string; artistV, titleV,idV,linkV,s:OleVariant;
     XDOC: IXMLDocument; XmlNd,nd,nd1: IXMLNode; i,j,Len,searchID:Integer;
-    IdHTTP1: TIdhttp; Mem:TMemoryStream; tb:TBytes; SList:TStringList;
+    IdHTTP1: TIdhttp; Mem:TMemoryStream; SList:TStringList;
     IDSubtitle,LanguageName,SubFormat,SubSumCD,MovieName,
     SubAddDate,SubEnabled,SubDownloadsCnt,SubBad,a,t:WideString;
 begin
@@ -217,10 +217,7 @@ begin
       end
       else begin  // IdHTTP1.Free;  Exit;
         MyUrl:= Format(SearchPath[searchID], [UTF8Encode(artist), UTF8Encode(title)]);
-        FillChar(tb ,sizeof(tb),0);
-        tb:= vl_enc(MyUrl,'Mlv1clt4.0');
-        Mem:= TMemoryStream.Create();
-        Mem.Write(tb[0],length(tb));
+        vl_enc(MyUrl,'Mlv1clt4.0',Mem);
         //http://www.viewlyrics.com:1212/searchlyrics.htm
         IdHTTP1.Request.UserAgent:='MiniLyrics';
         {IdHTTP1.ProtocolVersion:=pv1_1;
@@ -656,11 +653,11 @@ function Conv(i: Integer): int64;
 var
     r: int64;
 begin
-    r := i mod 4294967296;
-    if (i >= 0) and (r > 2147483648) then
-        r := r - 4294967296;
-    if (i < 0) and (r < 2147483648) then
-        r := r + 4294967296;
+    r := i mod $100000000;
+    if (i >= 0) and (r > $80000000) then
+        r := r - $100000000;
+    if (i < 0) and (r < $80000000) then
+        r := r + $100000000;
     Result := r;
 end;
 
@@ -720,8 +717,8 @@ begin
     t5 := Conv(t5 * (t1 or t3));
     t5 := Conv(t5 * (t2 xor lrcId));
     t6 := t5;
-    if (t6 > 2147483648) then
-        t5 := t6 - 4294967296;
+    if (t6 > $80000000) then
+        t5 := t6 - $100000000;
     Result := IntToStr(t5);
 end;
 
@@ -747,8 +744,8 @@ begin
     end;
 end;
 
-function vl_enc(data, md5_extra:string):TBytes;
-var datalen,j,i,magickey:integer; hasheddata:string;
+procedure vl_enc(data, md5_extra:string; out ms:TMemoryStream);
+var datalen,j,i,magickey:integer; hasheddata:string; t:Tbytes;
 begin
   hasheddata:= StrToMD5(data + md5_extra);
   hasheddata:=hexToStr(hasheddata);
@@ -761,10 +758,12 @@ begin
     data[i]:= char(ord(data[i]) xor magickey);
  hasheddata:= hasheddata + data;
  datalen := Length(hasheddata);
- SetLength(result, datalen + 6);
- result[0]:=$02; result[1]:=magickey; result[2]:=$04; result[3]:=$00; result[4]:=$00; result[5]:=$00;
+ SetLength(t, datalen + 6);
+ t[0]:=$02; t[1]:=magickey; t[2]:=$04; t[3]:=$00; t[4]:=$00; t[5]:=$00;
  for i:= 1 to datalen do
-   result[5 + i]:=byte(hasheddata[i]);
+   t[5 + i]:=byte(hasheddata[i]);
+ ms:= TMemoryStream.Create;
+ ms.Write(t[0],datalen + 6);
 end;
 
 function vl_dec(data:string):string;

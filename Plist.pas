@@ -26,7 +26,7 @@ uses
   Forms, TntForms, StdCtrls, TntStdCtrls, Controls, ShellAPI, Math,
   Dialogs, TntDialogs, Buttons, TntButtons, Menus, TntMenus,
   ComCtrls, TntComCtrls, Classes, TntClasses, TntSystem, ExtCtrls,
-  TntExtCtrls, TntFileCtrl, SyncObjs;
+  TntExtCtrls, TntFileCtrl;
 
 const
   chsdetDll='uchardet.dll';
@@ -325,7 +325,8 @@ function Gb2Big5(str: string): string;
 
 implementation
 
-uses Main, Core, UnRAR, Locale, Options, SevenZip, DLyric, GDILyrics, LyricShow;
+uses Main, Core, Locale, Options,
+     DLyric, GDILyrics, LyricShow;
 
 {$R *.dfm}
 {$R plist_img.res}
@@ -411,7 +412,7 @@ procedure TLyric.ClearLyric;
 begin
   if length(LyricTime) > 0 then begin
     SetLength(LyricTime, 0);
-    LyricShowForm.DisplayLyricD('','');
+    if Assigned(LyricShowForm) then LyricShowForm.DisplayLyricD('','');
     case HaveLyric of
       1: if LyricStringsW <> nil then LyricStringsW.Free;
       2: if LyricStringsA <> nil then LyricStringsA.Free;
@@ -1208,6 +1209,7 @@ begin
   end;
   MGB.Visible := Win32PlatformIsUnicode; N1.Visible := MGB.Visible;
   TntPageControl1.TabIndex := 0; CLyricF.Items := Screen.Fonts;
+  CLyricF.Text:=LyricF; CLyricS.Text:=IntToStr(LyricS);
   Lyric.BitMap.Canvas.Brush.Color := LbgColor; Lyric.BitMap.Canvas.Font.Color := LTextColor;
   Lyric.BitMap.Canvas.Font.Name := LyricF; Lyric.BitMap.Canvas.Font.Size := LyricS;
   Lyric.ItemHeight := WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;
@@ -1225,8 +1227,6 @@ end;
 
 procedure TPlaylistForm.FormShow(Sender: TObject);
 begin
-  CLyricF.Text := Lyric.BitMap.Canvas.Font.Name;
-  CLyricS.Text := intToStr(Lyric.BitMap.Canvas.Font.Size);
   PLTC.Color := LTextColor; PLBC.Color := LbgColor;
   PLHC.Color := LhgColor;
   PlaylistBox.Count := Playlist.Count;
@@ -1779,9 +1779,10 @@ end;
 procedure TPlaylistForm.CLyricFChange(Sender: TObject);
 begin
   if CLyricF.ItemIndex > -1 then begin
-    GDILyric.SetFont(CLyricF.Text);
+    if Assigned(LyricShowForm) then GDILyric.SetFont(CLyricF.Text);
     Lyric.BitMap.Canvas.Font.Name := CLyricF.Text; UpdatePW := True;
     Lyric.ItemHeight:= WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;
+    LyricF:= CLyricF.Text;
     TMLyricPaint(nil);
   end;
 end;
@@ -1791,7 +1792,7 @@ var i, e: integer;
 begin
   Val(CLyricS.Text, i, e);
   if (e = 0) and (i > 0) then begin
-    Lyric.BitMap.Canvas.Font.Size := i;
+    Lyric.BitMap.Canvas.Font.Size := i; LyricS:=i;
     Lyric.ItemHeight:= WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;
     UpdatePW := True;
     TMLyricPaint(nil);

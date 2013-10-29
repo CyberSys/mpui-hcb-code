@@ -6,9 +6,11 @@ object OpenDevicesForm: TOpenDevicesForm
   ClientHeight = 484
   ClientWidth = 438
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   ParentFont = True
+  FormStyle = fsStayOnTop
   OldCreateOrder = True
-  Position = poMainFormCenter
+  Position = poScreenCenter
   OnCreate = TntFormCreate
   OnShow = FormShow
   DesignSize = (
@@ -64,7 +66,7 @@ object OpenDevicesForm: TOpenDevicesForm
   object LVideoDevices: TTntStaticText
     Left = 12
     Top = 18
-    Width = 70
+    Width = 67
     Height = 17
     Caption = 'VideoDevices'
     TabOrder = 3
@@ -72,7 +74,7 @@ object OpenDevicesForm: TOpenDevicesForm
   object LCountryCode: TTntStaticText
     Left = 12
     Top = 82
-    Width = 65
+    Width = 68
     Height = 17
     Caption = 'CountryCode'
     TabOrder = 4
@@ -80,7 +82,7 @@ object OpenDevicesForm: TOpenDevicesForm
   object LAudioDevices: TTntStaticText
     Left = 12
     Top = 50
-    Width = 70
+    Width = 68
     Height = 17
     Caption = 'AudioDevices'
     TabOrder = 5

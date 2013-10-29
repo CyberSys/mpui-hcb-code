@@ -25,7 +25,7 @@ interface
 uses
   Windows,
   ActiveX,
-  DirectDraw,
+//  DirectDraw,
   GDIPAPI;
 
 (**************************************************************************\
@@ -199,7 +199,7 @@ type
     function GetLastStatus: TStatus;
   end;
 
-  TGPInstalledFontCollection = class(TGPFontCollection)  //表示安装在系统上的字体
+  TGPInstalledFontCollection = class(TGPFontCollection)
   public
     constructor Create; reintroduce;
     destructor Destroy; override;
@@ -208,7 +208,7 @@ type
   TGPPrivateFontCollection = class(TGPFontCollection)
   public
     constructor Create; reintroduce;
-    destructor destroy; override;
+    destructor Destroy; override;
     function AddFontFile(filename: WideString): TStatus;
     function AddMemoryFont(memory: Pointer; length: Integer): TStatus;
   end;
@@ -266,7 +266,7 @@ type
     constructor Create(stream: IStream; useEmbeddedColorManagement: BOOL  = FALSE); reintroduce; overload;
     function FromFile(filename: WideString; useEmbeddedColorManagement: BOOL = FALSE): TGPImage;
     function FromStream(stream: IStream; useEmbeddedColorManagement: BOOL = FALSE): TGPImage;
-    destructor destroy; override;
+    destructor Destroy; override;
     function Clone: TGPImage;
     function Save(filename: WideString; const clsidEncoder: TGUID;
       encoderParams: PEncoderParameters = nil): TStatus; overload;
@@ -324,17 +324,17 @@ type
     function Clone(x, y, width, height: Integer; format: TPixelFormat): TGPBitmap; overload;
     function Clone(rect: TGPRectF; format: TPixelFormat): TGPBitmap; overload;
     function Clone(x, y, width, height: Single; format: TPixelFormat): TGPBitmap; overload;
-    function LockBits(rect: TGPRect; flags: UINT; format: TPixelFormat; out lockedBitmapData: TBitmapData): TStatus; 
+    function LockBits(rect: TGPRect; flags: UINT; format: TPixelFormat; out lockedBitmapData: TBitmapData): TStatus;
     function UnlockBits(var lockedBitmapData: TBitmapData): TStatus;
     function GetPixel(x, y: Integer; out color: TGPColor): TStatus;
     function SetPixel(x, y: Integer; color: TGPColor): TStatus;
     function SetResolution(xdpi, ydpi: Single): TStatus;
-    constructor Create(surface: IDirectDrawSurface7); reintroduce; overload;
+//    constructor Create(surface: IDirectDrawSurface7); reintroduce; overload;
     constructor Create(var gdiBitmapInfo: TBITMAPINFO; gdiBitmapData: Pointer); reintroduce; overload;
     constructor Create(hbm: HBITMAP; hpal: HPALETTE); reintroduce; overload;
     constructor Create(hicon: HICON); reintroduce; overload;
     constructor Create(hInstance: HMODULE; bitmapName: WideString); reintroduce; overload;
-    function FromDirectDrawSurface7(surface: IDirectDrawSurface7): TGPBitmap;
+//    function FromDirectDrawSurface7(surface: IDirectDrawSurface7): TGPBitmap;
     function FromBITMAPINFO(var gdiBitmapInfo: TBITMAPINFO; gdiBitmapData: Pointer): TGPBitmap;
     function FromHBITMAP(hbm: HBITMAP; hpal: HPALETTE): TGPBitmap;
     function FromHICON(hicon: HICON): TGPBitmap;
@@ -664,6 +664,8 @@ type
     function GetMiterLimit: Single;
     function SetAlignment(penAlignment: TPenAlignment): TStatus;
     function GetAlignment: TPenAlignment;
+    function SetWidthUnit(Value:TUnit):TStatus; //DB
+    function GetWidthUnit:TUnit; //DB
     function SetTransform(matrix: TGPMatrix): TStatus;
     function GetTransform(matrix: TGPMatrix): TStatus;
     function ResetTransform: TStatus;
@@ -750,7 +752,7 @@ type
       fillMode: TFillMode = FillModeAlternate); reintroduce; overload;
     constructor Create(points: PGPPoint; types: PBYTE; count: Integer;
       fillMode: TFillMode = FillModeAlternate); reintroduce; overload;
-    destructor destroy; override;
+    destructor Destroy; override;
     function Clone: TGPGraphicsPath;
     // Reset the path object to empty (and fill mode to FillModeAlternate)
     function Reset: TStatus;
@@ -965,7 +967,7 @@ type
     constructor Create(hdc: HDC; hdevice: THANDLE); reintroduce; overload;
     constructor Create(hwnd: HWND; icm: BOOL{ = FALSE}); reintroduce; overload;
     constructor Create(image: TGPImage); reintroduce; overload;
-    destructor destroy; override;
+    destructor Destroy; override;
     procedure Flush(intention: TFlushIntention = FlushIntentionFlush);
     //------------------------------------------------------------------------
     // GDI Interop methods
@@ -1413,9 +1415,11 @@ var
    GenericDefaultStringFormatBuffer    : TGPStringFormat = nil;
 
    StartupInput: TGDIPlusStartupInput;
-   gdiplusToken: ULONG;
+   gdiplusToken: ULONG=0;
 
 ////////////////////////////////////////////////////////////////////////////////
+
+procedure TeeGDIPlusStartup;
 
 implementation
 
@@ -1449,7 +1453,6 @@ implementation
 
   constructor TGPImageAttributes.Create;
   begin
-    nativeImageAttr := nil;
     lastResult := GdipCreateImageAttributes(nativeImageAttr);
   end;
 
@@ -1847,7 +1850,6 @@ implementation
 
   constructor TGPStringFormat.Create(formatFlags: Integer = 0; language: LANGID = LANG_NEUTRAL);
   begin
-    nativeFormat := nil;
     lastError := GdipCreateStringFormat(formatFlags, language, nativeFormat);
   end;
 
@@ -1876,7 +1878,6 @@ implementation
   constructor TGPStringFormat.Create(format: TGPStringFormat);
   var gpstf: GPSTRINGFORMAT;
   begin
-    nativeFormat := nil;
     if assigned(format) then gpstf := format.nativeFormat
                         else gpstf := nil;
     lastError := GdipCloneStringFormat(gpstf, nativeFormat);
@@ -2921,7 +2922,6 @@ implementation
 
   constructor TGPCustomLineCap.Create;
   begin
-    nativeCap := nil;
     lastResult := Ok;
   end;
 
@@ -2954,7 +2954,6 @@ implementation
 
   constructor TGPCachedBitmap.Create(bitmap: TGPBitmap; graphics: TGPGraphics);
   begin
-    nativeCachedBitmap := nil;
     lastResult := GdipCreateCachedBitmap(
         GpBitmap(bitmap.nativeImage),
         graphics.nativeGraphics,
@@ -2986,7 +2985,6 @@ implementation
   var unit_: TUnit;
   begin
     unit_ := UnitWorld;
-    nativePen := nil;
     lastResult := GdipCreatePen1(color, width, unit_, nativePen);
   end;
 
@@ -2994,7 +2992,6 @@ implementation
   var unit_: TUnit;
   begin
     unit_ := UnitWorld;
-    nativePen := nil;
     lastResult := GdipCreatePen2(brush.nativeBrush, width, unit_, nativePen);
   end;
 
@@ -3119,6 +3116,16 @@ implementation
   function TGPPen.GetAlignment: TPenAlignment;
   begin
     SetStatus(GdipGetPenMode(nativePen, result));
+  end;
+
+  function TGPPen.SetWidthUnit(Value:TUnit):TStatus; //DB
+  begin
+    result := SetStatus(GdipSetPenUnit(nativePen, Value));
+  end;
+
+  function TGPPen.GetWidthUnit:TUnit; //DB
+  begin
+    SetStatus(GdipGetPenUnit(nativePen,result));
   end;
 
   function TGPPen.SetTransform(matrix: TGPMatrix): TStatus;
@@ -3824,7 +3831,7 @@ implementation
     );
   end;
 
-  destructor TGPImage.destroy;
+  destructor TGPImage.Destroy;
   begin
     GdipDisposeImage(nativeImage);
   end;
@@ -4292,6 +4299,7 @@ implementation
         xdpi, ydpi));
   end;
 
+(*
   constructor TGPBitmap.Create(surface: IDirectDrawSurface7);
   var bitmap: GpBitmap;
   begin
@@ -4299,6 +4307,7 @@ implementation
     lastResult := GdipCreateBitmapFromDirectDrawSurface(surface, bitmap);
     SetNativeImage(bitmap);
   end;
+*)
 
   constructor TGPBitmap.Create(var gdiBitmapInfo: TBITMAPINFO; gdiBitmapData: Pointer);
   var bitmap: GpBitmap;
@@ -4332,10 +4341,12 @@ implementation
     SetNativeImage(bitmap);
   end;
 
+(*
   function TGPBitmap.FromDirectDrawSurface7(surface: IDirectDrawSurface7): TGPBitmap;
   begin
     result := TGPBitmap.Create(surface);
   end;
+*)
 
   function TGPBitmap.FromBITMAPINFO(var gdiBitmapInfo: TBITMAPINFO; gdiBitmapData: Pointer): TGPBitmap;
   begin
@@ -4438,7 +4449,7 @@ implementation
     SetNativeGraphics(graphics);
   end;
 
-  destructor TGPGraphics.destroy;
+  destructor TGPGraphics.Destroy;
   begin
     GdipDeleteGraphics(nativeGraphics);
   end;
@@ -6392,43 +6403,39 @@ implementation
   var
     nFontFamily: GpFontFamily;
   begin
-    if (GenericSansSerifFontFamily <> nil) then
+    if not Assigned(GenericSansSerifFontFamily) then
     begin
-      result := GenericSansSerifFontFamily;
-      exit;
+      GenericSansSerifFontFamily := TGPFontFamily.Create;
+      GenericSansSerifFontFamily.lastResult := GdipGetGenericFontFamilySansSerif(nFontFamily);
+      GenericSansSerifFontFamily.nativeFamily := nFontFamily;
     end;
-    GenericSansSerifFontFamily := TGPFontFamily.Create;
-    GenericSansSerifFontFamily.lastResult := GdipGetGenericFontFamilySansSerif(nFontFamily);
-    GenericSansSerifFontFamily.nativeFamily := nFontFamily;
+
     result := GenericSansSerifFontFamily;
   end;
 
   class function TGPFontFamily.GenericSerif: TGPFontFamily;
   var nFontFamily: GpFontFamily;
   begin
-    if (GenericSerifFontFamily <> nil) then
+    if not Assigned(GenericSerifFontFamily) then
     begin
-      result := GenericSerifFontFamily;
-      exit;
+      GenericSerifFontFamily := TGPFontFamily.Create;// (GenericSerifFontFamilyBuffer);
+      GenericSerifFontFamily.lastResult := GdipGetGenericFontFamilySerif(nFontFamily);
+      GenericSerifFontFamily.nativeFamily := nFontFamily;
     end;
 
-    GenericSerifFontFamily := TGPFontFamily.Create;// (GenericSerifFontFamilyBuffer);
-    GenericSerifFontFamily.lastResult := GdipGetGenericFontFamilySerif(nFontFamily);
-    GenericSerifFontFamily.nativeFamily := nFontFamily;
     result := GenericSerifFontFamily;
   end;
 
   class function TGPFontFamily.GenericMonospace: TGPFontFamily;
   var nFontFamily: GpFontFamily;
   begin
-    if (GenericMonospaceFontFamily <> nil) then
+    if not Assigned(GenericMonospaceFontFamily) then
     begin
-      result := GenericMonospaceFontFamily;
-      exit;
+      GenericMonospaceFontFamily := TGPFontFamily.Create;// (GenericMonospaceFontFamilyBuffer);
+      GenericMonospaceFontFamily.lastResult := GdipGetGenericFontFamilyMonospace(nFontFamily);
+      GenericMonospaceFontFamily.nativeFamily := nFontFamily;
     end;
-    GenericMonospaceFontFamily := TGPFontFamily.Create;// (GenericMonospaceFontFamilyBuffer);
-    GenericMonospaceFontFamily.lastResult := GdipGetGenericFontFamilyMonospace(nFontFamily);
-    GenericMonospaceFontFamily.nativeFamily := nFontFamily;
+
     result := GenericMonospaceFontFamily;
   end;
 
@@ -6804,7 +6811,7 @@ implementation
     lastResult := GdipNewPrivateFontCollection(nativeFontCollection);
   end;
 
-  destructor TGPPrivateFontCollection.destroy;
+  destructor TGPPrivateFontCollection.Destroy;
   begin
     GdipDeletePrivateFontCollection(nativeFontCollection);
     inherited Destroy;
@@ -6849,7 +6856,7 @@ implementation
       lastResult := GdipCreatePath2I(points, types, count, fillMode, nativePath);
   end;
 
-  destructor TGPGraphicsPath.destroy;
+  destructor TGPGraphicsPath.Destroy;
   begin
     GdipDeletePath(nativePath);
   end;
@@ -7219,13 +7226,12 @@ implementation
   end;
 
   function TGPGraphicsPath.AddString(
-      string_: WideString;                   //要添加的 String
-      length: Integer;                       //
-      family : TGPFontFamily;                //表示绘制文本所用字体的名称
-      style  : Integer;                      //一个 FontStyle 枚举，它表示有关文本的样式信息（粗体、斜体等）。它必须为整数
-      emSize : Single;  // World units       //限定字符的 Em（字体大小）方框的高度
-      origin : TGPPointF;                    //一个 Point，它表示文本从其起始的点
-      format : TGPStringFormat): TStatus;    //指定文本格式设置信息（如行间距和对齐方式）的 StringFormat
+      string_: WideString; length: Integer;
+      family : TGPFontFamily;
+      style  : Integer;
+      emSize : Single;  // World units
+      origin : TGPPointF;
+      format : TGPStringFormat): TStatus;
   var
     rect : TGPRectF;
     gpff : GPFONTFAMILY;
@@ -7963,30 +7969,44 @@ implementation
      // 閏rase la fonction parent
   end;
 
-initialization
+procedure TeeGDIPlusStartup;
 begin
+  if not TeeGDIPlusLoadDLL then Exit;
+
   // Initialize StartupInput structure
   StartupInput.DebugEventCallback := nil;
   StartupInput.SuppressBackgroundThread := False;
   StartupInput.SuppressExternalCodecs   := False;
   StartupInput.GdiplusVersion := 1;
+
   // Initialize GDI+
   GdiplusStartup(gdiplusToken, @StartupInput, nil);
-
 end;
 
-finalization
+procedure TeeGDIPlusShutdown;
 begin
+  if Assigned(GenericSansSerifFontFamily) then
+     GenericSansSerifFontFamily.Free;
 
-  if assigned(GenericSansSerifFontFamily) then GenericSansSerifFontFamily.Free;
-  if assigned(GenericSerifFontFamily) then GenericSerifFontFamily.Free;
-  if assigned(GenericMonospaceFontFamily) then GenericMonospaceFontFamily.Free;
+  if Assigned(GenericSerifFontFamily) then
+     GenericSerifFontFamily.Free;
 
-  if assigned(GenericTypographicStringFormatBuffer) then GenericTypographicStringFormatBuffer.free;
-  if assigned(GenericDefaultStringFormatBuffer) then GenericDefaultStringFormatBuffer.Free;
+  if Assigned(GenericMonospaceFontFamily) then
+     GenericMonospaceFontFamily.Free;
+
+  if Assigned(GenericTypographicStringFormatBuffer) then
+     GenericTypographicStringFormatBuffer.free;
+
+  if Assigned(GenericDefaultStringFormatBuffer) then
+     GenericDefaultStringFormatBuffer.Free;
 
   // Close GDI +
-  GdiplusShutdown(gdiplusToken);
+  if gdiplusToken<>0 then
+     GdiplusShutdown(gdiplusToken);
+  TeeGDIPlusUnLoadDLL;
 end;
 
+initialization
+finalization
+  TeeGDIPlusShutdown;
 end.

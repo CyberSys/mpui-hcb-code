@@ -215,8 +215,8 @@ begin
   MainForm.MStreamInfo.Checked:=True;
   MainForm.BStreamInfo.Down:=True;
   if (left+width)>=(CurMonitor.Left + CurMonitor.Width) then begin ControlledMove:=true; left:=CurMonitor.Left + CurMonitor.Width-width; end;
-  if left<0 then begin ControlledMove:=true; left:=0; end;
-  if top<0 then begin ControlledMove:=true; top:=0; end;
+  if left<CurMonitor.Left then begin ControlledMove:=true; left:=CurMonitor.Left; end;
+  if top<CurMonitor.Top then begin ControlledMove:=true; top:=CurMonitor.Top; end;
   if (top+height)>=(CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top) then begin
     ControlledMove:=true; top:=CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top-height; end;
   if (MainForm.Width>=CurMonitor.Width) OR (MainForm.Height>=(CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)) then MainForm.Enabled:=false;

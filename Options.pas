@@ -22,9 +22,9 @@ interface
 
 uses
   Windows, TntWindows, Messages, SysUtils, TntSysUtils, Variants, Classes, Graphics, Controls,
-  Forms, TntForms, TntDialogs, StdCtrls, ShellAPI, ComCtrls, Tabs, TabNotBk, ExtCtrls, TntSystem,
-  TntExtCtrls, TntComCtrls, TntStdCtrls, TntFileCtrl, ImgList, TntRegistry, TntClasses,
-  jpeg, CheckLst, TntCheckLst, ShlObj, Dialogs, ActiveX, TntGraphics, Math, TntMenus;
+  Forms, TntForms, TntDialogs, StdCtrls, ShellAPI, ComCtrls, ExtCtrls, TntSystem,
+  TntExtCtrls, TntComCtrls, TntStdCtrls, TntFileCtrl, TntRegistry, TntClasses,
+  jpeg, CheckLst, ShlObj, Dialogs, ActiveX, TntGraphics, Math, TntMenus;
 
 type
   Tass = class(TThread)
@@ -293,7 +293,7 @@ var
   OptionsForm: TOptionsForm; IsDsLoaded: THandle = 0; OptionsFormHook: HHOOK; ctrlkey: TShiftState = [];
 
 implementation
-uses Core, Config, Main, Locale, plist, unrar, Info, LyricShow;
+uses Core, Config, Main, Locale, plist, unrar, LyricShow;
 
 {$R *.dfm}
 var DirectSoundEnumerate: function(lpDSEnumCallback: PDSEnumCallback; lpContext: pointer): HRESULT; stdcall;
@@ -438,6 +438,7 @@ begin
   CAudioOut.ItemIndex := AudioOut;
   CAudioDev.ItemIndex := AudioDev;
   Ldlod.Checked := dlod;
+  Ldlod.Enabled:= Assigned(LyricShowForm);
   CIndex.Checked := ReIndex;
   CSoftVol.Checked := SoftVol;
   CRFScr.Checked := RFScr;
@@ -518,7 +519,8 @@ begin
   PLTC.Color := LTextColor;
   PLBC.Color := LbgColor;
   PLHC.Color := LhgColor;
-  BFont.Caption := PlayListForm.TMLyric.Font.Name;
+  BFont.Caption := LyricF;
+  BFont.Font.Size:=LyricS;
   PTc.color := TextColor;
   PTc.Enabled := Ass;
   POc.color := OutColor;
@@ -857,13 +859,18 @@ begin
   LTextColor := ColorToRGB(PLTC.Color);
   LbgColor := ColorToRGB(PLBC.Color);
   LhgColor := ColorToRGB(PLHC.Color);
-  LyricF := Bfont.Caption;
-  LyricS := PlaylistForm.TMLyric.Font.Size;
-  PlaylistForm.TMLyric.Color := PLBC.Color;
-  PlaylistForm.TMLyric.Font.Color := PLTC.Color;
   PlaylistForm.PLTC.Color := LTextColor;
   PlaylistForm.PLBC.Color := LbgColor;
   PlaylistForm.PLHC.Color := LhgColor;
+  if (LyricF <> Bfont.Caption) or (LyricS<> BFont.Font.Size) then begin
+     LyricF := Bfont.Caption; LyricS := BFont.Font.Size;
+     if Assigned(LyricShowForm) then GDILyric.SetFont(LyricF);
+     PlaylistForm.CLyricF.Text:=LyricF; PlaylistForm.CLyricS.Text:=IntToStr(LyricS);
+     Lyric .BitMap.Canvas.Font.Name := LyricF; Lyric.BitMap.Canvas.Font.Size := LyricS;
+     Lyric.ItemHeight:= WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;
+     UpdatePW := True;
+  end; 
+
   ADls:=CLS.Checked;
   AutoDs:=ads.Checked;
   Addsfiles := CAddsfiles.Checked;
@@ -951,14 +958,14 @@ var o: Integer;
               lsn := Tnt_WideLowerCase(sn);
               if (lsn = DefaultFont.Name) or
                 (Pos(DefaultFont.Name + ' & ', lsn) = 1) or
-                (Pos(' & ' + DefaultFont.Name, lsn) = 1) then
+                (Pos(' & ' + DefaultFont.Name, lsn) > 1) then
                 DefaultFontIndex := CSubfont.Items.Count - 1;
             end;
           end;
           CloseKey;
         end;
       finally
-        Free; a.free; DefaultFont.Free;
+        Free; a.free;
       end;
     end;
     COsdfont.Items := CSubfont.Items;
@@ -969,6 +976,11 @@ var o: Integer;
     if osdfont = '' then osdfont := subfont;
     if not WideFileExists(CheckSubfont(subfont)) then subfont := HomeDir + 'mplayer\subfont.ttf';
     if not WideFileExists(CheckSubfont(osdfont)) then osdfont := HomeDir + 'mplayer\subfont.ttf';
+    if LyricF = '' then begin
+      if DefaultFontIndex = -1 then LyricF := 'Tahoma'
+      else LyricF := DefaultFont.Name;
+    end;
+    DefaultFont.Free;
   end;
 begin
   OptionsFormHook := SetWindowsHookEx(WH_KEYBOARD, @KeyboardHook, 0, GetCurrentThreadID);
@@ -1172,18 +1184,12 @@ end;
 
 procedure TOptionsForm.BFontClick(Sender: TObject);
 begin
-  with PlaylistForm do begin
-    FontDialog1.Font.Name := BFont.Caption;
-    FontDialog1.Font.Size := TMLyric.Font.Size;
-    if FontDialog1.Execute then begin
-      BFont.Caption := FontDialog1.Font.Name;
-      BFont.Font.Name := FontDialog1.Font.Name;
-      GDILyric.SetFont(FontDialog1.Font.Name);
-      Lyric.BitMap.Canvas.Font.Name := FontDialog1.Font.Name;
-      Lyric.BitMap.Canvas.Font.Size := FontDialog1.Font.Size;
-      Lyric.ItemHeight:= WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;
-      UpdatePW := True;
-    end;
+  FontDialog1.Font.Name := BFont.Caption;
+  FontDialog1.Font.Size := BFont.Font.Size;
+  if FontDialog1.Execute then begin
+    BFont.Caption := FontDialog1.Font.Name;
+    BFont.Font.Name := FontDialog1.Font.Name;
+    BFont.Font.Size:= FontDialog1.Font.Size;
   end;
 end;
 

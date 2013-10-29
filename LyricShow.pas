@@ -41,7 +41,7 @@ uses plist, core;
 
 function TLyricShowForm.LyricTextW(s:WideString):Integer;
 begin
-  Result := WideCanvasTextWidth(Canvas,s) + Trunc(2.5 * Height);
+  Result := WideCanvasTextWidth(Canvas,s) + 3 * Height;
 end;
 
 function TLyricShowForm.LyricTextH:Integer;
@@ -71,10 +71,11 @@ begin
   ParentWindow := GetDesktopWindow;
   SetWindowPos(Self.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE);
   GDILyric := TGDIDrawLyric.Create(Handle);
-  Width := Screen.Width - 300;
+  Width := CurMonitor.Width;
   Height := 140;
-  Left := (Screen.Width - Width) div 2;
-  Top := Screen.WorkAreaHeight - Height;
+  Left := CurMonitor.Left;
+  Top := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom
+       - CurMonitor.WorkareaRect.Top - Height;
   GDILyric.SetWidthAndHeight(Width, Height);
 end;
 

@@ -8,6 +8,7 @@ object PlaylistForm: TPlaylistForm
   TransparentColorValue = 15204041
   Constraints.MinHeight = 105
   Constraints.MinWidth = 365
+  DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -31,7 +32,7 @@ object PlaylistForm: TPlaylistForm
     Top = 0
     Width = 368
     Height = 237
-    ActivePage = TntTabSheet2
+    ActivePage = TntTabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
     object TntTabSheet1: TTntTabSheet
@@ -363,7 +364,7 @@ object PlaylistForm: TPlaylistForm
         Top = 0
         Width = 143
         Height = 21
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 4
         OnChange = CLyricFChange
       end

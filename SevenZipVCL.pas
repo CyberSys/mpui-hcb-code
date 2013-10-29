@@ -23,7 +23,7 @@ unit SevenZipVCL;
 interface
 
 uses
-  Windows, SysUtils, TntWideStrUtils, TntSysUtils, Tntdialogs, Classes,
+  Windows, SysUtils, TntSysUtils, Tntdialogs, Classes,
   TntWindows, ActiveX ,core, locale, plist;
 
 const
@@ -511,7 +511,7 @@ function FileExists_( fn: Widestring ): Boolean;
 implementation
 
 uses
-  Forms, CommDlg, SevenZip;
+  Forms, SevenZip;
 
 //--------------------------------------------------------------------------------------------------
 //-------------------Start UniCode procedures-------------------------------------------------------

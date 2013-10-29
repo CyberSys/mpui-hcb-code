@@ -18,7 +18,7 @@
 }
 unit Config;
 interface
-uses Core, Main, Locale, info, Menus, TntMenus;
+uses Core, Main, Locale, Menus, TntMenus;
 
 const DefaultFileName = 'MPUI.ini';
   SectionName = 'MPUI';

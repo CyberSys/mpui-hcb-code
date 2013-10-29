@@ -8,9 +8,11 @@ object EqualizerForm: TEqualizerForm
   ClientHeight = 172
   ClientWidth = 232
   Color = clBtnFace
+  DefaultMonitor = dmMainForm
   ParentFont = True
+  FormStyle = fsStayOnTop
   OldCreateOrder = True
-  Position = poMainFormCenter
+  Position = poScreenCenter
   OnClose = FormClose
   OnShow = FormShow
   DesignSize = (

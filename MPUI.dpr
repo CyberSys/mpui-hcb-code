@@ -64,8 +64,6 @@ uses
   GDILyrics in 'GDILyrics.pas',
   GDIPAPI in 'GDIPAPI.pas',
   GDIPOBJ in 'GDIPOBJ.pas',
-  GDIPUTIL in 'GDIPUTIL.pas',
-  DirectDraw in 'DirectDraw.pas',
   LyricShow in 'LyricShow.pas' {LyricShowForm};
 
 {$R *.res}
@@ -104,14 +102,14 @@ begin
     Application.Initialize;
     TntApplication.Title := 'MPUI-hcb';
     Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TPlaylistForm, PlaylistForm);
-  Application.CreateForm(TInfoForm, InfoForm);
-  Application.CreateForm(TEqualizerForm, EqualizerForm);
-  Application.CreateForm(TOptionsForm, OptionsForm);
-  Application.CreateForm(TOpenDevicesForm, OpenDevicesForm);
-  Application.CreateForm(TDLyricForm, DLyricForm);
-  Application.CreateForm(TLyricShowForm, LyricShowForm);
-  Application.Run;
+    Application.CreateForm(TOptionsForm, OptionsForm);
+    Application.CreateForm(TPlaylistForm, PlaylistForm);
+    Application.CreateForm(TInfoForm, InfoForm);
+    Application.CreateForm(TEqualizerForm, EqualizerForm);
+    Application.CreateForm(TOpenDevicesForm, OpenDevicesForm);
+    Application.CreateForm(TDLyricForm, DLyricForm);
+    if (GdipHandle>0) and Assigned(UpdateLyricShowForm) then Application.CreateForm(TLyricShowForm, LyricShowForm);
+    Application.Run;
     ReleaseMutex(hAppMutex);
   end;
   CloseHandle(hAppMutex);
