@@ -234,7 +234,7 @@ var ClientWaitThread: TClientWaitThread;
 procedure HandleIDLine(ID: string; Content: WideString); forward;
 
 function ExpandName(const BasePath, FileName: WideString): WideString;
-begin
+begin                               
   Result := FileName;
   if (Pos(':', FileName) > 0) or (length(FileName)>515) then exit;
   if (length(FileName) > 1) and ((FileName[1] = '/') or (FileName[1] = '\')) then exit;
@@ -2828,7 +2828,7 @@ begin
   ReadPipe := 0; WritePipe := 0; ExitCode := 0; UseUni := false; HaveVideo := false;
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
   lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := true; ADls:=true;
-  dsEnd:=false; avThread:='1'; uav:=false; AutoDs:=True; LyricS := 8;
+  dsEnd:=false; avThread:='1'; uav:=false; AutoDs:=True; LyricS := 10;
   bluray:=false; dvd:=false; vcd:=false; cd:=false; ResetStreamInfo;
 end.
 
