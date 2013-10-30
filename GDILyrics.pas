@@ -72,6 +72,7 @@ type
     property NextString: widestring read FNextStr write FNextStr;
     property FirstStrWidth: Integer read FFirstStrWidth write FFirstStrWidth;
     property NextStrWidth: Integer read FNextStrWidth write FNextStrWidth;
+    property Position: Single read FPosition write FPosition;
   end;
 
 
@@ -237,13 +238,9 @@ var
   Winsize: TSize;
   SrcPoint: TPoint;
   blend: TBlendFunction;
-
   FormHDC, MemHDC: HDC;
-
   hBitMap: Windows.HBITMAP;
-
-  TmpLeft, TmpHeight: Integer;
-  TmpLeft2, TmpTop2: Single;
+  TmpLeft, TmpLeft2, TmpTop: Single;
 begin
   FormHDC := GetDC(FHandle);
   MemHDC := CreateCompatibleDC(FormHDC);
@@ -252,40 +249,40 @@ begin
 
   gBack := TGPGraphics.Create(MemHDC);
   gFore := TGPGraphics.Create(MemHDC);
-  TmpHeight := FFontHeight + 1;
-
 
   case FShowFlags of
     sfSingle:
       begin
-        TmpLeft2 := FWidth / 2 - FStrWidth1 / 2;
-        TmpTop2 := FHeight / 2 - TmpHeight / 2;
-        gBack.DrawImage(FBackImage, MakeRect(TmpLeft2, TmpTop2, FStrWidth1, TmpHeight));
-        gFore.SetClip(MakeRect(TmpLeft2, TmpTop2, FPosition, TmpHeight));
-        gFore.DrawImage(FForeImage, MakeRect(TmpLeft2, TmpTop2, FStrWidth1, TmpHeight));
+        TmpLeft := (FWidth - FStrWidth1) / 2;
+        TmpTop := (FHeight - FFontHeight) / 2;
+        gBack.DrawImage(FBackImage, MakeRect(TmpLeft, TmpTop, FStrWidth1, FFontHeight));
+        gFore.SetClip(MakeRect(TmpLeft, TmpTop, FPosition, FFontHeight));
+        gFore.DrawImage(FForeImage, MakeRect(TmpLeft, TmpTop, FStrWidth1, FFontHeight));
       end;
     sfDouble:
       begin
-        gBack2 := TGPGraphics.Create(MemHDC);
-        gBack.DrawImage(FBackImage, MakeRect(0.0, 11, FStrWidth1, TmpHeight));
+        TmpLeft2 := FWidth / 2;
+        TmpLeft := TmpLeft2 - FStrWidth1;
+        if TmpLeft < 0 then TmpLeft := 0;
+        gBack.DrawImage(FBackImage, MakeRect(TmpLeft, 11, FStrWidth1, FFontHeight));
 
-        TmpLeft := FWidth - FStrWidth2 + Trunc(FFontHeight * 0.75) - 10;
-        if TmpLeft <= 0 then TmpLeft := 0;
-        gBack2.DrawImage(FBackImage2, MakeRect(TmpLeft,
-          FHeight - FFontHeight - 10, FStrWidth2, TmpHeight));
+        if (TmpLeft2 + FStrWidth2) > FWidth then TmpLeft2 := FWidth - FStrWidth2;
+        gBack2 := TGPGraphics.Create(MemHDC);
+        gBack2.DrawImage(FBackImage2, MakeRect(TmpLeft2,
+          FHeight - FFontHeight - 10, FStrWidth2, FFontHeight));
         case FDrawMod of
           0:
             begin
-              gFore.SetClip(MakeRect(0.0, 10, FPosition, FFontHeight));
-              gFore.DrawImage(FForeImage, MakeRect(0.0, 10, FStrWidth1, TmpHeight));
+              gFore.SetClip(MakeRect(TmpLeft, 10, FPosition, FFontHeight));
+              gFore.DrawImage(FForeImage, MakeRect(TmpLeft, 10, FStrWidth1, FFontHeight));
             end;
           1:
             begin
-              gFore.SetClip(MakeRect(TmpLeft, FHeight - TmpHeight - 10,
-                FPosition, TmpHeight));
-              gFore.DrawImage(FForeImage2, MakeRect(TmpLeft,
-                FHeight - TmpHeight - 10,
-                FStrWidth2, TmpHeight));
+              gFore.SetClip(MakeRect(TmpLeft2, FHeight - FFontHeight - 10,
+                FPosition, FFontHeight));
+              gFore.DrawImage(FForeImage2, MakeRect(TmpLeft2,
+                FHeight - FFontHeight - 10,
+                FStrWidth2, FFontHeight));
             end;
         end;
         gBack2.Free;

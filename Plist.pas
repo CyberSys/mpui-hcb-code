@@ -1773,6 +1773,7 @@ begin
   end;
   UpdatePW := True;
   TMLyricPaint(nil);
+  if Assigned(LyricShowForm) then GDILyric.SetFont(LyricF);
   (Sender as TTntMenuItem).Checked := true;
 end;
 
