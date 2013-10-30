@@ -20,7 +20,7 @@ unit Equalizer;
 
 interface
 
-uses Windows, SysUtils, Classes, Graphics, Forms, TntForms, Controls, StdCtrls, 
+uses Windows, SysUtils, Classes, Graphics, Forms, TntForms, Controls, StdCtrls,
   Buttons, ExtCtrls, ComCtrls, TntStdCtrls, TntButtons;
 
 type
@@ -50,7 +50,7 @@ type
     procedure SSatClick(Sender: TObject);
   private
     { Private declarations }
-    Changed:boolean;
+    Changed: boolean;
   public
     { Public declarations }
   end;
@@ -73,7 +73,7 @@ procedure TEqualizerForm.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
   if Changed then begin
-    CBHSA:=1;
+    CBHSA := 1;
     SendCommand('get_property contrast');
     SendCommand('get_property brightness');
     SendCommand('get_property hue');
@@ -84,21 +84,20 @@ end;
 
 procedure TEqualizerForm.FormShow(Sender: TObject);
 begin
-  CBHSA:=5; Changed:=false;
-  BReset.Enabled:=TCon.Enabled OR TGam.Enabled OR
-                  TBri.Enabled OR THue.Enabled OR TSat.Enabled;
-  if (left+width)>=CurMonitor.Width then left:=CurMonitor.Width-width;
-  if left<CurMonitor.Left then left:=CurMonitor.Left; if top<CurMonitor.Top then top:=CurMonitor.Top;
-  if (top+height)>=CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top then 
-    top:=CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top-height;
+  CBHSA := 5; Changed := false;
+  BReset.Enabled := TCon.Enabled or TGam.Enabled or TBri.Enabled or THue.Enabled or TSat.Enabled;
+  if (Left < CurMonitor.Left) or ((Left + Width) > (CurMonitor.Left + CurMonitor.Width)) then
+    Left := CurMonitor.Left + (CurMonitor.Width - Width) div 2;
+  if (Top < CurMonitor.Top) or ((Top + Height) > (CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)) then
+    Top := CurMonitor.Top + (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - Height) div 2
 end;
 
 procedure TEqualizerForm.TbChange(Sender: TObject);
 begin
-  if CBHSA<>5 then exit
+  if CBHSA <> 5 then exit
   else begin
-    Changed:=true;
-    SendCommand('set_property '+(Sender as TTrackBar).Hint+' '+IntToStr((Sender as TTrackBar).Position));
+    Changed := true;
+    SendCommand('set_property ' + (Sender as TTrackBar).Hint + ' ' + IntToStr((Sender as TTrackBar).Position));
   end;
 end;
 
@@ -106,47 +105,48 @@ procedure TEqualizerForm.BResetClick(Sender: TObject);
 begin
   SbriClick(nil); SConClick(nil); SGamClick(nil);
   SHueClick(nil); SSatClick(nil);
-  SendCommand('osd_show_text "'+OSD_Reset_Prompt+' C/B/H/S/G"');
+  SendCommand('osd_show_text "' + OSD_Reset_Prompt + ' C/B/H/S/G"');
 end;
 
 procedure TEqualizerForm.SbriClick(Sender: TObject);
 begin
-  if briD<>101 then begin
-    Changed:=true; bri:=briD; TBri.Position:=briD;
-    SendCommand('set_property brightness '+IntToStr(briD));
+  if briD <> 101 then begin
+    Changed := true; bri := briD; TBri.Position := briD;
+    SendCommand('set_property brightness ' + IntToStr(briD));
   end;
 end;
 
 procedure TEqualizerForm.SConClick(Sender: TObject);
 begin
-  if contrD<>101 then begin
-    Changed:=true; contr:=contrD; TCon.Position:=contrD;
-    SendCommand('set_property contrast '+IntToStr(contrD));
+  if contrD <> 101 then begin
+    Changed := true; contr := contrD; TCon.Position := contrD;
+    SendCommand('set_property contrast ' + IntToStr(contrD));
   end;
 end;
 
 procedure TEqualizerForm.SGamClick(Sender: TObject);
 begin
-  if (gamD<>101) and Eq2 then begin
-    Changed:=true; gam:=gamD; TGam.Position:=gamD;
-    SendCommand('set_property gamma '+IntToStr(gamD)+' 1');
+  if (gamD <> 101) and Eq2 then begin
+    Changed := true; gam := gamD; TGam.Position := gamD;
+    SendCommand('set_property gamma ' + IntToStr(gamD) + ' 1');
   end;
 end;
 
 procedure TEqualizerForm.SHueClick(Sender: TObject);
 begin
-  if huD<>101 then begin
-    Changed:=true; hu:=huD; THue.Position:=huD;
-    SendCommand('set_property hue '+IntToStr(huD));
+  if huD <> 101 then begin
+    Changed := true; hu := huD; THue.Position := huD;
+    SendCommand('set_property hue ' + IntToStr(huD));
   end;
 end;
 
 procedure TEqualizerForm.SSatClick(Sender: TObject);
 begin
-  if satD<>101 then begin
-    Changed:=true; sat:=satD; TSat.Position:=satD;
-    SendCommand('set_property saturation '+IntToStr(satD)+' 1');
+  if satD <> 101 then begin
+    Changed := true; sat := satD; TSat.Position := satD;
+    SendCommand('set_property saturation ' + IntToStr(satD) + ' 1');
   end;
 end;
 
 end.
+
