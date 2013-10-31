@@ -829,25 +829,25 @@ begin
 
   if dlod <> Ldlod.Checked then begin
     if Ldlod.Checked then begin
-      GDILyric.SetFont(BFont.Caption);
-      if HaveLyric<>0 then begin
-        if MSecPos < Lyric.LyricTime[0].timecode then begin
-          if LyricCount=0 then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(0),'')
-          else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(0),Lyric.GetLyricString(1));
-        end;
-        if MSecPos > Lyric.LyricTime[LyricCount].timecode then begin
-          if CurLyric mod 2 = 0 then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric),'')
-          else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric-1),Lyric.GetLyricString(CurLyric));
-        end;
-        if (MSecPos >= Lyric.LyricTime[CurLyric].timecode) and (MSecPos <= Lyric.LyricTime[NextLyric].timecode) then begin
-          if CurLyric mod 2 = 0 then begin
-            if CurLyric = LyricCount then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric),'')
-            else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric),Lyric.GetLyricString(NextLyric));
-          end
-          else begin
-            if CurLyric = LyricCount then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric-1),Lyric.GetLyricString(CurLyric))
-            else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(NextLyric),Lyric.GetLyricString(CurLyric));
-          end;
+      GDILyric.FontName := Bfont.Caption;
+      if HaveLyric = 0 then exit;
+      GDILyric.FontHeight := LyricShowForm.GetFontHeight(Bfont.Caption);
+      if MSecPos < Lyric.LyricTime[0].timecode then begin
+        if LyricCount=0 then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(0),'')
+        else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(0),Lyric.GetLyricString(1));
+      end;
+      if MSecPos > Lyric.LyricTime[LyricCount].timecode then begin
+        if CurLyric mod 2 = 0 then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric),'')
+        else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric-1),Lyric.GetLyricString(CurLyric));
+      end;
+      if (MSecPos >= Lyric.LyricTime[CurLyric].timecode) and (MSecPos <= Lyric.LyricTime[NextLyric].timecode) then begin
+        if CurLyric mod 2 = 0 then begin
+          if CurLyric = LyricCount then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric),'')
+          else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric),Lyric.GetLyricString(NextLyric));
+        end
+        else begin
+          if CurLyric = LyricCount then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric-1),Lyric.GetLyricString(CurLyric))
+          else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(NextLyric),Lyric.GetLyricString(CurLyric));
         end;
       end;
       LyricShowForm.Show;
@@ -866,7 +866,7 @@ begin
      LyricF := Bfont.Caption; LyricS := BFont.Font.Size;
      if Assigned(LyricShowForm) then GDILyric.SetFont(LyricF);
      PlaylistForm.CLyricF.Text:=LyricF; PlaylistForm.CLyricS.Text:=IntToStr(LyricS);
-     Lyric .BitMap.Canvas.Font.Name := LyricF; Lyric.BitMap.Canvas.Font.Size := LyricS;
+     Lyric.BitMap.Canvas.Font.Name := LyricF; Lyric.BitMap.Canvas.Font.Size := LyricS;
      Lyric.ItemHeight:= WideCanvasTextHeight(Lyric.BitMap.Canvas,'S') + 4;
      UpdatePW := True;
   end; 

@@ -12,7 +12,7 @@ unit LyricShow;
 interface
 
 uses
-  Windows, Classes, ExtCtrls, Forms, GDILyrics, GDIPOBJ, GDIPAPI, Math;
+  Windows, Classes, ExtCtrls, Forms, GDILyrics, GDIPOBJ, GDIPAPI, Math, TntGraphics;
 type
   TLyricShowForm = class(TForm)
     procedure FormCreate(Sender: TObject);
@@ -40,61 +40,31 @@ uses plist, core;
 {$R *.dfm}
 
 function TLyricShowForm.LyricTextW(s: WideString): Integer;
-var g: TGPGraphics; FontFamily: TGPFontFamily;
-  Font: TGPFont; txtR: TGPRectF; wTot: single; i: Integer;
-  w:Single;
 begin
-  if s<>'' then w:= Width / length(s) else w:=0;
-  FontFamily := TGPFontFamily.Create(Canvas.Font.Name);
-  Font := TGPFont.Create(FontFamily, Canvas.Font.Size, FontStyleRegular, UnitPixel);
-  g := TGPGraphics.Create(Canvas.Handle);
-  wTot := 0;
-  for i := 1 to Length(s) do begin
-    g.MeasureString(s[i], 1, Font, MakePoint(0.0, 0.0), txtR);
-    if IsNaN(txtR.Width) or IsInfinite(txtR.Width) or
-       (txtR.Width>w) or (txtR.Width<Canvas.Font.Size) then
-      wTot := wTot + Canvas.Font.Size
-    else wTot := wTot + txtR.width;
-  end;
-  Result := Integer(Trunc(wTot)) + 1;
-  FontFamily.Free;
-  Font.Free;
-  g.Free;
+  Result := WideCanvasTextWidth(Canvas,s);
 end;
 
 
 function TLyricShowForm.LyricTextH(s: WideString): Integer;
-var g: TGPGraphics; FontFamily: TGPFontFamily;
-  Font: TGPFont; txtR: TGPRectF; h:Integer;
 begin
-  h:= Height - 20;
-  FontFamily := TGPFontFamily.Create(Canvas.Font.Name);
-  Font := TGPFont.Create(FontFamily, Canvas.Font.Size, FontStyleRegular, UnitPixel);
-  g := TGPGraphics.Create(Canvas.Handle);
-  g.MeasureString(s, -1, Font, MakePoint(0.0, 0.0), txtR);
-  if IsNaN(txtR.Height) or IsInfinite(txtR.Height) or
-     (txtR.Height>h) or (txtR.Height<Canvas.Font.Height) then
-    Result := Canvas.Font.Height
-  else Result :=  Integer(Trunc(txtR.Height)) + 1;
-  FontFamily.Free;
-  Font.Free;
-  g.Free;
+  Result := WideCanvasTextHeight(Canvas,s);
 end;
 
 function TLyricShowForm.GetFontHeight(f: string): Integer;
-var s: WideString; len: integer;
+var s: WideString; w:Integer;
 begin
   Canvas.Font.Name := f;
   s := Lyric.GetLyricString(MaxLenLyric);
-  len := LyricTextW(s);
-  if len > width then
+  w:=LyricTextW(s);
+  if w > width then
     repeat
       Canvas.Font.Size := Canvas.Font.Size - 1;
-    until (LyricTextW(s) <= width) or (Canvas.Font.Size = 1)
-  else if len < width then
+    until (LyricTextW(s) <= width) or (Canvas.Font.Size=1)
+  else if w < width then
     repeat
       Canvas.Font.Size := Canvas.Font.Size + 1;
-    until (LyricTextW(s) >= width) or (Canvas.Font.Size = 35);
+    until (LyricTextW(s) >= width) or (Canvas.Font.Size=35);
+  if LyricTextW(s) > width then Canvas.Font.Size := Canvas.Font.Size - 1;
   Result := LyricTextH(s);
 end;
 

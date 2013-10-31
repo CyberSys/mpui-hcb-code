@@ -215,8 +215,6 @@ begin
   with INI do try
     case mode of
       0: begin  //save all setting on optional panel
-          WriteInteger(SectionName, 'LyricSize', Core.LyricS);
-          WriteString(SectionName, 'LyricFont', Core.LyricF);
           WriteInteger(SectionName, 'Locale', DefaultLocale);
           WriteInteger(SectionName, 'AudioOut', Core.AudioOut);
           WriteInteger(SectionName, 'AudioDev', Core.AudioDev);
@@ -289,6 +287,8 @@ begin
           WriteBool(SectionName, 'AutoDs', Core.AutoDs);
         end;
       1: begin  //save some setting when mpui quit
+          WriteInteger(SectionName, 'LyricSize', Core.LyricS);
+          WriteString(SectionName, 'LyricFont', Core.LyricF);
           WriteString(SectionName, 'channellist', UTF8Encode(cl));
           WriteInteger(SectionName, 'IPanelWidth', Core.InterW);
           WriteInteger(SectionName, 'IPanelHeight', Core.InterH);

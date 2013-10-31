@@ -73,6 +73,8 @@ type
     property FirstStrWidth: Integer read FFirstStrWidth write FFirstStrWidth;
     property NextStrWidth: Integer read FNextStrWidth write FNextStrWidth;
     property Position: Single read FPosition write FPosition;
+    property FontName: String read FFontName write FFontName;
+    property FontHeight: Integer read FFontHeight write FFontHeight;
   end;
 
 
