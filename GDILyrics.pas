@@ -47,16 +47,11 @@ type
     // 首行\第二行字符
     FFirstStr,
       FNextStr: widestring;
-    // 首行\第二行字符宽度
-    FFirstStrWidth,
-      FNextStrWidth: Integer;
-
 
     procedure SetSingleOrDoubleLine(Value: TGDIShowFlags);
     procedure UpdateDisplay;
-    procedure DrawStrToImage(var DestBitmap: TGPBitmap; AStr, FontName: widestring; AWidth: Integer;
-      StartColor, EndColor: TGPColor; FontHeight: Integer; ForeColor: Boolean;
-      Alignment: TStringAlignment = StringAlignmentCenter);
+    procedure DrawStrToImage(var DestBitmap: TGPBitmap; AStr, FontName: widestring;
+      StartColor, EndColor: TGPColor; FontHeight: Integer; ForeColor: Boolean);
   public
     constructor Create(Handle: HWND);
     destructor Destroy; override;
@@ -66,12 +61,13 @@ type
     procedure SetFont(FontName: string);
     procedure SetPositionAndFlags(Position: Single = 0.0; DrawMod: Integer = 0);
     procedure SetWidthAndHeight(AWidth, AHeight: Integer);
-
+    function GetTextWidth(fz:Integer; Str: WideString):Integer;
+    
     property ShowFlags: TGDIShowFlags read FShowFlags write SetSingleOrDoubleLine;
     property FirstString: widestring read FFirstStr write FFirstStr;
     property NextString: widestring read FNextStr write FNextStr;
-    property FirstStrWidth: Integer read FFirstStrWidth write FFirstStrWidth;
-    property NextStrWidth: Integer read FNextStrWidth write FNextStrWidth;
+    property FirstStrWidth: Integer read FStrWidth1 write FStrWidth1;
+    property NextStrWidth: Integer read FStrWidth2 write FStrWidth2;
     property Position: Single read FPosition write FPosition;
     property FontName: String read FFontName write FFontName;
     property FontHeight: Integer read FFontHeight write FFontHeight;
@@ -108,10 +104,8 @@ begin
   inherited;
 end;
 
-procedure TGDIDrawLyric.DrawStrToImage(var DestBitmap: TGPBitmap; AStr,
-  FontName: widestring; AWidth: Integer;
-  StartColor, EndColor: TGPColor; FontHeight: Integer; ForeColor: Boolean;
-  Alignment: TStringAlignment);
+procedure TGDIDrawLyric.DrawStrToImage(var DestBitmap: TGPBitmap; AStr,FontName: widestring;
+  StartColor, EndColor: TGPColor; FontHeight: Integer; ForeColor: Boolean);
 
 var
   Graphics: TGPGraphics;
@@ -129,17 +123,17 @@ begin
   FontFamily := TGPFontFamily.Create(FontName);
   strFormat := TGPStringFormat.Create();
   strFormat.SetFormatFlags(StringFormatFlagsNoWrap);
-  strFormat.SetAlignment(Alignment);
+  strFormat.SetAlignment(StringAlignmentNear);
   Path := TGPGraphicsPath.Create();
   Path.AddString(AStr, -1, FontFamily, 1, FontHeight,
-    MakeRect(0.0, 0.0, AWidth, 0.0), strFormat);
+    MakePoint(3.0, 3.0), strFormat);
   Pen := TGPPen.Create(MakeColor(155, 215, 215, 215), 3);
   Pen.SetColor(MakeColor(65, 1, 3, 3));
   Pen.SetLineJoin(LineJoinRound);
   Graphics.DrawPath(Pen, Path);
 
   Brush := TGPLinearGradientBrush.Create(MakePoint(0.0, 0.0),
-    MakePoint(0.0, FontHeight + 4.5), StartColor, EndColor);
+    MakePoint(0.0, FontHeight + 9), StartColor, EndColor);
   case ForeColor of
     True:
       begin
@@ -169,32 +163,29 @@ end;
 
 procedure TGDIDrawLyric.DrawLyricBitmapFirst;
 begin
-  FStrWidth1 := Round(FFirstStrWidth + FFontHeight * 0.75);
   if Assigned(FBackImage) then FBackImage.Free;
-  FBackImage := TGPBitmap.Create(FStrWidth1, FFontHeight + 6);
-  DrawStrToImage(FBackImage, FFirstStr, FFontName, FStrWidth1, FBackColor1, FBackColor2,
-    FFontHeight, True, StringAlignmentNear);
+  FBackImage := TGPBitmap.Create(FWidth, FHeight);
+  DrawStrToImage(FBackImage, FFirstStr, FFontName, FBackColor1, FBackColor2,
+    FFontHeight, True);
 
   if Assigned(FForeImage) then FForeImage.Free;
-  FForeImage := TGPBitmap.Create(FStrWidth1, FFontHeight + 6);
-  DrawStrToImage(FForeImage, FFirstStr, FFontName, FStrWidth1, FForeColor1, FForeColor2,
-    FFontHeight, False, StringAlignmentNear);
+  FForeImage := TGPBitmap.Create(FWidth, FHeight);
+  DrawStrToImage(FForeImage, FFirstStr, FFontName, FForeColor1, FForeColor2,
+    FFontHeight, False);
   UpdateDisplay;
 end;
 
 procedure TGDIDrawLyric.DrawLyricBitmapNext;
 begin
-  FStrWidth2 := Round(FNextStrWidth + FFontHeight * 0.75);
-
   if Assigned(FBackImage2) then FBackImage2.Free;
-  FBackImage2 := TGPBitmap.Create(FStrWidth2, FFontHeight + 6);
-  DrawStrToImage(FBackImage2, FNextStr, FFontName, FStrWidth2, FBackColor1, FBackColor2,
-    FFontHeight, True, StringAlignmentNear);
+  FBackImage2 := TGPBitmap.Create(FWidth, FHeight);
+  DrawStrToImage(FBackImage2, FNextStr, FFontName, FBackColor1, FBackColor2,
+    FFontHeight, True);
 
   if Assigned(FForeImage2) then FForeImage2.Free;
-  FForeImage2 := TGPBitmap.Create(FStrWidth2, FFontHeight + 6);
-  DrawStrToImage(FForeImage2, FNextStr, FFontName, FStrWidth2, FForeColor1, FForeColor2,
-    FFontHeight, False, StringAlignmentNear);
+  FForeImage2 := TGPBitmap.Create(FWidth, FHeight);
+  DrawStrToImage(FForeImage2, FNextStr, FFontName, FForeColor1, FForeColor2,
+    FFontHeight, False);
   UpdateDisplay;
 end;
 
@@ -203,10 +194,10 @@ begin
   FFontName := FontName;
   if HaveLyric = 0 then exit;
   FFontHeight := LyricShowForm.GetFontHeight(FontName);
-  FirstStrWidth := LyricShowForm.LyricTextW(FirstString);
+  FirstStrWidth := GetTextWidth(FFontHeight,FirstString);
   DrawLyricBitmapFirst();
   if FShowFlags = sfDouble then begin
-    NextStrWidth := LyricShowForm.LyricTextW(NextString);
+    NextStrWidth := GetTextWidth(FFontHeight,NextString);
     DrawLyricBitmapNext();
   end;
 end;
@@ -257,34 +248,34 @@ begin
       begin
         TmpLeft := (FWidth - FStrWidth1) / 2;
         TmpTop := (FHeight - FFontHeight) / 2;
-        gBack.DrawImage(FBackImage, MakeRect(TmpLeft, TmpTop, FStrWidth1, FFontHeight));
-        gFore.SetClip(MakeRect(TmpLeft, TmpTop, FPosition, FFontHeight));
-        gFore.DrawImage(FForeImage, MakeRect(TmpLeft, TmpTop, FStrWidth1, FFontHeight));
+        gBack.DrawImage(FBackImage, MakeRect(TmpLeft, TmpTop, FWidth, FHeight));
+        gFore.SetClip(MakeRect(TmpLeft, TmpTop, FPosition, FHeight));
+        gFore.DrawImage(FForeImage, MakeRect(TmpLeft, TmpTop, FWidth, FHeight));
       end;
     sfDouble:
       begin
         TmpLeft2 := FWidth / 2;
         TmpLeft := TmpLeft2 - FStrWidth1;
         if TmpLeft < 0 then TmpLeft := 0;
-        gBack.DrawImage(FBackImage, MakeRect(TmpLeft, 11, FStrWidth1, FFontHeight));
+        gBack.DrawImage(FBackImage, MakeRect(TmpLeft, 11, FWidth, FHeight));
 
         if (TmpLeft2 + FStrWidth2) > FWidth then TmpLeft2 := FWidth - FStrWidth2;
         gBack2 := TGPGraphics.Create(MemHDC);
         gBack2.DrawImage(FBackImage2, MakeRect(TmpLeft2,
-          FHeight - FFontHeight - 10, FStrWidth2, FFontHeight));
+          FHeight - FFontHeight - 10, FWidth, FHeight));
         case FDrawMod of
           0:
             begin
-              gFore.SetClip(MakeRect(TmpLeft, 10, FPosition, FFontHeight));
-              gFore.DrawImage(FForeImage, MakeRect(TmpLeft, 10, FStrWidth1, FFontHeight));
+              gFore.SetClip(MakeRect(TmpLeft, 10, FPosition, FHeight));
+              gFore.DrawImage(FForeImage, MakeRect(TmpLeft, 10, FWidth, FHeight));
             end;
           1:
             begin
               gFore.SetClip(MakeRect(TmpLeft2, FHeight - FFontHeight - 10,
-                FPosition, FFontHeight));
+                FPosition, FHeight));
               gFore.DrawImage(FForeImage2, MakeRect(TmpLeft2,
                 FHeight - FFontHeight - 10,
-                FStrWidth2, FFontHeight));
+                FWidth, FHeight));
             end;
         end;
         gBack2.Free;
@@ -312,6 +303,29 @@ begin
   DeleteDC(MemHDC);
 end;
 
+function TGDIDrawLyric.GetTextWidth(fz:Integer; Str: WideString):Integer;
+var
+  Path: TGPGraphicsPath; FontFamily:TGPFontFamily ;  strFormat:TGPStringFormat;
+  rcBound:TGPRectF;   Pen: TGPPen;
+begin
+  FontFamily := TGPFontFamily.Create(FFontName);
+  strFormat := TGPStringFormat.Create();
+  strFormat.SetFormatFlags(StringFormatFlagsNoWrap);
+  strFormat.SetAlignment(StringAlignmentNear);
+  Path := TGPGraphicsPath.Create();
+  Pen := TGPPen.Create();
+  Pen.SetWidth(3);
+
+  Path.AddString(Str, -1, FontFamily, 1, fz , MakePoint(0.0, 0.0), strFormat);
+
+  Path.GetBounds(rcBound,nil,Pen);
+  Result := Round(rcBound.Width);
+
+  FontFamily.Free;
+  strFormat.Free;
+  Pen.Free;
+  Path.Free;
+end;
 
 end.
 
