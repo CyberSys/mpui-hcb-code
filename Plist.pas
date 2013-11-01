@@ -412,7 +412,7 @@ procedure TLyric.ClearLyric;
 begin
   if length(LyricTime) > 0 then begin
     SetLength(LyricTime, 0);
-    if Assigned(LyricShowForm) then LyricShowForm.DisplayLyricD('','');
+    if Assigned(LyricShowForm) then GDILyric.DisplayLyricD('','');
     case HaveLyric of
       1: if LyricStringsW <> nil then LyricStringsW.Free;
       2: if LyricStringsA <> nil then LyricStringsA.Free;
@@ -1111,8 +1111,8 @@ begin
       CurLyric := 0; NextLyric := 0;
       TY := 0; dt:=0;
       if dlod then begin
-        if LyricCount=0 then LyricShowForm.DisplayLyricD(GetLyricString(0),'')
-        else LyricShowForm.DisplayLyricD(GetLyricString(0),GetLyricString(1));
+        if LyricCount=0 then GDILyric.DisplayLyricD(GetLyricString(0),'')
+        else GDILyric.DisplayLyricD(GetLyricString(0),GetLyricString(1));
       end;
     end;
     exit;
@@ -1123,8 +1123,8 @@ begin
       TY:=-CurLyric*ItemHeight;  dt:=0;
 
       if dlod then begin
-        if CurLyric mod 2 = 0 then LyricShowForm.DisplayLyricD(GetLyricString(CurLyric),'')
-        else LyricShowForm.DisplayLyricD(GetLyricString(CurLyric-1),GetLyricString(CurLyric));
+        if CurLyric mod 2 = 0 then GDILyric.DisplayLyricD(GetLyricString(CurLyric),'')
+        else GDILyric.DisplayLyricD(GetLyricString(CurLyric-1),GetLyricString(CurLyric));
       end;
     end;
     exit;
@@ -1165,12 +1165,12 @@ begin
     dt := LyricTime[NextLyric].timecode - LyricTime[CurLyric].timecode;
   if dlod then begin
     if CurLyric mod 2 = 0 then begin
-      if CurLyric = LyricCount then LyricShowForm.DisplayLyricD(GetLyricString(CurLyric),'')
-      else LyricShowForm.DisplayLyricD(GetLyricString(CurLyric),GetLyricString(NextLyric));
+      if CurLyric = LyricCount then GDILyric.DisplayLyricD(GetLyricString(CurLyric),'')
+      else GDILyric.DisplayLyricD(GetLyricString(CurLyric),GetLyricString(NextLyric));
     end
     else begin
-      if CurLyric = LyricCount then LyricShowForm.DisplayLyricD(GetLyricString(CurLyric-1),GetLyricString(CurLyric))
-      else LyricShowForm.DisplayLyricD(GetLyricString(NextLyric),GetLyricString(CurLyric));
+      if CurLyric = LyricCount then GDILyric.DisplayLyricD(GetLyricString(CurLyric-1),GetLyricString(CurLyric))
+      else GDILyric.DisplayLyricD(GetLyricString(NextLyric),GetLyricString(CurLyric));
     end;
   end;
 end;
@@ -1776,23 +1776,23 @@ begin
   if Assigned(LyricShowForm) then begin
     GDILyric.FontName := LyricF;
     if HaveLyric = 0 then exit;
-    GDILyric.FontHeight := LyricShowForm.GetFontHeight(LyricF);
+    GDILyric.FontHeight := GDILyric.GetFontHeight;
     if MSecPos < Lyric.LyricTime[0].timecode then begin
-      if LyricCount=0 then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(0),'')
-      else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(0),Lyric.GetLyricString(1));
+      if LyricCount=0 then GDILyric.DisplayLyricD(Lyric.GetLyricString(0),'')
+      else GDILyric.DisplayLyricD(Lyric.GetLyricString(0),Lyric.GetLyricString(1));
     end;
     if MSecPos > Lyric.LyricTime[LyricCount].timecode then begin
-      if CurLyric mod 2 = 0 then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric),'')
-      else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric-1),Lyric.GetLyricString(CurLyric));
+      if CurLyric mod 2 = 0 then GDILyric.DisplayLyricD(Lyric.GetLyricString(CurLyric),'')
+      else GDILyric.DisplayLyricD(Lyric.GetLyricString(CurLyric-1),Lyric.GetLyricString(CurLyric));
     end;
     if (MSecPos >= Lyric.LyricTime[CurLyric].timecode) and (MSecPos <= Lyric.LyricTime[NextLyric].timecode) then begin
       if CurLyric mod 2 = 0 then begin
-        if CurLyric = LyricCount then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric),'')
-        else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric),Lyric.GetLyricString(NextLyric));
+        if CurLyric = LyricCount then GDILyric.DisplayLyricD(Lyric.GetLyricString(CurLyric),'')
+        else GDILyric.DisplayLyricD(Lyric.GetLyricString(CurLyric),Lyric.GetLyricString(NextLyric));
       end
       else begin
-        if CurLyric = LyricCount then LyricShowForm.DisplayLyricD(Lyric.GetLyricString(CurLyric-1),Lyric.GetLyricString(CurLyric))
-        else LyricShowForm.DisplayLyricD(Lyric.GetLyricString(NextLyric),Lyric.GetLyricString(CurLyric));
+        if CurLyric = LyricCount then GDILyric.DisplayLyricD(Lyric.GetLyricString(CurLyric-1),Lyric.GetLyricString(CurLyric))
+        else GDILyric.DisplayLyricD(Lyric.GetLyricString(NextLyric),Lyric.GetLyricString(CurLyric));
       end;
     end;
   end;

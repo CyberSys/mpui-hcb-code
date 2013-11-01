@@ -12,14 +12,11 @@ unit LyricShow;
 interface
 
 uses
-  Windows, Classes, ExtCtrls, Forms, GDILyrics, GDIPOBJ, GDIPAPI, Math, TntGraphics;
+  Windows, Classes, ExtCtrls, Forms, GDILyrics;
 type
   TLyricShowForm = class(TForm)
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure DisplayLyricS(fs: WideString);
-    procedure DisplayLyricD(fs, ns: WideString);
-    function GetFontHeight(f: string): Integer;
   private
     { Private declarations }
   public
@@ -33,32 +30,13 @@ var
 
 implementation
 
-uses plist, core;
+uses core;
 
 {$R *.dfm}
-
-function TLyricShowForm.GetFontHeight(f: string): Integer;
-var s: WideString; w:Integer;
-begin
-  Canvas.Font.Name := f;
-  s := Lyric.GetLyricString(MaxLenLyric);
-  w:=GDILyric.GetTextWidth(Canvas.Font.Size,s);
-  if w > width then
-    repeat
-      Canvas.Font.Size := Canvas.Font.Size - 1;
-    until (GDILyric.GetTextWidth(Canvas.Font.Size,s) <= width) or (Canvas.Font.Size<=2)
-  else if w < width then
-    repeat
-      Canvas.Font.Size := Canvas.Font.Size + 1;
-    until (GDILyric.GetTextWidth(Canvas.Font.Size,s) >= width) or (Canvas.Font.Size>=35);
-  if GDILyric.GetTextWidth(Canvas.Font.Size,s) > width then Canvas.Font.Size := Canvas.Font.Size - 1;
-  Result := Canvas.Font.Size -1;
-end;
 
 procedure TLyricShowForm.FormCreate(Sender: TObject);
 begin
   ParentWindow := GetDesktopWindow;
-  SetWindowPos(Self.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE);
   GDILyric := TGDIDrawLyric.Create(Handle);
   Width := CurMonitor.Width;
   Height := 140;
@@ -71,25 +49,6 @@ end;
 procedure TLyricShowForm.FormDestroy(Sender: TObject);
 begin
   GDILyric.Free;
-end;
-
-procedure TLyricShowForm.DisplayLyricS(fs: WideString);
-begin
-  GDILyric.ShowFlags := sfSingle; GDILyric.Position:=0;
-  GDILyric.FirstString := fs;
-  GDILyric.FirstStrWidth := GDILyric.GetTextWidth(Canvas.Font.Size,fs);
-  GDILyric.DrawLyricBitmapFirst();
-end;
-
-procedure TLyricShowForm.DisplayLyricD(fs, ns: WideString);
-begin
-  GDILyric.ShowFlags := sfDouble; GDILyric.Position:=0;
-  GDILyric.FirstString := fs;
-  GDILyric.FirstStrWidth := GDILyric.GetTextWidth(Canvas.Font.Size,fs);
-  GDILyric.DrawLyricBitmapFirst();
-  GDILyric.NextString := ns;
-  GDILyric.NextStrWidth := GDILyric.GetTextWidth(Canvas.Font.Size,ns);
-  GDILyric.DrawLyricBitmapNext();
 end;
 
 end.
