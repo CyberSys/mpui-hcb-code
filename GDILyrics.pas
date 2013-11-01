@@ -361,9 +361,9 @@ begin
     until (GetTextWidth(s) <= Fwidth) or (FontHeight<=2)
   else if w < Fwidth then begin
     repeat
-      inc(FFontHeight);
-    until (GetTextWidth(s) >= Fwidth) or (FontHeight>=35);
-    if GetTextWidth(s) > Fwidth then dec(FFontHeight);
+      inc(FFontHeight); w:=GetTextWidth(s);
+    until (w >= Fwidth) or (FontHeight>=45);
+    if w > Fwidth then dec(FFontHeight);
   end;
   Result := FontHeight;
 end;
