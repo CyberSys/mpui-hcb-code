@@ -124,7 +124,7 @@ begin
   Graphics.SetSmoothingMode(SmoothingModeAntiAlias);
   Graphics.SetInterpolationMode(InterpolationModeHighQualityBicubic);
   FontFamily := TGPFontFamily.Create(FontName);
-  strFormat := TGPStringFormat.Create();
+  strFormat := TGPStringFormat.Create(TGPStringFormat.GenericTypographic);
   strFormat.SetFormatFlags(StringFormatFlagsNoWrap);
   strFormat.SetAlignment(StringAlignmentNear);
   Path := TGPGraphicsPath.Create();
@@ -297,7 +297,7 @@ var
   rcBound:TGPRectF;   Pen: TGPPen;
 begin
   FontFamily := TGPFontFamily.Create(FFontName);
-  strFormat := TGPStringFormat.Create();
+  strFormat := TGPStringFormat.Create(TGPStringFormat.GenericTypographic);
   strFormat.SetFormatFlags(StringFormatFlagsNoWrap);
   strFormat.SetAlignment(StringAlignmentNear);
   Path := TGPGraphicsPath.Create();
@@ -336,22 +336,22 @@ end;
 
 
 procedure TGDIDrawLyric.GetFontHeight;
-var s: WideString; w:Integer;
+var s: WideString; w,h:Integer;
 begin
   s := Lyric.GetLyricString(MaxLenLyric);
-  w:=GetTextWidth(s);
+  w:=GetTextWidth(s) + FFontHeight; h:=FHeight div 2 - 5;
   if w > Fwidth then
     repeat
-      dec(FFontHeight);
-    until (GetTextWidth(s) <= Fwidth) or (FontHeight<=2)
+      dec(FFontHeight); w:=GetTextWidth(s);
+    until (w <= Fwidth) or (FFontHeight<=2)
   else if w < Fwidth then begin
     repeat
       inc(FFontHeight); w:=GetTextWidth(s);
-    until (w >= Fwidth) or (FontHeight>=45);
+    until (w >= Fwidth) or (FFontHeight>=h);
     if w > Fwidth then dec(FFontHeight);
   end;
   if FFontHeight<2 then FFontHeight:=2
-  else if FFontHeight>45 then FFontHeight:=45;
+  else if FFontHeight>h then FFontHeight:=h;
 end;
 
 end.
