@@ -1776,7 +1776,7 @@ begin
   if Assigned(LyricShowForm) then begin
     GDILyric.FontName := LyricF;
     if HaveLyric = 0 then exit;
-    GDILyric.FontHeight := GDILyric.GetFontHeight;
+    GDILyric.GetFontHeight;
     if MSecPos < Lyric.LyricTime[0].timecode then begin
       if LyricCount=0 then GDILyric.DisplayLyricD(Lyric.GetLyricString(0),'')
       else GDILyric.DisplayLyricD(Lyric.GetLyricString(0),Lyric.GetLyricString(1));

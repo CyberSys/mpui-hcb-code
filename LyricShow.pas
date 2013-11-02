@@ -43,7 +43,7 @@ begin
   Left := CurMonitor.Left;
   Top := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom
     - CurMonitor.WorkareaRect.Top - Height;
-  GDILyric.SetWidthAndHeight(Width, Height);
+  GDILyric.SetWidthAndHeight(Width - 10, Height);
 end;
 
 procedure TLyricShowForm.FormDestroy(Sender: TObject);

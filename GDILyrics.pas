@@ -64,7 +64,7 @@ type
     function GetTextWidth(Str: WideString):Integer;
     procedure DisplayLyricS(fs: WideString);
     procedure DisplayLyricD(fs, ns: WideString);
-    function GetFontHeight: Integer;
+    procedure GetFontHeight;
 
     property ShowFlags: TGDIShowFlags read FShowFlags write SetSingleOrDoubleLine;
     property FirstString: widestring read FFirstStr write FFirstStr;
@@ -128,30 +128,24 @@ begin
   strFormat.SetFormatFlags(StringFormatFlagsNoWrap);
   strFormat.SetAlignment(StringAlignmentNear);
   Path := TGPGraphicsPath.Create();
-  Path.AddString(AStr, -1, FontFamily, 1, FontHeight-1,
-    MakePoint(3.0, 3.0), strFormat);
+  Path.AddString(AStr, -1, FontFamily, 1, FontHeight-1, MakePoint(3.0, 3.0), strFormat);
   Pen := TGPPen.Create(MakeColor(155, 215, 215, 215), 3);
   Pen.SetColor(MakeColor(65, 1, 3, 3));
   Pen.SetLineJoin(LineJoinRound);
   Graphics.DrawPath(Pen, Path);
 
-  Brush := TGPLinearGradientBrush.Create(MakePoint(0.0, 0.0),
-    MakePoint(0.0, FontHeight + 9), StartColor, EndColor);
+  Brush := TGPLinearGradientBrush.Create(MakePoint(0.0, 0.0), MakePoint(0.0, FontHeight + 9), StartColor, EndColor);
   case ForeColor of
-    True:
-      begin
-        for I := 0 to 3 do
-        begin
-          Pen.SetWidth(I);
-          Graphics.DrawPath(Pen, Path);
-        end;
-      end;
-
-    False:
-      begin
-        Pen.SetWidth(0);
-        Graphics.DrawPath(Pen, Path);
-      end;
+    True: begin
+            for I := 0 to 3 do begin
+              Pen.SetWidth(I);
+              Graphics.DrawPath(Pen, Path);
+            end;
+          end;
+   False: begin
+            Pen.SetWidth(0);
+            Graphics.DrawPath(Pen, Path);
+          end;
   end;
 
   Graphics.FillPath(Brush, Path);
@@ -196,7 +190,7 @@ procedure TGDIDrawLyric.SetFont(FontName: string);
 begin
   FFontName := FontName;
   if HaveLyric = 0 then exit;
-  FFontHeight := GetFontHeight;
+  GetFontHeight;
   FirstStrWidth := GetTextWidth(FirstString);
   DrawLyricBitmapFirst();
   if FShowFlags = sfDouble then begin
@@ -260,25 +254,19 @@ begin
         TmpLeft2 := FWidth / 2;
         TmpLeft := TmpLeft2 - FStrWidth1;
         if TmpLeft < 0 then TmpLeft := 0;
-        gBack.DrawImage(FBackImage, MakeRect(TmpLeft, 11, FWidth, FHeight));
+        gBack.DrawImage(FBackImage, MakeRect(TmpLeft, 0, FWidth, FHeight));
 
         if (TmpLeft2 + FStrWidth2) > FWidth then TmpLeft2 := FWidth - FStrWidth2;
         gBack2 := TGPGraphics.Create(MemHDC);
-        gBack2.DrawImage(FBackImage2, MakeRect(TmpLeft2,
-          FHeight - FFontHeight - 10, FWidth, FHeight));
+        gBack2.DrawImage(FBackImage2, MakeRect(TmpLeft2, FHeight - FFontHeight - 10, FWidth, FHeight));
         case FDrawMod of
-          0:
-            begin
-              gFore.SetClip(MakeRect(TmpLeft, 10, FPosition, FHeight));
-              gFore.DrawImage(FForeImage, MakeRect(TmpLeft, 10, FWidth, FHeight));
+         0: begin
+              gFore.SetClip(MakeRect(TmpLeft, 0, FPosition, FHeight));
+              gFore.DrawImage(FForeImage, MakeRect(TmpLeft, 0, FWidth, FHeight));
             end;
-          1:
-            begin
-              gFore.SetClip(MakeRect(TmpLeft2, FHeight - FFontHeight - 10,
-                FPosition, FHeight));
-              gFore.DrawImage(FForeImage2, MakeRect(TmpLeft2,
-                FHeight - FFontHeight - 10,
-                FWidth, FHeight));
+         1: begin
+              gFore.SetClip(MakeRect(TmpLeft2, FHeight - FFontHeight - 10,FPosition, FHeight));
+              gFore.DrawImage(FForeImage2, MakeRect(TmpLeft2,FHeight - FFontHeight - 10, FWidth, FHeight));
             end;
         end;
         gBack2.Free;
@@ -291,16 +279,13 @@ begin
   Winsize.cx := FWidth;
   Winsize.cy := FHeight;
   SrcPoint := Point(0, 0);
-  with blend do
-  begin
+  with blend do begin
     BlendOp := AC_SRC_OVER;
     BlendFlags := 0;
     AlphaFormat := AC_SRC_ALPHA;
     SourceConstantAlpha := 255;
   end;
-  UpdateLyricShowForm(FHandle, FormHDC, nil, @Winsize, MemHDC, @SrcPoint,
-    0, @blend, ULW_ALPHA);
-
+  UpdateLyricShowForm(FHandle, FormHDC, nil, @Winsize, MemHDC, @SrcPoint, 0, @blend, ULW_ALPHA);
   ReleaseDC(FHandle, FormHDC);
   DeleteObject(hBitMap);
   DeleteDC(MemHDC);
@@ -350,7 +335,7 @@ begin
 end;
 
 
-function TGDIDrawLyric.GetFontHeight: Integer;
+procedure TGDIDrawLyric.GetFontHeight;
 var s: WideString; w:Integer;
 begin
   s := Lyric.GetLyricString(MaxLenLyric);
@@ -365,7 +350,8 @@ begin
     until (w >= Fwidth) or (FontHeight>=45);
     if w > Fwidth then dec(FFontHeight);
   end;
-  Result := FontHeight;
+  if FFontHeight<2 then FFontHeight:=2
+  else if FFontHeight>45 then FFontHeight:=45;
 end;
 
 end.
