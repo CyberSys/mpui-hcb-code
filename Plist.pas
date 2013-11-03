@@ -99,6 +99,7 @@ type TLyric = class
     procedure ClearLyric;
     procedure DownloadLyric;
     function GetLyricString(i:Integer):WideString;
+    function GetMaxLyricString(i:Integer):WideString;
     constructor Create; overload;
     destructor Destroy; override;
   end;
@@ -1915,6 +1916,31 @@ begin
   end;
 end;
 
+function TLyric.GetMaxLyricString(i:Integer):WideString;
+var f:WideString; k: string;
+begin
+  Result:='';
+  if HaveLyric = 1 then begin
+    if LyricStringsW = nil then exit;
+    Result := LyricStringsW[i];
+    if PlaylistForm.MG2B.Checked then begin
+      f := Result;
+      LCMapStringW(GetUserDefaultLCID, LCMAP_TRADITIONAL_CHINESE, PWChar(f), length(f), PWChar(Result), length(Result));
+    end;
+    if PlaylistForm.MB2G.Checked then begin
+      f := Result;
+      LCMapStringW(GetUserDefaultLCID, LCMAP_SIMPLIFIED_CHINESE, PWChar(f), length(f), PWChar(Result), length(Result));
+    end;
+  end
+  else begin
+    if LyricStringsA = nil then exit;
+    k := LyricStringsA[i];
+    if PlaylistForm.MG2B.Checked then k := Gb2Big5(k);
+    if PlaylistForm.MB2G.Checked then k := Big52Gb(k);
+    Result := StringToWideStringEx(k, CP);
+  end;
+end;
+
 procedure TLyric.Draw;
 var s: WideString; L, T, j, i, d: integer;
 begin
@@ -1945,7 +1971,7 @@ begin
     WideCanvasTextOut(BitMap.Canvas, L,  j, s);
     if UpdatePW then begin
       UpdatePW := false;
-      s:= GetLyricString(MaxLenLyric);
+      s:= GetMaxLyricString(MaxLenLyric);
       j := 10 + WideCanvasTextWidth(BitMap.Canvas, s) + PlaylistForm.width - PlaylistForm.TMLyric.Width;
       if j > CurMonitor.Width then j := CurMonitor.Width;
       if j < PlaylistForm.Constraints.MinWidth then j := PlaylistForm.Constraints.MinWidth;

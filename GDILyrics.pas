@@ -333,7 +333,7 @@ end;
 procedure TGDIDrawLyric.GetFontHeight;
 var s: WideString; w,h:Single;
 begin
-  s := Lyric.GetLyricString(MaxLenLyric);
+  s := Lyric.GetMaxLyricString(MaxLenLyric);
   h:=FHeight / 2 - 5; w:= GetTextWidth(s);
   if w > Fwidth then
     repeat
