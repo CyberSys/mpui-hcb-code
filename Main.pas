@@ -1337,12 +1337,14 @@ begin
   end;
   CurMonitor := Screen.MonitorFromWindow(Handle);
   if CurMonitor = nil then begin
+    CurMonitor := Screen.Monitors[0];
     if Width > Screen.Width then Width := Screen.Width;
     if Height > Screen.Height then Height := Screen.Height;
     if (Left < 0) or (Left > Screen.Width) then Left := (Screen.Width - Width) div 2;
     if (Top < 0) or (Top > Screen.Height) then Top := (Screen.Height - Height) div 2;
     if Assigned(LyricShowForm) then begin
       LyricShowForm.Left := 0;
+      LyricShowForm.Height:=Screen.WorkAreaHeight*140 div 770;
       LyricShowForm.Top := Screen.WorkAreaHeight - LyricShowForm.Height;
       LyricShowForm.Width := Screen.Width;
       GDILyric.SetWidthAndHeight(LyricShowForm.Width, LyricShowForm.Height);
@@ -1357,8 +1359,8 @@ begin
       if Wid and Win32PlatformIsUnicode and IsDx then Restart;
       if Assigned(LyricShowForm) then begin
         LyricShowForm.Left := CurMonitor.Left;
-        LyricShowForm.Top := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom
-          - CurMonitor.WorkareaRect.Top - LyricShowForm.Height;
+        LyricShowForm.Height:=(CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)*140 div 770;
+        LyricShowForm.Top := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - LyricShowForm.Height;
         LyricShowForm.Width := MonitorW;
         GDILyric.SetWidthAndHeight(LyricShowForm.Width, LyricShowForm.Height);
       end;
@@ -1374,8 +1376,8 @@ begin
       if Wid and Win32PlatformIsUnicode and IsDx then Restart;
       if Assigned(LyricShowForm) then begin
         LyricShowForm.Left := CurMonitor.Left;
-        LyricShowForm.Top := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom
-          - CurMonitor.WorkareaRect.Top - LyricShowForm.Height;
+        LyricShowForm.Height:=(CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)*140 div 770;
+        LyricShowForm.Top := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - LyricShowForm.Height;
         LyricShowForm.Width := MonitorW;
         GDILyric.SetWidthAndHeight(LyricShowForm.Width, LyricShowForm.Height);
       end;

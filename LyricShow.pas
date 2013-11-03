@@ -39,7 +39,7 @@ begin
   ParentWindow := GetDesktopWindow;
   GDILyric := TGDIDrawLyric.Create(Handle);
   Width := CurMonitor.Width;
-  Height := 140;
+  Height := (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)*140 div 770;
   Left := CurMonitor.Left;
   Top := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom
     - CurMonitor.WorkareaRect.Top - Height;

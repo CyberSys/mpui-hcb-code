@@ -1134,8 +1134,8 @@ begin
     d:=  MSecPos - Lyric.LyricTime[CurLyric].timecode;
     l := d * ItemHeight div dt;
     if dlod then begin
-      if CurLyric mod 2 = 0 then GDILyric.SetPositionAndFlags(d * GDILyric.FirstStrWidth div dt, 0)
-      else GDILyric.SetPositionAndFlags(d * GDILyric.NextStrWidth div dt, 1);
+      if CurLyric mod 2 = 0 then GDILyric.SetPositionAndFlags(d * GDILyric.FirstStrWidth / dt, 0)
+      else GDILyric.SetPositionAndFlags(d * GDILyric.NextStrWidth / dt, 1);
     end;
   end
   else l:= 0;

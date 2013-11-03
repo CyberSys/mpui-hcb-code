@@ -22,7 +22,7 @@ type
   TGDIDrawLyric = class(TObject)
   private
     FHandle: HWND;
-    FFontHeight: Integer;
+    FFontHeight: Single;
     FFontName: string;
     FBackColor1,
       FBackColor2,
@@ -36,8 +36,7 @@ type
     FLyricBackImage: TGPImage;
 
     FWidth, FHeight: Integer;
-    FStrWidth1,
-      FStrWidth2: Integer;
+    FStrWidth1, FStrWidth2: Single;
 
     FShowFlags: TGDIShowFlags;
 
@@ -45,13 +44,12 @@ type
     FDrawMod: Integer;
 
     // 首行\第二行字符
-    FFirstStr,
-      FNextStr: widestring;
+    FFirstStr,FNextStr: widestring;
 
     procedure SetSingleOrDoubleLine(Value: TGDIShowFlags);
     procedure UpdateDisplay;
     procedure DrawStrToImage(var DestBitmap: TGPBitmap; AStr, FontName: widestring;
-      StartColor, EndColor: TGPColor; FontHeight: Integer; ForeColor: Boolean);
+      StartColor, EndColor: TGPColor; FontHeight: Single; ForeColor: Boolean);
   public
     constructor Create(Handle: HWND);
     destructor Destroy; override;
@@ -61,7 +59,7 @@ type
     procedure SetFont(FontName: string);
     procedure SetPositionAndFlags(Position: Single = 0.0; DrawMod: Integer = 0);
     procedure SetWidthAndHeight(AWidth, AHeight: Integer);
-    function GetTextWidth(Str: WideString):Integer;
+    function GetTextWidth(Str: WideString):Single;
     procedure DisplayLyricS(fs: WideString);
     procedure DisplayLyricD(fs, ns: WideString);
     procedure GetFontHeight;
@@ -69,11 +67,11 @@ type
     property ShowFlags: TGDIShowFlags read FShowFlags write SetSingleOrDoubleLine;
     property FirstString: widestring read FFirstStr write FFirstStr;
     property NextString: widestring read FNextStr write FNextStr;
-    property FirstStrWidth: Integer read FStrWidth1 write FStrWidth1;
-    property NextStrWidth: Integer read FStrWidth2 write FStrWidth2;
+    property FirstStrWidth: Single read FStrWidth1 write FStrWidth1;
+    property NextStrWidth: Single read FStrWidth2 write FStrWidth2;
     property Position: Single read FPosition write FPosition;
     property FontName: String read FFontName write FFontName;
-    property FontHeight: Integer read FFontHeight write FFontHeight;
+    property FontHeight: Single read FFontHeight write FFontHeight;
   end;
 
 
@@ -108,7 +106,7 @@ begin
 end;
 
 procedure TGDIDrawLyric.DrawStrToImage(var DestBitmap: TGPBitmap; AStr,FontName: widestring;
-  StartColor, EndColor: TGPColor; FontHeight: Integer; ForeColor: Boolean);
+  StartColor, EndColor: TGPColor; FontHeight: Single; ForeColor: Boolean);
 
 var
   Graphics: TGPGraphics;
@@ -128,13 +126,13 @@ begin
   strFormat.SetFormatFlags(StringFormatFlagsNoWrap);
   strFormat.SetAlignment(StringAlignmentNear);
   Path := TGPGraphicsPath.Create();
-  Path.AddString(AStr, -1, FontFamily, 1, FontHeight-1, MakePoint(3.0, 3.0), strFormat);
+  Path.AddString(AStr, -1, FontFamily, 1, FontHeight - 1, MakePoint(3.0, 3.0), strFormat);
   Pen := TGPPen.Create(MakeColor(155, 215, 215, 215), 3);
   Pen.SetColor(MakeColor(65, 1, 3, 3));
   Pen.SetLineJoin(LineJoinRound);
   Graphics.DrawPath(Pen, Path);
 
-  Brush := TGPLinearGradientBrush.Create(MakePoint(0.0, 0.0), MakePoint(0.0, FontHeight + 9), StartColor, EndColor);
+  Brush := TGPLinearGradientBrush.Create(MakePoint(0.0, 0.0), MakePoint(0.0, FontHeight + 18), StartColor, EndColor);
   case ForeColor of
     True: begin
             for I := 0 to 3 do begin
@@ -291,10 +289,10 @@ begin
   DeleteDC(MemHDC);
 end;
 
-function TGDIDrawLyric.GetTextWidth(Str: WideString):Integer;
+function TGDIDrawLyric.GetTextWidth(Str: WideString):Single;
 var
   Path: TGPGraphicsPath; FontFamily:TGPFontFamily ;  strFormat:TGPStringFormat;
-  rcBound:TGPRectF;   Pen: TGPPen;
+  Pen: TGPPen; r:TGPRectF;
 begin
   FontFamily := TGPFontFamily.Create(FFontName);
   strFormat := TGPStringFormat.Create(TGPStringFormat.GenericTypographic);
@@ -303,12 +301,9 @@ begin
   Path := TGPGraphicsPath.Create();
   Pen := TGPPen.Create();
   Pen.SetWidth(3);
-
   Path.AddString(Str, -1, FontFamily, 1, FFontHeight , MakePoint(0.0, 0.0), strFormat);
-
-  Path.GetBounds(rcBound,nil,Pen);
-  Result := Round(rcBound.Width);
-
+  Path.GetBounds(r,nil,Pen);
+  Result:= r.Width;
   FontFamily.Free;
   strFormat.Free;
   Pen.Free;
@@ -336,19 +331,19 @@ end;
 
 
 procedure TGDIDrawLyric.GetFontHeight;
-var s: WideString; w,h:Integer;
+var s: WideString; w,h:Single;
 begin
   s := Lyric.GetLyricString(MaxLenLyric);
-  w:=GetTextWidth(s) + FFontHeight; h:=FHeight div 2 - 5;
+  h:=FHeight / 2 - 5; w:= GetTextWidth(s);
   if w > Fwidth then
     repeat
-      dec(FFontHeight); w:=GetTextWidth(s);
+      FFontHeight:=FFontHeight - 1; w:= GetTextWidth(s);
     until (w <= Fwidth) or (FFontHeight<=2)
   else if w < Fwidth then begin
     repeat
-      inc(FFontHeight); w:=GetTextWidth(s);
+      FFontHeight:=FFontHeight + 1; w:= GetTextWidth(s);
     until (w >= Fwidth) or (FFontHeight>=h);
-    if w > Fwidth then dec(FFontHeight);
+    if w > Fwidth then FFontHeight:=FFontHeight - 1;
   end;
   if FFontHeight<2 then FFontHeight:=2
   else if FFontHeight>h then FFontHeight:=h;
