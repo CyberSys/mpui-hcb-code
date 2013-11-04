@@ -1927,6 +1927,7 @@ object OptionsForm: TOptionsForm
           'TDFUnRar <dfrischalowski@del-net.com>'
           'TSevenZipVCL <http://www.rg-software.de>'
           'Interface to 7-zip32.dll <dominic@psas.co.za>'
+          'GDI+ Lyric <yuanfen3287@vip.qq.com>'
           ''
           'Contibuted translations:'
           'French by Francois Gagne <frenchfrog@gmail.com>'
