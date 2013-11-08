@@ -121,7 +121,7 @@ begin
   strFormat.SetFormatFlags(StringFormatFlagsNoWrap);
   strFormat.SetAlignment(StringAlignmentNear);
   Path := TGPGraphicsPath.Create();
-  Path.AddString(AStr, -1, FontFamily, 1, FontHeight - 1, MakePoint(0.0, 0.0), strFormat);
+  Path.AddString(AStr, -1, FontFamily, 1, FontHeight, MakePoint(0.0, 0.0), strFormat);
   Pen := TGPPen.Create(MakeColor(155, 215, 215, 215), 3);
   Pen.SetColor(MakeColor(65, 1, 3, 3));
   Pen.SetLineJoin(LineJoinRound);
@@ -153,6 +153,7 @@ end;
 
 procedure TGDIDrawLyric.DrawLyricBitmapFirst;
 begin
+  FStrWidth1 := FStrWidth1 + FFontHeight;
   if Assigned(FBackImage) then FBackImage.Free;
   FBackImage := TGPBitmap.Create(FStrWidth1, RowHeight);
   DrawStrToImage(FBackImage, FFirstStr, FFontName, FBackColor1, FBackColor2,
@@ -167,6 +168,7 @@ end;
 
 procedure TGDIDrawLyric.DrawLyricBitmapNext;
 begin
+  FStrWidth2 := FStrWidth2 + FFontHeight;
   if Assigned(FBackImage2) then FBackImage2.Free;
   FBackImage2 := TGPBitmap.Create(FStrWidth2, RowHeight);
   DrawStrToImage(FBackImage2, FNextStr, FFontName, FBackColor1, FBackColor2,
@@ -330,14 +332,14 @@ procedure TGDIDrawLyric.GetFontHeight;
 var s: WideString; w:Integer;
 begin
   s := Lyric.GetMaxLyricString(MaxLenLyric);
-  w:= GetTextWidth(s);
+  w:= GetTextWidth(s) + FFontHeight;
   if w > Fwidth then
     repeat
-      FFontHeight:=FFontHeight - 1; w:= GetTextWidth(s);
+      FFontHeight:=FFontHeight - 1; w:= GetTextWidth(s) + FFontHeight;
     until (w <= Fwidth) or (FFontHeight<=2)
   else if w < Fwidth then begin
     repeat
-      FFontHeight:=FFontHeight + 1; w:= GetTextWidth(s);
+      FFontHeight:=FFontHeight + 1; w:= GetTextWidth(s) + FFontHeight;
     until (w >= Fwidth) or (FFontHeight>=RowHeight);
     if w > Fwidth then FFontHeight:=FFontHeight - 1;
   end;
