@@ -2231,15 +2231,15 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
           end;
         4: begin
             if (Eq2 = LastEq2) and (Dda = LastDda) then begin
-              if (contr <> 101) and (contr > contrD) then
+              if (contr <> 101) and (contr <> contrD) then
                 SendCommand('set_property contrast ' + IntToStr(contr));
-              if (bri <> 101) and (bri > briD) then
+              if (bri <> 101) and (bri <> briD) then
                 SendCommand('set_property brightness ' + IntToStr(bri));
-              if (hu <> 101) and (hu > huD) then
+              if (hu <> 101) and (hu <> huD) then
                 SendCommand('set_property hue ' + IntToStr(hu));
-              if (sat <> 101) and (sat > satD) then
+              if (sat <> 101) and (sat <> satD) then
                 SendCommand('set_property saturation ' + IntToStr(sat));
-              if Eq2 and (not Dda) and (gam <> 101) and (gam > gamD) then
+              if Eq2 and (not Dda) and (gam <> 101) and (gam <> gamD) then
                 SendCommand('set_property gamma ' + IntToStr(gam));
             end;
             if (Eq2 <> LastEq2) or (Dda <> LastDda) then begin
@@ -2488,7 +2488,7 @@ begin
             contrD := i;
             if contr = 101 then contr := i
             else begin
-              if contr > contrD then
+              if contr <> contrD then
                 SendCommand('set_property contrast ' + IntToStr(contr));
             end;
           end;
@@ -2508,7 +2508,7 @@ begin
             briD := i;
             if bri = 101 then bri := i
             else begin
-              if bri > briD then
+              if bri <> briD then
                 SendCommand('set_property brightness ' + IntToStr(bri));
             end;
           end;
@@ -2528,7 +2528,7 @@ begin
             huD := i;
             if hu = 101 then hu := i
             else begin
-              if hu > huD then
+              if hu <> huD then
                 SendCommand('set_property hue ' + IntToStr(hu));
             end;
           end;
@@ -2548,7 +2548,7 @@ begin
             satD := i;
             if sat = 101 then sat := i
             else begin
-              if sat > satD then
+              if sat <> satD then
                 SendCommand('set_property saturation ' + IntToStr(sat));
             end;
           end;
@@ -2568,7 +2568,7 @@ begin
             gamD := i;
             if gam = 101 then gam := i
             else begin
-              if gam > gamD then
+              if gam <> gamD then
                 SendCommand('set_property gamma ' + IntToStr(gam));
             end;
           end;
