@@ -1772,9 +1772,10 @@ begin
         TntCP.Items[i].Items[j].Items[k].Checked := false;
     end;
   end;
+  (Sender as TTntMenuItem).Checked := true;
   UpdatePW := True;
   TMLyricPaint(nil);
-  if Assigned(LyricShowForm) then begin
+  if dlod then begin
     GDILyric.FontName := LyricF;
     if HaveLyric = 0 then exit;
     GDILyric.GetFontHeight;
@@ -1797,7 +1798,6 @@ begin
       end;
     end;
   end;
-  (Sender as TTntMenuItem).Checked := true;
 end;
 
 procedure TPlaylistForm.CLyricFChange(Sender: TObject);
