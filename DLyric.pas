@@ -105,7 +105,7 @@ SearchPath: array[0..2] of string = (
     'http://ttlrcct.qianqian.com/dll/lyricsvr.dll?sh?Artist=%s&Title=%s&Flags=0',
     'http://ttlrccnc.qianqian.com/dll/lyricsvr.dll?sh?Artist=%s&Title=%s&Flags=0',
   //'<?xml version="1.0" encoding=''utf-8''?><search filetype="lyrics" artist="%s" title="%s"/>'
-    '<?xml version=''1.0'' encoding=''utf-8'' standalone=''yes'' ?><search filetype="lyrics" artist="%s" title="%s" client="MiniLyrics" />'
+    '<?xml version=''1.0'' encoding=''utf-8'' standalone=''yes'' ?><searchV1 filetype="lyrics" artist="%s" title="%s" client="MiniLyrics" />'
     );
 
 DownloadPath : array[0..2] of string = (
