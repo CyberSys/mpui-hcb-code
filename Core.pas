@@ -2814,7 +2814,7 @@ begin
   ReIndex := false; SoftVol := false; RFScr := false; ni := false; Dnav := true; Fol := 2;
   dbbuf := true; Dr := false; Volnorm := false; nfc := true; InterW := 4; InterH := 3;
   Params := ''; OnTop := 0; UpdateSkipBar := false; Async := false; AsyncV := '100';
-  Status := sNone; Shuffle := false; Loop := false; OneLoop := false; VideoOut := 'direct3d';
+  Status := sNone; Shuffle := false; Loop := false; OneLoop := false; VideoOut := 'Auto';
   Volume := 100; Mute := False; Duration := ''; MouseMode := 0; SubPos := Dsubpos; FSize := 4.5;
   Flip := false; Mirror := false; Yuy2 := false; Eq2 := false; LastEq2 := false; Rot := 0;
   Bp := 0; Ep := 0; FB := 2; MAspect := 'Default'; lavf := false; vsync := false;
