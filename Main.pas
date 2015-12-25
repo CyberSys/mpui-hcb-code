@@ -455,7 +455,7 @@ type
 
   private
     { Private declarations }
-    FirstShow, Seeking, CV, MV, DragD, FirstDrag: boolean;
+    FirstShow, Seeking, CV, MV: boolean;
     WStyle: longint; WheelRolled: boolean;
     FS_PX, FS_PY, FS_SX, FS_SY, lm, lw, lh, SeekMouseX, ViewMode: integer;
     HideMouseAt, UpdateSeekBarAt: Cardinal; //,ScreenSaverActive:Cardinal;
@@ -2519,7 +2519,7 @@ begin
   Vobfile := ''; substring := ''; MShowSub.Checked := true; IsDMenu := false; SMenu := true;
   AudioID := -1; SubID := -1; VideoID := -1; TID := 1; CID := 1; AID := 1; CDID := 1;
   subcount := 0; Lastsubcount := 0; CurrentSubCount := 0;
-  procArc := false; Dreset := false; ppoint.x := -1; ppoint.y := -1;
+  procArc := false; Dreset := false;
   LastPos := 0; SecondPos := -1; TotalTime := 0; Duration := '0:00:00'; ChapterLen := 0; ChaptersLen := 0;
   SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; dsEnd := false;
   AudioFile := '';
@@ -2597,7 +2597,8 @@ procedure TMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 var i, j: integer;
 begin
-  if ssCtrl in Shift then begin
+  if (ssCtrl in Shift) or (ssRight in Shift) then begin
+    IPanel.PopupMenu:=nil;    OPanel.PopupMenu:=nil;
     if core.Status = sPaused then SendCommand('seek ' + IntToStr(WheelDelta div 20))
     else begin
       SendCommand('set_property mute 1');
@@ -2706,10 +2707,8 @@ end;
 
 procedure TMainForm.DisplayClick(Sender: TObject);
 begin
-  if (pPoint.x <> -1) and (pPoint.y <> -1) then begin
-    pPoint.x := -1; pPoint.y := -1;
-    exit;
-  end;
+  if poped then
+   exit;
 
   if Running and (MouseMode > -1) then begin
     if Dnav and IsDMenu then begin
@@ -2730,56 +2729,22 @@ procedure TMainForm.DisplayMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var p: TPoint;
 begin
-  if Button = mbLeft then begin
-    FirstDrag := true;
-    if IPanel.Cursor = crHandPoint then MouseMode := 2 //Drag Subtitle
-    else if ssShift in Shift then MouseMode := 3 //Scale video
-    else if ssCtrl in Shift then MouseMode := 4 //Adjust aspect ratio
-    else if ssAlt in Shift then MouseMode := 5 //Adjust bright,contrast
-    else if ((Width <= CurMonitor.Width) or (Height <= (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)))
-      and (WindowState = wsNormal) then begin
-      GetCursorPos(p); OldX := p.X; OldY := p.Y;
-      MouseMode := 1; //Drag window
-    end;
-  end;
-
-  if Button = mbmiddle then begin
-    MFunc := (MFunc + 1) mod 2;
-    case MFunc of
-      0: SendCommand('osd_show_text "0:' + OSD_Volume_Prompt + '"');
-      1: SendCommand('osd_show_text "1:' + OSD_Size_Prompt + '"');
-    end;
-    MWheelControl.Items[MFunc].Checked := true;
-    MPWheelControl.Items[MFunc].Checked := true;
-  end;
-
-  if (Button = mbright) then begin
-    if RFScr then SimulateKey(MFullscreen)
-    else begin
-      ppoint.X := mpopup.PopupPoint.X;
-      ppoint.y := mpopup.PopupPoint.y;
-    end;
-  end;
+  poped:=false;
+  GetCursorPos(p); OldX := p.X; OldY := p.Y;
+  if IPanel.Cursor = crHandPoint then MouseMode := 2 //Drag Subtitle
+  else if (Shift=[ssMiddle]) or (Shift=[ssShift,ssLeft]) then MouseMode := 3 //Scale video
+  else if (Shift=[ssLeft,ssRight]) or (Shift=[ssCtrl,ssLeft]) then MouseMode := 4 //Adjust aspect ratio
+  else if Shift=[ssRight] then MouseMode := 5 //Seek video
+  else if ((Width <= CurMonitor.Width) or (Height <= (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)))
+       and (WindowState = wsNormal) and (Shift=[ssLeft]) then MouseMode := 1;
 end;
 
 procedure TMainForm.DisplayMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 var p: TPoint; OY, i: integer; t: boolean;
-  procedure CheckDragD;
-  begin
-    if FirstDrag then begin
-      if abs(p.X - OldX) > abs(p.Y - OldY) then begin
-        DragD := true; SetCursor(Screen.Cursors[crSizeWE]);
-      end
-      else begin
-        DragD := false; SetCursor(Screen.Cursors[crSizeNS]);
-      end;
-      FirstDrag := false;
-    end;
-  end;
-
 begin
   GetCursorPos(p);
+  if (p.X = OldX) and (p.Y = OldY) then exit; //过滤播放器的UpdateTimer定时器中防系统休眠操作触发这个函数，误触发会造成很多不可预期的鼠标操作问题
   OY := p.Y - OPanel.ClientOrigin.Y;
   if (not MPCtrl.Checked) and (MouseMode = 0) then begin
     if CPanel.Visible then t := OY < OPanel.Height
@@ -2822,7 +2787,7 @@ begin
 
   if abs(MouseMode) = 2 then begin
     MouseMode := -2; //在拖动时不进行单击、双击事件
-    if ssCtrl in shift then begin //Scale Subtitle
+    if ([ssCtrl,ssLeft]=shift) or ([ssRight]=shift) then begin //Scale Subtitle
       FSize := FSize + (p.X - OldX) / 60;
       OldX := p.X; OldY := p.Y;
       if FSize > 10 then FSize := 10; if FSize < 0.1 then FSize := 0.1;
@@ -2836,90 +2801,81 @@ begin
     end;
   end;
 
-  if abs(MouseMode) = 3 then begin
+  if abs(MouseMode) = 3 then begin   //Scale Video}
     MouseMode := -3; //在拖动时不进行单击、双击事件
-    CheckDragD;
-    if DragD then begin //Change Volumn
-      if MFunc = 0 then FormMouseWheel(nil, Shift, 20 * (p.X - OldX), p, DragD)
-      else FormMouseWheel(nil, Shift, 4 * (p.X - OldX), p, DragD); //Change Size
-    end
-    else begin //Scale Video
-      Scale := Scale + (OldY - p.Y);
-      if Scale < 100 then Scale := 100;
-      LastScale := Scale; MKaspect.Checked := true;
-      FixSize;
-    end;
+    Scale := Scale + (p.X - OldX);
+    if Scale < 100 then Scale := 100;
+    LastScale := Scale; MKaspect.Checked := true;
+    FixSize;
     OldX := p.X; OldY := p.Y;
   end;
 
   if abs(MouseMode) = 4 then begin //Ajust Aspect ratio
     MouseMode := -4; //在拖动时不进行单击、双击事件
     SetCursor(Screen.Cursors[crCross]);
-    {CheckDragD;
-    if DragD then begin }
+    IPanel.PopupMenu:=nil; OPanel.PopupMenu:=nil;
+
     if IPanel.Width >= 32 then begin
       IPanel.Left := IPanel.Left - (p.X - OldX);
       IPanel.Width := IPanel.Width + (p.X - OldX) * 2;
     end;
-   // end
-   // else begin
+
     if IPanel.Height >= 32 then begin
       IPanel.Top := IPanel.Top + (p.Y - OldY);
       IPanel.Height := IPanel.Height - (p.Y - OldY) * 2;
     end;
-   // end;
     OldX := p.X; OldY := p.Y;
   end;
 
-  if abs(MouseMode) = 5 then begin //Ajust C/B/S/H/G
-    MouseMode := -5; //在拖动时不进行单击、双击事件
-    CheckDragD;
-    if ssAlt in shift then begin
-      if DragD then begin
-        SendCommand('brightness ' + IntToStr(p.X - OldX));
-        SendCommand('osd_show_property_text "' + OSD_Brightness_Prompt + ':${brightness}"');
-      end
-      else begin
-        SendCommand('contrast ' + IntToStr(OldY - p.Y));
-        SendCommand('osd_show_property_text "' + OSD_Contrast_Prompt + ':${contrast}"');
-      end;
-    end
-    else if ssCtrl in shift then begin
-      SendCommand('gamma ' + IntToStr(p.X - OldX));
-      SendCommand('osd_show_property_text "' + OSD_Gamma_Prompt + ':${gamma}"');
-    end
-    else begin
-      if DragD then begin
-        SendCommand('saturation ' + IntToStr(p.X - OldX));
-        SendCommand('osd_show_property_text "' + OSD_Saturation_Prompt + ':${saturation}"');
-      end
-      else begin
-        SendCommand('hue ' + IntToStr(OldY - p.Y));
-        SendCommand('osd_show_property_text "' + OSD_Hue_Prompt + ':${hue}"');
-      end;
-    end;
-    OldX := p.X; OldY := p.Y;
+  if abs(MouseMode) = 5 then begin
+    MouseMode:= -5;
+    IPanel.PopupMenu:=nil; OPanel.PopupMenu:=nil;
+
   end;
 end;
 
 procedure TMainForm.DisplayMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var p: TPoint;
 begin
-  if MouseMode = -4 then begin
+  GetCursorPos(p);
+  if MouseMode = -3 then begin
     InterW := IPanel.Width; InterH := IPanel.Height;
     MKaspect.Checked := true;
     Aspect := MCustomAspect.Tag; MCustomAspect.Checked := true;
     if InterW <> 0 then NativeHeight := InterH * NativeWidth div InterW;
     FixSize;
+  end
+  else if Button=mbMiddle then begin
+    MFunc := (MFunc + 1) mod 2;
+    case MFunc of
+      0: SendCommand('osd_show_text "0:' + OSD_Volume_Prompt + '"');
+      1: SendCommand('osd_show_text "1:' + OSD_Size_Prompt + '"');
+    end;
+    MWheelControl.Items[MFunc].Checked := true;
+    MPWheelControl.Items[MFunc].Checked := true;
   end;
-  if MouseMode = -5 then begin
-    CBHSA := 1;
-    SendCommand('get_property contrast');
-    SendCommand('get_property brightness');
-    SendCommand('get_property hue');
-    SendCommand('get_property saturation');
-    SendCommand('get_property gamma');
+  if (MouseMode= -5) then begin
+    if core.Status = sPaused then SendCommand('seek ' + IntToStr(p.X - OldX))
+    else begin
+      SendCommand('set_property mute 1');
+      SendCommand('seek ' + IntToStr(p.X - OldX));
+      SendCommand('set_property mute 0');
+    end;
+    OldX := p.X; OldY := p.Y;
   end;
+  if ((MouseMode= -5) or (MouseMode= -4) or (MouseMode=-2)) and (not RFScr) then begin
+    if Button=mbRight then begin IPanel.PopupMenu:=MPopup; OPanel.PopupMenu:=MPopup; end;
+    if MouseMode= -4 then poped:=true;
+  end
+  else if Button=mbRight then begin
+    if RFScr then SimulateKey(MFullscreen)
+    else begin
+      poped:=true;
+      IPanel.PopupMenu:=MPopup; OPanel.PopupMenu:=MPopup;
+    end;
+  end;
+
   MouseMode := 0;
 end;
 

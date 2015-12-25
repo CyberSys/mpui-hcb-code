@@ -229,23 +229,21 @@ begin
     BClose.Caption := 'Close';
     ads.Caption := 'Auto download subtitle as playing a video';
     HelpText.Text := UTF8Decode(
-      '//*'^I'Adjust volume'^M^J +
       'DblClick'^I'Toggle fullscreen'^M^J +
       'LMB click StatusBar Timer'^I'Toggle Time'^M^J +
       'MMB'^I'Toggle Wheel function'^M^J +
-      'Ctrl+LMB drag subtitle'^I'Scale subtitle'^M^J +
-      'Ctrl+Wheel '^I'Seek'^M^J +
+      'Ctrl+LMB or RMB drag subtitle '^I'Scale subtitle'^M^J +
+      'Ctrl+Wheel, Wheel+RMB or RMB drag '^I'Seek'^M^J +
       'LMB click video'^I'Play/Pause'^M^J +
       'M/RMB click SeekBar Slider'^I'Set Intro/Ending'^M^J +
       'LMB drag video'^I'Adjust window position'^M^J +
       'LMB drag subtitle'^I'Adjust subtitle position'^M^J +
-      'Ctrl+LMB drag video'^I'Adjust aspect ratio'^M^J +
-      'Shift+LMB drag video'^I'Scale video,Adjust volume or size'^M^J +
-      'Alt+LMB drag video'^I'Adjust brightness,contrast,hue,saturation,gamma'^M^J +
-      'While drag,release or press different function key invoke different function'^M^J^M^J +
+      'Ctrl+LMB or LMB+RMB drag video,'^I'Adjust aspect ratio'^M^J +
+      'Shift+LMB or MMB drag video'^I'Scale video'^M^J^M^J +
       'If "MPUI.ini" exist in MPUI folder, MPUI will firstly read or save setting to this file.'^M^J +
       'If open a folder contained ''VIDEO_TS'', ''MPEGAV'',''MPEG2'' or ''BDMV'' folder, MPUI will try to'^M^J +
       'play this folder with DVD, VCD, SVCD or BluRay mode.');
+
     Cconfig.Caption := 'Show config window while play';
     Cconfig.Hint := 'Check it or add ":cfg=1" to path of Winamp plugin, to open config window as play';
     Esubfont.Hint := 'please input font name, font''s file name of font in system font folder,'^M^J +

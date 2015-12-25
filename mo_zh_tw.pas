@@ -226,19 +226,16 @@ begin
   end;
   OptionsForm.HelpText.Text:=UTF8Decode(
 '雙擊左鍵'^I'切換全屏'^M^J+
-'÷/*,0'^I'調節音量'^M^J+
-'Ctrl+左鍵拖曳'^I'調節視頻寬高比'^M^J+
-'Ctrl+左鍵拖曳字幕'^I'縮放 字幕'^M^J+
+'“Ctrl+左鍵拖曳” 或 “左鍵+右鍵拖曳”'^I'調節視頻寬高比'^M^J+
+'“Ctrl+左鍵拖曳字幕” 或 “右鍵拖曳字幕”'^I'縮放 字幕'^M^J+
 '中鍵'^I'切換滾輪功能'^M^J+
-'Ctrl+滾輪'^I'前進/後退 媒體'^M^J+
+'“Ctrl+滾輪” 或 “右鍵拖曳” 或 “滾輪+右鍵”'^I'前進/後退 媒體'^M^J+
 '左鍵 單擊'^I'播放/暫停'^M^J+
 '左鍵拖曳'^I'調節窗體位置'^M^J+
-'Alt+左鍵拖曳'^I'調節亮度、對比、色調、飽和、伽瑪'^M^J+
-'Shift+左鍵拖曳'^I'縮放視頻，調節音量、窗體尺寸'^M^J+
+'“Shift+左鍵拖曳” 或 “中鍵拖曳”'^I'縮放視頻'^M^J+
 '左鍵拖曳字幕'^I'調節字幕在屏位置'^M^J+
 '左鍵 單擊狀態欄時間'^I'切換時間顯示模式'^M^J+
-'中鍵/右鍵 單擊進度條滑塊'^I'設置片頭/片尾'^M^J+
-'在拖曳時，松開、按下不同的功能鍵和起始拖曳方向決定不同的功能'^M^J^M^J+
+'中鍵/右鍵 單擊進度條滑塊'^I'設置片頭/片尾'^M^J^M^J+
 '如果MPUI目錄下存在''MPUI.ini''檔案，MPUI將優先讀取和保存設置到這個檔案'^M^J+
 'MPUI將以DVD、VCD、SVCD或藍光的方式打開包含''VIDEO_TS''、''MPEGAV''、''MPEG2'''^M^J+
 '或''BDMV''子目錄的目錄');
@@ -271,7 +268,7 @@ begin
     CSP.Caption:=UTF8Decode('單擊畫面暫停');
     CRS.Caption:=UTF8Decode('啟動時使用上次的窗體大小');
     CRP.Caption:=UTF8Decode('啟動時使用上次的窗體位置');
-    CTime.Caption:=UTF8Decode('在状态栏显示系统时间');
+    CTime.Caption:=UTF8Decode('在狀態欄顯示系統時間');
     LAudioOut.Caption:=UTF8Decode('音效輸出驅動程式');
       CAudioOut.Items[0]:=UTF8Decode('(不解碼音效)');
       CAudioOut.Items[1]:=UTF8Decode('(不播放音效)');
@@ -370,7 +367,7 @@ begin
     CAddsFiles.Caption:=UTF8Decode('添加連續文件');
     SSF.Caption:=UTF8Decode('保存截圖的目錄');
     SLyric.Caption:=UTF8Decode('歌詞目錄:');
-    TLyric.Caption:=UTF8Decode('歌词');
+    TLyric.Caption:=UTF8Decode('歌詞');
     Ldlod.Caption:=UTF8Decode('桌面歌詞');
     LTCL.Caption:=UTF8Decode('文字');
     LBCL.Caption:=UTF8Decode('背景');
@@ -511,7 +508,7 @@ begin
     TntTabSheet2.Caption:=UTF8Decode('歌詞');
     CPA.Caption:=UTF8Decode('自動選擇');
     CP0.Caption:=UTF8Decode('系統默認');
-    MGB.Caption:=UTF8Decode('简体<-->繁體');
+    MGB.Caption:=UTF8Decode('簡體<-->繁體');
     MDownloadLyric.Caption:=MainForm.MDownloadLyric.Caption;
     MLoadLyric.Caption:=MainForm.MLoadlyric.Caption;
     CPO.Caption:=UTF8Decode('其他');

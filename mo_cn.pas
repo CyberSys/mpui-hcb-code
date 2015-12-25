@@ -227,19 +227,16 @@ begin
   OptionsForm.BClose.Caption:=UTF8Decode('关闭');
   OptionsForm.HelpText.Text:=UTF8Decode(
 '双击左键'^I'切换全屏'^M^J+
-'÷/*'^I'调节音量'^M^J+
-'Ctrl+左键拖曳'^I'调节视频宽高比'^M^J+
-'Ctrl+左键拖曳字幕'^I'缩放 字幕'^M^J+
+'“Ctrl+左键拖曳” 或 “左键+右键拖曳”'^I'调节视频宽高比'^M^J+
+'“Ctrl+左键拖曳字幕” 或 “右键拖曳字幕”'^I'缩放 字幕'^M^J+
 '中键'^I'切换滚轮功能'^M^J+
-'Ctrl+滚轮'^I'前进/后退 媒体'^M^J+
+'“Ctrl+滚轮” 或 “右键拖曳” 或 “滚轮+右键”'^I'前进/後退 媒体'^M^J+
 '左键 单击'^I'播放/暂停'^M^J+
 '左键拖曳'^I'调节窗体位置'^M^J+
-'Alt+左键拖曳'^I'调节亮度、对比、色调、饱和、伽玛'^M^J+
-'Shift+左键拖曳'^I'缩放视频，调节音量、窗体尺寸'^M^J+
+'“Shift+左键拖曳” 或 “中键拖曳”'^I'缩放视频'^M^J+
 '左键拖曳字幕'^I'调节字幕在屏位置'^M^J+
 '左键 单击状态栏时间'^I'切换时间显示模式'^M^J+
-'中键/右键 单击进度条滑块'^I'设置片头/片尾'^M^J+
-'在拖曳时，松开、按下不同的功能键和起始拖曳方向决定不同的功能'^M^J^M^J+
+'中键/右键 单击进度条滑块'^I'设置片头/片尾'^M^J^M^J+
 '如果MPUI目录下存在''MPUI.ini''文件，MPUI将优先读取和保存设置到这个文件'^M^J+
 'MPUI将以DVD、VCD、SVCD或蓝光的方式打开包含''VIDEO_TS''、''MPEGAV''、''MPEG2'''^M^J+
 '或''BDMV''子目录的目录');
@@ -513,7 +510,7 @@ begin
     MLoadLyric.Caption:=MainForm.MLoadlyric.Caption;
     CPO.Caption:=UTF8Decode('其他');
     SC.Caption:=UTF8Decode('简体中文');
-    TC.Caption:=UTF8Decode('繁體中文');
+    TC.Caption:=UTF8Decode('繁体中文');
     CY0.Caption:=UTF8Decode('Русский (俄文 OEM866)');
     CY.Caption:=UTF8Decode('西里尔文');
     CY4.Caption:=UTF8Decode('Русский (俄文, 20866,KOI8-R)');

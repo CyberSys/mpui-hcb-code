@@ -107,8 +107,8 @@ const DefaultHKS = '262182,262184,262181,262183,262331,262333,131123,131264,1311
 type TStatus = (sNone, sOpening, sClosing, sPlaying, sPaused, sStopped, sError);
 var Status: TStatus;
 
-var HomeDir, SystemDir, TempDir, AppdataDir: WideString;
-var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread,cl: WideString;
+  HomeDir, SystemDir, TempDir, AppdataDir: WideString;
+  MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread,cl: WideString;
   ArcPW, TmpPW, DisplayURL, AudioFile: WideString;
   Duration, LyricF, fass, HKS, lastP1, lastFN: string;
   substring, Vobfile, ShotDir, LyricDir, LyricURL: WideString;
@@ -122,7 +122,7 @@ var MediaURL, TmpURL, ArcMovie, Params, AddDirCP,avThread,cl: WideString;
   ControlledResize, ni, nobps, Dnav, IsDMenu, SMenu, lavf, UdvdTtime, vsync: boolean;
   Flip, Mirror, Yuy2, Eq2, LastEq2, Dda, LastDda, Wadsp, addsFiles: boolean;
   WantFullscreen, WantCompact, AutoQuit, IsPause, IsDx, dsEnd,uav: boolean;
-var VideoID, Ch, CurPlay, LyricS, HaveLyric: integer;
+  VideoID, Ch, CurPlay, LyricS, HaveLyric: integer;
   AudioID, MouseMode, SubPos, NoAccess: integer;
   SubID, TID, tmpTID, CID, AID, VCDST, CDID: integer;
   subcount, Bp, Ep, CurrentLocale: integer;
@@ -132,13 +132,13 @@ var VideoID, Ch, CurPlay, LyricS, HaveLyric: integer;
   CurrentSubCount, OnTop, VobAndInterSubCount, IntersubCount: integer;
   IL, IT, EL, ET, EW, EH, InterW, InterH, NW, NH, OldX, OldY, Scale, LastScale: integer;
   MFunc, CBHSA, bri, briD, contr, contrD, hu, huD, sat, satD, gam, gamD: integer;
-var AudioOut, AudioDev, Postproc, Deinterlace, Aspect: integer;
+  AudioOut, AudioDev, Postproc, Deinterlace, Aspect: integer;
   ReIndex, SoftVol, RFScr, dbbuf, nfc, nmsg, Firstrun, Volnorm, Dr: boolean;
   Loadsrt, LoadVob, Loadsub, Expand, TotalTime, TTime, ChapterLen, ChaptersLen: integer;
-var HaveAudio, HaveVideo, LastHaveVideo, ChkAudio, ChkVideo, ChkStartPlay: boolean;
+  HaveAudio, HaveVideo, LastHaveVideo, ChkAudio, ChkVideo, ChkStartPlay: boolean;
   NativeWidth, NativeHeight, MonitorID, MonitorW, MonitorH: integer;
   LastPos, SecondPos, OSDLevel, DefaultOSDLevel, MSecPos: integer;
-var Volume, MWC, CP, seekLen: integer;
+  Volume, MWC, CP, seekLen: integer;
   ds, tEnd, procArc, Mute, Ass, Efont, ISub, AutoNext, UpdatePW, sconfig, EndOpenDir: boolean;
   DTFormat: string;
   FormatSet: TFormatSettings;
@@ -147,7 +147,7 @@ var Volume, MWC, CP, seekLen: integer;
   Speed, FSize, Fol, FB, dy, LyricV, Adelay, Sdelay, balance: real;
   CurMonitor: TMonitor;
   FontPaths: TTntStringList;
-  ppoint: TPoint;
+  poped: boolean;
   PlayMsgAt: Cardinal;
 
 var StreamInfo: record
@@ -1269,8 +1269,8 @@ var Dummy: cardinal;
 begin
   if (not Running) or (WritePipe = 0) or (not Win32PlatformIsUnicode) then exit;
   if (Status = sPaused) and (CheckInfo(PauseCMD, Command) < 0) then
-    Command := 'pausing_keep ' + Command + #10
-  else Command := Command + #10;
+    Command:='pausing_keep ' + Command + #10
+  else Command:=  Command + #10;
   WriteFile(WritePipe, Command[1], length(Command), Dummy, nil);
 end;
 
