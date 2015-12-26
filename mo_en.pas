@@ -621,7 +621,8 @@ begin
   LOCstr_InfoAudioRate := 'Sample Rate';
   LOCstr_InfoAudioChannels := 'Channels';
   IKeyHint := 'Please press hotkey';
-  IKeyerror := 'Shortcut is already in use.'^M^J + 'Overwrite?';
+  IKeyerror := 'Shortcut is already in use';
+  IKeyerror1 := 'Overwrite?';
   Ccap := 'Chapter'; Acap := 'Angle'; Tcap := 'Track';
 end;
 

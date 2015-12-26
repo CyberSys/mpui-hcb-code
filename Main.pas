@@ -2707,8 +2707,7 @@ end;
 
 procedure TMainForm.DisplayClick(Sender: TObject);
 begin
-  if poped then
-   exit;
+  if poped then begin poped:=false; exit; end;
 
   if Running and (MouseMode > -1) then begin
     if Dnav and IsDMenu then begin
@@ -2729,11 +2728,10 @@ procedure TMainForm.DisplayMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var p: TPoint;
 begin
-  poped:=false;
   GetCursorPos(p); OldX := p.X; OldY := p.Y;
-  if IPanel.Cursor = crHandPoint then MouseMode := 2 //Drag Subtitle
-  else if (Shift=[ssMiddle]) or (Shift=[ssShift,ssLeft]) then MouseMode := 3 //Scale video
+  if (Shift=[ssMiddle]) or (Shift=[ssShift,ssLeft]) then MouseMode := 3 //Scale video
   else if (Shift=[ssLeft,ssRight]) or (Shift=[ssCtrl,ssLeft]) then MouseMode := 4 //Adjust aspect ratio
+  else if IPanel.Cursor = crHandPoint then MouseMode := 2 //Drag Subtitle
   else if Shift=[ssRight] then MouseMode := 5 //Seek video
   else if ((Width <= CurMonitor.Width) or (Height <= (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)))
        and (WindowState = wsNormal) and (Shift=[ssLeft]) then MouseMode := 1;
@@ -2788,13 +2786,14 @@ begin
   if abs(MouseMode) = 2 then begin
     MouseMode := -2; //在拖动时不进行单击、双击事件
     if ([ssCtrl,ssLeft]=shift) or ([ssRight]=shift) then begin //Scale Subtitle
+      IPanel.PopupMenu:=nil; OPanel.PopupMenu:=nil;
       FSize := FSize + (p.X - OldX) / 60;
       OldX := p.X; OldY := p.Y;
       if FSize > 10 then FSize := 10; if FSize < 0.1 then FSize := 0.1;
       if ass then SendCommand('sub_scale ' + FloatToStr(FSize / Fscale) + ' 1')
       else SendCommand('sub_scale ' + FloatToStr(FSize) + ' 1');
     end
-    else if not ass then begin //Move Subtitle
+    else if (not ass) and ([ssLeft]=shift) then begin //Move Subtitle
       SubPos := i;
       if SubPos < 0 then SubPos := 0; if SubPos > 100 then SubPos := 100;
       SendCommand('sub_pos ' + IntToStr(SubPos) + ' 1');
@@ -2803,7 +2802,7 @@ begin
 
   if abs(MouseMode) = 3 then begin   //Scale Video}
     MouseMode := -3; //在拖动时不进行单击、双击事件
-    Scale := Scale + (p.X - OldX);
+    Scale := Scale + (OldY - p.Y);
     if Scale < 100 then Scale := 100;
     LastScale := Scale; MKaspect.Checked := true;
     FixSize;
@@ -2830,7 +2829,6 @@ begin
   if abs(MouseMode) = 5 then begin
     MouseMode:= -5;
     IPanel.PopupMenu:=nil; OPanel.PopupMenu:=nil;
-
   end;
 end;
 

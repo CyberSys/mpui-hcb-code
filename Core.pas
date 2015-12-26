@@ -680,7 +680,7 @@ begin
   ClientWaitThread := TClientWaitThread.Create(true);
   ClientWaitThread.FreeOnTerminate := true;
   Processor := TProcessor.Create(true);
-  Processor.FreeOnTerminate := true; ;
+  Processor.FreeOnTerminate := true;
   if ML then CmdLine := EscapeParam(ExpandName(HomeDir, MplayerLocation))
   else CmdLine := EscapeParam(HomeDir + 'mplayer.exe');
   if not GUI then CmdLine := CmdLine + ' -nogui -noconsolecontrols';
@@ -1265,13 +1265,20 @@ begin
 end;
 
 procedure SendCommand(Command: string);
-var Dummy: cardinal;
+var Dummy: cardinal; np:boolean;
+procedure SC(c:string);
+begin
+  c:=  c + #10;
+  if (Status = sPaused) and np then c:='pausing_keep ' + c;
+  WriteFile(WritePipe, c[1], length(c), Dummy, nil);
+end;
 begin
   if (not Running) or (WritePipe = 0) or (not Win32PlatformIsUnicode) then exit;
-  if (Status = sPaused) and (CheckInfo(PauseCMD, Command) < 0) then
-    Command:='pausing_keep ' + Command + #10
-  else Command:=  Command + #10;
-  WriteFile(WritePipe, Command[1], length(Command), Dummy, nil);
+  np:= CheckInfo(PauseCMD, Command) < 0;
+
+  if np then SC('set_property osdlevel 0');
+  SC(Command);
+  if np then SC('set_property osdlevel ' + IntToStr(OSDLevel));
 end;
 
 procedure SendVolumeChangeCommand(Vol: integer);

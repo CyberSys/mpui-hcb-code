@@ -617,7 +617,8 @@ begin
   LOCstr_InfoAudioRate:=UTF8Decode('采样率');
   LOCstr_InfoAudioChannels:=UTF8Decode('声道');
   IKeyHint:=UTF8Decode('请按下快捷键');
-  IKeyerror:=UTF8Decode('快捷键已被使用。'^M^J+'要覆盖它吗？');
+  IKeyerror:=UTF8Decode('快捷键已被使用');
+  IKeyerror1:=UTF8Decode('要覆盖它吗？');
   Ccap:=UTF8Decode('章节'); Tcap:=UTF8Decode('轨');
   Acap:=UTF8Decode('视角');
 end;

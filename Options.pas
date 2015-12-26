@@ -1415,11 +1415,13 @@ begin
   if t <> nil then begin
     if IKey then begin
       IKey := false; HK.Items[sIndex].Caption := tCap;
-      if WideMessageDlg('"' + t.SubItems.Strings[0] + '"'^M^J + '"' + t.Caption + '"' + IKeyerror, mtInformation, [mbYes, mbNo], 0) = mrYes then begin
+      t.Selected := true; t.MakeVisible(false);
+      if WideMessageDlg('"' + t.Caption + '" ' + IKeyerror + ' <' + t.SubItems.Strings[0] +'>'^M^J + IKeyerror1 , mtWarning, [mbYes, mbNo], 0) = mrYes then begin
         HK.Items[sIndex].Caption := ShiftToStr(Shift) + KeyToStr(Key);
         HK.Items[sIndex].Data := Pointer(i);
         t.Caption := ''; t.Data := nil;
       end;
+      HK.Items[sIndex].Selected := true; HK.Items[sIndex].MakeVisible(false);
     end
     else begin
       t.Selected := true; t.MakeVisible(false);

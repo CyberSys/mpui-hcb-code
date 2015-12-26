@@ -75,7 +75,7 @@ var LOCstr_Title: WideString;
   AnyFilter: WideString;
   FontFilter: WideString;
   LyricFilter: WideString;
-  IKeyHint, IKeyerror: WideString;
+  IKeyHint, IKeyerror,IKeyerror1: WideString;
 
 var LOCstr_NoInfo: WideString;
   LOCstr_InfoFileName: WideString;
