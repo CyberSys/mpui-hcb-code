@@ -991,8 +991,10 @@ begin
             CBHSA := 2;
           end;
         VK_LEFT: if Wid then begin
-            if IPanel.Width <= 6 then exit;
-            IPanel.Left := IPanel.Left + 3; IPanel.Width := IPanel.Width - 6;
+            if IPanel.Width = 32 then exit;
+            IPanel.Width := IPanel.Width - 6;
+            if IPanel.Width < 32 then IPanel.Width:=32;
+            IPanel.Left := (OPanel.Width - IPanel.Width) div 2;
             CBHSA := 2;
           end;
         VK_UP: if Wid then begin
@@ -1000,8 +1002,10 @@ begin
             CBHSA := 2;
           end;
         VK_DOWN: if Wid then begin
-            if IPanel.Height <= 6 then exit;
-            IPanel.Top := IPanel.Top + 3; IPanel.Height := IPanel.Height - 6;
+            if IPanel.Height = 32 then exit;
+            IPanel.Height := IPanel.Height - 6;
+            if IPanel.Height < 32 then IPanel.Height := 32;
+            IPanel.Top := (OPanel.Height - IPanel.Height) div 2;
             CBHSA := 2;
           end;
       {+=} 187: begin
@@ -1055,7 +1059,7 @@ begin
                 Scale := Scale + 1; LastScale := Scale;
                 MKaspect.Checked := true; FixSize;
               end;
-            Ord('W'): if Wid and (Scale > 100) then begin
+            Ord('W'): if Wid and (Scale > 1) then begin
                 Scale := Scale - 1; LastScale := Scale;
                 MKaspect.Checked := true; FixSize;
               end;
@@ -1317,7 +1321,7 @@ begin
       InterW := IPanel.Width; InterH := IPanel.Height;
       MKaspect.Checked := true; CBHSA := 0;
       Aspect := MCustomAspect.Tag; MCustomAspect.Checked := true;
-      if InterW <> 0 then NativeHeight := InterH * NativeWidth div InterW;
+      NativeHeight := InterH * NativeWidth div InterW;
       FixSize;
     end;
   end;
@@ -1415,7 +1419,7 @@ begin
 end;
 
 procedure TMainForm.FixSize;
-var SX, SY, NX, NY: integer;
+var NX, NY, w, h: integer;
 begin
   if (not FirstShow) and (LastHaveVideo or ds) then begin
     EW := Opanel.Width; EH := Opanel.Height;
@@ -1427,15 +1431,29 @@ begin
   end
   else IPanel.Align := alNone;
 
-  SX := OPanel.Width; SY := OPanel.Height;
-  NY := SY; NX := NativeWidth * SY div NativeHeight;
-  if NX > SX then begin
-    NX := SX; NY := NativeHeight * SX div NativeWidth; end;
+  NY := OPanel.Height; NX := NativeWidth * OPanel.Height div NativeHeight;
+  if NX > OPanel.Width then begin
+    NX := OPanel.Width; NY := NativeHeight * OPanel.Width div NativeWidth;
+  end;
   with IPanel do begin
-    Width := NX * LastScale div 100;
-    Height := NY * LastScale div 100;
-    Left := (SX - Width) div 2;
-    Top := (SY - Height) div 2;
+    w := NX * LastScale div 100;
+    h := NY * LastScale div 100;
+    if (LastScale <> 100) and ((w < 32) or ( h < 32)) then begin
+      if w > h then begin
+        h := 32;
+        LastScale := h*100 div NY;
+        w := NX * LastScale div 100;
+      end
+      else begin
+        w := 32;
+        LastScale := w*100 div NX;
+        h := NY * LastScale div 100;
+      end;
+    end;
+    Width := w;
+    Height := h;
+    Left := (OPanel.Width - Width) div 2;
+    Top := (OPanel.Height - Height) div 2;
   end;
 end;
 
@@ -1623,9 +1641,11 @@ begin
     end;
   end;
   if MSize200.Checked then begin
-    SX := SX * 2; SY := SY * 2; end;
+    SX := SX * 2; SY := SY * 2; 
+  end;
   if MSizeAny.Checked then begin
-    if NW <> 0 then SX := NW; if NH <> 0 then SY := NH; end;
+    if NW <> 0 then SX := NW; if NH <> 0 then SY := NH; 
+  end;
   PX := Left + ((OPanel.Width - SX) div 2);
   PY := Top + ((OPanel.Height - SY) div 2);
   SX := Width - (OPanel.Width - SX);
@@ -2739,7 +2759,7 @@ end;
 
 procedure TMainForm.DisplayMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
-var p: TPoint; OY, i: integer; t: boolean;
+var p: TPoint; OY,i,w,h : integer; t: boolean;
 begin
   GetCursorPos(p);
   if (p.X = OldX) and (p.Y = OldY) then exit; //过滤播放器的UpdateTimer定时器中防系统休眠操作触发这个函数，误触发会造成很多不可预期的鼠标操作问题
@@ -2803,7 +2823,7 @@ begin
   if abs(MouseMode) = 3 then begin   //Scale Video}
     MouseMode := -3; //在拖动时不进行单击、双击事件
     Scale := Scale + (OldY - p.Y);
-    if Scale < 100 then Scale := 100;
+    if Scale < 1 then Scale := 1;
     LastScale := Scale; MKaspect.Checked := true;
     FixSize;
     OldX := p.X; OldY := p.Y;
@@ -2813,15 +2833,23 @@ begin
     MouseMode := -4; //在拖动时不进行单击、双击事件
     SetCursor(Screen.Cursors[crCross]);
     IPanel.PopupMenu:=nil; OPanel.PopupMenu:=nil;
-
-    if IPanel.Width >= 32 then begin
+    w:= IPanel.Width + (p.X - OldX) * 2;
+    h:= IPanel.Height - (p.Y - OldY) * 2;
+    if w < 32 then begin
+      IPanel.Left := OPanel.Width div 2 - 16;
+      IPanel.Width:=32;
+    end
+    else begin
       IPanel.Left := IPanel.Left - (p.X - OldX);
-      IPanel.Width := IPanel.Width + (p.X - OldX) * 2;
+      IPanel.Width := w;
     end;
-
-    if IPanel.Height >= 32 then begin
+    if h < 32 then begin
+      IPanel.Top := OPanel.Height div 2 - 16;
+      IPanel.Height := 32;
+    end
+    else begin
       IPanel.Top := IPanel.Top + (p.Y - OldY);
-      IPanel.Height := IPanel.Height - (p.Y - OldY) * 2;
+      IPanel.Height := h;
     end;
     OldX := p.X; OldY := p.Y;
   end;
@@ -2837,11 +2865,11 @@ procedure TMainForm.DisplayMouseUp(Sender: TObject;
 var p: TPoint;
 begin
   GetCursorPos(p);
-  if MouseMode = -3 then begin
+  if MouseMode = -4 then begin
     InterW := IPanel.Width; InterH := IPanel.Height;
     MKaspect.Checked := true;
     Aspect := MCustomAspect.Tag; MCustomAspect.Checked := true;
-    if InterW <> 0 then NativeHeight := InterH * NativeWidth div InterW;
+    NativeHeight := InterH * NativeWidth div InterW;
     FixSize;
   end
   else if Button=mbMiddle then begin
