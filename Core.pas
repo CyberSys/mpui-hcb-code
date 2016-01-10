@@ -2341,9 +2341,6 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
       end;
 
       LastEq2 := Eq2; LastDda := Dda; HaveVideo := true;
-      if (NativeWidth / NativeHeight) = (CurMonitor.Width / CurMonitor.Height) then begin
-        LastScale := 100; Scale := 100;
-      end;
       VideoSizeChanged; SetupPlay;
       Result := true;
     end;

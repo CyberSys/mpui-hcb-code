@@ -1057,10 +1057,12 @@ begin
           {'"} 222: if Deinterlace = 2 then HandleCommand('step_property deinterlace');
             Ord('E'): if Wid then begin
                 Scale := Scale + 1; LastScale := Scale;
+                MSizeAny.Checked := True; MSizeAny.Checked := false;
                 MKaspect.Checked := true; FixSize;
               end;
             Ord('W'): if Wid and (Scale > 1) then begin
                 Scale := Scale - 1; LastScale := Scale;
+                MSizeAny.Checked := True; MSizeAny.Checked := false;
                 MKaspect.Checked := true; FixSize;
               end;
             Ord('1'), VK_NUMPAD1: begin
@@ -1469,8 +1471,7 @@ begin
       SkipBar.Width := (SeekBar.Width * Ep div TotalTime) - SkipBar.Left + SeekBar.Left
     else SkipBar.Width := SeekBar.Width - SkipBar.Left + SeekBar.Left;
   end;
-  if (Width >= (CurMonitor.Width - 20)) or (Height >= (CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - 20))
-    or MMaxW.Checked then LastScale := Scale;
+  if not (MSize50.Checked or MSize100.Checked or MSize200.Checked) then LastScale := Scale;
   FixSize;
   CX := OPanel.ClientWidth;
   CY := OPanel.ClientHeight;
@@ -1641,7 +1642,7 @@ begin
     end;
   end;
   if MSize200.Checked then begin
-    SX := SX * 2; SY := SY * 2; 
+    SX := SX * 2; SY := SY * 2;
   end;
   if MSizeAny.Checked then begin
     if NW <> 0 then SX := NW; if NH <> 0 then SY := NH; 
@@ -1659,7 +1660,7 @@ begin
   if ((PY + SY) > (CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)) then begin
     PY := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - SY; end;
   SetWindowLong(Handle, GWL_STYLE, DWORD(GetWindowLong(Handle, GWL_STYLE)) and (not WS_MAXIMIZE));
-  ControlledResize := true; LastScale := 100; SetBounds(PX, PY, SX, SY);
+  ControlledResize := true; SetBounds(PX, PY, SX, SY);
   if WantCompact then begin
     SimulateKey(MCompact); WantCompact := false;
   end;
@@ -1674,6 +1675,7 @@ begin
   if MFullscreen.Checked then SimulateKey(MFullscreen)
   else if (Sender as TTntMenuItem).Checked then exit;
   (Sender as TTntMenuItem).Checked := True;
+  LastScale := 100;
   VideoSizeChanged;
 end;
 
@@ -2823,6 +2825,7 @@ begin
   if abs(MouseMode) = 3 then begin   //Scale Video}
     MouseMode := -3; //在拖动时不进行单击、双击事件
     IPanel.PopupMenu:=nil; OPanel.PopupMenu:=nil;
+    MSizeAny.Checked := True; MSizeAny.Checked := false;
     w:= OldY - p.Y; h:= p.X - OldX;
     if abs(w) > abs(h) then Scale := Scale + w
     else Scale := Scale + h;
