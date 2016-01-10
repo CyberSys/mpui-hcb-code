@@ -2822,7 +2822,10 @@ begin
 
   if abs(MouseMode) = 3 then begin   //Scale Video}
     MouseMode := -3; //在拖动时不进行单击、双击事件
-    Scale := Scale + (OldY - p.Y);
+    IPanel.PopupMenu:=nil; OPanel.PopupMenu:=nil;
+    w:= OldY - p.Y; h:= p.X - OldX;
+    if abs(w) > abs(h) then Scale := Scale + w
+    else Scale := Scale + h;
     if Scale < 1 then Scale := 1;
     LastScale := Scale; MKaspect.Checked := true;
     FixSize;
@@ -2872,7 +2875,7 @@ begin
     NativeHeight := InterH * NativeWidth div InterW;
     FixSize;
   end
-  else if Button=mbMiddle then begin
+  else if MouseMode= 3 then begin
     MFunc := (MFunc + 1) mod 2;
     case MFunc of
       0: SendCommand('osd_show_text "0:' + OSD_Volume_Prompt + '"');
@@ -2880,8 +2883,8 @@ begin
     end;
     MWheelControl.Items[MFunc].Checked := true;
     MPWheelControl.Items[MFunc].Checked := true;
-  end;
-  if (MouseMode= -5) then begin
+  end
+  else if MouseMode= -5 then begin
     if core.Status = sPaused then SendCommand('seek ' + IntToStr(p.X - OldX))
     else begin
       SendCommand('set_property mute 1');
@@ -2890,7 +2893,7 @@ begin
     end;
     OldX := p.X; OldY := p.Y;
   end;
-  if ((MouseMode= -5) or (MouseMode= -4) or (MouseMode=-2)) and (not RFScr) then begin
+  if (MouseMode < -1) and (MouseMode <> -3) and (not RFScr) then begin
     if Button=mbRight then begin IPanel.PopupMenu:=MPopup; OPanel.PopupMenu:=MPopup; end;
     if MouseMode= -4 then poped:=true;
   end
