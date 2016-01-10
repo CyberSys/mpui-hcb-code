@@ -2893,9 +2893,9 @@ begin
     end;
     OldX := p.X; OldY := p.Y;
   end;
-  if (MouseMode < -1) and (MouseMode <> -3) and (not RFScr) then begin
+  if (MouseMode < -1) and (not RFScr) then begin
     if Button=mbRight then begin IPanel.PopupMenu:=MPopup; OPanel.PopupMenu:=MPopup; end;
-    if MouseMode= -4 then poped:=true;
+    if MouseMode < -2 then poped:=true;
   end
   else if Button=mbRight then begin
     if RFScr then SimulateKey(MFullscreen)
