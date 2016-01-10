@@ -1471,8 +1471,7 @@ begin
       SkipBar.Width := (SeekBar.Width * Ep div TotalTime) - SkipBar.Left + SeekBar.Left
     else SkipBar.Width := SeekBar.Width - SkipBar.Left + SeekBar.Left;
   end;
-  if not (MSize50.Checked or MSize100.Checked or MSize200.Checked) then LastScale := Scale;
-  FixSize;
+
   CX := OPanel.ClientWidth;
   CY := OPanel.ClientHeight;
   Logo.Left := (CX - Logo.Width) div 2;
@@ -1483,6 +1482,8 @@ begin
   else begin
     MSizeAny.Checked := true; MSizeAny.Checked := false;
   end;
+  if not (MSize50.Checked or MSize100.Checked or MSize200.Checked) then LastScale := Scale;
+  FixSize;
 end;
 
 procedure TMainForm.SetupPlay;
@@ -1667,7 +1668,7 @@ begin
   if WantFullscreen then begin
     SimulateKey(MFullscreen); WantFullscreen := False;
   end;
-  ControlledResize := false;
+  ControlledResize := false; FixSize;
 end;
 
 procedure TMainForm.MSizeClick(Sender: TObject);
