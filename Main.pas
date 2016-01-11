@@ -1660,6 +1660,7 @@ begin
   if ((PX + SX) > (CurMonitor.Left + CurMonitor.Width)) then begin PX := CurMonitor.Left + CurMonitor.Width - SX; end;
   if ((PY + SY) > (CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top)) then begin
     PY := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom - CurMonitor.WorkareaRect.Top - SY; end;
+  if (SX = Width) and (SY = Height) then FixSize;
   SetWindowLong(Handle, GWL_STYLE, DWORD(GetWindowLong(Handle, GWL_STYLE)) and (not WS_MAXIMIZE));
   ControlledResize := true; SetBounds(PX, PY, SX, SY);
   if WantCompact then begin
@@ -1668,7 +1669,7 @@ begin
   if WantFullscreen then begin
     SimulateKey(MFullscreen); WantFullscreen := False;
   end;
-  ControlledResize := false; FixSize;
+  ControlledResize := false;
 end;
 
 procedure TMainForm.MSizeClick(Sender: TObject);
