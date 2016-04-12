@@ -44,6 +44,7 @@ begin
   Top := CurMonitor.Top + CurMonitor.WorkareaRect.Bottom
     - CurMonitor.WorkareaRect.Top - Height;
   GDILyric.SetWidthAndHeight(Width, Height);
+  if dlod then Show else Hide;
 end;
 
 procedure TLyricShowForm.FormDestroy(Sender: TObject);

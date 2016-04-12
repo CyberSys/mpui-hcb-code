@@ -633,8 +633,8 @@ begin
   WantFullscreen := false; WantCompact := false;
   Constraints.MinWidth := Width; Constraints.MinHeight := Height;
   Load(HomeDir + 'autorun.inf', 0); Load(HomeDir + DefaultFileName, 0);
-  SSD.Caption := 'CP' + IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT));
-  if subcode = '' then subcode := SSD.Caption; //AnsiCodePage
+  if subcode = '' then subcode := 'CP' + IntToStr(LCIDToCodePage(LOCALE_USER_DEFAULT)); //AnsiCodePage
+  SSD.Caption := subcode; SSD.Checked := True;
   UpdateVolSlider;
   if Wid and Win32PlatformIsUnicode and ds then begin
     SetWindowLong(Handle, GWL_STYLE, DWORD(GetWindowLong(Handle, GWL_STYLE)) or WS_SIZEBOX or WS_MAXIMIZEBOX);
@@ -1130,12 +1130,12 @@ begin
             Ord('X'): if MSubtitle.Count > 0 then begin
                 Sdelay := Sdelay + 0.1; HandleCommand('sub_delay +0.1');
               end;
-            Ord('G'): if Dnav then HandleCommand('dvdnav 5'); {menu}
-            Ord('H'): if Dnav then HandleCommand('dvdnav 6'); {selset}
-            Ord('I'): if Dnav then HandleCommand('dvdnav 1'); {up}
-            Ord('K'): if Dnav then HandleCommand('dvdnav 2'); {down}
-            Ord('J'): if Dnav then HandleCommand('dvdnav 3'); {left}
-            Ord('L'): if Dnav then HandleCommand('dvdnav 4'); {right}
+        Ord('G'): if Dnav then HandleCommand('dvdnav menu'); {5}
+    Ord('H'): if Dnav then HandleCommand('dvdnav selset'); {6}
+        Ord('I'): if Dnav then HandleCommand('dvdnav up'); {1}
+        Ord('K'): if Dnav then HandleCommand('dvdnav down'); {2}
+            Ord('J'): if Dnav then HandleCommand('dvdnav left'); {3}
+            Ord('L'): if Dnav then HandleCommand('dvdnav right'); {4}
             {;:} 186: if Dnav then HandleCommand('dvdnav prev');
             Ord('N'): NextAspect;
             Ord('B'): NextSub;
@@ -2735,7 +2735,7 @@ begin
 
   if Running and (MouseMode > -1) then begin
     if Dnav and IsDMenu then begin
-      SendCommand('dvdnav 6'); //'dvdnav select' or 'dvdnav mouse'
+      SendCommand('dvdnav mouse'); //'dvdnav select' or 'dvdnav 6'
       exit;
     end;
     if SP then SendCommand('pause');
@@ -3387,7 +3387,7 @@ end;
 procedure TMainForm.SSDClick(Sender: TObject);
 var s: string; i: Integer;
 begin
-  if (Sender as TTntMenuItem).Checked or (not Running) then Exit;
+  if (Sender as TTntMenuItem).Checked then Exit;
   (Sender as TTntMenuItem).Checked := true;
   s := (Sender as TTntMenuItem).Caption;
   i := Pos('&', s);

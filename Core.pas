@@ -1915,6 +1915,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
         if Loadsub = 1 then begin
           SubID := i + VobAndInterSubCount;
           MainForm.MShowSub.Checked := true;
+          SendCommand('sub_select ' + IntToStr(SubID));
         end
         else
           CurrentSubCount := VobAndInterSubCount + i + 1;

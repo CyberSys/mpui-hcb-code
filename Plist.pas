@@ -421,6 +421,7 @@ begin
   end;
   HaveLyric := 0; PlaylistForm.CPA.Tag:=0;
   PlaylistForm.TMLyricPaint(nil);
+  if dlod then LyricShowForm.Hide;
 end;
 
 
@@ -979,7 +980,10 @@ begin
   end;
 
   HaveLyric := 2; LyricURL := FileName; IsParsed := true;
-  if dlod then GDILyric.SetFont(BitMap.Canvas.Font.Name);
+  if dlod then begin
+    GDILyric.SetFont(BitMap.Canvas.Font.Name);
+    LyricShowForm.Show;
+  end;
   with PlaylistForm do begin
     UpdatePW := True;
     if Visible then TMLyricPaint(nil)
@@ -1080,7 +1084,10 @@ begin
     end;
 
   HaveLyric := 1; LyricURL := FileName; IsParsed := true;
-  if dlod then GDILyric.SetFont(BitMap.Canvas.Font.Name);
+  if dlod then begin
+    GDILyric.SetFont(BitMap.Canvas.Font.Name);
+    LyricShowForm.Show;
+  end;
   with PlaylistForm do begin
     UpdatePW := True;
     if Visible then PlaylistForm.TMLyricPaint(nil)

@@ -599,6 +599,7 @@ begin
 
   if subcode <> CSubcp.Text then begin
     subcode := CSubcp.Text; changed := true;
+    MainForm.SSD.Caption := subcode; MainForm.SSD.Checked := True;
   end;
 
   if uof <> SOsdfont.Checked then begin
@@ -850,7 +851,7 @@ begin
           else GDILyric.DisplayLyricD(Lyric.GetLyricString(NextLyric),Lyric.GetLyricString(CurLyric));
         end;
       end;
-      LyricShowForm.Show;
+      if HaveLyric <> 0 then LyricShowForm.Show;
     end
     else
       LyricShowForm.Hide;
