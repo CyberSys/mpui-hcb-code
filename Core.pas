@@ -1308,7 +1308,7 @@ end;
 procedure HandleInputLine(Line: string);
 var r, i, j, p, len: integer; s: string; f: real; b:boolean;
     t: TTntMenuItem; key: word; a:TDownLoadLyric; m:TMenuItem;
-
+    h:Cardinal;
   function SubMenu_Add(Menu: TMenuItem; ID, SelectedID: integer; Handler: TNotifyEvent): integer;
   begin
     t := TTntMenuItem.Create(Menu);
@@ -2015,7 +2015,6 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
   end;
 
   function CheckLength: boolean;
-  var h:Cardinal;
   begin
     Result := (len > 10) and (Copy(Line, 1, 10) = 'ID_LENGTH=');
     if Result then begin
@@ -2655,7 +2654,16 @@ begin
   if (len > 11) and (Copy(Line, 1, 11) = 'ANS_LENGTH=') then begin
     Val(Copy(Line, 12, MaxInt), f, r);
     if r = 0 then begin
-      TTime := abs(round(f)); TotalTime:= TTime;
+      if IsMediaInfoLoaded = 0 then MediaInfoDLL_Load;
+      if IsMediaInfoLoaded <> 0 then begin
+        h := MediaInfo_New();
+        MediaInfo_Open(h,PWideChar(EscapeParam(WideExtractShortPathName(MediaURL))));
+        MediaInfo_Option (0, 'Inform', 'General;%Duration/String3%');
+        s := MediaInfo_Inform(h, 0);
+        MediaInfo_Close(h);
+      end;
+      if (IsMediaInfoLoaded <> 0) and (s<>'') then TTime:=TimeToSeconds(s)
+      else TTime := abs(round(f)); TotalTime:= TTime;
     end;
     if HaveChapters then begin
       ChapterLen:=UpdateLen;

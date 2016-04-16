@@ -86,7 +86,8 @@ end;
 
 procedure TInfoForm.UpdateInfo(calcoff:boolean);
 var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
-    i,j,c:integer; s:WideString; h: Cardinal;
+    i,j,c:integer; s,VB,VW,VH,FR,DR,AB,AR,AC:WideString; h: Cardinal;
+
   procedure calcOffset;
   var w,a:integer; KeySet:TTntStringList;
   begin
@@ -177,22 +178,6 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
     if d<>'' then o:= d;
   end;
 
-  procedure iM(z,y:WideString; var o:Integer);
-  var d: WideString;
-  begin
-    MediaInfo_Option (0, 'Inform', PWideChar(z+';%'+y+'%'));
-    d := MediaInfo_Inform(h, 0);
-    if d<>'' then o:= StrToInt(d);
-  end;
-
-  procedure rM(z,y:WideString; var o:Real);
-  var d: WideString;
-  begin
-    MediaInfo_Option (0, 'Inform', PWideChar(z+';%'+y+'%'));
-    d := MediaInfo_Inform(h, 0);
-    if d<>'' then o:= StrToFloat(d);
-  end;
-
 begin
   with StreamInfo do begin
     if not Visible then exit;
@@ -206,17 +191,18 @@ begin
     end;
     if calcOff then calcOffset;
     HaveTagHeader:=false; HaveVideoHeader:=false; HaveAudioHeader:=false;
+    VB:=''; VW:=''; VH:=''; FR:=''; DR:=''; AB:=''; AR:=''; AC:='';
     if IsMediaInfoLoaded = 0 then MediaInfoDLL_Load;
     if IsMediaInfoLoaded <> 0 then begin
       h := MediaInfo_New();
       MediaInfo_Open(h,PWideChar(EscapeParam(WideExtractShortPathName(MediaURL))));
       M('General','Format',FileFormat);
       //M('General','Duration/String3',PlaybackTime);
-      M('General','Video_Format_List',Video.Codec); iM('Video','BitRate',Video.BitRate);
-      iM('Video','Width',Video.Width); iM('Video','Height',Video.Height);
-      rM('General','FrameRate',Video.FPS); rM('Video','DisplayAspectRatio',Video.Aspect);
-      M('General','Audio_Format_List ',Audio.Decoder); iM('Audio','BitRate',Audio.BitRate);
-      iM('Audio','SamplingRate',Audio.Rate); iM('Audio','Channel(s)',Audio.Channels);
+      M('General','Video_Format_List',Video.Codec); M('Video','BitRate/String',VB);
+      M('Video','Width',VW); M('Video','Height',VH);
+      M('General','FrameRate/String',FR); M('Video','DisplayAspectRatio/String',DR);
+      M('General','Audio_Format_List ',Audio.Decoder); M('Audio','BitRate/String',AB);
+      M('Audio','SamplingRate/String',AR); M('Audio','Channel(s)/String)',AC);
       MediaInfo_Close(h);
     end;
     AddItem(LOCstr_InfoFileName,FileName);
@@ -233,15 +219,22 @@ begin
     if c>-1 then T(ClipInfo[c].Key, ClipInfo[c].Value);
     if length(Video.Decoder)>0 then V(LOCstr_InfoDecoder, Video.Decoder);
     if length(Video.Codec)>0 then V(LOCstr_InfoCodec, Video.Codec);
-    if Video.Bitrate<>0 then V(LOCstr_InfoBitrate, IntToStr(Video.Bitrate DIV 1000)+' kbps');
-    if (Video.Width<>0) AND (Video.Height<>0) then V(LOCstr_InfoVideoSize, IntToStr(Video.Width)+' x '+IntToStr(Video.Height));
-    if (Video.FPS>0.01) then begin str(Video.FPS:0:3,s); V(LOCstr_InfoVideoFPS, s+' fps'); end;
-    if (Video.Aspect>0.01) then begin V(LOCstr_InfoVideoAspect, FormatAspectRatio(Video.Aspect)); end;
+    if VB<>'' then V(LOCstr_InfoBitrate, VB)
+    else if Video.Bitrate<>0 then V(LOCstr_InfoBitrate, IntToStr(Video.Bitrate div 1000)+' kbps');
+    if (VW<>'') and (VH<>'') then V(LOCstr_InfoVideoSize, VW+' x '+VH)
+    else if (Video.Width<>0) AND (Video.Height<>0) then V(LOCstr_InfoVideoSize, IntToStr(Video.Width)+' x '+IntToStr(Video.Height));
+    if FR<>'' then V(LOCstr_InfoVideoFPS, FR)
+    else if (Video.FPS>0.01) then begin str(Video.FPS:0:3,s); V(LOCstr_InfoVideoFPS, s+' fps'); end;
+    if DR<>'' then V(LOCstr_InfoVideoAspect, DR)
+    else if (Video.Aspect>0.01) then V(LOCstr_InfoVideoAspect, FormatAspectRatio(Video.Aspect));
     if length(Audio.Decoder)>0 then A(LOCstr_InfoDecoder, Audio.Decoder);
     if length(Audio.Codec)>0 then A(LOCstr_InfoCodec, Audio.Codec);
-    if Audio.Bitrate<>0 then A(LOCstr_InfoBitrate, IntToStr(Audio.Bitrate DIV 1000)+' kbps');
-    if Audio.Rate<>0 then A(LOCstr_InfoAudioRate, IntToStr(Audio.Rate)+' Hz');
-    if Audio.Channels<>0 then A(LOCstr_InfoAudioChannels, IntToStr(Audio.Channels));
+    if AB<>'' then A(LOCstr_InfoBitrate, AB)
+    else if Audio.Bitrate<>0 then A(LOCstr_InfoBitrate, IntToStr(Audio.Bitrate div 1000)+' kbps');
+    if AR<>'' then A(LOCstr_InfoAudioRate, AR)
+    else if Audio.Rate<>0 then A(LOCstr_InfoAudioRate, IntToStr(Audio.Rate)+' Hz');
+    if AC<>'' then  A(LOCstr_InfoAudioChannels, AC)
+    else if Audio.Channels<>0 then A(LOCstr_InfoAudioChannels, IntToStr(Audio.Channels));
     Constraints.MinHeight:=Height-InfoBox.Height+InfoBox.Count*InfoBox.ItemHeight+5;
   end;
 end;
