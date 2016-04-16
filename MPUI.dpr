@@ -64,7 +64,8 @@ uses
   GDILyrics in 'GDILyrics.pas',
   GDIPAPI in 'GDIPAPI.pas',
   GDIPOBJ in 'GDIPOBJ.pas',
-  LyricShow in 'LyricShow.pas' {LyricShowForm};
+  LyricShow in 'LyricShow.pas' {LyricShowForm},
+  MediaInfoDll in 'MediaInfoDLL.pas';
 
 {$R *.res}
 {$R XPStyle.res}

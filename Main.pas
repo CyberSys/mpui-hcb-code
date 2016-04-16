@@ -521,7 +521,7 @@ procedure UnLoadUser32Library;
 
 implementation
 uses Locale, Config, Options, Info, UnRAR, Equalizer, SevenZip, Core, DLyric,
-  OpenDevice, GDIPAPI, GDIPOBJ, LyricShow;
+  OpenDevice, GDIPAPI, GDIPOBJ, LyricShow, MediaInfoDll;
 
 {$R *.dfm}
 
@@ -688,6 +688,7 @@ begin
   UnLoadRarLibrary; UnLoadZipLibrary; UnLoad7zLibrary;
   UnLoadShell32Library; UnLoadDsLibrary;
   UnLoadSLibrary; UnLoadCLibrary; UnLoadUser32Library;
+  UnLoadMediaInfoLibrary;
   FontPaths.Free; SetErrorMode(0);
 end;
 

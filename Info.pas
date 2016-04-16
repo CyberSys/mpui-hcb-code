@@ -22,7 +22,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, TntGraphics, Controls, Forms,
-  Dialogs, TntStdCtrls,TntForms, StdCtrls, Graphics, TntClipBrd, TntClasses;
+  Dialogs, TntStdCtrls,TntForms, StdCtrls, Graphics, TntClipBrd, TntClasses, TntSysUtils;
 
 type
   TInfoForm = class(TTntForm)
@@ -55,7 +55,7 @@ var
   Docked:boolean;
 
 implementation
-uses Core, Locale, Main;
+uses Core, Locale, Main, MediaInfoDll;
 
 {$R *.dfm}
 
@@ -86,7 +86,7 @@ end;
 
 procedure TInfoForm.UpdateInfo(calcoff:boolean);
 var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
-    i,j,c:integer; s:WideString;
+    i,j,c:integer; s:WideString; h: Cardinal;
   procedure calcOffset;
   var w,a:integer; KeySet:TTntStringList;
   begin
@@ -169,6 +169,30 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
     AddItem(Key,Value);
   end;
 
+  procedure M(z,y:WideString; var o:WideString);
+  var d: WideString;
+  begin
+    MediaInfo_Option (0, 'Inform', PWideChar(z+';%'+y+'%'));
+    d := MediaInfo_Inform(h, 0);
+    if d<>'' then o:= d;
+  end;
+
+  procedure iM(z,y:WideString; var o:Integer);
+  var d: WideString;
+  begin
+    MediaInfo_Option (0, 'Inform', PWideChar(z+';%'+y+'%'));
+    d := MediaInfo_Inform(h, 0);
+    if d<>'' then o:= StrToInt(d);
+  end;
+
+  procedure rM(z,y:WideString; var o:Real);
+  var d: WideString;
+  begin
+    MediaInfo_Option (0, 'Inform', PWideChar(z+';%'+y+'%'));
+    d := MediaInfo_Inform(h, 0);
+    if d<>'' then o:= StrToFloat(d);
+  end;
+
 begin
   with StreamInfo do begin
     if not Visible then exit;
@@ -182,6 +206,19 @@ begin
     end;
     if calcOff then calcOffset;
     HaveTagHeader:=false; HaveVideoHeader:=false; HaveAudioHeader:=false;
+    if IsMediaInfoLoaded = 0 then MediaInfoDLL_Load;
+    if IsMediaInfoLoaded <> 0 then begin
+      h := MediaInfo_New();
+      MediaInfo_Open(h,PWideChar(EscapeParam(WideExtractShortPathName(MediaURL))));
+      M('General','Format',FileFormat);
+      M('General','Duration/String3',PlaybackTime);
+      M('General','Video_Format_List',Video.Codec); iM('Video','BitRate',Video.BitRate);
+      iM('Video','Width',Video.Width); iM('Video','Height',Video.Height);
+      rM('General','FrameRate',Video.FPS); rM('Video','DisplayAspectRatio',Video.Aspect);
+      M('General','Audio_Format_List ',Audio.Decoder); iM('Audio','BitRate',Audio.BitRate);
+      iM('Audio','SamplingRate',Audio.Rate); iM('Audio','Channel(s)',Audio.Channels);
+      MediaInfo_Close(h);
+    end;
     AddItem(LOCstr_InfoFileName,FileName);
     if length(FileFormat)>0 then AddItem(LOCstr_InfoFileFormat,FileFormat);
     if length(PlaybackTime)>0 then AddItem(LOCstr_InfoPlaybackTime,PlaybackTime);
