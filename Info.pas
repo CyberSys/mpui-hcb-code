@@ -211,7 +211,7 @@ begin
       h := MediaInfo_New();
       MediaInfo_Open(h,PWideChar(EscapeParam(WideExtractShortPathName(MediaURL))));
       M('General','Format',FileFormat);
-      M('General','Duration/String3',PlaybackTime);
+      //M('General','Duration/String3',PlaybackTime);
       M('General','Video_Format_List',Video.Codec); iM('Video','BitRate',Video.BitRate);
       iM('Video','Width',Video.Width); iM('Video','Height',Video.Height);
       rM('General','FrameRate',Video.FPS); rM('Video','DisplayAspectRatio',Video.Aspect);

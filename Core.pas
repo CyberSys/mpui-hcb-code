@@ -209,7 +209,8 @@ function loadArcSub(path: WideString):WideString; overload;
 function loadArcSub(folder,ArcName: WideString):WideString; overload;
 
 implementation
-uses Main, config, plist, Info, UnRAR, Equalizer, Locale, Options, SevenZip, DLyric,OpenDevice;
+uses Main, config, plist, Info, UnRAR, Equalizer, Locale, Options, SevenZip,
+     DLyric, OpenDevice, MediaInfoDll;
 
 type TClientWaitThread = class(TThread)
   private procedure ClientDone;
@@ -2014,12 +2015,22 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
   end;
 
   function CheckLength: boolean;
+  var h:Cardinal;
   begin
     Result := (len > 10) and (Copy(Line, 1, 10) = 'ID_LENGTH=');
     if Result then begin
       Val(Copy(Line, 11, MaxInt), f, r);
       if r = 0 then begin
-        TTime := abs(round(f)); TotalTime:= TTime;
+        if IsMediaInfoLoaded = 0 then MediaInfoDLL_Load;
+        if IsMediaInfoLoaded <> 0 then begin
+          h := MediaInfo_New();
+          MediaInfo_Open(h,PWideChar(EscapeParam(WideExtractShortPathName(MediaURL))));
+          MediaInfo_Option (0, 'Inform', 'General;%Duration/String3%');
+          s := MediaInfo_Inform(h, 0);
+          MediaInfo_Close(h);
+        end;
+        if (IsMediaInfoLoaded <> 0) and (s<>'') then TTime:=TimeToSeconds(s)
+        else TTime := abs(round(f)); TotalTime:= TTime;
       end;
       if HaveChapters then begin
         ChapterLen:=UpdateLen;
