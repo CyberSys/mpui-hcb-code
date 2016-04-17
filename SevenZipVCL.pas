@@ -898,7 +898,7 @@ begin
   vSize := 0;
   repeat
     Inc( fIdx );
-    if ( Files[ fIdx ].Handle = INVALID_HANDLE_VALUE ) and ( not OpenVolume( fIdx + 1 ) ) then begin  //FHO 20.01.2007
+    if ( not OpenVolume( fIdx + 1 ) ) and ( Files[ fIdx ].Handle = INVALID_HANDLE_VALUE ) then begin  //FHO 20.01.2007
       Result := S_FALSE;
       Exit;
     end;
@@ -915,7 +915,7 @@ begin
         Handle := INVALID_HANDLE_VALUE;                        //FHO 20.01.2007
         Size := 0;
       end;
-      if ( Files[ fIdx ].Handle = INVALID_HANDLE_VALUE ) and ( not OpenVolume( fIdx + 1 ) ) then begin                                        //FHO 20.01.2007
+      if ( not OpenVolume( fIdx + 1 ) ) and ( Files[ fIdx ].Handle = INVALID_HANDLE_VALUE ) then begin                                        //FHO 20.01.2007
         Result := S_FALSE;
         Exit;
       end;
@@ -1017,7 +1017,7 @@ var Name:WideString; n:Integer;
   var n:integer; s,e,lastfound:widestring;
   begin
     Result:=''; s:=WideChangeFileExt(first,'');
-    lastfound:=first;
+    //lastfound:=first;
     if not TryStrToInt(Copy(WideExtractFileExt(first),2,MaxInt),n) then exit;
     e:= '00' + inttostr(n);
 
@@ -1034,7 +1034,7 @@ var Name:WideString; n:Integer;
 begin
   Result := FALSE;
   repeat
-   name := '';
+   //name := '';
    name := GetLastVolumeFN(Arcname);
    if name = '' then
      if not BrowseForFile(Name) then Exit;
@@ -1061,9 +1061,9 @@ begin
   Files[0].Size:=FileSeek(Files[0].Handle,int64(0),soFromEnd);
   Files[0].OnRemovableDrive:=DriveIsRemovable(Copy(WideExtractFilePath(Files[0].Name),1,2));
 
- // if not FArchive then
-    arcSize:=Files[0].Size;
- // else arcSize := 0;
+  if not FArchive then
+    arcSize:=Files[0].Size
+  else arcSize := 0;
 end;
 
 destructor TMyStreamReader.Destroy;
