@@ -1334,6 +1334,9 @@ begin
             RootKey := HKEY_CURRENT_USER;
             if OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\' + ext, true) then
               WriteString('Progid', AppName + ext);
+            if OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\' + ext + '\UserChoice', true) then
+              WriteString('Progid', 'Applications\MPUI.exe');
+
             if Win32PlatformIsVista then begin
               RootKey := HKEY_LOCAL_MACHINE;
               if OpenKey('\Software\Clients\Media\' + AppName + '\Capabilities\FileAssociations', true) then
