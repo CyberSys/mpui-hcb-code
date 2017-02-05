@@ -428,13 +428,14 @@ end;
 procedure TPlaylist.Play;
 begin
   MainForm.UpdateParams;
-  Playlist.NowPlaying(0); CurPlay := 0;
-  MainForm.DoOpen(Playlist[0].FullURL, Playlist[0].DisplayURL);
+  if Addsfiles then CurPlay:=acp else CurPlay:=0;
+  Playlist.NowPlaying(CurPlay);
+  MainForm.DoOpen(Playlist[CurPlay].FullURL, Playlist[CurPlay].DisplayURL);
 end;
 
 procedure TPFF.Execute;
 begin
-  Synchronize(Playlist.play)
+  Synchronize(Playlist.play);
 end;
 
 procedure TPlaylist.Add(const Entry: TPlaylistEntry);
@@ -1491,7 +1492,7 @@ begin
 end;
 
 procedure TPlaylistForm.BAddClick(Sender: TObject);
-var i: integer; sfiles: TWStringList;
+var i,k: integer; sfiles: TWStringList; t:TPFF;
 begin
   with MainForm.OpenDialog do begin
     Title := MainForm.MOpenFile.Caption;
@@ -1514,12 +1515,32 @@ begin
       PClear := (Sender <> BAdd); EndOpenDir:=PClear;
       sfiles := TWSTringList.Create;
       sfiles.AddStrings(files);
-      sfiles.SortStr(mysort);
+      sfiles.SortStr(mysort); acp:=-1;
       for i := 0 to Files.Count - 1 do begin
-        Playlist.AddFiles(sfiles[i],false);
-        if Addsfiles then addEpisode(sfiles[i]);
+        if Addsfiles then begin
+          k:= playlist.FindItem('', WideExtractFileName(sfiles[i]));
+          if k < 0 then begin
+            acp:=0;
+            Playlist.AddFiles(sfiles[i],false);
+            addEpisode(sfiles[i]);
+          end
+          else acp:=k;
+        end
+        else Playlist.AddFiles(sfiles[i],false);
       end;
-      Playlist.Changed; 
+      if Addsfiles and (acp>-1) then begin
+        if (CurPlay<=High(Playlist.Data)) and (CurPlay>=Low(Playlist.Data)) then
+          Playlist.Data[CurPlay].State:=Plist.psNotPlayed;
+        if GetCurrentThreadId = MainThreadId then Playlist.play
+        else begin
+          t:=TPFF.Create(True);
+          t.FreeOnTerminate:=True;
+          t.Priority := tpTimeCritical;
+          t.Resume;
+          SwitchToThread;;
+        end;
+      end;
+      Playlist.Changed;
       sfiles.Free;
     end;
   end;
