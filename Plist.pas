@@ -1516,13 +1516,8 @@ begin
       sfiles.AddStrings(files);
       sfiles.SortStr(mysort);
       for i := 0 to Files.Count - 1 do begin
-        if Addsfiles then begin
-          if playlist.FindItem('', WideExtractFileName(sfiles[i])) < 0 then begin
-            Playlist.AddFiles(sfiles[i],false);
-            addEpisode(sfiles[i]);
-          end;
-        end
-        else Playlist.AddFiles(sfiles[i],false);
+        Playlist.AddFiles(sfiles[i],false);
+        if Addsfiles then addEpisode(sfiles[i]);
       end;
       Playlist.Changed; 
       sfiles.Free;

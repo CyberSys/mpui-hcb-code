@@ -23,7 +23,7 @@ object DLyricForm: TDLyricForm
     Left = 0
     Top = 0
     Width = 593
-    Height = 444
+    Height = 451
     ActivePage = SSubtitle
     Align = alClient
     TabOrder = 0
@@ -32,7 +32,7 @@ object DLyricForm: TDLyricForm
       Caption = 'Lyric'
       DesignSize = (
         585
-        416)
+        423)
       object LArtist: TTntLabel
         Left = 16
         Top = 16
@@ -134,7 +134,7 @@ object DLyricForm: TDLyricForm
       Caption = 'Subtitle'
       DesignSize = (
         585
-        416)
+        423)
       object LSTitle: TTntLabel
         Left = 228
         Top = 11
