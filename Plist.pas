@@ -1493,6 +1493,17 @@ end;
 
 procedure TPlaylistForm.BAddClick(Sender: TObject);
 var i,k: integer; sfiles: TWStringList; t:TPFF;
+function Find(MovieName: widestring): integer;
+var j: integer;
+begin
+  Result := -1;
+  for j := High(playlist.Data) downto Low(playlist.Data) do begin
+    if MovieName = playlist.Data[j].FullURL then begin
+      Result := j;
+      exit;
+    end;
+  end;
+end;
 begin
   with MainForm.OpenDialog do begin
     Title := MainForm.MOpenFile.Caption;
@@ -1518,7 +1529,7 @@ begin
       sfiles.SortStr(mysort); acp:=-1;
       for i := 0 to Files.Count - 1 do begin
         if Addsfiles then begin
-          k:= playlist.FindItem('', WideExtractFileName(sfiles[i]));
+          k:= Find(sfiles[i]);
           if k < 0 then begin
             acp:=0;
             Playlist.AddFiles(sfiles[i],false);
