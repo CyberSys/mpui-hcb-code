@@ -86,7 +86,7 @@ end;
 
 procedure TInfoForm.UpdateInfo(calcoff:boolean);
 var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
-    i,j,c:integer; s,VB,VW,VH,FR,DR,AB,AR,AC:WideString; h: Cardinal;
+    i,j,c:integer; s,VB,VW,VH,FR,DR,AB,AR,AC:WideString;
 
   procedure calcOffset;
   var w,a:integer; KeySet:TTntStringList;
@@ -170,14 +170,6 @@ var HaveTagHeader,HaveVideoHeader,HaveAudioHeader:boolean;
     AddItem(Key,Value);
   end;
 
-  procedure M(z,y:WideString; var o:WideString);
-  var d: WideString;
-  begin
-    MediaInfo_Option (0, 'Inform', PWideChar(z+';%'+y+'%'));
-    d := MediaInfo_Inform(h, 0);
-    if d<>'' then o:= d;
-  end;
-
 begin
   with StreamInfo do begin
     if not Visible then exit;
@@ -194,16 +186,13 @@ begin
     VB:=''; VW:=''; VH:=''; FR:=''; DR:=''; AB:=''; AR:=''; AC:='';
     if IsMediaInfoLoaded = 0 then MediaInfoDLL_Load;
     if IsMediaInfoLoaded <> 0 then begin
-      h := MediaInfo_New();
-      MediaInfo_Open(h,PWideChar(EscapeParam(WideExtractShortPathName(MediaURL))));
-      M('General','Format',FileFormat);
-      //M('General','Duration/String3',PlaybackTime);
-      M('General','Video_Format_List',Video.Codec); M('Video','BitRate/String',VB);
-      M('Video','Width',VW); M('Video','Height',VH);
-      M('General','FrameRate/String',FR); M('Video','DisplayAspectRatio/String',DR);
-      M('General','Audio_Format_List ',Audio.Decoder); M('Audio','BitRate/String',AB);
-      M('Audio','SamplingRate/String',AR); M('Audio','Channel(s)/String)',AC);
-      MediaInfo_Close(h);
+      FileFormat:=MediaInfo.FileFormat;
+      PlaybackTime:=SecondsToTime(TimeToSeconds(MediaInfo.PlaybackTime));
+      Video.Codec:=MediaInfo.VideoCodec; VB:=MediaInfo.VideoBitRate;
+      VW:=MediaInfo.VideoWidth; VH:=MediaInfo.VideoHeight;
+      FR:=MediaInfo.FrameRate; DR:=MediaInfo.DisplayAspectRatio;
+      Audio.Decoder:=MediaInfo.AudioDecoder; AB:=MediaInfo.AudioBitRate;
+      AR:=MediaInfo.AudioSamplingRate; AC:=MediaInfo.AudioChannel;
     end;
     AddItem(LOCstr_InfoFileName,FileName);
     if length(FileFormat)>0 then AddItem(LOCstr_InfoFileFormat,FileFormat);

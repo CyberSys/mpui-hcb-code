@@ -166,6 +166,11 @@ var StreamInfo: record
     end;
   end;
 
+  MediaInfo: record
+    FileFormat,VideoCodec,VideoBitRate,VideoWidth,VideoHeight,FrameRate,DisplayAspectRatio,
+    AudioDecoder,AudioBitRate,AudioSamplingRate, AudioChannel,PlaybackTime:WideString
+  end;
+
 function CheckMenu(Menu: TMenuItem; ID: integer): integer;
 function GetLongPath(const ShortName: WideString): WideString;
 function GetLongPathNameA(lpszShortPath, lpszLongPath: PChar; cchBuffer: DWORD): DWORD;
@@ -177,6 +182,7 @@ function WideGetEnvironmentVariable(const Name: WideString): WideString;
 function WideExpandUNCFileName(const FileName: WideString): WideString;
 function WideGetUniversalName(const FileName: WideString): WideString;
 function CheckOption(OPTN: WideString): boolean;
+function TimeToSeconds(TimeCode: string): integer;
 function SecondsToTime(Seconds: integer): string;
 function EscapeParam(const Param: widestring): widestring;
 function CheckSubfont(Sfont: WideString): WideString;
@@ -207,6 +213,7 @@ procedure loadArcLyric(path: WideString); overload;
 procedure loadArcLyric(folder,ArcName: WideString); overload;
 function loadArcSub(path: WideString):WideString; overload;
 function loadArcSub(folder,ArcName: WideString):WideString; overload;
+procedure CheckMediaInfo;
 
 implementation
 uses Main, config, plist, Info, UnRAR, Equalizer, Locale, Options, SevenZip,
@@ -232,7 +239,34 @@ var ClientWaitThread: TClientWaitThread;
   LastLine: string;
   LineRepeatCount: integer;
 
+  
 procedure HandleIDLine(ID: string; Content: WideString); forward;
+
+procedure CheckMediaInfo;
+var h: Cardinal;
+  procedure M(z,y:WideString; var o:WideString);
+  var d: WideString;
+  begin
+    MediaInfo_Option (0, 'Inform', PWideChar(z+';%'+y+'%'));
+    d := MediaInfo_Inform(h, 0);
+    if d<>'' then o:= d;
+  end;
+begin
+    if IsMediaInfoLoaded = 0 then MediaInfoDLL_Load;
+    if IsMediaInfoLoaded <> 0 then begin
+      FillChar(MediaInfo ,sizeof(MediaInfo),0);
+      h := MediaInfo_New();
+      MediaInfo_Open(h,PWideChar(EscapeParam(WideExtractShortPathName(MediaURL))));
+      M('General','Format',MediaInfo.FileFormat);
+      M('General','Duration/String3',MediaInfo.PlaybackTime);
+      M('General','Video_Format_List',MediaInfo.VideoCodec); M('Video','BitRate/String',MediaInfo.VideoBitRate);
+      M('Video','Width',MediaInfo.VideoWidth); M('Video','Height',MediaInfo.VideoHeight);
+      M('General','FrameRate/String',MediaInfo.FrameRate); M('Video','DisplayAspectRatio/String',MediaInfo.DisplayAspectRatio);
+      M('General','Audio_Format_List ',MediaInfo.AudioDecoder); M('Audio','BitRate/String',MediaInfo.AudioBitRate);
+      M('Audio','SamplingRate/String',MediaInfo.AudioSamplingRate); M('Audio','Channel(s)/String)',MediaInfo.AudioChannel);
+      MediaInfo_Close(h);
+  end;
+end;
 
 function ExpandName(const BasePath, FileName: WideString): WideString;
 begin                               
@@ -801,7 +835,7 @@ begin
   end;
 
   if Firstrun then begin
-    ClearTmpFiles(TempDir); Lyric.ClearLyric; procArc := true;
+    ClearTmpFiles(TempDir); Lyric.ClearLyric; procArc := true; CheckMediaInfo;
     a:=WideIncludeTrailingPathDelimiter(ExpandName(HomeDir, LyricDir));
     s := Tnt_WideLowerCase(WideExtractFileExt(MediaURL));
     n:= WideExtractFileName(MediaURL);
@@ -1308,7 +1342,6 @@ end;
 procedure HandleInputLine(Line: string);
 var r, i, j, p, len: integer; s: string; f: real; b:boolean;
     t: TTntMenuItem; key: word; a:TDownLoadLyric; m:TMenuItem;
-    h:Cardinal;
   function SubMenu_Add(Menu: TMenuItem; ID, SelectedID: integer; Handler: TNotifyEvent): integer;
   begin
     t := TTntMenuItem.Create(Menu);
@@ -2020,15 +2053,7 @@ var r, i, j, p, len: integer; s: string; f: real; b:boolean;
     if Result then begin
       Val(Copy(Line, 11, MaxInt), f, r);
       if r = 0 then begin
-        if IsMediaInfoLoaded = 0 then MediaInfoDLL_Load;
-        if IsMediaInfoLoaded <> 0 then begin
-          h := MediaInfo_New();
-          MediaInfo_Open(h,PWideChar(EscapeParam(WideExtractShortPathName(MediaURL))));
-          MediaInfo_Option (0, 'Inform', 'General;%Duration/String3%');
-          s := MediaInfo_Inform(h, 0);
-          MediaInfo_Close(h);
-        end;
-        if (IsMediaInfoLoaded <> 0) and (s<>'') then TTime:=TimeToSeconds(s)
+        if (IsMediaInfoLoaded <> 0) and (MediaInfo.PlaybackTime<>'') then TTime:=TimeToSeconds(MediaInfo.PlaybackTime)
         else TTime := abs(round(f)); TotalTime:= TTime;
       end;
       if HaveChapters then begin
@@ -2654,15 +2679,7 @@ begin
   if (len > 11) and (Copy(Line, 1, 11) = 'ANS_LENGTH=') then begin
     Val(Copy(Line, 12, MaxInt), f, r);
     if r = 0 then begin
-      if IsMediaInfoLoaded = 0 then MediaInfoDLL_Load;
-      if IsMediaInfoLoaded <> 0 then begin
-        h := MediaInfo_New();
-        MediaInfo_Open(h,PWideChar(EscapeParam(WideExtractShortPathName(MediaURL))));
-        MediaInfo_Option (0, 'Inform', 'General;%Duration/String3%');
-        s := MediaInfo_Inform(h, 0);
-        MediaInfo_Close(h);
-      end;
-      if (IsMediaInfoLoaded <> 0) and (s<>'') then TTime:=TimeToSeconds(s)
+      if (IsMediaInfoLoaded <> 0) and (MediaInfo.PlaybackTime<>'') then TTime:=TimeToSeconds(MediaInfo.PlaybackTime)
       else TTime := abs(round(f)); TotalTime:= TTime;
     end;
     if HaveChapters then begin
