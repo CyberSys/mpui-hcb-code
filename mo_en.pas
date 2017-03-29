@@ -232,7 +232,7 @@ begin
       'DblClick'^I'Toggle fullscreen'^M^J +
       'LMB click StatusBar Timer'^I'Toggle Time'^M^J +
       'MMB'^I'Toggle Wheel function'^M^J +
-      'Ctrl+LMB or RMB drag subtitle '^I'Scale subtitle'^M^J +
+      'RMB drag subtitle '^I'Scale subtitle'^M^J +
       'Ctrl+Wheel, Wheel+RMB or RMB drag '^I'Seek'^M^J +
       'LMB click video'^I'Play/Pause'^M^J +
       'M/RMB click SeekBar Slider'^I'Set Intro/Ending'^M^J +
