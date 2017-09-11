@@ -682,7 +682,9 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  procArc := false; ForceStop; ClearTmpFiles(TempDir);
+  procArc := false;
+  UpdateMRF;
+  ForceStop; ClearTmpFiles(TempDir);
 //  SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, ScreenSaverActive, nil, 0);
   Config.Save(HomeDir + DefaultFileName, 1);
   UnLoadRarLibrary; UnLoadZipLibrary; UnLoad7zLibrary;
@@ -1817,8 +1819,9 @@ begin
   INI := TMemIniFile.Create(FileName);
   try
     for i := MRFile.Count - 1 downto 2 do begin
-      MRFile.delete(i); INI.DeleteKey(SectionName, 'RF' + IntToStr(i - 2));
+      MRFile.delete(i);
     end;
+    if INI.SectionExists('RF') then INI.EraseSection('RF');
     INI.UpdateFile;
   finally
     INI.Free;
@@ -1827,34 +1830,54 @@ begin
 end;
 
 procedure TMainForm.MRFClick(Sender: TObject);
-var Entry: TPlaylistEntry; w, g: WideString; h: integer;
+var Entry: TPlaylistEntry;
 begin
   PClear := true; EndOpenDir := true;
-  w := (Sender as TTntMenuItem).Hint;
-  h := pos('|', w); g := '';
-  if h > 0 then begin
-    g := copy(w, h + 1, MaxInt); w := copy(w, 1, h - 1);
-  end;
-  if g <> '' then Entry.DisplayURL := g
-  else Entry.DisplayURL := WideExtractFileName(w);
-  Entry.FullURL := w;
-  Entry.State := psNotPlayed;
+  Entry.DisplayURL := (Sender as TTntMenuItem).Caption;
+  Entry.FullURL := (Sender as TTntMenuItem).Hint;
+  Entry.State := psNotPlayed; Lps:= (Sender as TTntMenuItem).Tag;
   playlist.Add(Entry);
-  if Addsfiles then Plist.addEpisode(w);
+  if Addsfiles then Plist.addEpisode(Entry.FullURL);
   Playlist.Changed;
 end;
 
 procedure TMainForm.UpdateMRF;
-var t: TTntMenuItem; s: WideString;
+var t: TTntMenuItem; i,a:Integer;
 begin
-  s := MediaURL + '|' + DisplayURL;
-  if (MRfile.Count > 2) and (TTntMenuItem(MRFile.Items[2]).Hint = s) then exit;
-  if (Copy(MediaURL, 1, 12) = ' -dvd-device') or (Copy(MediaURL, 1, 14) = ' -cdrom-device')
+  if (MediaURL = '') or (DisplayURL = '') or (Copy(MediaURL, 1, 12) = ' -dvd-device') or (Copy(MediaURL, 1, 14) = ' -cdrom-device')
     or (Copy(MediaURL, 1, 15) = ' -bluray-device') then exit;
+    
+  if Running then begin
+    if not HaveVideo then
+      a := SecondPos
+    else begin
+      if SecondPos < 15 then
+        a := SecondPos - 5
+      else
+        a := SecondPos - 15;
+    end;
+  end
+  else a:=-1;
+  
+  if (MRfile.Count > 2) then begin
+  	for i:=2 to MRfile.Count-1 do begin
+  	  if MediaURL=TTntMenuItem(MRFile.Items[i]).Hint then begin
+  	    t := TTntMenuItem.Create(MRFile);
+        t.Caption := DisplayURL;
+        t.Hint := TTntMenuItem(MRFile.Items[i]).Hint;
+        t.OnClick := MRFClick;
+        t.tag:=a;
+        MRFile.delete(i);
+        MRFile.Insert(2, t);
+        exit;
+  	  end;
+    end;
+  end;
+
   if MRFile.Count = (RFileMax + 2) then MRFile.Delete(RFileMax + 1);
   t := TTntMenuItem.Create(MRFile);
-  t.Caption := DisplayURL; t.Hint := s;
-  t.OnClick := MRFClick;
+  t.Caption := DisplayURL; t.Hint := MediaURL;
+  t.OnClick := MRFClick; t.tag:=a;
   MRFile.Insert(2, t);
   MRFile.Visible := true;
 end;
@@ -2441,6 +2464,7 @@ end;
 procedure TMainForm.NextFile(Direction: integer; ExitState: TPlaybackState);
 var Index: integer;
 begin
+  if Direction<>0 then UpdateParams;
   //ForceStop;
   Index := Playlist.GetNext(ExitState, Direction);
   if Index < 0 then begin
@@ -2483,7 +2507,7 @@ end;
 
 procedure TMainForm.BPrevNextClick(Sender: TObject);
 begin
-  UpdateParams; AutoNext := false;
+  AutoNext := false;
   NextFile((Sender as TComponent).Tag, psSkipped);
 end;
 
@@ -2545,6 +2569,7 @@ begin
   AudioID := -1; SubID := -1; VideoID := -1; TID := 1; CID := 1; AID := 1; CDID := 1;
   subcount := 0; Lastsubcount := 0; CurrentSubCount := 0;
   procArc := false; Dreset := false;
+  UpdateMRF; //UpdateMRF;放在Firstrun:=true后, SecondPos := -1;前
   LastPos := 0; SecondPos := -1; TotalTime := 0; Duration := '0:00:00'; ChapterLen := 0; ChaptersLen := 0;
   SeekBarSlider.Left := 0; UpdateSkipBar := SkipBar.Visible; dsEnd := false;
   AudioFile := '';
@@ -3164,9 +3189,7 @@ begin
             key := VK_HOME;
             FormKeyDown(nil, key, []);
           end
-          else begin
-            UpdateParams; NextFile(1, psPlayed);
-          end
+          else NextFile(1, psPlayed);
         end;
       end
       else SkipBar.Width := SeekBar.Width - SkipBar.Left + SeekBar.Left;

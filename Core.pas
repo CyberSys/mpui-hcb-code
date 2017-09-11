@@ -19,14 +19,14 @@
 unit Core;
 interface
 uses Windows, TntWindows, SysUtils, TntSysUtils, TntSystem, Classes, Forms, Menus, TntMenus,
-  Controls, Graphics, Dialogs, MultiMon, ShlObj, TntClasses;
+  Controls, Graphics, Dialogs, MultiMon, ShlObj, TntClasses, INIFiles;
 
 const ABOVE_NORMAL_PRIORITY_CLASS: Cardinal = $00008000;
 const PauseCMD: array[0..1] of WideString = ('pause', 'frame_step');
 const PauseInfo: array[0..1] of WideString = ('=  PAUSE  =', '= 暂停 =');
 const CacheFill: array[0..4] of WideString = ('Cache fill:', '缓存填充:', '缓冲填充:', '緩存填充:', '緩沖填充:');
 const GenIndex: array[0..2] of WideString = ('Generating Index:', '正在生成索引:', '正在生成索引:');
-const defaultHeight = 340; RFileMax = 10; stopTimeout = 1000; Dsubpos = 96;
+const defaultHeight = 340; RFileMax = 50; stopTimeout = 1000; Dsubpos = 96;
 const szdllCount = 2; Fscale = 4.2;
 const sddll = 'SubDownloader.dll';
 const szdll: array[0..szdllCount] of WideString = ('7zxa.dll', '7za.dll', '7z.dll');
@@ -137,7 +137,7 @@ var Status: TStatus;
   Loadsrt, LoadVob, Loadsub, Expand, TotalTime, TTime, ChapterLen, ChaptersLen: integer;
   HaveAudio, HaveVideo, LastHaveVideo, ChkAudio, ChkVideo, ChkStartPlay: boolean;
   NativeWidth, NativeHeight, MonitorID, MonitorW, MonitorH: integer;
-  LastPos, SecondPos, OSDLevel, DefaultOSDLevel, MSecPos: integer;
+  LastPos, Lps, SecondPos, OSDLevel, DefaultOSDLevel, MSecPos: integer;
   Volume, MWC, CP, seekLen: integer;
   ds, tEnd, procArc, Mute, Ass, Efont, ISub, AutoNext, UpdatePW, sconfig, EndOpenDir: boolean;
   DTFormat: string;
@@ -894,8 +894,6 @@ begin
       end;
     end;
 
-    MainForm.UpdateMRF;
-
     if (i > 0) and IsLoaded(s) then begin
       tEnd := false;
       TmpURL := MediaURL; //避免系统调度UNRART线程的不确定性造成线程执行时获取的是已经变化的MediaURL
@@ -1032,6 +1030,7 @@ begin
       if Dreset then LastPos := i
       else if not UDVDTtime then LastPos := LastPos + i;
     end;
+    if FirstRun and (LPs>0) then begin LastPos:= LPs; Lps := 0; end;
     if LastPos > 0 then begin
       SecondPos := LastPos; CmdLine := CmdLine + ' -ss ' + SecondsToTime(LastPos); end;
 
@@ -1062,6 +1061,7 @@ begin
     end;
   end
   else begin
+  	if FirstRun and (LPs>0) then begin LastPos:= LPs; Lps := 0; end;
     if LastPos > 0 then CmdLine := CmdLine + ' -ss ' + SecondsToTime(LastPos);
     if Cache then CmdLine := CmdLine + ' -cache ' + CacheV;
     if cd or vcd then begin
@@ -1185,7 +1185,7 @@ begin
     MainForm.UpdateStatus;
   end
   else begin
-    MainForm.UpdateParams; MainForm.NextFile(1, psPlayed);
+    MainForm.NextFile(1, psPlayed);
     if not Running then begin
       if MainForm.BNext.Enabled then DisplayURL := Playlist[0].DisplayURL;
       MainForm.UpdateCaption; MainForm.SetupStop;
@@ -2456,7 +2456,7 @@ begin
         end;
 
        { if MainForm.MSIE.Checked and (EP>0) and (SecondPos>=Ep) then begin
-          MainForm.UpdateParams; MainForm.NextFile(1,psPlayed);
+          MainForm.NextFile(1,psPlayed);
         end; }
         if Mainform.MSIE.Checked then begin
           if (p = 0) and (Bp > p) and (Bp < TotalTime) then begin
@@ -2869,7 +2869,8 @@ begin
   ReadPipe := 0; WritePipe := 0; ExitCode := 0; UseUni := false; HaveVideo := false;
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
   lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := true; ADls:=true;
-  dsEnd:=false; avThread:='1'; uav:=false; AutoDs:=True; LyricS := 10; acp:=0;
+  dsEnd:=false; avThread:='1'; uav:=false; AutoDs:=True; LyricS := 10; acp:=0; Lps := 0;
+  MediaURL := ''; DisplayURL := '';
   bluray:=false; dvd:=false; vcd:=false; cd:=false; ResetStreamInfo;
 end.
 

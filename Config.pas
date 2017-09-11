@@ -32,8 +32,7 @@ implementation
 uses SysUtils, TntSysUtils, INIFiles, Windows;
 
 procedure Load(FileName: WideString; Mode: integer);
-var INI: TMemIniFile; t: TTntMenuItem; s: string;
-  i, h: integer; w, g: WideString;
+var INI: TMemIniFile; t: TTntMenuItem; s: string; i: integer;
 begin
   if not WideFileExists(FileName) then begin
     FileName := AppdataDir + WideExtractFileName(FileName);
@@ -163,17 +162,13 @@ begin
           s := ReadString(SectionName, 'HotKey', '');
           if s <> '' then Core.HKS := s;
           for i := 0 to RFileMax - 1 do begin
-            s := ReadString(SectionName, 'RF' + IntToStr(i), '');
+            s := ReadString('RF', 'RFh' + IntToStr(i), '');
             if s <> '' then begin
               t := TTntMenuItem.Create(MainForm.MRFile);
-              w := UTF8Decode(s);
-              t.Hint := w;
-              h := pos('|', w); g := '';
-              if h > 0 then begin
-                g := copy(w, h + 1, MaxInt); w := copy(w, 1, h - 1);
-              end;
-              if g <> '' then t.Caption := g
-              else t.Caption := WideExtractFileName(w);
+              t.Hint := UTF8Decode(s);
+              s := ReadString('RF', 'RFc' + IntToStr(i), '');
+              t.Caption:= UTF8Decode(s);
+              t.Tag:=ReadInteger('RF','RFt' + IntToStr(i),0);
               t.OnClick := MainForm.MRFClick;
               MainForm.MRFile.add(t);
               MainForm.MRFile.Visible := true;
@@ -317,8 +312,11 @@ begin
           WriteBool(SectionName, 'Shuffle', Core.Shuffle);
           WriteBool(SectionName, 'Loop', Core.Loop);
           WriteBool(SectionName, 'OneLoop', Core.OneLoop);
-          for h := MainForm.MRFile.Count - 1 downto 2 do
-            WriteString(SectionName, 'RF' + IntToStr(h - 2), UTF8Encode(TTntMenuItem(MainForm.MRFile.Items[h]).Hint));
+          for h := MainForm.MRFile.Count - 1 downto 2 do begin
+            WriteString('RF', 'RFc' + IntToStr(h - 2), UTF8Encode(TTntMenuItem(MainForm.MRFile.Items[h]).Caption));
+            WriteString('RF', 'RFh' + IntToStr(h - 2), UTF8Encode(TTntMenuItem(MainForm.MRFile.Items[h]).Hint));
+            WriteInteger('RF', 'RFt' + IntToStr(h - 2), MainForm.MRFile.Items[h].tag);
+          end;
         end;
       2: begin  //immediately save setting
           WriteBool(SectionName, 'instance', Core.oneM);

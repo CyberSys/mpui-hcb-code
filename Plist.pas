@@ -1539,7 +1539,7 @@ begin
         end
         else Playlist.AddFiles(sfiles[i],false);
       end;
-      if Addsfiles and (acp>-1) then begin
+      if Addsfiles and (acp>0) then begin
         if (CurPlay<=High(Playlist.Data)) and (CurPlay>=Low(Playlist.Data)) then
           Playlist.Data[CurPlay].State:=Plist.psNotPlayed;
         if GetCurrentThreadId = MainThreadId then Playlist.play
@@ -1549,7 +1549,7 @@ begin
           t.Priority := tpTimeCritical;
           t.Resume;
           SwitchToThread;;
-        end;
+        end; 
       end;
       Playlist.Changed;
       sfiles.Free;
