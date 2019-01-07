@@ -745,11 +745,11 @@ begin
       if Data[i].State = psNotPlayed then inc(UPCount);
 
     if UPCount = 0 then begin
-      if Count > 1 then begin
+      if not Loop then Result := -1
+      else if Count > 1 then begin
         repeat Result := Random(Count);
         until Result <> CurPlay;
       end
-      else if not Loop then Result := -1;
     end
     else begin
       repeat Result := Random(Count);
