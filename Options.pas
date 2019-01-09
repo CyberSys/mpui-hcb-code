@@ -1295,7 +1295,7 @@ end;
 
 procedure regAss();
 var s: TTntStringList; reg: TTntRegistry; i: integer;
-  hr: HRESULT; AppName, ext, AppPath: widestring;
+  hr: HRESULT; AppName,App, ext, AppPath: widestring;
   AAR: IApplicationAssociationRegistration;
 begin
   s := TTntStringList.Create;
@@ -1303,7 +1303,7 @@ begin
   if s.Count < 1 then begin
     s.Free; exit; end;
   reg := TTntRegistry.Create;
-  hr := 1; AAR := nil; ext := ''; AppName := 'MPUI-hcb';
+  hr := 1; AAR := nil; ext := ''; AppName := 'MPUI-hcb'; App:='MPUI.exe';
   AppPath := WideExpandFileName(WideParamStr(0));
   with reg do begin
     try
@@ -1315,6 +1315,10 @@ begin
           WriteExpandString('ApplicationDescription', 'A Windows frontend for MPlayer');
           WriteExpandString('ApplicationName', AppName);
         end;
+        if OpenKey('\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\' + App, true) then begin
+          WriteString('', AppPath);
+          WriteString('Path',WideExtractFilePath(AppPath));
+        end;
         hr := CoCreateInstance(CLSID_ApplicationAssociationRegistration, nil, CLSCTX_INPROC_SERVER, IID_IApplicationAssociationRegistration, AAR);
       end;
 
@@ -1322,11 +1326,28 @@ begin
         ext := '.' + Tnt_WideLowerCase(copy(s.Strings[i], 2, MaxInt));
         if s.Strings[i][1] = '1' then begin
           RootKey := HKEY_CLASSES_ROOT;
+          OpenKey('\' + ext + '\OpenWithList\' + App, true);
+          if OpenKey('\' + ext + '\OpenWithProgIds', true) then
+             WriteString(AppName + ext,'');
+          if OpenKey('\Applications\' + App, true) then
+          	  WriteString('FriendlyAppName',AppName);
+          if OpenKey('\Applications\' + App + '\shell', true) then
+          	   WriteString('', 'play');
+          if OpenKey('\Applications\' + App + '\shell\open\command', true) then
+            WriteString('', '"' + AppPath + '" "%1"');
+          if OpenKey('\Applications\' + App + '\shell\play', true) then WriteString('','&Play');
+          if OpenKey('\Applications\' + App + '\shell\play\command', true) then
+            WriteString('', '"' + AppPath + '" "%1"');
+          if OpenKey('\Applications\' + App + '\SupportedTypes', true) then WriteString(ext,'');
+          OpenKey('\SystemFileAssociations\video\OpenWithList\' + App,true);
+          OpenKey('\SystemFileAssociations\audio\OpenWithList\' + App,true);
           if OpenKey('\' + AppName + ext, true) then
             WriteString('', 'MPlayer file (' + ext + ')');
           if OpenKey('\' + AppName + ext + '\DefaultIcon', true) then
             WriteString('', AppPath + ',0');
           if OpenKey('\' + AppName + ext + '\shell\open\command', true) then
+            WriteString('', '"' + AppPath + '" "%1"');
+          if OpenKey('\' + AppName + ext + '\shell\play\command', true) then
             WriteString('', '"' + AppPath + '" "%1"');
           if OpenKey('\' + ext, true) then
             WriteString('', AppName + ext);
@@ -1335,7 +1356,7 @@ begin
             if OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\' + ext, true) then
               WriteString('Progid', AppName + ext);
             if OpenKey('\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\' + ext + '\UserChoice', true) then
-              WriteString('Progid', 'Applications\MPUI.exe');
+              WriteString('Progid', AppName + ext);
 
             if Win32PlatformIsVista then begin
               RootKey := HKEY_LOCAL_MACHINE;
