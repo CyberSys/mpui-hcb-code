@@ -120,13 +120,13 @@ var Status: TStatus;
   CT, RP, RS, SP, AutoPlay, ETime, InSubDir, SPDIF, ML, GUI, dlod: boolean;
   Shuffle, Loop, OneLoop, Uni, Utf, UseUni,ADls: boolean;
   ControlledResize, ni, nobps, Dnav, IsDMenu, SMenu, lavf, UdvdTtime, vsync: boolean;
-  Flip, Mirror, Yuy2, Eq2, LastEq2, Dda, LastDda, Wadsp, addsFiles: boolean;
+  Flip, Mirror, Yuy2, Eq2, LastEq2, Dda, LastDda, Wadsp, addsFiles, LastAddsfiles: boolean;
   WantFullscreen, WantCompact, AutoQuit, IsPause, IsDx, dsEnd,uav: boolean;
   VideoID, Ch, CurPlay, LyricS, HaveLyric: integer;
   AudioID, MouseMode, SubPos, NoAccess: integer;
   SubID, TID, tmpTID, CID, AID, VCDST, CDID: integer;
   subcount, Bp, Ep, CurrentLocale: integer;
-  Lastsubcount,acp: integer;
+  Lastsubcount: integer;
   CurLyric, NextLyric, LyricCount,MaxLenLyric: integer;
   VobsubCount, VobFileCount: integer;
   CurrentSubCount, OnTop, VobAndInterSubCount, IntersubCount: integer;
@@ -2868,8 +2868,9 @@ begin
   LTextColor := clWindowText; LBGColor := clWindow; LHGColor := $93; ClientProcess := 0;
   ReadPipe := 0; WritePipe := 0; ExitCode := 0; UseUni := false; HaveVideo := false;
   NW := 0; NH := 0; SP := true; CT := true; fass := DefaultFass; HKS := DefaultHKS; seekLen := 10;
-  lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := true; ADls:=true;
-  dsEnd:=false; avThread:='1'; uav:=false; AutoDs:=True; LyricS := 10; acp:=0; Lps := 0;
+  lastP1 := ''; lastFN := ''; balance := 0; sconfig := false; Addsfiles := true; LastAddsfiles := true;
+  ADls:=true;
+  dsEnd:=false; avThread:='1'; uav:=false; AutoDs:=True; LyricS := 10; Lps := 0;
   MediaURL := ''; DisplayURL := '';
   bluray:=false; dvd:=false; vcd:=false; cd:=false; ResetStreamInfo;
 end.

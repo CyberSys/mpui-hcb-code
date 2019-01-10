@@ -874,6 +874,7 @@ begin
 
   ADls:=CLS.Checked;
   AutoDs:=ads.Checked;
+  if Addsfiles=false then LastAddsfiles:= false;
   Addsfiles := CAddsfiles.Checked;
   if PlaylistForm.Visible then PlaylistForm.TMLyricPaint(nil);
   MainForm.UpdateMenuCheck; SaveHotKey;

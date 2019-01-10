@@ -428,7 +428,7 @@ end;
 procedure TPlaylist.Play;
 begin
   MainForm.UpdateParams;
-  if Addsfiles then CurPlay:=acp else CurPlay:=0;
+  CurPlay:=0;
   Playlist.NowPlaying(CurPlay);
   MainForm.DoOpen(Playlist[CurPlay].FullURL, Playlist[CurPlay].DisplayURL);
 end;
@@ -1492,7 +1492,7 @@ begin
 end;
 
 procedure TPlaylistForm.BAddClick(Sender: TObject);
-var i,k: integer; sfiles: TWStringList; t:TPFF;
+var i: integer; sfiles: TWStringList; t:TPFF;
 function Find(MovieName: widestring): integer;
 var j: integer;
 begin
@@ -1526,31 +1526,18 @@ begin
       PClear := (Sender <> BAdd); EndOpenDir:=PClear;
       sfiles := TWSTringList.Create;
       sfiles.AddStrings(files);
-      sfiles.SortStr(mysort); acp:=-1;
+      sfiles.SortStr(mysort);
       for i := 0 to Files.Count - 1 do begin
         if Addsfiles then begin
-          k:= Find(sfiles[i]);
-          if k < 0 then begin
-            acp:=0;
+          if (Find(sfiles[i]) < 0) or (LastAddsfiles = false) then begin
             Playlist.AddFiles(sfiles[i],false);
             addEpisode(sfiles[i]);
           end
-          else acp:=k;
+          else if PClear then Playlist.AddFiles(sfiles[i],false);
         end
         else Playlist.AddFiles(sfiles[i],false);
       end;
-      if Addsfiles and (acp>0) then begin
-        if (CurPlay<=High(Playlist.Data)) and (CurPlay>=Low(Playlist.Data)) then
-          Playlist.Data[CurPlay].State:=Plist.psNotPlayed;
-        if GetCurrentThreadId = MainThreadId then Playlist.play
-        else begin
-          t:=TPFF.Create(True);
-          t.FreeOnTerminate:=True;
-          t.Priority := tpTimeCritical;
-          t.Resume;
-          SwitchToThread;;
-        end; 
-      end;
+      LastAddsfiles:= Addsfiles;
       Playlist.Changed;
       sfiles.Free;
     end;

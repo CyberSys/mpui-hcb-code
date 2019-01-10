@@ -149,6 +149,7 @@ begin
           Core.WantFullscreen := ReadBool(SectionName, 'Fullscreen', Core.WantFullscreen);
           Core.AutoQuit := ReadBool(SectionName, 'AutoQuit', Core.AutoQuit);
           Core.Addsfiles := ReadBool(SectionName, 'Add sequence files', Core.Addsfiles);
+          LastAddsfiles:=Addsfiles;
           Core.WantCompact := ReadBool(SectionName, 'Compact', Core.WantCompact);
           Core.ADls := ReadBool(SectionName, 'Auto Download Lyric/Subtitle', Core.ADls);
           Core.dlod := ReadBool(SectionName, 'display lyric on desktop', Core.dlod);
